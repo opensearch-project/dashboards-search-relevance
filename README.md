@@ -1,11 +1,7 @@
-## My Project
+## Search Relevance Tools
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
+### Summary
+In search applications, tuning relevance is a constant, iterative exercise to bring the right search results to your end users. The tooling in this repository aims to help the search relevance engineer and non-engineering search relevance experts help create the best search experience possible for your end users without hiding internals from engineers who want to go deep into the details.
 
 ## Security
 
