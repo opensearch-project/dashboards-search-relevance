@@ -31,8 +31,8 @@ This document explains who the maintainers are (see below), what they do in this
 
 | Maintainer               | GitHub ID                               | Affiliation |
 | ------------------------ | --------------------------------------- | ----------- |
-| Henri Yandell            | [hyandell](https://github.com/hyandell) | Amazon      |
-| Daniel "dB." Doubrovkine | [dblock](https://github.com/dblock)     | Amazon      |
+| Mark Cohen            | [macohen](https://github.com/macohen) | Amazon      |
+| Michael Froh | [msfroh](https://github.com/msfroh)     | Amazon      |
 
 ## Maintainer Responsibilities
 
