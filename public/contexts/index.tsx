@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { createContext, useContext, useState } from 'react';
 
 import { DocumentsIndex } from '../types/index';

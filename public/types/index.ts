@@ -1,3 +1,7 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
 export interface DocumentsIndex {
   'docs.count': string;
   'docs.deleted': string;

@@ -21,7 +21,7 @@ import {
 } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
 
-import { CoreStart, ChromeBreadcrumb } from '../../../../../../../src/core/public';
+import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
 import { SearchConfigsPanel } from './search_components/search_configs';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchResultTable } from './result_components/search_result_table';

@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { NavigationPublicPluginStart } from 'src/plugins/navigation/public';
-import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
+import { CoreStart, ChromeBreadcrumb } from '../../../../../src/core/public';
 import '../../ace-themes/sql_console';
 import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
