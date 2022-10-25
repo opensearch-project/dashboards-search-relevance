@@ -1,0 +1,26 @@
+{
+  "name": "searchRelevance",
+  "version": "2.3.0.0",
+  "main": "index.ts",
+  "license": "Apache-2.0",
+  "scripts": {
+    "osd": "node ../../scripts/osd",
+    "build": "yarn plugin_helpers build",
+    "test": "../../node_modules/.bin/jest --config ./test/jest.config.js",
+    "cypress:run": "TZ=America/Los_Angeles cypress run",
+    "cypress:open": "TZ=America/Los_Angeles cypress open",
+    "plugin_helpers": "node ../../scripts/plugin_helpers"
+  },
+  "dependencies": {
+    "react-grid-layout": "^0.16.2"
+  },
+  "devDependencies": {
+    "@cypress/skip-test": "^2.6.1",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/react-test-renderer": "^16.9.1",
+    "@types/react-grid-layout": "^0.16.7",
+    "cypress": "^5.0.0",
+    "eslint": "^6.8.0",
+    "jest-dom": "^4.0.0"
+  }
+}
