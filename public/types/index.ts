@@ -15,20 +15,15 @@ export interface DocumentsIndex {
   uuid: string;
 }
 
+export interface IDocType {
+  [key: string]: string;
+}
+
 export interface Document {
   _index: string;
   _id: string;
   _score: number;
-  _source: {
-    id: string;
-    name: string;
-    title: string;
-    short_description: string;
-    img_500x500: string;
-    date_released: string;
-    supplier: string;
-    price: number;
-  };
+  _source: IDocType;
 }
 
 export interface SearchResults {

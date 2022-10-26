@@ -25,11 +25,11 @@ import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
 import { SearchConfigsPanel } from './search_components/search_configs';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchResultTable } from './result_components/search_result_table';
-import { ServiceEndpoints } from '../../../constants';
+import { ServiceEndpoints } from '../../../../common';
 
 const defaultQuery = JSON.stringify({
   query: {
-    term: { title: '%searchInput%' },
+    term: { title: '%SearchQuery%' },
   },
 });
 
@@ -39,10 +39,10 @@ interface SearchResultProps {
 
 export const SearchResult = ({ http }: SearchResultProps) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchIndex1, setSearchIndex1] = useState('chorus-ecommerce-data');
-  const [searchIndex2, setSearchIndex2] = useState('chorus-ecommerce-data');
-  const [queryString1, setQueryString1] = useState(defaultQuery);
-  const [queryString2, setQueryString2] = useState(defaultQuery);
+  const [searchIndex1, setSearchIndex1] = useState('');
+  const [searchIndex2, setSearchIndex2] = useState('');
+  const [queryString1, setQueryString1] = useState('');
+  const [queryString2, setQueryString2] = useState('');
   const [querqyResult1, setQuerqyResult1] = useState({});
   const [querqyResult2, setQuerqyResult2] = useState({});
   const [searchBarValue, setSearchBarValue] = useState('');
@@ -50,8 +50,8 @@ export const SearchResult = ({ http }: SearchResultProps) => {
 
   const onClickSearch = () => {
     setIsLoading(true);
-    const jsonQuery1 = JSON.parse(queryString1.replace(/%searchInput%/g, searchBarValue));
-    const jsonQuery2 = JSON.parse(queryString2.replace(/%searchInput%/g, searchBarValue));
+    const jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
+    const jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
     http
       .post(ServiceEndpoints.GetSearchResults, {
         body: JSON.stringify({ index: searchIndex1, ...jsonQuery1 }),

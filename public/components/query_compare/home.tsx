@@ -11,7 +11,7 @@ import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
 import { useSearchRelevanceContext } from '../../contexts';
 import { DocumentsIndex } from '../../types/index';
-import { ServiceEndpoints } from '../../constants';
+import { ServiceEndpoints } from '../../../common';
 
 import './home.scss';
 
