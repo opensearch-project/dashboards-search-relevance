@@ -10,14 +10,14 @@ import {
   SearchRelevancePluginStart,
   AppPluginStartDependencies,
 } from './types';
-import { PLUGIN_NAME } from '../common';
+import { PLUGIN_NAME, PLUGIN_ID } from '../common';
 
 export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
   public setup(core: CoreSetup): SearchRelevancePluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
-      id: 'searchRelevance',
+      id: PLUGIN_ID,
       title: PLUGIN_NAME,
       category: {
         id: 'opensearch',

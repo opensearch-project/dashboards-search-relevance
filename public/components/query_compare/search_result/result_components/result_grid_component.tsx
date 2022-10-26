@@ -8,7 +8,7 @@ import { EuiButtonIcon, EuiLink, EuiPanel, EuiText } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { IDocType } from '../../../../../common';
+import { IDocType } from '../../../../types/index';
 
 interface ResultGridComponentProps {
   querqyResult: any;
@@ -19,14 +19,7 @@ export const ResultGridComponent = ({ querqyResult }: ResultGridComponentProps) 
   const getExpColapTd = () => {
     return (
       <td className="osdDocTableCell__toggleDetails" key={uniqueId('grid-td-')}>
-        <EuiButtonIcon
-          className="euiButtonIcon euiButtonIcon--text"
-          // onClick={() => {
-          //   toggleDetailOpen();
-          // }}
-          iconType="arrowLeft"
-          // iconType={detailsOpen || surroundingEventsOpen ? 'arrowLeft' : 'arrowRight'}
-        />
+        <EuiButtonIcon className="euiButtonIcon euiButtonIcon--text" iconType="arrowLeft" />
       </td>
     );
   };

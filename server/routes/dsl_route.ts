@@ -6,8 +6,8 @@
 import { schema } from '@osd/config-schema';
 import { RequestParams } from '@opensearch-project/opensearch';
 
-import { IRouter } from '../../../../../src/core/server';
-import { ServiceEndpoints } from '../../public/constants';
+import { IRouter } from '../../../../src/core/server';
+import { ServiceEndpoints } from '../../common';
 
 export function registerDslRoute({ router }: { router: IRouter }) {
   router.post(

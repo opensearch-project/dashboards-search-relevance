@@ -6,12 +6,7 @@
 export const PLUGIN_ID = 'searchRelevance';
 export const PLUGIN_NAME = 'Search Relevance';
 
-export const pageStyles: CSS.Properties = {
-  float: 'left',
-  width: '100%',
-  maxWidth: '1130px',
-};
-
-export interface IDocType {
-  [key: string]: string;
+export enum ServiceEndpoints {
+  GetIndexes = '/api/relevancy/search/indexes',
+  GetSearchResults = '/api/relevancy/search',
 }
