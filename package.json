@@ -1,5 +1,5 @@
 {
-  "name": "searchRelevance",
+  "name": "dashboards-search-relevance",
   "version": "3.0.0.0",
   "main": "./public/index.ts",
   "license": "Apache-2.0",
