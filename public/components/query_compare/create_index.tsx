@@ -6,7 +6,7 @@
 import React from 'react';
 import { EuiPageBody, EuiEmptyPrompt, EuiLink } from '@elastic/eui';
 
-import { Header } from '../common/header/header';
+import { Header } from '../common/header';
 
 export const CreateIndex = () => {
   return (

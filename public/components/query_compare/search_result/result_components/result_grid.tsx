@@ -11,9 +11,9 @@ import { useState } from 'react';
 import { IDocType } from '../../../../types/index';
 
 interface ResultGridComponentProps {
-  querqyResult: any;
+  queryResult: any;
 }
-export const ResultGridComponent = ({ querqyResult }: ResultGridComponentProps) => {
+export const ResultGridComponent = ({ queryResult }: ResultGridComponentProps) => {
   const [resultGrid, setResultGrid] = useState(<></>);
 
   const getExpColapTd = () => {
@@ -76,9 +76,9 @@ export const ResultGridComponent = ({ querqyResult }: ResultGridComponentProps) 
 
   useEffect(() => {
     console.log('query result changed');
-    if (!_.isEmpty(querqyResult))
+    if (!_.isEmpty(queryResult))
       setResultGrid(
-        querqyResult.hits.hits.map((doc: any, id: number) => {
+        queryResult.hits.hits.map((doc: any, id: number) => {
           return (
             <>
               <tr className="osdDocTable__row">{getTds(doc._source)}</tr>
@@ -86,19 +86,13 @@ export const ResultGridComponent = ({ querqyResult }: ResultGridComponentProps) 
           );
         })
       );
-  }, [querqyResult]);
+  }, [queryResult]);
 
   return (
-    <EuiPanel>
-      <div className="dscTable dscTableFixedScroll">
-        <table className="osd-table table" data-test-subj="docTable">
-          <thead>
-            <th key={uniqueId('datagrid-header-')}>Document Hits</th>
-            <th key={uniqueId('datagrid-header-')}>Difference</th>
-          </thead>
-          <tbody>{resultGrid}</tbody>
-        </table>
-      </div>
-    </EuiPanel>
+    <div className="dscTable dscTableFixedScroll">
+      <table className="osd-table table" data-test-subj="docTable">
+        <tbody>{resultGrid}</tbody>
+      </table>
+    </div>
   );
 };
