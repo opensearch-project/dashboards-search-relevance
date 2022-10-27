@@ -29,8 +29,8 @@ const InitialState = () => {
 const ResultPanels = ({ queryResult1, queryResult2 }: ResultComponentsProps) => {
   return (
     <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
-      <ResultPanel title="Result 1" queryResult={queryResult1} />
-      <ResultPanel title="Result 2" queryResult={queryResult2} />
+      <ResultPanel resultNumber={1} queryResult={queryResult1} />
+      <ResultPanel resultNumber={2} queryResult={queryResult2} />
     </EuiSplitPanel.Outer>
   );
 };

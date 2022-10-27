@@ -11,7 +11,6 @@ interface SearchBarProps {
   setSearchBarValue: React.Dispatch<React.SetStateAction<string>>;
   isLoading: boolean;
   onClickSearch: () => void;
-  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const SearchInputBar = ({
@@ -19,7 +18,6 @@ export const SearchInputBar = ({
   setSearchBarValue,
   isLoading,
   onClickSearch,
-  setIsCollapsed,
 }: SearchBarProps) => {
   return (
     <>
@@ -41,7 +39,6 @@ export const SearchInputBar = ({
           <EuiButton
             fill
             onClick={() => {
-              setIsCollapsed(true);
               onClickSearch();
             }}
           >

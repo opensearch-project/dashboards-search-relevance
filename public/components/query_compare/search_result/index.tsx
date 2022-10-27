@@ -3,23 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  EuiPage,
-  EuiPageBody,
-  EuiPageHeader,
-  EuiTitle,
-  EuiPageContentBody,
-  EuiPageHeaderSection,
-  EuiCode,
-  EuiPanel,
-  EuiSpacer,
-  EuiFlexItem,
-  EuiButtonIcon,
-  EuiFlexGroup,
-  EuiSplitPanel,
-  EuiText,
-} from '@elastic/eui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { EuiPageContentBody } from '@elastic/eui';
 
 import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
@@ -28,10 +13,16 @@ import { ServiceEndpoints } from '../../../../common';
 import { Header } from '../../common/header';
 import { SearchResults } from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
+import { useSearchRelevanceContext } from '../../../contexts';
 
-const defaultQuery = JSON.stringify({
+const defaultQuery1 = JSON.stringify({
   query: {
     term: { title: '%SearchQuery%' },
+  },
+});
+const defaultQuery2 = JSON.stringify({
+  query: {
+    term: { name: '%SearchQuery%' },
   },
 });
 
@@ -40,9 +31,6 @@ interface SearchResultProps {
 }
 
 export const SearchResult = ({ http }: SearchResultProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchIndex1, setSearchIndex1] = useState('');
-  const [searchIndex2, setSearchIndex2] = useState('');
   const [queryString1, setQueryString1] = useState('');
   const [queryString2, setQueryString2] = useState('');
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -50,16 +38,23 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const [searchBarValue, setSearchBarValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const {
+    updateComparedResult1,
+    updateComparedResult2,
+    selectedIndex,
+  } = useSearchRelevanceContext();
+
   const onClickSearch = () => {
     setIsLoading(true);
     const jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
     const jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
     http
       .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: searchIndex1, ...jsonQuery1 }),
+        body: JSON.stringify({ index: selectedIndex.index1, ...jsonQuery1 }),
       })
       .then((res) => {
         setQueryResult1(res);
+        updateComparedResult1(res);
       })
       .catch((error: Error) => {
         setQueryResult1(error.body.message);
@@ -68,10 +63,11 @@ export const SearchResult = ({ http }: SearchResultProps) => {
 
     http
       .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: searchIndex2, ...jsonQuery2 }),
+        body: JSON.stringify({ index: selectedIndex.index2, ...jsonQuery2 }),
       })
       .then((res) => {
         setQueryResult2(res);
+        updateComparedResult2(res);
       })
       .catch((error: Error) => {
         setQueryResult2(error.body.message);
@@ -82,10 +78,6 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       });
   };
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
-    setter(e.target.value);
-  };
-
   return (
     <>
       <Header>
@@ -94,22 +86,14 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           setSearchBarValue={setSearchBarValue}
           isLoading={isLoading}
           onClickSearch={onClickSearch}
-          setIsCollapsed={setIsCollapsed}
         />
       </Header>
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
-          isCollapsed={isCollapsed}
-          onChange={onChange}
-          searchIndex1={searchIndex1}
-          searchIndex2={searchIndex2}
-          setSearchIndex1={setSearchIndex1}
-          setSearchIndex2={setSearchIndex2}
           queryString1={queryString1}
           queryString2={queryString2}
           setQueryString1={setQueryString1}
           setQueryString2={setQueryString2}
-          setIsCollapsed={setIsCollapsed}
         />
         <ResultComponents queryResult1={queryResult1} queryResult2={queryResult2} />
       </EuiPageContentBody>

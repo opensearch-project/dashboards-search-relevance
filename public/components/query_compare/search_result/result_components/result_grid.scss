@@ -282,6 +282,7 @@ discover-app {
 
 .dscTable {
   overflow: auto;
+  margin-top: 12px;
 
   // SASSTODO: add a monospace modifier to the doc-table component
   .osdDocTable__row {
@@ -485,4 +486,18 @@ discover-app {
 
 .osdDocViewer__warning {
   margin-right: $euiSizeS;
+}
+
+.comparison-rank {
+  display: flex;
+  align-items: center;
+
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 21px;
+  letter-spacing: -0.08px;
+
+  svg {
+    margin-right: 7px;
+  }
 }

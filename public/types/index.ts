@@ -44,3 +44,8 @@ export interface SearchResults {
     hits: Document[];
   };
 }
+
+export interface SelectedIndex {
+  index1: string;
+  index2: string;
+}
