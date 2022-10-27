@@ -48,7 +48,7 @@ export const Home = ({
   }, [http, setDocumentsIndexes]);
 
   return (
-    <div className="search-relevance">
+    <div className="search-relevance-flex">
       {documentsIndexes.length ? <SearchResult http={http} /> : <CreateIndex />}
     </div>
   );

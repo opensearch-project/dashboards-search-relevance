@@ -1,0 +1,66 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import React, { FunctionComponent } from 'react';
+import { EuiTitle, EuiSpacer, EuiFormRow, EuiSelect, EuiCodeEditor } from '@elastic/eui';
+
+import { useSearchRelevanceContext } from '../../../../../contexts';
+
+interface SearchConfigProps {
+  title: string;
+  setSearchIndex: React.Dispatch<React.SetStateAction<string>>;
+  queryString: string;
+  setQueryString: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
+  title,
+  setSearchIndex,
+  queryString,
+  setQueryString,
+}) => {
+  const { documentsIndexes } = useSearchRelevanceContext();
+
+  return (
+    <>
+      <EuiTitle size="xs">
+        <h2 style={{ fontWeight: '300', fontSize: '21px' }}>{title}</h2>
+      </EuiTitle>
+      <EuiSpacer size="m" />
+      <EuiFormRow fullWidth label="Index">
+        <EuiSelect
+          options={documentsIndexes.map(({ index }) => ({
+            value: index,
+            text: index,
+          }))}
+          aria-label="Search Index"
+          onChange={(e) => setSearchIndex(e.target.value)}
+        />
+      </EuiFormRow>
+      <EuiFormRow
+        fullWidth
+        label="Query"
+        helpText="Enter a query in OpenSearch Query DSL. Use %SearchQuery% to refer to the text in the search bar. 
+Need more help? See some examples. "
+      >
+        <EuiCodeEditor
+          mode="json"
+          theme="sql_console"
+          width="100%"
+          height="10rem"
+          value={queryString}
+          onChange={setQueryString}
+          showPrintMargin={false}
+          setOptions={{
+            fontSize: '14px',
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+          }}
+          aria-label="Code Editor"
+        />
+      </EuiFormRow>
+    </>
+  );
+};

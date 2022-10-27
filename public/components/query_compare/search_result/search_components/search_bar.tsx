@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiButton, EuiFieldSearch, EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
+import { EuiButton, EuiFieldSearch, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
 import React from 'react';
 
 interface SearchBarProps {
@@ -22,40 +22,33 @@ export const SearchInputBar = ({
   setIsCollapsed,
 }: SearchBarProps) => {
   return (
-    <EuiFlexGroup justifyContent="center">
-      <EuiFlexItem grow={false}>
-        <EuiFieldSearch
-          style={{ width: '700px' }}
-          fullWidth={true}
-          placeholder="Enter Search Query"
-          value={searchBarValue}
-          onChange={(e) => setSearchBarValue(e.target.value)}
-          isClearable={true}
-          isLoading={isLoading}
-          onSearch={(value) => {}}
-          aria-label="Enter your Search query"
-        />
-      </EuiFlexItem>
-      <EuiFlexItem grow={false}>
-        <EuiButton
-          fill
-          onClick={() => {
-            setIsCollapsed(true);
-            onClickSearch();
-          }}
-        >
-          Search
-        </EuiButton>
-      </EuiFlexItem>
-      <EuiFlexItem grow={false}>
-        <EuiButton
-          onClick={() => {
-            setSearchBarValue('');
-          }}
-        >
-          Clear
-        </EuiButton>
-      </EuiFlexItem>
-    </EuiFlexGroup>
+    <>
+      <EuiSpacer size="m" />
+      <EuiFlexGroup>
+        <EuiFlexItem grow={true}>
+          <EuiFieldSearch
+            fullWidth={true}
+            placeholder="Search"
+            value={searchBarValue}
+            onChange={(e) => setSearchBarValue(e.target.value)}
+            isClearable={true}
+            isLoading={isLoading}
+            onSearch={(value) => {}}
+            aria-label="Enter your Search query"
+          />
+        </EuiFlexItem>
+        <EuiFlexItem grow={false}>
+          <EuiButton
+            fill
+            onClick={() => {
+              setIsCollapsed(true);
+              onClickSearch();
+            }}
+          >
+            Search
+          </EuiButton>
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </>
   );
 };
