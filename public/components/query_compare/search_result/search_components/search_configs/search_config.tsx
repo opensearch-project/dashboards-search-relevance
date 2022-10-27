@@ -4,7 +4,15 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { EuiTitle, EuiSpacer, EuiFormRow, EuiSelect, EuiCodeEditor } from '@elastic/eui';
+import {
+  EuiTitle,
+  EuiSpacer,
+  EuiFormRow,
+  EuiSelect,
+  EuiCodeEditor,
+  EuiText,
+  EuiButtonEmpty,
+} from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
 
@@ -21,7 +29,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   queryString,
   setQueryString,
 }) => {
-  const { documentsIndexes } = useSearchRelevanceContext();
+  const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
 
   return (
     <>
@@ -39,12 +47,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           onChange={(e) => setSearchIndex(e.target.value)}
         />
       </EuiFormRow>
-      <EuiFormRow
-        fullWidth
-        label="Query"
-        helpText="Enter a query in OpenSearch Query DSL. Use %SearchQuery% to refer to the text in the search bar. 
-Need more help? See some examples. "
-      >
+      <EuiFormRow fullWidth label="Query">
         <EuiCodeEditor
           mode="json"
           theme="sql_console"
@@ -61,6 +64,20 @@ Need more help? See some examples. "
           aria-label="Code Editor"
         />
       </EuiFormRow>
+      <EuiText>
+        <p style={{ fontSize: '14px', fontWeight: '400', lineHeight: '18px' }}>
+          Enter a query in OpenSearch Query DSL. Use %SearchQuery% to refer to the text in the
+          search bar. Need more help?{' '}
+          <EuiButtonEmpty
+            size="xs"
+            color="primary"
+            onClick={() => setShowFlyout(true)}
+            style={{ margin: '0 -8px' }}
+          >
+            See some examples
+          </EuiButtonEmpty>
+        </p>
+      </EuiText>
     </>
   );
 };
