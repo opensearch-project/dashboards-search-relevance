@@ -8,16 +8,6 @@ In search applications, tuning relevance is a constant, iterative exercise to br
 ## Search Comparison UI
 The first release in this plugin will include an experimental feature to allow users to enter a plain text search query, substitute that query into two different QueryDSLs and compare the results side by side.
 
-# Code Summary
-
-## dashboards-search-relevance
-
-|                          |                                                                                                                    |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| Test and build           | [![Search Relevance Dashboards CI][dashboard-build-badge]][dashboard-build-link]                                      |
-| Code coverage            | [![codecov][dashboard-codecov-badge]][codecov-link]                                                                |
-| Distribution build tests | [![cypress tests][cypress-test-badge]][cypress-test-link] [![cypress code][cypress-code-badge]][cypress-code-link] |
-
 ### Repository Checks
 
 # Security
