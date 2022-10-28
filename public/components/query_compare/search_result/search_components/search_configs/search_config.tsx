@@ -15,30 +15,68 @@ import {
 } from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
+import { QueryError, QueryStringError } from '../../../../../types/index';
 
 interface SearchConfigProps {
   queryNumber: 1 | 2;
   queryString: string;
   setQueryString: React.Dispatch<React.SetStateAction<string>>;
+  selectedIndex: string;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<string>>;
+  queryError: QueryError;
+  setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   queryNumber,
   queryString,
   setQueryString,
+  selectedIndex,
+  setSelectedIndex,
+  queryError,
+  setQueryError,
 }) => {
-  const {
-    documentsIndexes,
-    setShowFlyout,
-    selectedIndex,
-    updateSelectedIndex,
-  } = useSearchRelevanceContext();
+  const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
 
-  const onChangeSearchIndex = (e: any) => {
-    updateSelectedIndex({
-      indexNumber: `index${queryNumber}`,
-      indexName: e.target.value,
+  // On select index
+  const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setSelectedIndex(e.target.value);
+
+    setQueryError({
+      ...queryError,
+      selectIndex: '',
     });
+  };
+
+  // Select index on blur
+  const selectIndexOnBlur = () => {
+    // If Index Select on blur without selecting an index, show error
+    if (!selectedIndex.length) {
+      setQueryError({
+        ...queryError,
+        selectIndex: 'An index is required. Select an index.',
+      });
+    }
+  };
+
+  // On change query string
+  const onChangeQueryString = (value: string) => {
+    setQueryString(value);
+    setQueryError({
+      ...queryError,
+      queryString: '',
+    });
+  };
+
+  // Code editor on blur
+  const codeEditorOnBlur = () => {
+    // If no query string on blur, show error
+    if (!queryString.length) {
+      setQueryError({
+        ...queryError,
+        queryString: QueryStringError.empty,
+      });
+    }
   };
 
   return (
@@ -47,7 +85,12 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
       </EuiTitle>
       <EuiSpacer size="m" />
-      <EuiFormRow fullWidth label="Index">
+      <EuiFormRow
+        fullWidth
+        label="Index"
+        error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
+        isInvalid={!!queryError.selectIndex.length}
+      >
         <EuiSelect
           hasNoInitialSelection={true}
           options={documentsIndexes.map(({ index }) => ({
@@ -55,18 +98,24 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             text: index,
           }))}
           aria-label="Search Index"
-          onChange={onChangeSearchIndex}
-          value={selectedIndex[`index${queryNumber}`]}
+          onChange={onChangeSelectedIndex}
+          value={selectedIndex}
+          onBlur={selectIndexOnBlur}
         />
       </EuiFormRow>
-      <EuiFormRow fullWidth label="Query">
+      <EuiFormRow
+        fullWidth
+        label="Query"
+        error={!!queryError.queryString.length && <span>{queryError.queryString}</span>}
+        isInvalid={!!queryError.queryString.length}
+      >
         <EuiCodeEditor
           mode="json"
           theme="sql_console"
           width="100%"
           height="10rem"
           value={queryString}
-          onChange={setQueryString}
+          onChange={onChangeQueryString}
           showPrintMargin={false}
           setOptions={{
             fontSize: '14px',
@@ -74,6 +123,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             enableLiveAutocompletion: true,
           }}
           aria-label="Code Editor"
+          onBlur={codeEditorOnBlur}
         />
       </EuiFormRow>
       <EuiText>

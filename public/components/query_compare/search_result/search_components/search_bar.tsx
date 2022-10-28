@@ -9,14 +9,12 @@ import React from 'react';
 interface SearchBarProps {
   searchBarValue: string;
   setSearchBarValue: React.Dispatch<React.SetStateAction<string>>;
-  isLoading: boolean;
   onClickSearch: () => void;
 }
 
 export const SearchInputBar = ({
   searchBarValue,
   setSearchBarValue,
-  isLoading,
   onClickSearch,
 }: SearchBarProps) => {
   return (
@@ -30,18 +28,12 @@ export const SearchInputBar = ({
             value={searchBarValue}
             onChange={(e) => setSearchBarValue(e.target.value)}
             isClearable={true}
-            isLoading={isLoading}
-            onSearch={(value) => {}}
+            onSearch={onClickSearch}
             aria-label="Enter your Search query"
           />
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiButton
-            fill
-            onClick={() => {
-              onClickSearch();
-            }}
-          >
+          <EuiButton fill onClick={onClickSearch}>
             Search
           </EuiButton>
         </EuiFlexItem>

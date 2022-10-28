@@ -11,20 +11,9 @@ import { SearchConfigsPanel } from './search_components/search_configs/search_co
 import { SearchInputBar } from './search_components/search_bar';
 import { ServiceEndpoints } from '../../../../common';
 import { Header } from '../../common/header';
-import { SearchResults } from '../../../types/index';
+import { SearchResults, QueryError, QueryStringError } from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
-import { useSearchRelevanceContext } from '../../../contexts';
-
-const defaultQuery1 = JSON.stringify({
-  query: {
-    term: { title: '%SearchQuery%' },
-  },
-});
-const defaultQuery2 = JSON.stringify({
-  query: {
-    term: { name: '%SearchQuery%' },
-  },
-});
+import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
 
 interface SearchResultProps {
   http: CoreStart['http'];
@@ -36,46 +25,97 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
   const [queryResult2, setQueryResult2] = useState<SearchResults>({} as any);
   const [searchBarValue, setSearchBarValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   const {
     updateComparedResult1,
     updateComparedResult2,
-    selectedIndex,
+    selectedIndex1,
+    selectedIndex2,
+    setQueryError1,
+    setQueryError2,
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
-    setIsLoading(true);
-    const jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
-    const jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
-    http
-      .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: selectedIndex.index1, ...jsonQuery1 }),
-      })
-      .then((res) => {
-        setQueryResult1(res);
-        updateComparedResult1(res);
-      })
-      .catch((error: Error) => {
-        setQueryResult1(error.body.message);
-        console.error(error);
-      });
+    const queryError1: QueryError = { ...initialQueryErrorState };
+    const queryError2: QueryError = { ...initialQueryErrorState };
 
-    http
-      .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: selectedIndex.index2, ...jsonQuery2 }),
-      })
-      .then((res) => {
-        setQueryResult2(res);
-        updateComparedResult2(res);
-      })
-      .catch((error: Error) => {
-        setQueryResult2(error.body.message);
-        console.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    // Check if select an index
+    if (!selectedIndex1.length) {
+      queryError1.selectIndex = 'An index is required. Select an index.';
+    }
+    if (!selectedIndex2.length) {
+      queryError2.selectIndex = 'An index is required. Select an index.';
+    }
+
+    // Check if query string is empty
+    if (!queryString1.length) {
+      queryError1.queryString = QueryStringError.empty;
+    }
+    if (!queryString2.length) {
+      queryError2.queryString = QueryStringError.empty;
+    }
+
+    // Check if query string is valid
+    let jsonQuery1 = {};
+    let jsonQuery2 = {};
+    if (queryString1.trim().length > 0) {
+      try {
+        jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
+      } catch {
+        queryError1.queryString = QueryStringError.invalid;
+      }
+    }
+    if (queryString2.trim().length > 0) {
+      try {
+        jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
+      } catch {
+        queryError2.queryString = QueryStringError.invalid;
+      }
+    }
+
+    // Handle query1
+    if (queryError1.queryString.length || queryError1.selectIndex.length) {
+      setQueryError1(queryError1);
+      setQueryResult1({} as any);
+    } else if (!queryError1.queryString.length && !queryError1.selectIndex.length) {
+      http
+        .post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ index: selectedIndex1, ...jsonQuery1 }),
+        })
+        .then((res) => {
+          setQueryResult1(res);
+          updateComparedResult1(res);
+        })
+        .catch((error: Error) => {
+          setQueryError1({
+            ...queryError1,
+            queryString: error.body.message,
+          });
+          console.error(error);
+        });
+    }
+
+    // Handle query2
+    if (queryError2.queryString.length || queryError2.selectIndex.length) {
+      setQueryError2(queryError2);
+      setQueryResult2({} as any);
+    } else if (!queryError2.queryString.length && !queryError2.selectIndex.length) {
+      http
+        .post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ index: selectedIndex2, ...jsonQuery2 }),
+        })
+        .then((res) => {
+          setQueryResult2(res);
+          updateComparedResult2(res);
+        })
+        .catch((error: Error) => {
+          setQueryError2({
+            ...queryError2,
+            queryString: error.body.message,
+          });
+          console.error(error);
+        });
+    }
   };
 
   return (
@@ -84,7 +124,6 @@ export const SearchResult = ({ http }: SearchResultProps) => {
         <SearchInputBar
           searchBarValue={searchBarValue}
           setSearchBarValue={setSearchBarValue}
-          isLoading={isLoading}
           onClickSearch={onClickSearch}
         />
       </Header>

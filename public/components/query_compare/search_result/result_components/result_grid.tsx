@@ -34,7 +34,7 @@ export const ResultGridComponent = ({
   queryResult,
   resultNumber,
 }: ResultGridComponentProps) => {
-  const { selectedIndex } = useSearchRelevanceContext();
+  const { selectedIndex1, selectedIndex2 } = useSearchRelevanceContext();
 
   const getExpColapTd = () => {
     return (
@@ -92,7 +92,7 @@ export const ResultGridComponent = ({
             type="questionInCircle"
             color="#343741"
             content={
-              selectedIndex.index1 === selectedIndex.index2 ? (
+              selectedIndex1 === selectedIndex2 ? (
                 <span>
                   Not in <strong>Results {resultNumber === 1 ? 2 : 1}</strong>
                 </span>

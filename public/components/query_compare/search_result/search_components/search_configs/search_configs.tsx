@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiPanel, EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
 import React from 'react';
+import { EuiPanel, EuiFlexGroup, EuiFlexItem } from '@elastic/eui';
+
 import '../../../../../ace-themes/sql_console';
 import { SearchConfig } from './search_config';
+import { useSearchRelevanceContext } from '../../../../../contexts';
 
 interface SearchConfigsPanelProps {
   queryString1: string;
@@ -21,6 +23,17 @@ export const SearchConfigsPanel = ({
   setQueryString1,
   setQueryString2,
 }: SearchConfigsPanelProps) => {
+  const {
+    selectedIndex1,
+    setSelectedIndex1,
+    selectedIndex2,
+    setSelectedIndex2,
+    queryError1,
+    queryError2,
+    setQueryError1,
+    setQueryError2,
+  } = useSearchRelevanceContext();
+
   return (
     <EuiPanel
       hasShadow={false}
@@ -36,6 +49,10 @@ export const SearchConfigsPanel = ({
             queryNumber={1}
             queryString={queryString1}
             setQueryString={setQueryString1}
+            selectedIndex={selectedIndex1}
+            setSelectedIndex={setSelectedIndex1}
+            queryError={queryError1}
+            setQueryError={setQueryError1}
           />
         </EuiFlexItem>
         <EuiFlexItem>
@@ -43,6 +60,10 @@ export const SearchConfigsPanel = ({
             queryNumber={2}
             queryString={queryString2}
             setQueryString={setQueryString2}
+            selectedIndex={selectedIndex2}
+            setSelectedIndex={setSelectedIndex2}
+            queryError={queryError2}
+            setQueryError={setQueryError2}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
