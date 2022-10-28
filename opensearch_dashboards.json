@@ -1,6 +1,6 @@
 {
   "id": "searchRelevanceDashboards",
-  "version": "3.0",
+  "version": "2.3",
   "opensearchDashboardsVersion": "2.3.0",
   "server": true,
   "ui": true,

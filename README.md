@@ -8,6 +8,8 @@ In search applications, tuning relevance is a constant, iterative exercise to br
 ## Search Comparison UI
 The first release in this plugin will include an experimental feature to allow users to enter a plain text search query, substitute that query into two different QueryDSLs and compare the results side by side.
 
+### Repository Checks
+
 # Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
