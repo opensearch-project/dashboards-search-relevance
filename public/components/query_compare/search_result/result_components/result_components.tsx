@@ -10,6 +10,8 @@ import { SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
+import './result_components.scss';
+
 interface ResultComponentsProps {
   queryResult1: SearchResults;
   queryResult2: SearchResults;
@@ -35,12 +37,12 @@ const ResultPanels = ({ queryResult1, queryResult2 }: ResultComponentsProps) => 
       {!queryError1.queryString.length && !queryError1.selectIndex.length ? (
         <ResultPanel resultNumber={1} queryResult={queryResult1} />
       ) : (
-        <EuiSplitPanel.Inner style={{ minHeight: '500px' }} />
+        <EuiSplitPanel.Inner className="search-relevance-result-panel" />
       )}
       {!queryError2.queryString.length && !queryError2.selectIndex.length ? (
         <ResultPanel resultNumber={2} queryResult={queryResult2} />
       ) : (
-        <EuiSplitPanel.Inner style={{ minHeight: '500px' }} />
+        <EuiSplitPanel.Inner className="search-relevance-result-panel" />
       )}
     </EuiSplitPanel.Outer>
   );

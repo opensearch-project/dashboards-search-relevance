@@ -10,6 +10,8 @@ import '../../../../../ace-themes/sql_console';
 import { SearchConfig } from './search_config';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 
+import './search_configs.scss';
+
 interface SearchConfigsPanelProps {
   queryString1: string;
   queryString2: string;
@@ -44,7 +46,7 @@ export const SearchConfigsPanel = ({
       style={{ borderBottom: '1px solid #D3DAE6' }}
     >
       <EuiFlexGroup>
-        <EuiFlexItem>
+        <EuiFlexItem className="search-relevance-config">
           <SearchConfig
             queryNumber={1}
             queryString={queryString1}
@@ -55,7 +57,7 @@ export const SearchConfigsPanel = ({
             setQueryError={setQueryError1}
           />
         </EuiFlexItem>
-        <EuiFlexItem>
+        <EuiFlexItem className="search-relevance-config">
           <SearchConfig
             queryNumber={2}
             queryString={queryString2}

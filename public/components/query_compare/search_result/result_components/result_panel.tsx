@@ -17,6 +17,8 @@ import { ResultGridComponent } from './result_grid';
 import { SearchResults } from '../../../../types/index';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
+import './result_components.scss';
+
 interface ResultPanelProps {
   resultNumber: number;
   queryResult: SearchResults;
@@ -30,7 +32,7 @@ export const ResultPanel = ({ resultNumber, queryResult }: ResultPanelProps) => 
   };
 
   return (
-    <EuiSplitPanel.Inner style={{ minHeight: '500px' }}>
+    <EuiSplitPanel.Inner className="search-relevance-result-panel">
       <EuiFlexGroup justifyContent="spaceBetween" alignItems="center">
         <EuiFlexItem grow={false}>
           <EuiTitle size="s">
