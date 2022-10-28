@@ -40,12 +40,12 @@ export const ResultPanel = ({ resultNumber, queryResult }: ResultPanelProps) => 
         <EuiFlexItem grow={false}>
           <EuiTitle size="xs">
             <h2 style={{ fontWeight: '700', fontSize: '14px' }}>
-              {queryResult.hits.total.value} results
+              {queryResult?.hits?.total?.value} results
             </h2>
           </EuiTitle>
         </EuiFlexItem>
       </EuiFlexGroup>
-      {queryResult.hits.hits.length ? (
+      {queryResult?.hits?.hits?.length ? (
         <ResultGridComponent
           queryResult={queryResult}
           comparedDocumentsRank={getComparedDocumentsRank()}

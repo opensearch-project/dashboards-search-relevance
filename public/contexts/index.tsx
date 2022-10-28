@@ -5,13 +5,13 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
-import { DocumentsIndex, SearchResults, SelectedIndex } from '../types/index';
+import { DocumentsIndex, SearchResults, QueryError } from '../types/index';
 import { getDocumentRank, DocumentRank } from './utils';
 
-interface UpdateSelectedIndex {
-  indexNumber: 'index1' | 'index2';
-  indexName: string;
-}
+export const initialQueryErrorState: QueryError = {
+  selectIndex: '',
+  queryString: '',
+};
 
 export interface SearchRelevanceContextProps {
   documentsIndexes: DocumentsIndex[];
@@ -22,8 +22,14 @@ export interface SearchRelevanceContextProps {
   updateComparedResult1: (result: SearchResults) => void;
   comparedResult2: DocumentRank;
   updateComparedResult2: (result: SearchResults) => void;
-  selectedIndex: SelectedIndex;
-  updateSelectedIndex: (args: UpdateSelectedIndex) => void;
+  selectedIndex1: string;
+  setSelectedIndex1: React.Dispatch<React.SetStateAction<string>>;
+  selectedIndex2: string;
+  setSelectedIndex2: React.Dispatch<React.SetStateAction<string>>;
+  queryError1: QueryError;
+  setQueryError1: React.Dispatch<React.SetStateAction<QueryError>>;
+  queryError2: QueryError;
+  setQueryError2: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
 export const SearchRelevanceContext = createContext<SearchRelevanceContextProps | null>(null);
@@ -40,13 +46,13 @@ export const useSearchRelevanceContext = () => {
 
 export const SearchRelevanceContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [documentsIndexes, setDocumentsIndexes] = useState<DocumentsIndex[]>([]);
-  const [showFlyout, setShowFlyout] = useState<boolean>(false);
+  const [showFlyout, setShowFlyout] = useState(false);
   const [comparedResult1, setComparedResult1] = useState<DocumentRank>({});
   const [comparedResult2, setComparedResult2] = useState<DocumentRank>({});
-  const [selectedIndex, setSelectedIndex] = useState<SelectedIndex>({
-    index1: '',
-    index2: '',
-  });
+  const [selectedIndex1, setSelectedIndex1] = useState('');
+  const [selectedIndex2, setSelectedIndex2] = useState('');
+  const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
+  const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
 
   const updateComparedResult1 = (result: SearchResults) => {
     setComparedResult1(getDocumentRank(result.hits.hits));
@@ -54,13 +60,6 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
 
   const updateComparedResult2 = (result: SearchResults) => {
     setComparedResult2(getDocumentRank(result.hits.hits));
-  };
-
-  const updateSelectedIndex = ({ indexNumber, indexName }: UpdateSelectedIndex) => {
-    setSelectedIndex({
-      ...selectedIndex,
-      [indexNumber]: indexName,
-    });
   };
 
   return (
@@ -74,8 +73,14 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
         updateComparedResult1,
         comparedResult2,
         updateComparedResult2,
-        selectedIndex,
-        updateSelectedIndex,
+        selectedIndex1,
+        setSelectedIndex1,
+        selectedIndex2,
+        setSelectedIndex2,
+        queryError1,
+        setQueryError1,
+        queryError2,
+        setQueryError2,
       }}
     >
       {children}

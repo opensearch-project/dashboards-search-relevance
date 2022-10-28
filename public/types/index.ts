@@ -45,7 +45,12 @@ export interface SearchResults {
   };
 }
 
-export interface SelectedIndex {
-  index1: string;
-  index2: string;
+export enum QueryStringError {
+  empty = 'A query is required. Enter a query.',
+  invalid = 'Query syntax is invalid',
+}
+
+export interface QueryError {
+  selectIndex: 'An index is required. Select an index.' | '';
+  queryString: QueryStringError | string;
 }
