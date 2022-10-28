@@ -15,6 +15,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Check LongPathsEnabled
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+
       - name: Checkout Dashboards Search Relevance plugin
         uses: actions/checkout@v2
         with:
