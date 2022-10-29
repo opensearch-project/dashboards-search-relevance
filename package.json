@@ -1,6 +1,6 @@
 {
   "name": "dashboards-search-relevance",
-  "version": "2.3.0.0",
+  "version": "3.0.0.0",
   "main": "./public/index.ts",
   "license": "Apache-2.0",
   "scripts": {
@@ -11,6 +11,8 @@
     "cypress:open": "TZ=America/Los_Angeles cypress open",
     "plugin_helpers": "node ../../scripts/plugin_helpers"
   },
-  "dependencies": {},
+  "dependencies": {
+    "yarn": "^1.22.19"
+  },
   "devDependencies": {}
 }
