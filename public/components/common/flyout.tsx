@@ -20,7 +20,7 @@ import { useSearchRelevanceContext } from '../../contexts';
 const query1 = `
 "query": {
   "multi_match": {
-    "query": "Queen",
+    "query": "%SearchText%",
     "fields": ["speaker", "text_entry"]
   }
 }
@@ -29,18 +29,9 @@ const query1 = `
 const query2 = `
 "query": {
   "multi_match": {
-     "query": "Queen",
-     "fields": ["speaker^3", "text_entry"]
-   }
-}
-`;
-
-const query3 = `
-"query": {
-  "multi_match": {
-     "query": "%SearchQuery%",
-     "fields": ["speaker", "text_entry"]
-   }
+    "query": "%SearchText%",
+    "fields": ["speaker^3", "text_entry"]
+  }
 }
 `;
 
@@ -63,56 +54,55 @@ export const Flyout = () => {
         <EuiText>
           <h3>Query format</h3>
           <p>
-            Enter a query in <EuiLink target="_blank">OpenSearch Query DSL</EuiLink>. Use the{' '}
-            <EuiCode>%SearchQuery%</EuiCode> variable to refer to the text in the search bar. When
-            you enter <strong>Search</strong>, the queries are sent to the search engine using the{' '}
-            <EuiCode>GET</EuiCode> HTTP method and the <EuiCode>_search</EuiCode> endpoint.
+            Enter a query in{' '}
+            <EuiLink
+              target="_blank"
+              href="https://opensearch.org/docs/latest/opensearch/query-dsl/index/"
+            >
+              OpenSearch Query DSL
+            </EuiLink>
+            . Use the <EuiCode>%SearchQuery%</EuiCode> variable to refer to the text in the search
+            bar. When you enter <strong>Search</strong>, the queries are sent to the search engine
+            using the <EuiCode>GET</EuiCode> HTTP method and the <EuiCode>_search</EuiCode>{' '}
+            endpoint.
           </p>
           <h3>Example</h3>
           <br />
+          <p>1. Enter the search text in the search bar.</p>
           <p>
-            1. Enter <strong>Query 1</strong>
+            2. Select an index for <strong>Query 1</strong> and enter a query.
           </p>
           <p>
-            To search for the text <EuiCode>Queen</EuiCode> in the <EuiCode>speaker</EuiCode> and{' '}
-            <EuiCode>text_entry</EuiCode> fields, enter the following as <strong>Query 1:</strong>
+            The following example searches the <EuiCode>speaker</EuiCode> and{' '}
+            <EuiCode>text_entry</EuiCode> fields of the <EuiCode>shakespeare</EuiCode>
+            index for the search text:
           </p>
           <EuiCodeBlock isCopyable={true} language="json">
             {query1}
           </EuiCodeBlock>
           <p>
-            2. Enter <strong>Query 2</strong>
+            3. Select an index for <strong>Query 2</strong> and enter a query.
           </p>
           <p>
-            You can then see how boosting a field affects the results. Enter the following query
-            that boosts the <EuiCode>speaker</EuiCode> field as <strong>Query 2:</strong>
+            You can see how boosting a field affects the results. The following query boosts the
+            <EuiCode>speaker</EuiCode> field:
           </p>
           <EuiCodeBlock isCopyable={true} language="json">
             {query2}
           </EuiCodeBlock>
           <p>
             To learn more about boosts, see the{' '}
-            <EuiLink target="_blank">Multi-match Query Documentation</EuiLink>.
+            <EuiLink
+              target="_blank"
+              href="https://opensearch.org/docs/latest/search-plugins/sql/full-text/#multi-match"
+            >
+              Multi-match Query Documentation
+            </EuiLink>
+            .
           </p>
-          <p>3. Compare results</p>
+          <p>4. Compare results</p>
           <p>
-            Select <strong>Search</strong> and then compare the results in{' '}
-            <strong>Results 1</strong> and <strong>Results 2</strong>.
-          </p>
-          <h3>Using variables</h3>
-          <p>
-            Alternatively, you can enter the search text <EuiCode>Queen</EuiCode> in the search bar
-            and refer to it as <EuiCode>%SearchQuery%</EuiCode> in the query:
-          </p>
-          <EuiCodeBlock isCopyable={true} language="json">
-            {query3}
-          </EuiCodeBlock>
-          <p>
-            If you change the text in the search bar to <EuiCode>King</EuiCode>, all instances of{' '}
-            <EuiCode>%SearchQuery%</EuiCode> in Query 1 and Query 2 will search for{' '}
-            <EuiCode>King</EuiCode>. After entering the search text in the search bar, select
-            <strong>Search</strong> and then compare the results in <strong>Results 1</strong> and{' '}
-            <strong>Results 2</strong>.
+            Select <strong>Search</strong> and compare the results in Results 1 and Results 2.
           </p>
         </EuiText>
       </EuiFlyoutBody>
