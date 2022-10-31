@@ -128,8 +128,8 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       </EuiFormRow>
       <EuiText>
         <p style={{ fontSize: '14px', fontWeight: '400', lineHeight: '18px' }}>
-          Enter a query in OpenSearch Query DSL. Use %SearchQuery% to refer to the text in the
-          search bar. Need more help?{' '}
+          Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search
+          bar. Need more help?{' '}
           <EuiButtonEmpty
             size="xs"
             color="primary"

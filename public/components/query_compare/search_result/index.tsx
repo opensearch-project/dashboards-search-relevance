@@ -60,14 +60,14 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     let jsonQuery2 = {};
     if (queryString1.trim().length > 0) {
       try {
-        jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
+        jsonQuery1 = JSON.parse(queryString1.replace(/%SearchText%/g, searchBarValue));
       } catch {
         queryError1.queryString = QueryStringError.invalid;
       }
     }
     if (queryString2.trim().length > 0) {
       try {
-        jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
+        jsonQuery2 = JSON.parse(queryString2.replace(/%SearchText%/g, searchBarValue));
       } catch {
         queryError2.queryString = QueryStringError.invalid;
       }
