@@ -3,126 +3,141 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import {
-  EuiPage,
-  EuiPageBody,
-  EuiPageHeader,
-  EuiTitle,
-  EuiPageContentBody,
-  EuiPageHeaderSection,
-  EuiCode,
-  EuiPanel,
-  EuiSpacer,
-  EuiFlexItem,
-  EuiButtonIcon,
-  EuiFlexGroup,
-  EuiSplitPanel,
-  EuiText,
-} from '@elastic/eui';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { EuiPageContentBody } from '@elastic/eui';
 
 import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
-import { SearchConfigsPanel } from './search_components/search_configs';
+import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 import { SearchInputBar } from './search_components/search_bar';
-import { SearchResultTable } from './result_components/search_result_table';
 import { ServiceEndpoints } from '../../../../common';
-
-const defaultQuery = JSON.stringify({
-  query: {
-    term: { title: '%SearchQuery%' },
-  },
-});
+import { Header } from '../../common/header';
+import { SearchResults, QueryError, QueryStringError } from '../../../types/index';
+import { ResultComponents } from './result_components/result_components';
+import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
 
 interface SearchResultProps {
   http: CoreStart['http'];
 }
 
 export const SearchResult = ({ http }: SearchResultProps) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [searchIndex1, setSearchIndex1] = useState('');
-  const [searchIndex2, setSearchIndex2] = useState('');
   const [queryString1, setQueryString1] = useState('');
   const [queryString2, setQueryString2] = useState('');
-  const [querqyResult1, setQuerqyResult1] = useState({});
-  const [querqyResult2, setQuerqyResult2] = useState({});
+  const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
+  const [queryResult2, setQueryResult2] = useState<SearchResults>({} as any);
   const [searchBarValue, setSearchBarValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    updateComparedResult1,
+    updateComparedResult2,
+    selectedIndex1,
+    selectedIndex2,
+    setQueryError1,
+    setQueryError2,
+  } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
-    setIsLoading(true);
-    const jsonQuery1 = JSON.parse(queryString1.replace(/%SearchQuery%/g, searchBarValue));
-    const jsonQuery2 = JSON.parse(queryString2.replace(/%SearchQuery%/g, searchBarValue));
-    http
-      .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: searchIndex1, ...jsonQuery1 }),
-      })
-      .then((res) => {
-        setQuerqyResult1(res);
-      })
-      .catch((error: Error) => {
-        setQuerqyResult1(error.body.message);
-        console.error(error);
-      });
+    const queryError1: QueryError = { ...initialQueryErrorState };
+    const queryError2: QueryError = { ...initialQueryErrorState };
 
-    http
-      .post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ index: searchIndex2, ...jsonQuery2 }),
-      })
-      .then((res) => {
-        setQuerqyResult2(res);
-      })
-      .catch((error: Error) => {
-        setQuerqyResult2(error.body.message);
-        console.error(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+    // Check if select an index
+    if (!selectedIndex1.length) {
+      queryError1.selectIndex = 'An index is required. Select an index.';
+    }
+    if (!selectedIndex2.length) {
+      queryError2.selectIndex = 'An index is required. Select an index.';
+    }
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
-    setter(e.target.value);
+    // Check if query string is empty
+    if (!queryString1.length) {
+      queryError1.queryString = QueryStringError.empty;
+    }
+    if (!queryString2.length) {
+      queryError2.queryString = QueryStringError.empty;
+    }
+
+    // Check if query string is valid
+    let jsonQuery1 = {};
+    let jsonQuery2 = {};
+    if (queryString1.trim().length > 0) {
+      try {
+        jsonQuery1 = JSON.parse(queryString1.replace(/%SearchText%/g, searchBarValue));
+      } catch {
+        queryError1.queryString = QueryStringError.invalid;
+      }
+    }
+    if (queryString2.trim().length > 0) {
+      try {
+        jsonQuery2 = JSON.parse(queryString2.replace(/%SearchText%/g, searchBarValue));
+      } catch {
+        queryError2.queryString = QueryStringError.invalid;
+      }
+    }
+
+    // Handle query1
+    if (queryError1.queryString.length || queryError1.selectIndex.length) {
+      setQueryError1(queryError1);
+      setQueryResult1({} as any);
+      updateComparedResult1({} as any);
+    } else if (!queryError1.queryString.length && !queryError1.selectIndex.length) {
+      http
+        .post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ index: selectedIndex1, ...jsonQuery1 }),
+        })
+        .then((res) => {
+          setQueryResult1(res);
+          updateComparedResult1(res);
+        })
+        .catch((error: Error) => {
+          setQueryError1({
+            ...queryError1,
+            queryString: error.body.message,
+          });
+          console.error(error);
+        });
+    }
+
+    // Handle query2
+    if (queryError2.queryString.length || queryError2.selectIndex.length) {
+      setQueryError2(queryError2);
+      setQueryResult2({} as any);
+      updateComparedResult2({} as any);
+    } else if (!queryError2.queryString.length && !queryError2.selectIndex.length) {
+      http
+        .post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ index: selectedIndex2, ...jsonQuery2 }),
+        })
+        .then((res) => {
+          setQueryResult2(res);
+          updateComparedResult2(res);
+        })
+        .catch((error: Error) => {
+          setQueryError2({
+            ...queryError2,
+            queryString: error.body.message,
+          });
+          console.error(error);
+        });
+    }
   };
 
   return (
-    <EuiPageContentBody>
-      <EuiSpacer size="l" />
-      <EuiFlexGroup>
-        <EuiFlexItem>
-          <SearchConfigsPanel
-            isCollapsed={isCollapsed}
-            onChange={onChange}
-            searchIndex1={searchIndex1}
-            searchIndex2={searchIndex2}
-            setSearchIndex1={setSearchIndex1}
-            setSearchIndex2={setSearchIndex2}
-            queryString1={queryString1}
-            queryString2={queryString2}
-            setQueryString1={setQueryString1}
-            setQueryString2={setQueryString2}
-            setIsCollapsed={setIsCollapsed}
-          />
-        </EuiFlexItem>
-      </EuiFlexGroup>
-      <EuiSpacer size="l" />
-
-      <EuiPanel style={{ width: '100%' }}>
-        <EuiSpacer size="l" />
-        <EuiSpacer size="l" />
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <SearchInputBar
-            searchBarValue={searchBarValue}
-            setSearchBarValue={setSearchBarValue}
-            isLoading={isLoading}
-            onClickSearch={onClickSearch}
-            setIsCollapsed={setIsCollapsed}
-          />
-        </div>
-        <EuiSpacer size="l" />
-        <EuiSpacer size="l" />
-        <EuiSpacer size="l" />
-        <SearchResultTable querqyResult1={querqyResult1} querqyResult2={querqyResult2} />
-      </EuiPanel>
-    </EuiPageContentBody>
+    <>
+      <Header>
+        <SearchInputBar
+          searchBarValue={searchBarValue}
+          setSearchBarValue={setSearchBarValue}
+          onClickSearch={onClickSearch}
+        />
+      </Header>
+      <EuiPageContentBody className="search-relevance-flex">
+        <SearchConfigsPanel
+          queryString1={queryString1}
+          queryString2={queryString2}
+          setQueryString1={setQueryString1}
+          setQueryString2={setQueryString2}
+        />
+        <ResultComponents queryResult1={queryResult1} queryResult2={queryResult2} />
+      </EuiPageContentBody>
+    </>
   );
 };

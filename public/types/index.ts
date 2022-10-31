@@ -16,7 +16,7 @@ export interface DocumentsIndex {
 }
 
 export interface IDocType {
-  [key: string]: string;
+  [key: string]: any;
 }
 
 export interface Document {
@@ -43,4 +43,14 @@ export interface SearchResults {
     max_score: number;
     hits: Document[];
   };
+}
+
+export enum QueryStringError {
+  empty = 'A query is required. Enter a query.',
+  invalid = 'Query syntax is invalid. Enter a valid query.',
+}
+
+export interface QueryError {
+  selectIndex: 'An index is required. Select an index.' | '';
+  queryString: QueryStringError | string;
 }

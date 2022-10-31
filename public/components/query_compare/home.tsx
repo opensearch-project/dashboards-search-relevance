@@ -12,6 +12,7 @@ import { SearchResult } from './search_result';
 import { useSearchRelevanceContext } from '../../contexts';
 import { DocumentsIndex } from '../../types/index';
 import { ServiceEndpoints } from '../../../common';
+import { Flyout } from '../common/flyout';
 
 import './home.scss';
 
@@ -34,7 +35,7 @@ export const Home = ({
   setToast,
   chrome,
 }: QueryExplorerProps) => {
-  const { documentsIndexes, setDocumentsIndexes } = useSearchRelevanceContext();
+  const { documentsIndexes, setDocumentsIndexes, showFlyout } = useSearchRelevanceContext();
 
   useEffect(() => {
     setBreadcrumbs([...parentBreadCrumbs]);
@@ -48,8 +49,11 @@ export const Home = ({
   }, [http, setDocumentsIndexes]);
 
   return (
-    <div className="search-relevance">
-      {documentsIndexes.length ? <SearchResult http={http} /> : <CreateIndex />}
-    </div>
+    <>
+      <div className="search-relevance-flex">
+        {documentsIndexes.length ? <SearchResult http={http} /> : <CreateIndex />}
+      </div>
+      {showFlyout && <Flyout />}
+    </>
   );
 };
