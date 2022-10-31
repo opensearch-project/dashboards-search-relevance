@@ -138,6 +138,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           >
             See some examples
           </EuiButtonEmpty>
+          .
         </p>
       </EuiText>
     </>
