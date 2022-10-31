@@ -1,4 +1,5 @@
 ![OpenSearch Project](OpenSearch.svg)
+
 # Search Relevance Tools
 
 ## Summary
