@@ -32,9 +32,13 @@ export function registerDslRoute({ router }: { router: IRouter }) {
         });
       } catch (error) {
         if (error.statusCode !== 404) console.error(error);
+
+        // Template: Error: {{Error.type}} – {{Error.reason}}
+        const errorMessage = `Error: ${error.body?.error?.type} - ${error.body?.error?.reason}`;
+
         return response.custom({
           statusCode: error.statusCode || 500,
-          body: error.message,
+          body: errorMessage,
         });
       }
     }
