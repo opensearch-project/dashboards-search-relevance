@@ -55,11 +55,11 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
   const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
 
   const updateComparedResult1 = (result: SearchResults) => {
-    setComparedResult1(getDocumentRank(result.hits.hits));
+    setComparedResult1(getDocumentRank(result?.hits?.hits));
   };
 
   const updateComparedResult2 = (result: SearchResults) => {
-    setComparedResult2(getDocumentRank(result.hits.hits));
+    setComparedResult2(getDocumentRank(result?.hits?.hits));
   };
 
   return (
