@@ -47,7 +47,7 @@ export interface SearchResults {
 
 export enum QueryStringError {
   empty = 'A query is required. Enter a query.',
-  invalid = 'Query syntax is invalid',
+  invalid = 'Query syntax is invalid. Enter a valid query.',
 }
 
 export interface QueryError {
