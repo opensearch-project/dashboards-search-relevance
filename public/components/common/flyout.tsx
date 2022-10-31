@@ -65,7 +65,7 @@ export const Flyout = () => {
             >
               OpenSearch Query DSL
             </EuiLink>
-            . Use the <EuiCode>%SearchQuery%</EuiCode> variable to refer to the text in the search
+            . Use the <EuiCode>%SearchText%</EuiCode> variable to refer to the text in the search
             bar. When you enter <strong>Search</strong>, the queries are sent to the search engine
             using the <EuiCode>GET</EuiCode> HTTP method and the <EuiCode>_search</EuiCode>{' '}
             endpoint.
