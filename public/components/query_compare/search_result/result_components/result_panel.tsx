@@ -42,7 +42,9 @@ export const ResultPanel = ({ resultNumber, queryResult }: ResultPanelProps) => 
         <EuiFlexItem grow={false}>
           <EuiTitle size="xs">
             <h2 style={{ fontWeight: '700', fontSize: '14px' }}>
-              {queryResult?.hits?.total?.value} results
+              {typeof queryResult?.hits?.total?.value === 'number'
+                ? `${queryResult?.hits?.total?.value} results`
+                : '0 results'}
             </h2>
           </EuiTitle>
         </EuiFlexItem>

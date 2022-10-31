@@ -77,6 +77,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     if (queryError1.queryString.length || queryError1.selectIndex.length) {
       setQueryError1(queryError1);
       setQueryResult1({} as any);
+      updateComparedResult1({} as any);
     } else if (!queryError1.queryString.length && !queryError1.selectIndex.length) {
       http
         .post(ServiceEndpoints.GetSearchResults, {
@@ -99,6 +100,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     if (queryError2.queryString.length || queryError2.selectIndex.length) {
       setQueryError2(queryError2);
       setQueryResult2({} as any);
+      updateComparedResult2({} as any);
     } else if (!queryError2.queryString.length && !queryError2.selectIndex.length) {
       http
         .post(ServiceEndpoints.GetSearchResults, {

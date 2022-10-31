@@ -8,7 +8,6 @@ import { EuiSplitPanel, EuiTitle, EuiFlexGroup, EuiPanel } from '@elastic/eui';
 
 import { SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
-import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_components.scss';
 
@@ -30,20 +29,10 @@ const InitialState = () => {
 };
 
 const ResultPanels = ({ queryResult1, queryResult2 }: ResultComponentsProps) => {
-  const { queryError1, queryError2 } = useSearchRelevanceContext();
-
   return (
     <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
-      {!queryError1.queryString.length && !queryError1.selectIndex.length ? (
-        <ResultPanel resultNumber={1} queryResult={queryResult1} />
-      ) : (
-        <EuiSplitPanel.Inner className="search-relevance-result-panel" />
-      )}
-      {!queryError2.queryString.length && !queryError2.selectIndex.length ? (
-        <ResultPanel resultNumber={2} queryResult={queryResult2} />
-      ) : (
-        <EuiSplitPanel.Inner className="search-relevance-result-panel" />
-      )}
+      <ResultPanel resultNumber={1} queryResult={queryResult1} />
+      <ResultPanel resultNumber={2} queryResult={queryResult2} />
     </EuiSplitPanel.Outer>
   );
 };

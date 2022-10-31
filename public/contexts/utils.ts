@@ -15,6 +15,8 @@ export interface DocumentsComparison {
 }
 
 export const getDocumentRank = (documents: Document[]): DocumentRank => {
+  if (!Array.isArray(documents)) return {};
+
   return documents.reduce((result, currentDocument, currentIndex: number) => {
     return {
       ...result,
