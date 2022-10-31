@@ -18,7 +18,12 @@ interface ResultComponentsProps {
 
 const InitialState = () => {
   return (
-    <EuiPanel hasBorder={false} hasShadow={false} grow={true}>
+    <EuiPanel
+      hasBorder={false}
+      hasShadow={false}
+      grow={true}
+      style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+    >
       <EuiFlexGroup justifyContent="center">
         <EuiTitle>
           <h2>Add queries to compare search results.</h2>
