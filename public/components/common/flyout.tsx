@@ -18,19 +18,23 @@ import {
 import { useSearchRelevanceContext } from '../../contexts';
 
 const query1 = `
-"query": {
-  "multi_match": {
-    "query": "%SearchText%",
-    "fields": ["speaker", "text_entry"]
+{
+  "query": {
+    "multi_match": {
+      "query": "%SearchText%",
+      "fields": ["speaker", "text_entry"]
+    }
   }
 }
 `;
 
 const query2 = `
-"query": {
-  "multi_match": {
-    "query": "%SearchText%",
-    "fields": ["speaker^3", "text_entry"]
+{
+  "query": {
+    "multi_match": {
+      "query": "%SearchText%",
+      "fields": ["speaker^3", "text_entry"]
+    }
   }
 }
 `;
