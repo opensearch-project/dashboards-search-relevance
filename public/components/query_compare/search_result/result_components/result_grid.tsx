@@ -144,7 +144,6 @@ export const ResultGridComponent = ({
                   fontWeight: '300',
                   fontSize: '27px',
                   lineHeight: '36px',
-                  fontFamily: 'Inter',
                 }}
               >
                 {documentRank}
