@@ -54,7 +54,7 @@ export const ResultGridComponent = ({
                 <span key={uniqueId('grid-desc')}>
                   <dt>{entry[0]}:</dt>
                   <dd>
-                    <span>{entry[1]}</span>
+                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]}</span>
                   </dd>
                 </span>
               );

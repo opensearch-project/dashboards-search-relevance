@@ -16,7 +16,7 @@ export interface DocumentsIndex {
 }
 
 export interface IDocType {
-  [key: string]: string;
+  [key: string]: any;
 }
 
 export interface Document {
