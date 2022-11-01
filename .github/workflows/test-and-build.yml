@@ -11,13 +11,13 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Check LongPathsEnabled
+      - name: Enable core.longpaths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
-        run: (Get-ItemProperty "HKLM:System\CurrentControlSet\Control\FileSystem").LongPathsEnabled
+        run: git config --global core.longpaths true
 
       - name: Checkout Dashboards Search Relevance plugin
         uses: actions/checkout@v2
