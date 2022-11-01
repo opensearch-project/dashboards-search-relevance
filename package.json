@@ -11,8 +11,9 @@
     "cypress:open": "TZ=America/Los_Angeles cypress open",
     "plugin_helpers": "node ../../scripts/plugin_helpers"
   },
-  "dependencies": {
-    "yarn": "^1.22.19"
-  },
-  "devDependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "cypress": "9.5.4",
+    "eslint": "^6.8.0"
+  }
 }
