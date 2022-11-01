@@ -1,7 +1,7 @@
 {
-  "name": "searchRelevance",
-  "version": "2.3.0.0",
-  "main": "index.ts",
+  "name": "searchRelevanceDashboards",
+  "version": "3.0.0.0",
+  "main": "./public/index.ts",
   "license": "Apache-2.0",
   "scripts": {
     "osd": "node ../../scripts/osd",
