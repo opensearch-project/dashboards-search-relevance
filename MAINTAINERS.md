@@ -78,7 +78,7 @@ Add integration checks that validate pull requests and pushes to ease the burden
 
 #### Developer Certificate of Origin Workflow
 
-Validates pull requests commits are all signed with DCO, [dco.yml](./workflow/dco.yml).  Example [pull request](https://github.com/opensearch-project/opensearch-ci/pull/16).
+Validates pull requests commits are all signed with DCO, [dco.yml](./.github/workflows/dco.yml).  Example [pull request](https://github.com/opensearch-project/opensearch-ci/pull/16).
 
 ### Use Semver
 
