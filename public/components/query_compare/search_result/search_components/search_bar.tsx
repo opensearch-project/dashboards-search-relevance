@@ -33,7 +33,7 @@ export const SearchInputBar = ({
           />
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiButton fill onClick={onClickSearch}>
+          <EuiButton fill onClick={onClickSearch} aria-label="searchRelevance-searchButton">
             Search
           </EuiButton>
         </EuiFlexItem>
