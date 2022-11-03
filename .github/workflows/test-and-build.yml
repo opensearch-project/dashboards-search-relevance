@@ -20,12 +20,12 @@ jobs:
         run: git config --global core.longpaths true
 
       - name: Checkout Dashboards Search Relevance plugin
-        uses: actions/checkout@v2.5.0
+        uses: actions/checkout@v3
         with:
           path: dashboards-search-relevance
 
       - name: Checkout OpenSearch Dashboards
-        uses: actions/checkout@v2.5.0
+        uses: actions/checkout@v3
         with:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_VERSION }}
