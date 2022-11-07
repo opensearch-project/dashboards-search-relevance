@@ -1,9 +1,10 @@
 ![OpenSearch Project](OpenSearch.svg)
 
 # Search Relevance Tools
-[![Link Checker](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/link-checker.yml/badge.svg?branch=main)](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/link-checker.yml)
-
 [![Build Search Relevance Plugin](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/test-and-build.yml/badge.svg)](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/test-and-build.yml)
+[![Link Checker](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/link-checker.yml/badge.svg?branch=main)](https://github.com/opensearch-project/dashboards-search-relevance/actions/workflows/link-checker.yml)
+[![codecov](https://codecov.io/gh/opensearch-project/dashboards-search-relevance/branch/main/graph/badge.svg?token=PYQO2GW39S)](https://codecov.io/gh/opensearch-project/dashboards-search-relevance)
+
 
 ## Summary
 In search applications, tuning relevance is a constant, iterative exercise to bring the right search results to your end users. The tooling in this repository aims to help the search relevance engineer and business user create the best search experience possible for application users without hiding internals from engineers who want to go deep into the details.
