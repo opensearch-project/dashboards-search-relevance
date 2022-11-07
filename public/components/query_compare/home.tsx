@@ -50,7 +50,7 @@ export const Home = ({
 
   return (
     <>
-      <div className="search-relevance-flex">
+      <div className="osdOverviewWrapper">
         {documentsIndexes.length ? <SearchResult http={http} /> : <CreateIndex />}
       </div>
       {showFlyout && <Flyout />}
