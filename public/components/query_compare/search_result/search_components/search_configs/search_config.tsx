@@ -124,6 +124,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           }}
           aria-label="Code Editor"
           onBlur={codeEditorOnBlur}
+          tabSize={2}
         />
       </EuiFormRow>
       <EuiText>
