@@ -1,0 +1,227 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Search bar component Renders search bar component 1`] = `
+<SearchInputBar
+  onClickSearch={[Function]}
+  searchBarValue="basic"
+  setSearchBarValue={[Function]}
+>
+  <EuiSpacer
+    size="m"
+  >
+    <div
+      className="euiSpacer euiSpacer--m"
+    />
+  </EuiSpacer>
+  <EuiFlexGroup>
+    <div
+      className="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--directionRow euiFlexGroup--responsive"
+    >
+      <EuiFlexItem
+        grow={true}
+      >
+        <div
+          className="euiFlexItem"
+        >
+          <EuiFieldSearch
+            aria-label="Enter your Search query"
+            compressed={false}
+            fullWidth={true}
+            incremental={false}
+            isClearable={true}
+            isLoading={false}
+            onChange={[Function]}
+            onSearch={[Function]}
+            placeholder="Search"
+            value="basic"
+          >
+            <EuiFormControlLayout
+              clear={
+                Object {
+                  "onClick": [Function],
+                }
+              }
+              compressed={false}
+              fullWidth={true}
+              icon="search"
+              isLoading={false}
+            >
+              <div
+                className="euiFormControlLayout euiFormControlLayout--fullWidth"
+              >
+                <div
+                  className="euiFormControlLayout__childrenWrapper"
+                >
+                  <EuiValidatableControl>
+                    <input
+                      aria-label="Enter your Search query"
+                      className="euiFieldSearch euiFieldSearch--fullWidth euiFieldSearch-isClearable"
+                      onChange={[Function]}
+                      onKeyUp={[Function]}
+                      placeholder="Search"
+                      type="search"
+                      value="basic"
+                    />
+                  </EuiValidatableControl>
+                  <EuiFormControlLayoutIcons
+                    clear={
+                      Object {
+                        "onClick": [Function],
+                      }
+                    }
+                    compressed={false}
+                    icon="search"
+                    isLoading={false}
+                  >
+                    <div
+                      className="euiFormControlLayoutIcons"
+                    >
+                      <EuiFormControlLayoutCustomIcon
+                        size="m"
+                        type="search"
+                      >
+                        <span
+                          className="euiFormControlLayoutCustomIcon"
+                        >
+                          <EuiIcon
+                            aria-hidden="true"
+                            className="euiFormControlLayoutCustomIcon__icon"
+                            size="m"
+                            type="search"
+                          >
+                            <EuiIconEmpty
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                              focusable="false"
+                              role="img"
+                              style={null}
+                            >
+                              <svg
+                                aria-hidden={true}
+                                className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                focusable="false"
+                                height={16}
+                                role="img"
+                                style={null}
+                                viewBox="0 0 16 16"
+                                width={16}
+                                xmlns="http://www.w3.org/2000/svg"
+                              />
+                            </EuiIconEmpty>
+                          </EuiIcon>
+                        </span>
+                      </EuiFormControlLayoutCustomIcon>
+                    </div>
+                    <div
+                      className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
+                    >
+                      <EuiFormControlLayoutClearButton
+                        onClick={[Function]}
+                        size="m"
+                      >
+                        <EuiI18n
+                          default="Clear input"
+                          token="euiFormControlLayoutClearButton.label"
+                        >
+                          <button
+                            aria-label="Clear input"
+                            className="euiFormControlLayoutClearButton"
+                            onClick={[Function]}
+                            type="button"
+                          >
+                            <EuiIcon
+                              className="euiFormControlLayoutClearButton__icon"
+                              type="cross"
+                            >
+                              <EuiIconEmpty
+                                aria-hidden={true}
+                                className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutClearButton__icon"
+                                focusable="false"
+                                role="img"
+                                style={null}
+                              >
+                                <svg
+                                  aria-hidden={true}
+                                  className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutClearButton__icon"
+                                  focusable="false"
+                                  height={16}
+                                  role="img"
+                                  style={null}
+                                  viewBox="0 0 16 16"
+                                  width={16}
+                                  xmlns="http://www.w3.org/2000/svg"
+                                />
+                              </EuiIconEmpty>
+                            </EuiIcon>
+                          </button>
+                        </EuiI18n>
+                      </EuiFormControlLayoutClearButton>
+                    </div>
+                  </EuiFormControlLayoutIcons>
+                </div>
+              </div>
+            </EuiFormControlLayout>
+          </EuiFieldSearch>
+        </div>
+      </EuiFlexItem>
+      <EuiFlexItem
+        grow={false}
+      >
+        <div
+          className="euiFlexItem euiFlexItem--flexGrowZero"
+        >
+          <EuiButton
+            aria-label="searchRelevance-searchButton"
+            fill={true}
+            onClick={[Function]}
+          >
+            <EuiButtonDisplay
+              aria-label="searchRelevance-searchButton"
+              baseClassName="euiButton"
+              disabled={false}
+              element="button"
+              fill={true}
+              isDisabled={false}
+              onClick={[Function]}
+              type="button"
+            >
+              <button
+                aria-label="searchRelevance-searchButton"
+                className="euiButton euiButton--primary euiButton--fill"
+                disabled={false}
+                onClick={[Function]}
+                style={
+                  Object {
+                    "minWidth": undefined,
+                  }
+                }
+                type="button"
+              >
+                <EuiButtonContent
+                  className="euiButton__content"
+                  iconSide="left"
+                  textProps={
+                    Object {
+                      "className": "euiButton__text",
+                    }
+                  }
+                >
+                  <span
+                    className="euiButtonContent euiButton__content"
+                  >
+                    <span
+                      className="euiButton__text"
+                    >
+                      Search
+                    </span>
+                  </span>
+                </EuiButtonContent>
+              </button>
+            </EuiButtonDisplay>
+          </EuiButton>
+        </div>
+      </EuiFlexItem>
+    </div>
+  </EuiFlexGroup>
+</SearchInputBar>
+`;
