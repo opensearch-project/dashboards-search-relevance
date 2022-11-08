@@ -8,6 +8,7 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { SearchInputBar } from '../search_bar';
+import { TEST_SEARCH_TEXT } from '../../../../../../test/constants';
 
 describe('Search bar component', () => {
   configure({ adapter: new Adapter() });
@@ -15,7 +16,7 @@ describe('Search bar component', () => {
   it('Renders search bar component', async () => {
     const wrapper = mount(
       <SearchInputBar
-        searchBarValue="basic"
+        searchBarValue={TEST_SEARCH_TEXT}
         setSearchBarValue={() => {}}
         onClickSearch={() => {}}
       />
