@@ -191,3 +191,10 @@ export const TEST_QUERY_RESPONSE = {
     ],
   },
 };
+
+export const TEST_COMPARED_DOCUMENTS_RANK = {
+  WwLJC4QBuER5vZIv1tvg: 2,
+  XALJC4QBuER5vZIv1tvh: 1,
+  XQLJC4QBuER5vZIv1tvh: 10,
+  XgLJC4QBuER5vZIv1tvh: 100,
+};
