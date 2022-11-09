@@ -135,7 +135,7 @@ export const ResultGridComponent = ({
 
   const getRankColumn = (documentId: string, documentRank: number) => {
     return (
-      <td>
+      <td key={`${resultNumber}-${documentId}`}>
         <EuiFlexGroup style={{ width: '150px' }} direction="column" justifyContent="center">
           <EuiFlexItem>
             <EuiTitle size="xs">
