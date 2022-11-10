@@ -51,12 +51,12 @@ export const ResultGridComponent = ({
           <dl className="source truncate-by-height">
             {_.toPairs(doc).map((entry: string[]) => {
               return (
-                <span key={uniqueId('grid-desc')}>
-                  <dt>{entry[0]}:</dt>
+                <>
+                  <dt>{`${entry[0]}:`}</dt>
                   <dd>
-                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]}</span>
+                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
                   </dd>
-                </span>
+                </>
               );
             })}
           </dl>
@@ -158,7 +158,7 @@ export const ResultGridComponent = ({
 
   const getTds = (document: Document, documentRank: number) => {
     const cols = [];
-    const fieldClsName = 'osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord';
+    const fieldClsName = 'eui-textBreakAll eui-textBreakWord';
     const timestampClsName = 'eui-textNoWrap';
 
     // Get rank index column
