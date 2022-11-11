@@ -198,3 +198,5 @@ export const TEST_COMPARED_DOCUMENTS_RANK = {
   XQLJC4QBuER5vZIv1tvh: 10,
   XgLJC4QBuER5vZIv1tvh: 100,
 };
+
+export const TEST_QUERY_STRING = '{}';
