@@ -1,0 +1,400 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create index component Renders create index component 1`] = `
+<CreateIndex>
+  <Header>
+    <EuiPanel
+      borderRadius="none"
+      grow={false}
+      hasBorder={false}
+      hasShadow={false}
+      style={
+        Object {
+          "borderBottom": "1px solid #D3DAE6",
+        }
+      }
+    >
+      <div
+        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--plain euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
+        style={
+          Object {
+            "borderBottom": "1px solid #D3DAE6",
+          }
+        }
+      >
+        <EuiPageHeader
+          pageTitle="Compare search results"
+        >
+          <header
+            className="euiPageHeader euiPageHeader--responsive euiPageHeader--center"
+          >
+            <EuiPageHeaderContent
+              pageTitle="Compare search results"
+              responsive={true}
+            >
+              <div
+                className="euiPageHeaderContent"
+              >
+                <EuiFlexGroup
+                  alignItems="flexStart"
+                  className="euiPageHeaderContent__top"
+                  gutterSize="l"
+                  responsive={true}
+                >
+                  <div
+                    className="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsFlexStart euiFlexGroup--directionRow euiFlexGroup--responsive euiPageHeaderContent__top"
+                  >
+                    <EuiFlexItem>
+                      <div
+                        className="euiFlexItem"
+                      >
+                        <EuiTitle
+                          size="l"
+                        >
+                          <h1
+                            className="euiTitle euiTitle--large"
+                          >
+                            Compare search results
+                          </h1>
+                        </EuiTitle>
+                      </div>
+                    </EuiFlexItem>
+                  </div>
+                </EuiFlexGroup>
+                <div
+                  className="euiPageHeaderContent__bottom"
+                >
+                  <EuiSpacer>
+                    <div
+                      className="euiSpacer euiSpacer--l"
+                    />
+                  </EuiSpacer>
+                  <EuiCallOut
+                    iconType="iInCircle"
+                    title="Experimental Feature"
+                  >
+                    <div
+                      className="euiCallOut euiCallOut--primary"
+                    >
+                      <div
+                        className="euiCallOutHeader"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiCallOutHeader__icon"
+                          color="inherit"
+                          size="m"
+                          type="iInCircle"
+                        >
+                          <EuiIconEmpty
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiCallOutHeader__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiCallOutHeader__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            />
+                          </EuiIconEmpty>
+                        </EuiIcon>
+                        <span
+                          className="euiCallOutHeader__title"
+                        >
+                          Experimental Feature
+                        </span>
+                      </div>
+                      <EuiText
+                        color="default"
+                        size="s"
+                      >
+                        <div
+                          className="euiText euiText--small"
+                        >
+                          <EuiTextColor
+                            color="default"
+                            component="div"
+                          >
+                            <div
+                              className="euiTextColor euiTextColor--default"
+                            >
+                              <EuiText>
+                                <div
+                                  className="euiText euiText--medium"
+                                >
+                                  <p>
+                                    Compare results using the same search text with different queries. For more information, see the
+                                     
+                                    <EuiLink
+                                      href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                                      target="_blank"
+                                    >
+                                      <a
+                                        className="euiLink euiLink--primary"
+                                        href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                      >
+                                        Compare Search Results Documentation
+                                        <EuiIcon
+                                          aria-label="External link"
+                                          className="euiLink__externalIcon"
+                                          size="s"
+                                          type="popout"
+                                        >
+                                          <EuiIconEmpty
+                                            aria-hidden={true}
+                                            aria-label="External link"
+                                            className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                            focusable="false"
+                                            role="img"
+                                            style={null}
+                                          >
+                                            <svg
+                                              aria-hidden={true}
+                                              aria-label="External link"
+                                              className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                              focusable="false"
+                                              height={16}
+                                              role="img"
+                                              style={null}
+                                              viewBox="0 0 16 16"
+                                              width={16}
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            />
+                                          </EuiIconEmpty>
+                                        </EuiIcon>
+                                        <EuiScreenReaderOnly>
+                                          <span
+                                            className="euiScreenReaderOnly"
+                                          >
+                                            <EuiI18n
+                                              default="(opens in a new tab or window)"
+                                              token="euiLink.newTarget.screenReaderOnlyText"
+                                            >
+                                              (opens in a new tab or window)
+                                            </EuiI18n>
+                                          </span>
+                                        </EuiScreenReaderOnly>
+                                      </a>
+                                    </EuiLink>
+                                    . To leave feedback, visit
+                                     
+                                    <EuiLink
+                                      href="https://forum.opensearch.org/t/feedback-experimental-feature-compare-search-results/11331"
+                                      target="_blank"
+                                    >
+                                      <a
+                                        className="euiLink euiLink--primary"
+                                        href="https://forum.opensearch.org/t/feedback-experimental-feature-compare-search-results/11331"
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                      >
+                                        forums.opensearch.com
+                                        <EuiIcon
+                                          aria-label="External link"
+                                          className="euiLink__externalIcon"
+                                          size="s"
+                                          type="popout"
+                                        >
+                                          <EuiIconEmpty
+                                            aria-hidden={true}
+                                            aria-label="External link"
+                                            className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                            focusable="false"
+                                            role="img"
+                                            style={null}
+                                          >
+                                            <svg
+                                              aria-hidden={true}
+                                              aria-label="External link"
+                                              className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                              focusable="false"
+                                              height={16}
+                                              role="img"
+                                              style={null}
+                                              viewBox="0 0 16 16"
+                                              width={16}
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            />
+                                          </EuiIconEmpty>
+                                        </EuiIcon>
+                                        <EuiScreenReaderOnly>
+                                          <span
+                                            className="euiScreenReaderOnly"
+                                          >
+                                            <EuiI18n
+                                              default="(opens in a new tab or window)"
+                                              token="euiLink.newTarget.screenReaderOnlyText"
+                                            >
+                                              (opens in a new tab or window)
+                                            </EuiI18n>
+                                          </span>
+                                        </EuiScreenReaderOnly>
+                                      </a>
+                                    </EuiLink>
+                                    .
+                                  </p>
+                                </div>
+                              </EuiText>
+                            </div>
+                          </EuiTextColor>
+                        </div>
+                      </EuiText>
+                    </div>
+                  </EuiCallOut>
+                </div>
+              </div>
+            </EuiPageHeaderContent>
+          </header>
+        </EuiPageHeader>
+      </div>
+    </EuiPanel>
+  </Header>
+  <EuiPageBody>
+    <div
+      className="euiPageBody euiPageBody--borderRadiusNone"
+    >
+      <EuiEmptyPrompt
+        body={
+          <p>
+            Before you can query data, you need to index it.
+             
+            <EuiLink
+              href="https://opensearch.org/docs/latest/opensearch/index-data/"
+              target="_blank"
+            >
+              Learn how to index your data
+            </EuiLink>
+            , or 
+            <EuiLink
+              href="/app/home#/tutorial_directory"
+            >
+              add sample data 
+            </EuiLink>
+            to OpenSearch Dashboards.
+          </p>
+        }
+        title={
+          <h2>
+            Create an index to start comparing search results. 
+          </h2>
+        }
+      >
+        <div
+          className="euiEmptyPrompt"
+        >
+          <EuiTitle
+            size="m"
+          >
+            <h2
+              className="euiTitle euiTitle--medium"
+            >
+              Create an index to start comparing search results. 
+            </h2>
+          </EuiTitle>
+          <EuiTextColor
+            color="subdued"
+          >
+            <span
+              className="euiTextColor euiTextColor--subdued"
+            >
+              <EuiSpacer
+                size="m"
+              >
+                <div
+                  className="euiSpacer euiSpacer--m"
+                />
+              </EuiSpacer>
+              <EuiText>
+                <div
+                  className="euiText euiText--medium"
+                >
+                  <p>
+                    Before you can query data, you need to index it.
+                     
+                    <EuiLink
+                      href="https://opensearch.org/docs/latest/opensearch/index-data/"
+                      target="_blank"
+                    >
+                      <a
+                        className="euiLink euiLink--primary"
+                        href="https://opensearch.org/docs/latest/opensearch/index-data/"
+                        rel="noopener noreferrer"
+                        target="_blank"
+                      >
+                        Learn how to index your data
+                        <EuiIcon
+                          aria-label="External link"
+                          className="euiLink__externalIcon"
+                          size="s"
+                          type="popout"
+                        >
+                          <EuiIconEmpty
+                            aria-hidden={true}
+                            aria-label="External link"
+                            className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              aria-label="External link"
+                              className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            />
+                          </EuiIconEmpty>
+                        </EuiIcon>
+                        <EuiScreenReaderOnly>
+                          <span
+                            className="euiScreenReaderOnly"
+                          >
+                            <EuiI18n
+                              default="(opens in a new tab or window)"
+                              token="euiLink.newTarget.screenReaderOnlyText"
+                            >
+                              (opens in a new tab or window)
+                            </EuiI18n>
+                          </span>
+                        </EuiScreenReaderOnly>
+                      </a>
+                    </EuiLink>
+                    , or 
+                    <EuiLink
+                      href="/app/home#/tutorial_directory"
+                    >
+                      <a
+                        className="euiLink euiLink--primary"
+                        href="/app/home#/tutorial_directory"
+                        rel="noreferrer"
+                      >
+                        add sample data 
+                      </a>
+                    </EuiLink>
+                    to OpenSearch Dashboards.
+                  </p>
+                </div>
+              </EuiText>
+            </span>
+          </EuiTextColor>
+        </div>
+      </EuiEmptyPrompt>
+    </div>
+  </EuiPageBody>
+</CreateIndex>
+`;
