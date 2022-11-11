@@ -185,7 +185,7 @@ export const ResultGridComponent = ({
       <>
         {queryResult.hits.hits.map((document: Document, documentRank: number) => {
           return (
-            <tr className="osdDocTable__row" key={document._id}>
+            <tr className="osdDocTable__row" key={uniqueId('documentId-')}>
               {getTds(document, documentRank + 1)}
             </tr>
           );

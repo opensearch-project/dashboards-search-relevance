@@ -213,7 +213,7 @@ exports[`Result grid component Renders result grid component 1`] = `
         <tbody>
           <tr
             className="osdDocTable__row"
-            key="WwLJC4QBuER5vZIv1tvg"
+            key="documentId-1"
           >
             <td
               key="1-WwLJC4QBuER5vZIv1tvg"
@@ -307,8 +307,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-10"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-2"
             >
               <div
                 className="truncate-by-height"
@@ -317,123 +317,87 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc1"
-                    >
-                      <dt>
-                        arr
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          ["el1","el2","el3"]
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc2"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          3920564
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc3"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          006R90321
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc4"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Xerox 006R90321 toner cartridge Original Black 6 pc(s)
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc5"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Toner (6 Per Box) for CopyCentre C65 Digital Copier
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc6"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc7"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2009-12-10T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc8"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Xerox
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc9"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          4995
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      arr:
+                    </dt>
+                    <dd>
+                      <span>
+                        ["el1","el2","el3"]
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        3920564
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        006R90321
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        Xerox 006R90321 toner cartridge Original Black 6 pc(s)
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Toner (6 Per Box) for CopyCentre C65 Digital Copier
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2009-12-10T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        Xerox
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        4995
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -441,7 +405,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="XALJC4QBuER5vZIv1tvh"
+            key="documentId-3"
           >
             <td
               key="1-XALJC4QBuER5vZIv1tvh"
@@ -535,8 +499,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-21"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-4"
             >
               <div
                 className="truncate-by-height"
@@ -545,136 +509,96 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc11"
-                    >
-                      <dt>
-                        nestObj
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          {"key1":[1,true,null],"key2":{"key21":"element"}}
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc12"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2101957
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc13"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          dv7-1211ea
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc14"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc15"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc16"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc17"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-12-19T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc18"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HP
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc19"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          10995
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc20"
-                    >
-                      <dt>
-                        attr_t_product_colour
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Silver
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      nestObj:
+                    </dt>
+                    <dd>
+                      <span>
+                        {"key1":[1,true,null],"key2":{"key21":"element"}}
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        2101957
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        dv7-1211ea
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2008-12-19T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        HP
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        10995
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      attr_t_product_colour:
+                    </dt>
+                    <dd>
+                      <span>
+                        Silver
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -682,7 +606,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="XQLJC4QBuER5vZIv1tvh"
+            key="documentId-5"
           >
             <td
               key="1-XQLJC4QBuER5vZIv1tvh"
@@ -776,8 +700,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-31"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-6"
             >
               <div
                 className="truncate-by-height"
@@ -786,123 +710,87 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc22"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1128895
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc23"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          DB9 RS232 Serial Null Modem Adapter - M/F
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc24"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc25"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc26"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc27"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2007-08-09T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc28"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc29"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          595
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc30"
-                    >
-                      <dt>
-                        attr_t_product_colour
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Grey
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        1128895
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        DB9 RS232 Serial Null Modem Adapter - M/F
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2007-08-09T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        StarTech.com
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        595
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      attr_t_product_colour:
+                    </dt>
+                    <dd>
+                      <span>
+                        Grey
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -910,7 +798,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="XgLJC4QBuER5vZIv1tvh"
+            key="documentId-7"
           >
             <td
               key="1-XgLJC4QBuER5vZIv1tvh"
@@ -1004,8 +892,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-40"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-8"
             >
               <div
                 className="truncate-by-height"
@@ -1014,110 +902,78 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc32"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1449722
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc33"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          ProCurve 420 Wireless Access Point
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc34"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HP ProCurve 420 Wireless Access Point
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc35"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc36"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc37"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-03-07T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc38"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HP
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc39"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          9495
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        1449722
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        ProCurve 420 Wireless Access Point
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        HP ProCurve 420 Wireless Access Point
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2008-03-07T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        HP
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        9495
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -1125,7 +981,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="XwLJC4QBuER5vZIv1tvh"
+            key="documentId-9"
           >
             <td
               key="1-XwLJC4QBuER5vZIv1tvh"
@@ -1280,8 +1136,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-49"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-10"
             >
               <div
                 className="truncate-by-height"
@@ -1290,110 +1146,78 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc41"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1625640
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc42"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2GB SD Card
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc43"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Integral 2GB SD Card memory card
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc44"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2GB SD Card
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc45"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc46"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-06-23T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc47"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Integral
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc48"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1195
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        1625640
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        2GB SD Card
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        Integral 2GB SD Card memory card
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        2GB SD Card
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2008-06-23T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        Integral
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        1195
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -1401,7 +1225,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="YALJC4QBuER5vZIv1tvh"
+            key="documentId-11"
           >
             <td
               key="1-YALJC4QBuER5vZIv1tvh"
@@ -1556,8 +1380,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-58"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-12"
             >
               <div
                 className="truncate-by-height"
@@ -1566,110 +1390,78 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc50"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2067378
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc51"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          LC51C
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc52"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Brother LC51C Original Cyan
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc53"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          LC51C
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc54"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc55"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2009-04-08T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc56"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Brother
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc57"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1795
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        2067378
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        LC51C
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        Brother LC51C Original Cyan
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        LC51C
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2009-04-08T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        Brother
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        1795
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -1677,7 +1469,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="YQLJC4QBuER5vZIv1tvh"
+            key="documentId-13"
           >
             <td
               key="1-YQLJC4QBuER5vZIv1tvh"
@@ -1832,8 +1624,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-68"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-14"
             >
               <div
                 className="truncate-by-height"
@@ -1842,123 +1634,87 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc59"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          636678
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc60"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Emergency Power Off (EPO)
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc61"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          APC Emergency Power Off (EPO)
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc62"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Emergency Power Off (EPO)
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc63"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc64"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2006-11-15T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc65"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          APC
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc66"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          69195
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc67"
-                    >
-                      <dt>
-                        attr_t_product_colour
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Black
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        636678
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        Emergency Power Off (EPO)
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        APC Emergency Power Off (EPO)
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Emergency Power Off (EPO)
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2006-11-15T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        APC
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        69195
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      attr_t_product_colour:
+                    </dt>
+                    <dd>
+                      <span>
+                        Black
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -1966,7 +1722,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="YgLJC4QBuER5vZIv1tvh"
+            key="documentId-15"
           >
             <td
               key="1-YgLJC4QBuER5vZIv1tvh"
@@ -2121,8 +1877,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-77"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-16"
             >
               <div
                 className="truncate-by-height"
@@ -2131,110 +1887,78 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc69"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          1570809
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc70"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc71"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc72"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc73"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc74"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-04-11T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc75"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          APC
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc76"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          53895
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        1570809
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2008-04-11T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        APC
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        53895
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -2242,7 +1966,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="YwLJC4QBuER5vZIv1tvh"
+            key="documentId-17"
           >
             <td
               key="1-YwLJC4QBuER5vZIv1tvh"
@@ -2397,8 +2121,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-87"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-18"
             >
               <div
                 className="truncate-by-height"
@@ -2407,123 +2131,87 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc78"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          148843
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc79"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc80"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc81"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc82"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc83"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2005-07-15T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc84"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          HERMA
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc85"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          3795
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc86"
-                    >
-                      <dt>
-                        attr_t_product_colour
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          White
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        148843
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2005-07-15T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        HERMA
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        3795
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      attr_t_product_colour:
+                    </dt>
+                    <dd>
+                      <span>
+                        White
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
@@ -2531,7 +2219,7 @@ exports[`Result grid component Renders result grid component 1`] = `
           </tr>
           <tr
             className="osdDocTable__row"
-            key="ZALJC4QBuER5vZIv1tvh"
+            key="documentId-19"
           >
             <td
               key="1-ZALJC4QBuER5vZIv1tvh"
@@ -2686,8 +2374,8 @@ exports[`Result grid component Renders result grid component 1`] = `
               </EuiFlexGroup>
             </td>
             <td
-              className="osdDocTableCell__dataField eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-96"
+              className="eui-textBreakAll eui-textBreakWord"
+              key="datagrid-cell-20"
             >
               <div
                 className="truncate-by-height"
@@ -2696,110 +2384,78 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <span
-                      key="grid-desc88"
-                    >
-                      <dt>
-                        id
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          968447
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc89"
-                    >
-                      <dt>
-                        name
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc90"
-                    >
-                      <dt>
-                        title
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc91"
-                    >
-                      <dt>
-                        short_description
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc92"
-                    >
-                      <dt>
-                        img_500x500
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc93"
-                    >
-                      <dt>
-                        date_released
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          2007-08-09T00:00:00Z
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc94"
-                    >
-                      <dt>
-                        supplier
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          OKI
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-desc95"
-                    >
-                      <dt>
-                        price
-                        :
-                      </dt>
-                      <dd>
-                        <span>
-                          20395
-                        </span>
-                      </dd>
-                    </span>
+                    <dt>
+                      id:
+                    </dt>
+                    <dd>
+                      <span>
+                        968447
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      name:
+                    </dt>
+                    <dd>
+                      <span>
+                        Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      title:
+                    </dt>
+                    <dd>
+                      <span>
+                        OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      short_description:
+                    </dt>
+                    <dd>
+                      <span>
+                        Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      img_500x500:
+                    </dt>
+                    <dd>
+                      <span>
+                        http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      date_released:
+                    </dt>
+                    <dd>
+                      <span>
+                        2007-08-09T00:00:00Z
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      supplier:
+                    </dt>
+                    <dd>
+                      <span>
+                        OKI
+                         
+                      </span>
+                    </dd>
+                    <dt>
+                      price:
+                    </dt>
+                    <dd>
+                      <span>
+                        20395
+                         
+                      </span>
+                    </dd>
                   </dl>
                 </span>
               </div>
