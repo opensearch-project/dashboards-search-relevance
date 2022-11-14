@@ -3,10 +3,11 @@ name: Pull Request Stats
 on:
   pull_request:
     types: [opened]
+  workflow_dispatch:
 
 jobs:
   stats:
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest,macos-latest,windows-latest]
     steps:
       - name: Run pull request stats
         uses: flowwer-dev/pull-request-stats@master
