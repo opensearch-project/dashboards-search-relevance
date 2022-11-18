@@ -108,6 +108,13 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         label="Query"
         error={!!queryError.queryString.length && <span>{queryError.queryString}</span>}
         isInvalid={!!queryError.queryString.length}
+        labelAppend={
+          <EuiText size="xs">
+            <EuiButtonEmpty size="xs" color="primary" onClick={() => setShowFlyout(true)}>
+              Help
+            </EuiButtonEmpty>
+          </EuiText>
+        }
       >
         <EuiCodeEditor
           mode="json"
@@ -124,21 +131,13 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           }}
           aria-label="Code Editor"
           onBlur={codeEditorOnBlur}
+          tabSize={2}
         />
       </EuiFormRow>
       <EuiText>
         <p style={{ fontSize: '14px', fontWeight: '400', lineHeight: '18px' }}>
           Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search
-          bar. Need more help?{' '}
-          <EuiButtonEmpty
-            size="xs"
-            color="primary"
-            onClick={() => setShowFlyout(true)}
-            style={{ margin: '0 -8px' }}
-          >
-            See some examples
-          </EuiButtonEmpty>
-          .
+          bar.
         </p>
       </EuiText>
     </>
