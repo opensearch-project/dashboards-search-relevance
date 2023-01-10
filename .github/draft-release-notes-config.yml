@@ -43,3 +43,8 @@ categories:
     labels:
       - 'refactor'
       - 'code quality'
+  - title: 'Security'
+    labels:
+      - 'security'
+      - 'security fix'
+      - 'security vulnerability'
