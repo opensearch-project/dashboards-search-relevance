@@ -1,6 +1,6 @@
 Compatible with OpenSearch and OpenSearch Dashboards Version 2.5.0
 ### 🛡 Security
-* Update yarn.lock ([#113](https://github.com/opensearch-project/dashboards-search-relevance/pull/113))
+* Update yarn.lock ([#107](https://github.com/opensearch-project/dashboards-search-relevance/pull/107))([#113](https://github.com/opensearch-project/dashboards-search-relevance/pull/113))
 
 ### 🚞 Infrastructure
 * Unit Test Coverage Threshold ([#101](https://github.com/opensearch-project/dashboards-search-relevance/pull/101))
