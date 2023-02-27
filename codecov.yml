@@ -1,0 +1,8 @@
+# https://docs.codecov.com/docs/codecov-yaml
+coverage:
+  status:
+    project:
+      default:
+        target: 80%%
+        threshold: 2%
+
