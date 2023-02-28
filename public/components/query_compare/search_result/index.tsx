@@ -38,85 +38,92 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
-    const queryError1: QueryError = { ...initialQueryErrorState };
-    const queryError2: QueryError = { ...initialQueryErrorState };
+    const queryErrors = [{ ...initialQueryErrorState }, { ...initialQueryErrorState }];
+    const jsonQueries = [{}, {}];
 
+    validateQuery(selectedIndex1, queryString1, queryErrors[0]);
+    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
+
+    validateQuery(selectedIndex2, queryString2, queryErrors[1]);
+    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
+
+    handleQuery(jsonQueries, queryErrors);
+  };
+
+  const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
     // Check if select an index
-    if (!selectedIndex1.length) {
-      queryError1.selectIndex = 'An index is required. Select an index.';
-    }
-    if (!selectedIndex2.length) {
-      queryError2.selectIndex = 'An index is required. Select an index.';
+    if (!selectedIndex.length) {
+      queryError.selectIndex = 'An index is required. Select an index.';
     }
 
     // Check if query string is empty
-    if (!queryString1.length) {
-      queryError1.queryString = QueryStringError.empty;
+    if (!queryString.length) {
+      queryError.queryString = QueryStringError.empty;
     }
-    if (!queryString2.length) {
-      queryError2.queryString = QueryStringError.empty;
-    }
+  };
 
-    // Check if query string is valid
-    let jsonQuery1 = {};
-    let jsonQuery2 = {};
-    if (queryString1.trim().length > 0) {
+  const rewriteQuery = (searchBarValue: string, queryString: string, queryError: QueryError) => {
+    if (queryString.trim().length > 0) {
       try {
-        jsonQuery1 = JSON.parse(queryString1.replace(/%SearchText%/g, searchBarValue));
+        return JSON.parse(queryString.replace(/%SearchText%/g, searchBarValue));
       } catch {
-        queryError1.queryString = QueryStringError.invalid;
+        queryError.queryString = QueryStringError.invalid;
       }
     }
-    if (queryString2.trim().length > 0) {
-      try {
-        jsonQuery2 = JSON.parse(queryString2.replace(/%SearchText%/g, searchBarValue));
-      } catch {
-        queryError2.queryString = QueryStringError.invalid;
-      }
-    }
+  };
+
+  const handleQuery = (jsonQueries: any, queryErrors: QueryError[]) => {
+    let requestBody = {};
 
     // Handle query1
-    if (queryError1.queryString.length || queryError1.selectIndex.length) {
-      setQueryError1(queryError1);
+    if (queryErrors[0].queryString.length || queryErrors[0].selectIndex.length) {
+      setQueryError1(queryErrors[0]);
       setQueryResult1({} as any);
       updateComparedResult1({} as any);
-    } else if (!queryError1.queryString.length && !queryError1.selectIndex.length) {
-      http
-        .post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ index: selectedIndex1, ...jsonQuery1 }),
-        })
-        .then((res) => {
-          setQueryResult1(res);
-          updateComparedResult1(res);
-        })
-        .catch((error: Error) => {
-          setQueryError1({
-            ...queryError1,
-            queryString: error.body.message,
-          });
-          console.error(error);
-        });
+    } else if (!queryErrors[0].queryString.length && !queryErrors[0].selectIndex.length) {
+      requestBody = {
+        query1: { index: selectedIndex1, ...jsonQueries[0] },
+      };
     }
 
     // Handle query2
-    if (queryError2.queryString.length || queryError2.selectIndex.length) {
-      setQueryError2(queryError2);
+    if (queryErrors[1].queryString.length || queryErrors[1].selectIndex.length) {
+      setQueryError2(queryErrors[1]);
       setQueryResult2({} as any);
       updateComparedResult2({} as any);
-    } else if (!queryError2.queryString.length && !queryError2.selectIndex.length) {
+    } else if (!queryErrors[1].queryString.length && !queryErrors[1].selectIndex.length) {
+      requestBody = {
+        ...requestBody,
+        query2: { index: selectedIndex2, ...jsonQueries[1] },
+      };
+    }
+
+    if (Object.keys(requestBody).length !== 0) {
       http
         .post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ index: selectedIndex2, ...jsonQuery2 }),
+          body: JSON.stringify(requestBody),
         })
         .then((res) => {
-          setQueryResult2(res);
-          updateComparedResult2(res);
+          setQueryResult1(res.result1);
+          updateComparedResult1(res.result1);
+          setQueryResult2(res.result2);
+          updateComparedResult2(res.result2);
+
+          if (res.errorMessage1) {
+            setQueryError1({
+              ...queryErrors[0],
+              queryString: res.errorMessage1,
+            });
+          }
+
+          if (res.errorMessage2) {
+            setQueryError2({
+              ...queryErrors[1],
+              queryString: res.errorMessage2,
+            });
+          }
         })
         .catch((error: Error) => {
-          setQueryError2({
-            ...queryError2,
-            queryString: error.body.message,
-          });
           console.error(error);
         });
     }
