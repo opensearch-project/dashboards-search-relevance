@@ -6,7 +6,7 @@
 export { MetricsServiceSetup, MetricsService } from './metrics_service';
 
 export enum METRIC_NAME {
-  RELEVANT_SEARCH = 'relevant_search',
+  RELEVANT_SEARCH = 'search_relevance',
 }
 
 export enum METRIC_ACTION {

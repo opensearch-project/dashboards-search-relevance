@@ -10,7 +10,7 @@ interface MetricValue {
   count: number;
 }
 
-interface MetricOutPut {
+interface MetricOutput {
   response_time_avg: number;
   requests_per_second: number;
 }
@@ -25,7 +25,7 @@ interface MetricsData {
 
 export interface Stats {
   readonly data: MetricsData;
-  readonly overall: MetricOutPut;
+  readonly overall: MetricOutput;
   readonly component_counts: Record<string, number>;
   readonly status_code_counts: Record<string, number>;
 }
@@ -36,21 +36,20 @@ export interface MetricsServiceSetup {
 }
 
 export class MetricsService {
-  private data: MetricsData = {};
-  private overall: MetricValue = { sum: 0, count: 0 };
-  private componentCounts: Record<string, number> = {};
-  private statusCodeCounts: Record<string, number> = {};
+  private interval: number = 60000;
+  private windowSize: number = 10;
 
-  private resetIntervalMs?: number;
+  private data: Record<number, MetricsData> = {};
+  private componentCounts: Record<number, Record<string, number>> = {};
+  private statusCodeCounts: Record<number, Record<string, number>> = {};
+  private overall: Record<number, MetricValue> = {};
 
   constructor(private logger?: Logger) {}
 
-  setup(resetIntervalMs: number): MetricsServiceSetup {
-    this.resetIntervalMs = resetIntervalMs;
-
-    setInterval(() => {
-      this.resetMetrics();
-    }, resetIntervalMs);
+  setup(logger: Logger, interval: number, windowSize: number): MetricsServiceSetup {
+    this.logger = logger;
+    this.interval = interval;
+    this.windowSize = windowSize;
 
     const addMetric = (
       componentName: string,
@@ -58,47 +57,65 @@ export class MetricsService {
       statusCode: number,
       value: number
     ): void => {
-      if (!this.data[componentName]) {
-        this.data[componentName] = {};
-      }
-      if (!this.data[componentName][action]) {
-        this.data[componentName][action] = {};
-      }
-      if (!this.data[componentName][action][statusCode]) {
-        this.data[componentName][action][statusCode] = { sum: 0, count: 0 };
+      const currInterval = Math.floor(Date.now() / this.interval);
+
+      this.trim();
+
+      if (!this.data[currInterval]) {
+        this.data[currInterval] = {};
+        this.overall[currInterval] = { sum: 0, count: 0 };
+        this.componentCounts[currInterval] = {};
+        this.statusCodeCounts[currInterval] = {};
       }
 
-      const { sum, count } = this.data[componentName][action][statusCode];
-      this.data[componentName][action][statusCode] = {
+      if (!this.data[currInterval][componentName]) {
+        this.data[currInterval][componentName] = {};
+        this.componentCounts[currInterval][componentName] = 0;
+      }
+
+      if (!this.data[currInterval][componentName][action]) {
+        this.data[currInterval][componentName][action] = {};
+      }
+
+      if (!this.data[currInterval][componentName][action][statusCode]) {
+        this.data[currInterval][componentName][action][statusCode] = { sum: 0, count: 0 };
+        this.statusCodeCounts[currInterval][statusCode] = 0;
+      }
+
+      const { sum, count } = this.data[currInterval][componentName][action][statusCode];
+      this.data[currInterval][componentName][action][statusCode] = {
         sum: sum + value,
         count: count + 1,
       };
 
-      this.overall.sum += value;
-      this.overall.count++;
+      this.componentCounts[currInterval][componentName]++;
+      this.statusCodeCounts[currInterval][statusCode]++;
 
-      if (!this.componentCounts[componentName]) {
-        this.componentCounts[componentName] = 0;
-      }
-      this.componentCounts[componentName]++;
-
-      if (!this.statusCodeCounts[statusCode]) {
-        this.statusCodeCounts[statusCode] = 0;
-      }
-      this.statusCodeCounts[statusCode]++;
+      this.overall[currInterval].sum += value;
+      this.overall[currInterval].count++;
     };
 
     const getStats = (): Stats => {
-      const requestsPerSecond = this.overall.count / (this.resetIntervalMs! / 1000);
+      const prevInterval = Math.floor(Date.now() / this.interval) - 1;
+      const data = { ...this.data[prevInterval] } || {};
+      const overall = { ...this.overall[prevInterval] } || {};
+
+      let requestsPerSecond = 0,
+        responseTimeAvg = 0;
+
+      if (Object.keys(overall).length !== 0 && overall.count !== 0) {
+        responseTimeAvg = overall.sum / overall.count;
+        requestsPerSecond = overall.count / (this.interval / 1000);
+      }
 
       return {
-        data: { ...this.data },
+        data,
         overall: {
-          response_time_avg: this.overall.sum / this.overall.count,
+          response_time_avg: responseTimeAvg,
           requests_per_second: requestsPerSecond,
         },
-        component_counts: { ...this.componentCounts },
-        status_code_counts: { ...this.statusCodeCounts },
+        component_counts: { ...this.componentCounts[prevInterval] } || {},
+        status_code_counts: { ...this.statusCodeCounts[prevInterval] } || {},
       };
     };
 
@@ -113,9 +130,20 @@ export class MetricsService {
 
   resetMetrics(): void {
     this.data = {};
-    this.overall.sum = 0;
-    this.overall.count = 0;
+    this.overall = {};
     this.componentCounts = {};
     this.statusCodeCounts = {};
+  }
+
+  trim(): void {
+    const oldestTimestampToKeep = Math.floor(
+      (Date.now() - this.windowSize * this.interval) / this.interval
+    );
+    for (const timestampStr in this.data) {
+      const timestamp = parseInt(timestampStr);
+      if (timestamp < oldestTimestampToKeep) {
+        delete this.data[timestamp];
+      }
+    }
   }
 }
