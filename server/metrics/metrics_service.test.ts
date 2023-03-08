@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MetricsService, MetricsServiceSetup } from '.';
+import { MetricsService, MetricsServiceSetup } from './';
 
 describe('MetricsService', () => {
   let metricsService: MetricsService;
@@ -11,81 +11,65 @@ describe('MetricsService', () => {
 
   beforeEach(() => {
     metricsService = new MetricsService();
-    setup = metricsService.setup(1000);
+    setup = metricsService.setup();
   });
 
   afterEach(() => {
     metricsService.stop();
   });
 
-  describe('addMetric', () => {
-    it('should track metric data', () => {
+  describe('test addMetric and getStats', () => {
+    it('should add metrics to the correct interval and ignore metrics in the future', () => {
+      jest.useFakeTimers('modern');
+      jest.setSystemTime(0);
       setup.addMetric('component1', 'action1', 200, 100);
+      jest.advanceTimersByTime(30000);
       setup.addMetric('component1', 'action1', 200, 200);
-      setup.addMetric('component1', 'action2', 200, 300);
+      setup.addMetric('component1', 'action1', 200, 300);
+      jest.advanceTimersByTime(30000);
+      setup.addMetric('component1', 'action1', 200, 400);
 
       const stats = setup.getStats();
-      expect(stats.data).toEqual({
-        component1: {
-          action1: {
-            200: { sum: 300, count: 2 },
-          },
-          action2: {
-            200: { sum: 300, count: 1 },
-          },
-        },
+      expect(stats.data['component1']['action1'][200]).toEqual({
+        sum: 600,
+        count: 3,
       });
-    });
-
-    it('should track overall metric data', () => {
-      setup.addMetric('component1', 'action1', 200, 100);
-      setup.addMetric('component1', 'action1', 200, 200);
-      setup.addMetric('component1', 'action2', 200, 300);
-
-      const stats = setup.getStats();
-      expect(stats.overall).toEqual({
-        response_time_avg: 200,
-        requests_per_second: 3,
-      });
-    });
-
-    it('should track component counts', () => {
-      setup.addMetric('component1', 'action1', 200, 100);
-      setup.addMetric('component2', 'action1', 200, 200);
-      setup.addMetric('component2', 'action2', 200, 300);
-
-      const stats = setup.getStats();
-      expect(stats.component_counts).toEqual({
-        component1: 1,
-        component2: 2,
-      });
-    });
-
-    it('should track status code counts', () => {
-      setup.addMetric('component1', 'action1', 200, 100);
-      setup.addMetric('component2', 'action1', 200, 200);
-      setup.addMetric('component2', 'action2', 400, 300);
-
-      const stats = setup.getStats();
-      expect(stats.status_code_counts).toEqual({
-        200: 2,
-        400: 1,
-      });
+      expect(stats.overall.response_time_avg).toEqual(200);
+      expect(stats.overall.requests_per_second).toEqual(0.05);
+      expect(stats.component_counts['component1']).toEqual(3);
+      expect(stats.status_code_counts[200]).toEqual(3);
     });
   });
 
   describe('resetMetrics', () => {
-    it('should reset all metrics data', () => {
+    it('should clear all metrics data', () => {
       setup.addMetric('component1', 'action1', 200, 100);
-      setup.addMetric('component2', 'action1', 200, 200);
       metricsService.resetMetrics();
       const stats = setup.getStats();
-      expect(stats).toEqual({
-        data: {},
-        overall: { response_time_avg: NaN, requests_per_second: 0 },
-        component_counts: {},
-        status_code_counts: {},
-      });
+      expect(stats.data).toEqual({});
+      expect(stats.overall).toEqual({ response_time_avg: 0, requests_per_second: 0 });
+      expect(stats.component_counts).toEqual({});
+      expect(stats.status_code_counts).toEqual({});
+    });
+  });
+
+  describe('trim', () => {
+    it('should remove old metrics data', () => {
+      jest.useFakeTimers('modern');
+      jest.setSystemTime(0);
+      setup.addMetric('component1', 'action1', 200, 100);
+      jest.advanceTimersByTime(60000);
+      setup.addMetric('component1', 'action1', 200, 200);
+      jest.advanceTimersByTime(60000);
+      setup.addMetric('component1', 'action1', 200, 300);
+      jest.advanceTimersByTime(60000);
+      metricsService.trim();
+      jest.setSystemTime(0);
+      const stats = setup.getStats();
+      expect(stats.data).toEqual({});
+      expect(stats.overall).toEqual({ response_time_avg: 0, requests_per_second: 0 });
+      expect(stats.component_counts).toEqual({});
+      expect(stats.status_code_counts).toEqual({});
     });
   });
 });

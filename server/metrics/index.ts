@@ -5,6 +5,13 @@
 
 export { MetricsServiceSetup, MetricsService } from './metrics_service';
 
+export enum METRIC_INTERVAL {
+  ONE_SECOND = 1000,
+  ONE_MINUTE = 60000,
+}
+
+export const DEFAULT_WINDOW_SIZE = 3;
+
 export enum METRIC_NAME {
   RELEVANT_SEARCH = 'search_relevance',
 }

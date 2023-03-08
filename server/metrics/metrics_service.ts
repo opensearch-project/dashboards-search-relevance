@@ -4,6 +4,7 @@
  */
 
 import { Logger } from '../../../../src/core/server';
+import { METRIC_INTERVAL, DEFAULT_WINDOW_SIZE } from '.';
 
 interface MetricValue {
   sum: number;
@@ -36,8 +37,8 @@ export interface MetricsServiceSetup {
 }
 
 export class MetricsService {
-  private interval: number = 60000;
-  private windowSize: number = 10;
+  private interval: number = METRIC_INTERVAL.ONE_MINUTE;
+  private windowSize: number = DEFAULT_WINDOW_SIZE;
 
   private data: Record<number, MetricsData> = {};
   private componentCounts: Record<number, Record<string, number>> = {};
@@ -46,8 +47,10 @@ export class MetricsService {
 
   constructor(private logger?: Logger) {}
 
-  setup(logger: Logger, interval: number, windowSize: number): MetricsServiceSetup {
-    this.logger = logger;
+  setup(
+    interval: number = METRIC_INTERVAL.ONE_MINUTE,
+    windowSize: number = DEFAULT_WINDOW_SIZE
+  ): MetricsServiceSetup {
     this.interval = interval;
     this.windowSize = windowSize;
 

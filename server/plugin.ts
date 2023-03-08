@@ -41,7 +41,8 @@ export class SearchRelevancePlugin
     const config: SearchRelevancePluginConfigType = await this.config$.pipe(first()).toPromise();
 
     const metricsService: MetricsServiceSetup = this.metricsService.setup(
-      config.metrics.refreshTime
+      config.metrics.metricInterval,
+      config.metrics.windowSize
     );
 
     const router = core.http.createRouter();

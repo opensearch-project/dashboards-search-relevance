@@ -5,11 +5,12 @@
 
 import { schema, TypeOf } from '@osd/config-schema';
 
-const METRICS_REFRESH_TIME: number = 60000;
+import { METRIC_INTERVAL, DEFAULT_WINDOW_SIZE } from './server/metrics';
 
 export const configSchema = schema.object({
   metrics: schema.object({
-    refreshTime: schema.number({ defaultValue: METRICS_REFRESH_TIME }),
+    metricInterval: schema.number({ defaultValue: METRIC_INTERVAL.ONE_MINUTE }),
+    windowSize: schema.number({ min: 2, max: 10, defaultValue: DEFAULT_WINDOW_SIZE }),
   }),
 });
 
