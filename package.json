@@ -1,6 +1,6 @@
 {
   "name": "searchRelevanceDashboards",
-  "version": "2.5.0.0",
+  "version": "2.6.0.0",
   "main": "./public/index.ts",
   "license": "Apache-2.0",
   "scripts": {
