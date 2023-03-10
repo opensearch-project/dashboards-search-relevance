@@ -3,11 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { PluginInitializerContext } from '../../../src/core/server';
+import { PluginConfigDescriptor, PluginInitializerContext } from '../../../src/core/server';
 import { SearchRelevancePlugin } from './plugin';
+import { configSchema, SearchRelevancePluginConfigType } from '../config';
 
-// This exports static code and TypeScript types,
-// as well as, OpenSearch Dashboards Platform `plugin()` initializer.
+export const config: PluginConfigDescriptor<SearchRelevancePluginConfigType> = {
+  schema: configSchema,
+};
 
 export function plugin(initializerContext: PluginInitializerContext) {
   return new SearchRelevancePlugin(initializerContext);
