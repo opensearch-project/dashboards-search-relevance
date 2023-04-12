@@ -1,0 +1,85 @@
+name: Version Bump
+
+on:
+  push:
+    branches:
+      - test-branch
+
+jobs:
+  version-bump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      new_version: ${{ steps.version-bump.outputs.new_version }}
+      base: ${{ steps.version-bump.outputs.base }}
+
+    name: Version Bump
+    steps:
+      - name: GitHub App token
+        id: github_app_token
+        uses: tibdex/github-app-token@v1.5.0
+        with:
+          app_id: ${{ secrets.APP_ID }}
+          private_key: ${{ secrets.APP_PRIVATE_KEY }}
+          installation_id: 22958780
+
+      - uses: actions/checkout@v2
+      - name: Fetch Tag and Version Information
+        id: version-bump
+        run: |
+          TAG=$(node -p "require('./package.json').version")
+          CURRENT_VERSION_FULL=$(node -p "require('./package.json').version")
+          MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d. -f3)
+          BASE="$MAJOR_VERSION.$MINOR_VERSION"
+          BASE_X="$MAJOR_VERSION.x"
+          CURRENT_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
+          NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1))"
+          NEXT_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1))"
+          NEXT_VERSION_FULL="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1)).0"
+          echo "::set-output name=new_version::$NEW_VERSION"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "BASE=$BASE" >> $GITHUB_ENV
+          echo "BASE_X=$BASE_X" >> $GITHUB_ENV
+          echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
+          echo "CURRENT_VERSION_FULL=CURRENT_VERSION_FULL" >> $GITHUB_ENV
+          echo "NEXT_VERSION=$NEXT_VERSION" >> $GITHUB_ENV
+          echo "NEXT_VERSION_FULL=$NEXT_VERSION_FULL" >> $GITHUB_ENV
+
+      - name: Increment Patch Version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d. -f3)
+          CURRENT_VERSION_SHORT="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
+          NEW_VERSION_SHORT="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1))"
+          NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1)).0"
+          BASE="$MAJOR_VERSION.$MINOR_VERSION"
+          sed -i'' -e "s/\"version\": \"$CURRENT_VERSION\",/\"version\": \"$NEW_VERSION\",/g" opensearch_dashboards.json
+          sed -i'' -e "s/\"opensearchDashboardsVersion\": \"CURRENT_VERSION_SHORT\",/\"opensearchDashboardsVersion\": \"NEW_VERSION_SHORT\",/g" opensearch_dashboards.json
+          sed -i'' -e "s/\"version\": \"$CURRENT_VERSION\",/\"version\": \"$NEW_VERSION\",/g" package.json
+          echo Adding $NEW_VERSION after $CURRENT_VERSION
+          echo Adding $NEW_VERSION_SHORT after $CURRENT_VERSION_SHORT
+          echo "::set-output name=new_version::$NEW_VERSION"   
+          echo "::set-output name=base::$BASE"  
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ steps.github_app_token.outputs.token }}
+          base: ${{ steps.version-bump.outputs.base }}
+          branch: 'create-pull-request/patch-${{ steps.version-bump.outputs.base }} '
+          delete-branch: true
+          commit-message: Increment version to ${{ steps.version-bump.outputs.new_version }}
+          signoff: true
+          labels: |
+            autocut
+          title: '[AUTO] Increment version to ${{ env.NEXT_VERSION }}.'
+          body: |
+            I've noticed that a new tag ${{ env.TAG }} was pushed, and incremented the version from ${{ steps.version-bump.outputs.base }} to ${{ steps.version-bump.outputs.new_version }}.
+            
+
