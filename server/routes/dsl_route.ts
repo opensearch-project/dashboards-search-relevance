@@ -28,7 +28,7 @@ export function registerDslRoute(router: IRouter) {
     async (context, request, response) => {
       const { query1, query2 } = request.body;
       const actionName =
-        query1 && query2 ? METRIC_ACTION.COMPARE_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
+        query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
       let resBody: SearchResultsResponse = {};
 
       if (query1) {

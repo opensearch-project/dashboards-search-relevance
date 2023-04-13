@@ -7,7 +7,7 @@ import { Logger } from '../../../../src/core/server';
 import { METRIC_INTERVAL, DEFAULT_WINDOW_SIZE } from '.';
 
 interface MetricValue {
-  sum: number;
+  duration_in_milliseconds: number;
   count: number;
 }
 
@@ -27,8 +27,8 @@ interface MetricsData {
 export interface Stats {
   readonly data: MetricsData;
   readonly overall: MetricOutput;
-  readonly component_counts: Record<string, number>;
-  readonly status_code_counts: Record<string, number>;
+  readonly count_per_component: Record<string, number>;
+  readonly count_per_status_code: Record<string, number>;
 }
 
 export interface MetricsServiceSetup {
@@ -65,8 +65,8 @@ export class MetricsService {
       this.trim();
 
       if (!this.data[currInterval]) {
-        this.data[currInterval] = {};
-        this.overall[currInterval] = { sum: 0, count: 0 };
+        this.data[currInterval] = {};1
+        this.overall[currInterval] = { duration_in_milliseconds: 0, count: 0 };
         this.componentCounts[currInterval] = {};
         this.statusCodeCounts[currInterval] = {};
       }
@@ -81,20 +81,20 @@ export class MetricsService {
       }
 
       if (!this.data[currInterval][componentName][action][statusCode]) {
-        this.data[currInterval][componentName][action][statusCode] = { sum: 0, count: 0 };
+        this.data[currInterval][componentName][action][statusCode] = { duration_in_milliseconds: 0, count: 0 };
         this.statusCodeCounts[currInterval][statusCode] = 0;
       }
 
-      const { sum, count } = this.data[currInterval][componentName][action][statusCode];
+      const { duration_in_milliseconds, count } = this.data[currInterval][componentName][action][statusCode];
       this.data[currInterval][componentName][action][statusCode] = {
-        sum: sum + value,
+        duration_in_milliseconds: duration_in_milliseconds + value,
         count: count + 1,
       };
 
       this.componentCounts[currInterval][componentName]++;
       this.statusCodeCounts[currInterval][statusCode]++;
 
-      this.overall[currInterval].sum += value;
+      this.overall[currInterval].duration_in_milliseconds += value;
       this.overall[currInterval].count++;
     };
 
@@ -107,7 +107,7 @@ export class MetricsService {
         responseTimeAvg = 0;
 
       if (Object.keys(overall).length !== 0 && overall.count !== 0) {
-        responseTimeAvg = overall.sum / overall.count;
+        responseTimeAvg = overall.duration_in_milliseconds / overall.count;
         requestsPerSecond = overall.count / (this.interval / 1000);
       }
 
@@ -117,8 +117,8 @@ export class MetricsService {
           response_time_avg: responseTimeAvg,
           requests_per_second: requestsPerSecond,
         },
-        component_counts: { ...this.componentCounts[prevInterval] } || {},
-        status_code_counts: { ...this.statusCodeCounts[prevInterval] } || {},
+        count_per_component: { ...this.componentCounts[prevInterval] } || {},
+        count_per_status_code: { ...this.statusCodeCounts[prevInterval] } || {},
       };
     };
 

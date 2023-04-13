@@ -17,7 +17,7 @@ export enum METRIC_NAME {
 }
 
 export enum METRIC_ACTION {
-  COMPARE_SEARCH = 'compare_search',
+  COMPARISON_SEARCH = 'comparison_search',
   SINGLE_SEARCH = 'single_search',
   FETCH_INDEX = 'fetch_index',
 }

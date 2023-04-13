@@ -31,13 +31,13 @@ describe('MetricsService', () => {
 
       const stats = setup.getStats();
       expect(stats.data['component1']['action1'][200]).toEqual({
-        sum: 600,
+        duration_in_milliseconds: 600,
         count: 3,
       });
       expect(stats.overall.response_time_avg).toEqual(200);
       expect(stats.overall.requests_per_second).toEqual(0.05);
-      expect(stats.component_counts['component1']).toEqual(3);
-      expect(stats.status_code_counts[200]).toEqual(3);
+      expect(stats.count_per_component['component1']).toEqual(3);
+      expect(stats.count_per_status_code[200]).toEqual(3);
     });
   });
 
@@ -48,8 +48,8 @@ describe('MetricsService', () => {
       const stats = setup.getStats();
       expect(stats.data).toEqual({});
       expect(stats.overall).toEqual({ response_time_avg: 0, requests_per_second: 0 });
-      expect(stats.component_counts).toEqual({});
-      expect(stats.status_code_counts).toEqual({});
+      expect(stats.count_per_component).toEqual({});
+      expect(stats.count_per_status_code).toEqual({});
     });
   });
 
@@ -68,8 +68,8 @@ describe('MetricsService', () => {
       const stats = setup.getStats();
       expect(stats.data).toEqual({});
       expect(stats.overall).toEqual({ response_time_avg: 0, requests_per_second: 0 });
-      expect(stats.component_counts).toEqual({});
-      expect(stats.status_code_counts).toEqual({});
+      expect(stats.count_per_component).toEqual({});
+      expect(stats.count_per_status_code).toEqual({});
     });
   });
 });
