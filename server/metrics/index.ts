@@ -13,7 +13,7 @@ export enum METRIC_INTERVAL {
 export const DEFAULT_WINDOW_SIZE = 3;
 
 export enum METRIC_NAME {
-  RELEVANT_SEARCH = 'search_relevance',
+  SEARCH_RELEVANCE = 'search_relevance',
 }
 
 export enum METRIC_ACTION {
