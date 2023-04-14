@@ -9,3 +9,5 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Mark Cohen   | [macohen](https://github.com/macohen) | Amazon      |
 | Michael Froh | [msfroh](https://github.com/msfroh)   | Amazon      |
 | Mingshi Liu  | [mingshl](https://github.com/mingshl) | Amazon      |
+| Louis Chu    | [noCharger](https://github.com/noCharger) | Amazon  |
+| Sean Li      | [sejli](https://github.com/sejli)     | Amazon |
