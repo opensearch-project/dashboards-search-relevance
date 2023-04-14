@@ -28,7 +28,7 @@ export function registerDslRoute(router: IRouter) {
     async (context, request, response) => {
       const { query1, query2 } = request.body;
       const actionName =
-        query1 && query2 ? METRIC_ACTION.COMPARE_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
+        query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
       let resBody: SearchResultsResponse = {};
 
       if (query1) {
@@ -47,7 +47,7 @@ export function registerDslRoute(router: IRouter) {
           );
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.RELEVANT_SEARCH,
+            METRIC_NAME.SEARCH_RELEVANCE,
             actionName,
             200,
             end - start
@@ -56,7 +56,7 @@ export function registerDslRoute(router: IRouter) {
         } catch (error) {
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.RELEVANT_SEARCH,
+            METRIC_NAME.SEARCH_RELEVANCE,
             actionName,
             error.statusCode,
             end - start
@@ -90,7 +90,7 @@ export function registerDslRoute(router: IRouter) {
           );
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.RELEVANT_SEARCH,
+            METRIC_NAME.SEARCH_RELEVANCE,
             actionName,
             200,
             end - start
@@ -100,7 +100,7 @@ export function registerDslRoute(router: IRouter) {
           const end = performance.now();
           if (error.statusCode !== 404) console.error(error);
           context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.RELEVANT_SEARCH,
+            METRIC_NAME.SEARCH_RELEVANCE,
             actionName,
             error.statusCode,
             end - start
@@ -139,7 +139,7 @@ export function registerDslRoute(router: IRouter) {
         );
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
-          METRIC_NAME.RELEVANT_SEARCH,
+          METRIC_NAME.SEARCH_RELEVANCE,
           METRIC_ACTION.FETCH_INDEX,
           200,
           end - start
@@ -150,7 +150,7 @@ export function registerDslRoute(router: IRouter) {
       } catch (error) {
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
-          METRIC_NAME.RELEVANT_SEARCH,
+          METRIC_NAME.SEARCH_RELEVANCE,
           METRIC_ACTION.FETCH_INDEX,
           error.statusCode,
           end - start
