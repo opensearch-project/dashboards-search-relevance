@@ -1,0 +1,11 @@
+{
+    "serverSourcePatterns": [
+      "package.json",
+      "tsconfig.json",
+      "yarn.lock",
+      ".yarnrc",
+      "{lib,public,server,webpackShims,translations,utils,models,common}/**/*",
+      "!__tests__",
+      "config.ts"
+    ]
+  }
