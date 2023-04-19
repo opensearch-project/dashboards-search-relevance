@@ -104,10 +104,15 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           body: JSON.stringify(requestBody),
         })
         .then((res) => {
-          setQueryResult1(res.result1);
-          updateComparedResult1(res.result1);
-          setQueryResult2(res.result2);
-          updateComparedResult2(res.result2);
+          if (res.result1) {
+            setQueryResult1(res.result1);
+            updateComparedResult1(res.result1);
+          }
+
+          if (res.result2) {
+            setQueryResult2(res.result2);
+            updateComparedResult2(res.result2);
+          }
 
           if (res.errorMessage1) {
             setQueryError1({
