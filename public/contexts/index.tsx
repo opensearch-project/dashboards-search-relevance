@@ -16,6 +16,8 @@ export const initialQueryErrorState: QueryError = {
 export interface SearchRelevanceContextProps {
   documentsIndexes: DocumentsIndex[];
   setDocumentsIndexes: React.Dispatch<React.SetStateAction<DocumentsIndex[]>>;
+  searchPipelines: string[];
+  setSearchPipelines: React.Dispatch<React.SetStateAction<string[]>>;
   showFlyout: boolean;
   setShowFlyout: React.Dispatch<React.SetStateAction<boolean>>;
   comparedResult1: DocumentRank;
@@ -26,6 +28,10 @@ export interface SearchRelevanceContextProps {
   setSelectedIndex1: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex2: string;
   setSelectedIndex2: React.Dispatch<React.SetStateAction<string>>;
+  selectedSearchPipeline1: string;
+  setSelectedSearchPipeline1: React.Dispatch<React.SetStateAction<string>>;
+  selectedSearchPipeline2: string;
+  setSelectedSearchPipeline2: React.Dispatch<React.SetStateAction<string>>;
   queryError1: QueryError;
   setQueryError1: React.Dispatch<React.SetStateAction<QueryError>>;
   queryError2: QueryError;
@@ -46,11 +52,14 @@ export const useSearchRelevanceContext = () => {
 
 export const SearchRelevanceContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [documentsIndexes, setDocumentsIndexes] = useState<DocumentsIndex[]>([]);
+  const [searchPipelines, setSearchPipelines] = useState<string[]>([]);
   const [showFlyout, setShowFlyout] = useState(false);
   const [comparedResult1, setComparedResult1] = useState<DocumentRank>({});
   const [comparedResult2, setComparedResult2] = useState<DocumentRank>({});
   const [selectedIndex1, setSelectedIndex1] = useState('');
   const [selectedIndex2, setSelectedIndex2] = useState('');
+  const [selectedSearchPipeline1, setSelectedSearchPipeline1] = useState('');
+  const [selectedSearchPipeline2, setSelectedSearchPipeline2] = useState('');
   const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
   const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
 
@@ -67,6 +76,8 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
       value={{
         documentsIndexes,
         setDocumentsIndexes,
+        searchPipelines,
+        setSearchPipelines,
         showFlyout,
         setShowFlyout,
         comparedResult1,
@@ -77,6 +88,10 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
         setSelectedIndex1,
         selectedIndex2,
         setSelectedIndex2,
+        selectedSearchPipeline1,
+        setSelectedSearchPipeline1,
+        selectedSearchPipeline2,
+        setSelectedSearchPipeline2,
         queryError1,
         setQueryError1,
         queryError2,

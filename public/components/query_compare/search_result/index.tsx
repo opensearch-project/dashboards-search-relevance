@@ -33,6 +33,8 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     updateComparedResult2,
     selectedIndex1,
     selectedIndex2,
+    selectedSearchPipeline1,
+    selectedSearchPipeline2,
     setQueryError1,
     setQueryError2,
   } = useSearchRelevanceContext();
@@ -82,7 +84,11 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       updateComparedResult1({} as any);
     } else if (!queryErrors[0].queryString.length && !queryErrors[0].selectIndex.length) {
       requestBody = {
-        query1: { index: selectedIndex1, ...jsonQueries[0] },
+        query1: { 
+          index: selectedIndex1,
+          searchPipeline: selectedSearchPipeline1,
+          ...jsonQueries[0] 
+        },
       };
     }
 
@@ -94,7 +100,11 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     } else if (!queryErrors[1].queryString.length && !queryErrors[1].selectIndex.length) {
       requestBody = {
         ...requestBody,
-        query2: { index: selectedIndex2, ...jsonQueries[1] },
+        query2: {
+          index: selectedIndex2,
+          searchPipeline: selectedSearchPipeline2,
+          ...jsonQueries[1] 
+        },
       };
     }
 
@@ -104,10 +114,15 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           body: JSON.stringify(requestBody),
         })
         .then((res) => {
-          setQueryResult1(res.result1);
-          updateComparedResult1(res.result1);
-          setQueryResult2(res.result2);
-          updateComparedResult2(res.result2);
+          if (res.result1) {
+            setQueryResult1(res.result1);
+            updateComparedResult1(res.result1);
+          }
+
+          if (res.result2) {
+            setQueryResult2(res.result2);
+            updateComparedResult2(res.result2);
+          }
 
           if (res.errorMessage1) {
             setQueryError1({

@@ -4,7 +4,6 @@
  */
 
 import { schema } from '@osd/config-schema';
-import { RequestParams } from '@opensearch-project/opensearch';
 
 import { IRouter } from '../../../../src/core/server';
 import { METRIC_NAME, METRIC_ACTION } from '../metrics';
@@ -19,6 +18,18 @@ interface SearchResultsResponse {
 
 const performance = require('perf_hooks').performance;
 
+// generate path based on index, search pipeline, and size
+function generatePath(index: string, searchPipeline: string, size: number) {
+  let path = `/${index}/_search?`;
+  if (searchPipeline) {
+    path += `&search_pipeline=${searchPipeline}`;
+  }
+  if (size) {
+    path += `&size=${size}`;
+  }
+  return path;
+}
+
 export function registerDslRoute(router: IRouter) {
   router.post(
     {
@@ -31,20 +42,18 @@ export function registerDslRoute(router: IRouter) {
         query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
       let resBody: SearchResultsResponse = {};
 
+      const client = context.core.opensearch.client.asCurrentUser;
+
       if (query1) {
-        const { index, size, ...rest } = query1;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, size, searchPipeline, ...rest } = query1;
 
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          const opensearchResponse1 = await client.transport.request({
+            path: generatePath(index, searchPipeline, size),
+            method: 'POST',
+            querystring: rest,
+          });
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -52,7 +61,7 @@ export function registerDslRoute(router: IRouter) {
             200,
             end - start
           );
-          resBody.result1 = resp;
+          resBody.result1 = opensearchResponse1.body;
         } catch (error) {
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
@@ -75,19 +84,15 @@ export function registerDslRoute(router: IRouter) {
       }
 
       if (query2) {
-        const { index, size, ...rest } = query2;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, size, searchPipeline, ...rest } = query2;
 
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          const opensearchResponse2 = await client.transport.request({
+            path: generatePath(index, searchPipeline, size),
+            method: 'POST',
+            querystring: rest,
+          });
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -95,7 +100,8 @@ export function registerDslRoute(router: IRouter) {
             200,
             end - start
           );
-          resBody.result2 = resp;
+          
+          resBody.result2 = opensearchResponse2.body;
         } catch (error) {
           const end = performance.now();
           if (error.statusCode !== 404) console.error(error);
@@ -155,6 +161,43 @@ export function registerDslRoute(router: IRouter) {
           error.statusCode,
           end - start
         );
+        if (error.statusCode !== 404) console.error(error);
+        return response.custom({
+          statusCode: error.statusCode || 500,
+          body: error.message,
+        });
+      }
+    }
+  );
+
+  // Fetch search pipelines
+  router.get(
+    {
+      path: ServiceEndpoints.GetSearchPipelines,
+      validate: {},
+    },
+    async (context, request, response) => {
+      const params = {
+        format: 'json',
+      };
+      try {
+
+        const client = context.core.opensearch.client.asCurrentUser;
+
+        const opensearchResponse = await client.transport.request(
+          { path: '_search/pipeline', method:'GET'},
+        );
+    
+        const { statusCode, body: responseContent, warnings } = opensearchResponse;
+    
+        return response.custom({
+          statusCode: statusCode!,
+          body: Object.keys(responseContent),
+          headers: {
+            warning: warnings || '',
+          },
+        });
+      } catch (error) {
         if (error.statusCode !== 404) console.error(error);
         return response.custom({
           statusCode: error.statusCode || 500,

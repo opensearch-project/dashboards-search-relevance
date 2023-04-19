@@ -23,6 +23,8 @@ interface SearchConfigProps {
   setQueryString: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex: string;
   setSelectedIndex: React.Dispatch<React.SetStateAction<string>>;
+  selectedSearchPipeline: string;
+  setSelectedSearchPipeline: React.Dispatch<React.SetStateAction<string>>;
   queryError: QueryError;
   setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
@@ -33,14 +35,26 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryString,
   selectedIndex,
   setSelectedIndex,
+  selectedSearchPipeline,
+  setSelectedSearchPipeline,
   queryError,
   setQueryError,
 }) => {
-  const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
+  const { documentsIndexes, searchPipelines, setShowFlyout } = useSearchRelevanceContext();
 
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
+
+    setQueryError({
+      ...queryError,
+      selectIndex: '',
+    });
+  };
+
+  // On select search pipeline
+  const onChangeSelectedSearchPipeline: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setSelectedSearchPipeline(e.target.value);
 
     setQueryError({
       ...queryError,
@@ -58,6 +72,17 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       });
     }
   };
+
+  // // Select search pipeline on blur
+  // const selectSearchPipelineOnBlur = () => {
+  //   // If Search Pipeline Select on blur without selecting a search pipeline, show error
+  //   if (!selectedSearchPipeline.length) {
+  //     setQueryError({
+  //       ...queryError,
+  //       selectSearchPipeline: 'Select a search pipeline to compare search results.',
+  //     });
+  //   }
+  // };
 
   // On change query string
   const onChangeQueryString = (value: string) => {
@@ -101,6 +126,23 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           onChange={onChangeSelectedIndex}
           value={selectedIndex}
           onBlur={selectIndexOnBlur}
+        />
+      </EuiFormRow>
+      <EuiFormRow
+        fullWidth
+        label="Search Pipeline"
+        error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
+        isInvalid={!!queryError.selectIndex.length}
+      >
+        <EuiSelect
+          hasNoInitialSelection={true}
+          options={searchPipelines.map((searchPipeline) => ({
+            value: searchPipeline,
+            text: searchPipeline,
+          }))}
+          aria-label="Search Pipeline"
+          onChange={onChangeSelectedSearchPipeline}
+          value={selectedSearchPipeline}
         />
       </EuiFormRow>
       <EuiFormRow

@@ -35,7 +35,7 @@ export const Home = ({
   setToast,
   chrome,
 }: QueryExplorerProps) => {
-  const { documentsIndexes, setDocumentsIndexes, showFlyout } = useSearchRelevanceContext();
+  const { documentsIndexes, setDocumentsIndexes, setSearchPipelines, showFlyout } = useSearchRelevanceContext();
 
   useEffect(() => {
     setBreadcrumbs([...parentBreadCrumbs]);
@@ -48,6 +48,13 @@ export const Home = ({
     });
   }, [http, setDocumentsIndexes]);
 
+  // Get Search Pipelines
+  useEffect(() => {
+    http.get(ServiceEndpoints.GetSearchPipelines).then((res: string[]) => {
+      setSearchPipelines(res);
+    });
+  }, [http, setSearchPipelines]);
+  
   return (
     <>
       <div className="osdOverviewWrapper">

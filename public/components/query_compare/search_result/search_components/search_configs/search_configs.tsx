@@ -30,6 +30,10 @@ export const SearchConfigsPanel = ({
     setSelectedIndex1,
     selectedIndex2,
     setSelectedIndex2,
+    selectedSearchPipeline1,
+    setSelectedSearchPipeline1,
+    selectedSearchPipeline2,
+    setSelectedSearchPipeline2,
     queryError1,
     queryError2,
     setQueryError1,
@@ -53,6 +57,8 @@ export const SearchConfigsPanel = ({
             setQueryString={setQueryString1}
             selectedIndex={selectedIndex1}
             setSelectedIndex={setSelectedIndex1}
+            selectedSearchPipeline={selectedSearchPipeline1}
+            setSelectedSearchPipeline={setSelectedSearchPipeline1}
             queryError={queryError1}
             setQueryError={setQueryError1}
           />
@@ -64,6 +70,8 @@ export const SearchConfigsPanel = ({
             setQueryString={setQueryString2}
             selectedIndex={selectedIndex2}
             setSelectedIndex={setSelectedIndex2}
+            selectedSearchPipeline={selectedSearchPipeline2}
+            setSelectedSearchPipeline={setSelectedSearchPipeline2}
             queryError={queryError2}
             setQueryError={setQueryError2}
           />
