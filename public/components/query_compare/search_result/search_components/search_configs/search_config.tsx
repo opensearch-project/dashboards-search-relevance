@@ -73,17 +73,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     }
   };
 
-  // // Select search pipeline on blur
-  // const selectSearchPipelineOnBlur = () => {
-  //   // If Search Pipeline Select on blur without selecting a search pipeline, show error
-  //   if (!selectedSearchPipeline.length) {
-  //     setQueryError({
-  //       ...queryError,
-  //       selectSearchPipeline: 'Select a search pipeline to compare search results.',
-  //     });
-  //   }
-  // };
-
   // On change query string
   const onChangeQueryString = (value: string) => {
     setQueryString(value);

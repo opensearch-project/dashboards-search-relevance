@@ -100,7 +100,6 @@ export function registerDslRoute(router: IRouter) {
             200,
             end - start
           );
-          
           resBody.result2 = opensearchResponse2.body;
         } catch (error) {
           const end = performance.now();
