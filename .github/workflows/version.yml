@@ -14,10 +14,9 @@ jobs:
     name: Version Bump
     steps:
       - uses: actions/checkout@v2
-      - name: Fetch Tag and Version Information
+      - name: Fetch Version Information
         id: version-bump
         run: |
-          TAG=$(node -p "require('./package.json').version")
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
           MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
@@ -29,7 +28,6 @@ jobs:
           CURRENT_VERSION_SHORT="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
           NEW_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1)).$MINOR_PATCH_VERSION"
           NEW_VERSION_SHORT="$MAJOR_VERSION.$MINOR_VERSION.$((PATCH_VERSION+1))"
-          echo "TAG=$TAG" >> $GITHUB_ENV
           echo "BASE=$BASE" >> $GITHUB_ENV
           echo "BASE_X=$BASE_X" >> $GITHUB_ENV
           echo "CURRENT_VERSION=$CURRENT_VERSION" >> $GITHUB_ENV
@@ -58,5 +56,5 @@ jobs:
             autocut
           title: '[AUTO] Increment version to ${{ env.NEW_VERSION }}.'
           body: |
-            I've noticed that a new tag ${{ env.TAG }} was pushed, and incremented the version from ${{ env.CURRENT_VERSION }} to ${{ env.NEW_VERSION }}.
+            I've noticed that a new tag ${{ env.CURRENT_VERSION }} was pushed, and incremented the version from ${{ env.CURRENT_VERSION }} to ${{ env.NEW_VERSION }}.
             
