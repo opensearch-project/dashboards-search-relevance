@@ -13,7 +13,7 @@ env:
   OPENSEARCH_DASHBOARDS_VERSION: 'main'
   OPENSEARCH_VERSION: '3.0.0-SNAPSHOT'
   OPENSEARCH_DASHBOARDS_FTREPO_VERSION: 'main'
-  ANOMALY_DETECTION_PLUGIN_VERSION: 'main'
+  SEARCH_PROCESSOR_PLUGIN_VERSION: 'main'
 jobs:
   test-without-security:
     name: Run integ tests without security
@@ -41,16 +41,16 @@ jobs:
       # It doesn't matter what plugin we use, but by launching OpenSearch
       # from a plugin repo, we don't need to checkout and build 
       # OpenSearch itself.
-      - name: Checkout Anomaly-Detection
+      - name: Checkout Search-Processor
         uses: actions/checkout@v2
         with:
-          path: anomaly-detection
-          repository: opensearch-project/anomaly-detection
-          ref: ${{ env.ANOMALY_DETECTION_PLUGIN_VERSION }}
+          path: search-processor
+          repository: opensearch-project/search-processor
+          ref: ${{ env.SEARCH_PROCESSOR_PLUGIN_VERSION }}
 
       - name: Run OpenSearch with plugin
         run: |
-          cd anomaly-detection
+          cd search-processor
           ./gradlew run -Dopensearch.version=${{ env.OPENSEARCH_VERSION }} &
           t=0
           while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do 
