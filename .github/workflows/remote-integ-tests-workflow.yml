@@ -29,18 +29,23 @@ jobs:
           distribution: 'corretto'
           java-version: '11'
 
+      - uses: actions/checkout@v2
       - name: Fetch Version Information
-        uses: actions/checkout@v2
         id: fetch version
         run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "Base branch name is $(basename "${{ github.ref }}")"
+            BRANCH_NAME=$(basename "${{ github.ref }}")
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+          fi
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
           MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
           PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d. -f3)
           OPENSEARCH_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
-          BRANCH_NAME=$(echo "${GITHUB_REF#refs/heads/}")
-          echo "$OPENSEARCH_VERSION" 
-          echo "$BRANCH_NAME" 
+          echo "OPENSEARCH_VERSION: $OPENSEARCH_VERSION"
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
