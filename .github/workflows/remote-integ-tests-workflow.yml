@@ -9,11 +9,6 @@ on:
   pull_request:
     branches:
       - "*"
-env:
-  OPENSEARCH_DASHBOARDS_VERSION: 'main'
-  OPENSEARCH_VERSION: '3.0.0'
-  OPENSEARCH_DASHBOARDS_FTREPO_VERSION: 'main'
-  SEARCH_PROCESSOR_PLUGIN_VERSION: 'main'
 jobs:
   test-without-security:
     name: Run integ tests without security
@@ -33,6 +28,23 @@ jobs:
         with:
           distribution: 'corretto'
           java-version: '11'
+
+      - uses: actions/checkout@v2
+      - name: Fetch Version Information
+        id: fetch version
+        run: |
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+          MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
+          MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
+          PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d. -f3)
+          OPENSEARCH_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
+          BRANCH_NAME=$(echo "${GITHUB_REF#refs/*/}")
+          echo "$OPENSEARCH_VERSION" 
+          echo "$BRANCH_NAME" 
+          echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
+          echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
 
       - name: Enable longer filenames
         if: ${{ matrix.os == 'windows-latest' }}
@@ -105,7 +117,7 @@ jobs:
 
       # Windows and Mac OS take a while to start, so we need a long sleep
       - name: Sleep until OSD server starts
-        run: sleep 900 
+        run: sleep 900
         shell: bash
 
       - name: Checkout opensearch-dashboards-functional-test

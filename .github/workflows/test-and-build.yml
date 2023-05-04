@@ -4,7 +4,6 @@ on: [pull_request, push]
 
 env:
   PLUGIN_NAME: dashboards-search-relevance
-  OPENSEARCH_VERSION: 'main'
 
 jobs:
   build:
@@ -19,7 +18,11 @@ jobs:
         shell: bash
         run: |
           OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
+          OPENSEARCH_VERSION=$(echo "${GITHUB_REF#refs/heads/}")
+          echo "OPENSEARCH_PLUGIN_VERSION: $OPENSEARCH_PLUGIN_VERSION"
+          echo "OPENSEARCH_VERSION: $OPENSEARCH_VERSION"
           echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
+          echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
 
       - name: Enable core.longpaths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
