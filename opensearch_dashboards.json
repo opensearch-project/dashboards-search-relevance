@@ -1,8 +1,10 @@
 {
   "id": "searchRelevanceDashboards",
-  "version": "2.7.0.0",
-  "opensearchDashboardsVersion": "2.7.0",
+  "version": "2.7.1.0",
+  "opensearchDashboardsVersion": "2.7.1",
   "server": true,
   "ui": true,
-  "requiredPlugins": ["navigation"]
+  "requiredPlugins": [
+    "navigation"
+  ]
 }
