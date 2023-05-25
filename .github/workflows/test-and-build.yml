@@ -2,6 +2,9 @@ name: Test and Build Dashboards Search Relevance Plugin
 
 on: [pull_request, push]
 
+env:
+  PLUGIN_NAME: dashboards-search-relevance
+  
 jobs:
   build:
     strategy:
