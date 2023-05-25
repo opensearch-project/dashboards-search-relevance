@@ -2,14 +2,6 @@ name: Test and Build Dashboards Search Relevance Plugin
 
 on: [pull_request, push]
 
-env:
-  PLUGIN_NAME: dashboards-search-relevance
-<<<<<<< HEAD
-  OPENSEARCH_VERSION: '2.x'
-  OPENSEARCH_PLUGIN_VERSION: 2.5.0.0
-=======
->>>>>>> dc5b53c (Make Workflows Fetch Version Automatically (#177))
-
 jobs:
   build:
     strategy:
