@@ -4,8 +4,6 @@ on: [pull_request, push]
 
 env:
   PLUGIN_NAME: dashboards-search-relevance
-  OPENSEARCH_VERSION: '2.x'
-  OPENSEARCH_PLUGIN_VERSION: 2.7.0.0
 
 jobs:
   build:
@@ -15,6 +13,21 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - uses: actions/checkout@v2
+      - name: Fetch Version Information
+        shell: bash
+        run: |
+          OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "Base branch name is $(basename "${{ github.ref }}")"
+            BRANCH_NAME=$(basename "${{ github.ref }}")
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+          fi
+          echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
+          echo "OPENSEARCH_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+
       - name: Enable core.longpaths on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --global core.longpaths true
