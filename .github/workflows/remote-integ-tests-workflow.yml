@@ -31,14 +31,17 @@ jobs:
 
       - uses: actions/checkout@v2
       - name: Fetch Version Information
-        id: fetch version
+        id: fetch_version
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then 
             pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
                 | jq -r '.[0].number')
+            url_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+                | jq -r '.[0].url')
             pr_data=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number")
+                "$url_number")
             BRANCH_NAME=$(echo "$pr_data" | jq -r '.base.ref')
             echo "BRANCH_NAME is $BRANCH_NAME"
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
@@ -55,7 +58,7 @@ jobs:
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-
+        shell: bash
 
       - name: Enable longer filenames
         if: ${{ matrix.os == 'windows-latest' }}
