@@ -18,13 +18,19 @@ jobs:
         shell: bash
         run: |
           OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "Base branch name is $(basename "${{ github.ref }}")"
-            BRANCH_NAME=$(basename "${{ github.ref }}")
+          if [[ "${{ github.event_name }}" == "push" ]]; then 
+            pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+                | jq -r '.[0].number')
+            pr_data=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/$pr_number")
+            BRANCH_NAME=$(echo "$pr_data" | jq -r '.base.ref')
+            echo "BRANCH_NAME is $BRANCH_NAME"
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
             BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
-          fi
+          fi  
+          echo "Target branch: $BRANCH_NAME"
           echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
 
