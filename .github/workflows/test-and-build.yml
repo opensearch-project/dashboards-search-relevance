@@ -5,6 +5,7 @@ on: [pull_request, push]
 env:
   PLUGIN_NAME: dashboards-search-relevance
 
+
 jobs:
   build:
     strategy:
