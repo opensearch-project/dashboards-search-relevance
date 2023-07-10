@@ -33,7 +33,7 @@ jobs:
       - name: Fetch Version Information
         id: fetch_version
         run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then 
+          if [[ "${{ github.event_name }}" == "push" ]]; then
             pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
                 | jq -r '.[0].number')
@@ -47,7 +47,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
             BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
-          fi  
+          fi
           CURRENT_VERSION=$(node -p "require('./package.json').version")
           MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
           MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
@@ -57,7 +57,8 @@ jobs:
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "ANOMALY_DETECTION__PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "ANOMALY_DETECTION_VERSION=$MAJOR_VERSION.$MINOR_VERSION.0-SNAPSHOT" >> $GITHUB_ENV
         shell: bash
 
       - name: Enable longer filenames
@@ -65,25 +66,25 @@ jobs:
         run: git config --system core.longpaths true
 
       # It doesn't matter what plugin we use, but by launching OpenSearch
-      # from a plugin repo, we don't need to checkout and build 
+      # from a plugin repo, we don't need to checkout and build
       # OpenSearch itself.
-      - name: Checkout Search-Processor
+      - name: Checkout Anomaly-Detection
         uses: actions/checkout@v2
         with:
-          path: search-processor
-          repository: opensearch-project/search-processor
-          ref: ${{ env.SEARCH_PROCESSOR_PLUGIN_VERSION }}
+          path: anomaly-detection
+          repository: opensearch-project/anomaly-detection
+          ref: ${{ env.ANOMALY_DETECTION_PLUGIN_VERSION }}
 
       - name: Run OpenSearch with plugin
         run: |
-          cd search-processor
-          ./gradlew run -Dopensearch.version=${{ env.OPENSEARCH_VERSION }} &
+          cd anomaly-detection
+          ./gradlew run -Dopensearch.version=${{ env.ANOMALY_DETECTION_VERSION }} &
           t=0
-          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do 
+          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do
             sleep 5
             let t=$t+5
-            if [[ $t -gt 300 ]]; then 
-              exit 1 
+            if [[ $t -gt 300 ]]; then
+              exit 1
             fi
           done
         shell: bash
