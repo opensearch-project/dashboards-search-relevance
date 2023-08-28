@@ -14,7 +14,7 @@ import {
 } from '@elastic/eui';
 
 import { ResultGridComponent } from './result_grid';
-import { SearchResults } from '../../../../types/index';
+import { QueryError, SearchResults } from '../../../../types/index';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_components.scss';
@@ -22,10 +22,18 @@ import './result_components.scss';
 interface ResultPanelProps {
   resultNumber: number;
   queryResult: SearchResults;
+  queryError: QueryError;
 }
 
-export const ResultPanel = ({ resultNumber, queryResult }: ResultPanelProps) => {
+export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPanelProps) => {
   const { comparedResult1, comparedResult2 } = useSearchRelevanceContext();
+
+  const errorMessage = (
+    <>
+      <EuiHorizontalRule margin="s" />
+      <EuiText>Query Error</EuiText>
+    </>
+  );
 
   const getComparedDocumentsRank = () => {
     return resultNumber === 1 ? comparedResult2 : comparedResult1;
@@ -47,7 +55,9 @@ export const ResultPanel = ({ resultNumber, queryResult }: ResultPanelProps) => 
           </EuiTitle>
         </EuiFlexItem>
       </EuiFlexGroup>
-      {queryResult?.hits?.hits?.length ? (
+      {typeof queryError.queryString !== 'string' && queryError.queryString?.statusCode !== 200 ? (
+        errorMessage
+      ) : queryResult?.hits?.hits?.length ? (
         <ResultGridComponent
           queryResult={queryResult}
           comparedDocumentsRank={getComparedDocumentsRank()}

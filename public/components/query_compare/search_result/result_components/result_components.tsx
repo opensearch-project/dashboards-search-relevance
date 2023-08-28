@@ -6,10 +6,11 @@
 import React, { useEffect, useState } from 'react';
 import { EuiSplitPanel, EuiTitle, EuiFlexGroup, EuiPanel } from '@elastic/eui';
 
-import { SearchResults } from '../../../../types/index';
+import { QueryError, SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
 
 import './result_components.scss';
+import { useSearchRelevanceContext } from '../../../../contexts';
 
 interface ResultComponentsProps {
   queryResult1: SearchResults;
@@ -34,10 +35,11 @@ const InitialState = () => {
 };
 
 const ResultPanels = ({ queryResult1, queryResult2 }: ResultComponentsProps) => {
+  const { queryError1, queryError2 } = useSearchRelevanceContext();
   return (
     <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
-      <ResultPanel resultNumber={1} queryResult={queryResult1} />
-      <ResultPanel resultNumber={2} queryResult={queryResult2} />
+      <ResultPanel resultNumber={1} queryResult={queryResult1} queryError={queryError1} />
+      <ResultPanel resultNumber={2} queryResult={queryResult2} queryError={queryError2} />
     </EuiSplitPanel.Outer>
   );
 };

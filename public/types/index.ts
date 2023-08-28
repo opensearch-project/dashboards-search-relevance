@@ -46,7 +46,7 @@ export interface SearchResults {
 }
 
 export enum SelectIndexError {
-  unselected = 'An index is required to compare search results. Select an index.'
+  unselected = 'An index is required to compare search results. Select an index.',
 }
 
 export enum QueryStringError {
