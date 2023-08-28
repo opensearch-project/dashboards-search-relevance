@@ -782,6 +782,12 @@ exports[`Result component Renders result component 1`] = `
             className="euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row"
           >
             <ResultPanel
+              queryError={
+                Object {
+                  "queryString": "",
+                  "selectIndex": "",
+                }
+              }
               queryResult={
                 Object {
                   "_shards": Object {
@@ -3749,6 +3755,12 @@ exports[`Result component Renders result component 1`] = `
               </_EuiSplitPanelInner>
             </ResultPanel>
             <ResultPanel
+              queryError={
+                Object {
+                  "queryString": "",
+                  "selectIndex": "",
+                }
+              }
               queryResult={
                 Object {
                   "_shards": Object {
