@@ -205,7 +205,7 @@ export const TEST_QUERY_STRING = '{}';
 
 export const TEST_QUERY_ERROR: QueryError = {
   selectIndex: '',
-  queryString: 'error',
+  queryString: 1,
   statusCode: 400,
   body: 'Error: parsing_exception - Unknown key for a VALUE_STRING in [this].',
 };
