@@ -53,7 +53,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
     // Check if select an index
     if (!selectedIndex.length) {
-      queryError.selectIndex = 'An index is required. Select an index.';
+      queryError.selectIndex = 'An index is required to compare search results. Select an index.';
     }
 
     // Check if query string is empty

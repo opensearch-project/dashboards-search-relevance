@@ -54,7 +54,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     if (!selectedIndex.length) {
       setQueryError({
         ...queryError,
-        selectIndex: 'An index is required. Select an index.',
+        selectIndex: 'An index is required to compare search results. Select an index.',
       });
     }
   };

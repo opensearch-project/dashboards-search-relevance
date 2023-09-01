@@ -51,6 +51,6 @@ export enum QueryStringError {
 }
 
 export interface QueryError {
-  selectIndex: 'An index is required. Select an index.' | '';
+  selectIndex: 'An index is required to compare search results. Select an index.' | '';
   queryString: QueryStringError | string;
 }
