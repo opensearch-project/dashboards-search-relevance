@@ -15,7 +15,7 @@ import {
 } from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
-import { QueryError, QueryStringError } from '../../../../../types/index';
+import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
 
 interface SearchConfigProps {
   queryNumber: 1 | 2;
@@ -54,7 +54,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     if (!selectedIndex.length) {
       setQueryError({
         ...queryError,
-        selectIndex: 'An index is required to compare search results. Select an index.',
+        selectIndex: SelectIndexError.unselected,
       });
     }
   };

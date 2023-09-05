@@ -45,12 +45,16 @@ export interface SearchResults {
   };
 }
 
+export enum SelectIndexError {
+  unselected = 'An index is required to compare search results. Select an index.'
+}
+
 export enum QueryStringError {
   empty = 'A query is required. Enter a query.',
   invalid = 'Query syntax is invalid. Enter a valid query.',
 }
 
 export interface QueryError {
-  selectIndex: 'An index is required to compare search results. Select an index.' | '';
+  selectIndex: SelectIndexError | string;
   queryString: QueryStringError | string;
 }
