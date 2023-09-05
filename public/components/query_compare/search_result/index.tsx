@@ -11,7 +11,7 @@ import { SearchConfigsPanel } from './search_components/search_configs/search_co
 import { SearchInputBar } from './search_components/search_bar';
 import { ServiceEndpoints } from '../../../../common';
 import { Header } from '../../common/header';
-import { SearchResults, QueryError, QueryStringError } from '../../../types/index';
+import { SearchResults, QueryError, QueryStringError, SelectIndexError } from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
 import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
 
@@ -53,7 +53,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
     // Check if select an index
     if (!selectedIndex.length) {
-      queryError.selectIndex = 'An index is required. Select an index.';
+      queryError.selectIndex = SelectIndexError.unselected;
     }
 
     // Check if query string is empty
