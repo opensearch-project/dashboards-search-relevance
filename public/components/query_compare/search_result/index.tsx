@@ -6,12 +6,17 @@
 import React, { useState } from 'react';
 import { EuiPageContentBody } from '@elastic/eui';
 
-import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
+import { CoreStart } from '../../../../../../src/core/public';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 import { SearchInputBar } from './search_components/search_bar';
 import { ServiceEndpoints } from '../../../../common';
 import { Header } from '../../common/header';
-import { SearchResults, QueryError, QueryStringError, SelectIndexError } from '../../../types/index';
+import {
+  SearchResults,
+  QueryError,
+  QueryStringError,
+  SelectIndexError,
+} from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
 import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
 
@@ -26,6 +31,8 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
   const [queryResult2, setQueryResult2] = useState<SearchResults>({} as any);
+  const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
+  const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
   const [searchBarValue, setSearchBarValue] = useState('');
 
   const {
@@ -33,8 +40,6 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     updateComparedResult2,
     selectedIndex1,
     selectedIndex2,
-    setQueryError1,
-    setQueryError2,
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
@@ -81,6 +86,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       setQueryResult1({} as any);
       updateComparedResult1({} as any);
     } else if (!queryErrors[0].queryString.length && !queryErrors[0].selectIndex.length) {
+      setQueryError1(initialQueryErrorState);
       requestBody = {
         query1: { index: selectedIndex1, ...jsonQueries[0] },
       };
@@ -92,6 +98,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       setQueryResult2({} as any);
       updateComparedResult2({} as any);
     } else if (!queryErrors[1].queryString.length && !queryErrors[1].selectIndex.length) {
+      setQueryError2(initialQueryErrorState);
       requestBody = {
         ...requestBody,
         query2: { index: selectedIndex2, ...jsonQueries[1] },
@@ -118,6 +125,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
             setQueryError1({
               ...queryErrors[0],
               queryString: res.errorMessage1,
+              errorResponse: res.errorMessage1,
             });
           }
 
@@ -125,6 +133,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
             setQueryError2({
               ...queryErrors[1],
               queryString: res.errorMessage2,
+              errorResponse: res.errorMessage2,
             });
           }
         })
@@ -149,8 +158,17 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           queryString2={queryString2}
           setQueryString1={setQueryString1}
           setQueryString2={setQueryString2}
+          queryError1={queryError1}
+          queryError2={queryError2}
+          setQueryError1={setQueryError1}
+          setQueryError2={setQueryError2}
         />
-        <ResultComponents queryResult1={queryResult1} queryResult2={queryResult2} />
+        <ResultComponents
+          queryResult1={queryResult1}
+          queryResult2={queryResult2}
+          queryError1={queryError1}
+          queryError2={queryError2}
+        />
       </EuiPageContentBody>
     </>
   );

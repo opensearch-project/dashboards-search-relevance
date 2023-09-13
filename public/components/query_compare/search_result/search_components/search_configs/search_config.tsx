@@ -42,40 +42,40 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
 
-    setQueryError({
-      ...queryError,
+    setQueryError((error: QueryError) => ({
+      ...error,
       selectIndex: '',
-    });
+    }));
   };
 
   // Select index on blur
   const selectIndexOnBlur = () => {
     // If Index Select on blur without selecting an index, show error
     if (!selectedIndex.length) {
-      setQueryError({
-        ...queryError,
+      setQueryError((error: QueryError) => ({
+        ...error,
         selectIndex: SelectIndexError.unselected,
-      });
+      }));
     }
   };
 
   // On change query string
   const onChangeQueryString = (value: string) => {
     setQueryString(value);
-    setQueryError({
-      ...queryError,
+    setQueryError((error: QueryError) => ({
+      ...error,
       queryString: '',
-    });
+    }));
   };
 
   // Code editor on blur
   const codeEditorOnBlur = () => {
     // If no query string on blur, show error
     if (!queryString.length) {
-      setQueryError({
-        ...queryError,
+      setQueryError((error: QueryError) => ({
+        ...error,
         queryString: QueryStringError.empty,
-      });
+      }));
     }
   };
 

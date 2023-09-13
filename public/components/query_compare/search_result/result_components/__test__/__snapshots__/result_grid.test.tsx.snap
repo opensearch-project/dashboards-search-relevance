@@ -2473,10 +2473,12 @@ exports[`Result panel query error Displays error message on query error 1`] = `
   <ResultPanel
     queryError={
       Object {
-        "body": "Error: parsing_exception - Unknown key for a VALUE_STRING in [this].",
-        "queryString": 1,
+        "errorResponse": Object {
+          "body": "Error: parsing_exception - Unknown key for a VALUE_STRING in [this].",
+          "statusCode": 400,
+        },
+        "queryString": "",
         "selectIndex": "",
-        "statusCode": 400,
       }
     }
     queryResult={
@@ -2748,11 +2750,40 @@ exports[`Result panel query error Displays error message on query error 1`] = `
               className="euiHorizontalRule euiHorizontalRule--full euiHorizontalRule--marginSmall"
             />
           </EuiHorizontalRule>
-          <EuiText>
+          <EuiText
+            color="danger"
+          >
             <div
               className="euiText euiText--medium"
             >
-              Query Error
+              <EuiTextColor
+                color="danger"
+                component="div"
+              >
+                <div
+                  className="euiTextColor euiTextColor--danger"
+                >
+                  Query Error
+                </div>
+              </EuiTextColor>
+            </div>
+          </EuiText>
+          <EuiText
+            color="danger"
+          >
+            <div
+              className="euiText euiText--medium"
+            >
+              <EuiTextColor
+                color="danger"
+                component="div"
+              >
+                <div
+                  className="euiTextColor euiTextColor--danger"
+                >
+                  Error: parsing_exception - Unknown key for a VALUE_STRING in [this].
+                </div>
+              </EuiTextColor>
             </div>
           </EuiText>
         </div>

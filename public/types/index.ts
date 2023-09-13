@@ -54,7 +54,13 @@ export enum QueryStringError {
   invalid = 'Query syntax is invalid. Enter a valid query.',
 }
 
+export interface ErrorResponse {
+  body: string;
+  statusCode: number;
+}
+
 export interface QueryError {
   selectIndex: SelectIndexError | string;
   queryString: QueryStringError | string;
+  errorResponse: ErrorResponse;
 }

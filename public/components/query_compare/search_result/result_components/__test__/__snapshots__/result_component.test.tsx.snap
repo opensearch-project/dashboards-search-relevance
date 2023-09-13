@@ -3,6 +3,26 @@
 exports[`Result component Renders result component 1`] = `
 <SearchRelevanceContextProvider>
   <ResultComponents
+    queryError1={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
+    queryError2={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
     queryResult1={
       Object {
         "_shards": Object {
@@ -385,6 +405,26 @@ exports[`Result component Renders result component 1`] = `
     }
   >
     <ResultPanels
+      queryError1={
+        Object {
+          "errorResponse": Object {
+            "body": "",
+            "statusCode": 200,
+          },
+          "queryString": "",
+          "selectIndex": "",
+        }
+      }
+      queryError2={
+        Object {
+          "errorResponse": Object {
+            "body": "",
+            "statusCode": 200,
+          },
+          "queryString": "",
+          "selectIndex": "",
+        }
+      }
       queryResult1={
         Object {
           "_shards": Object {
@@ -784,6 +824,10 @@ exports[`Result component Renders result component 1`] = `
             <ResultPanel
               queryError={
                 Object {
+                  "errorResponse": Object {
+                    "body": "",
+                    "statusCode": 200,
+                  },
                   "queryString": "",
                   "selectIndex": "",
                 }
@@ -3757,6 +3801,10 @@ exports[`Result component Renders result component 1`] = `
             <ResultPanel
               queryError={
                 Object {
+                  "errorResponse": Object {
+                    "body": "",
+                    "statusCode": 200,
+                  },
                   "queryString": "",
                   "selectIndex": "",
                 }

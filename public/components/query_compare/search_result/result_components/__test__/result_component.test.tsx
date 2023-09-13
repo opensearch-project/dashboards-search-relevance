@@ -9,14 +9,19 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { ResultComponents } from '../result_components';
 import { TEST_QUERY_RESPONSE } from '../../../../../../test/constants';
-import { SearchRelevanceContextProvider } from '../../../../../contexts';
+import { SearchRelevanceContextProvider, initialQueryErrorState } from '../../../../../contexts';
 
 describe('Result component', () => {
   configure({ adapter: new Adapter() });
   it('Renders result component', async () => {
     const wrapper = mount(
       <SearchRelevanceContextProvider>
-        <ResultComponents queryResult1={TEST_QUERY_RESPONSE} queryResult2={TEST_QUERY_RESPONSE} />
+        <ResultComponents
+          queryResult1={TEST_QUERY_RESPONSE}
+          queryResult2={TEST_QUERY_RESPONSE}
+          queryError1={initialQueryErrorState}
+          queryError2={initialQueryErrorState}
+        />
       </SearchRelevanceContextProvider>
     );
 
