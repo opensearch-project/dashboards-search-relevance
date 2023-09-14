@@ -115,6 +115,13 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             </EuiButtonEmpty>
           </EuiText>
         }
+        helpText={
+          <p>
+            Enter a query in{' '}
+            <a href="https://opensearch.org/docs/latest/query-dsl/index/">OpenSearch Query DSL</a>.
+            Use %SearchText% to refer to the text in the search bar
+          </p>
+        }
       >
         <EuiCodeEditor
           mode="json"
@@ -134,12 +141,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           tabSize={2}
         />
       </EuiFormRow>
-      <EuiText>
-        <p style={{ fontSize: '14px', fontWeight: '400', lineHeight: '18px' }}>
-          Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search
-          bar.
-        </p>
-      </EuiText>
     </>
   );
 };
