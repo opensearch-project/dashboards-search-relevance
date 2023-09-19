@@ -16,9 +16,10 @@ import {
   QueryError,
   QueryStringError,
   SelectIndexError,
+  initialQueryErrorState,
 } from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
-import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
+import { useSearchRelevanceContext } from '../../../contexts';
 
 const DEFAULT_QUERY = '{}';
 

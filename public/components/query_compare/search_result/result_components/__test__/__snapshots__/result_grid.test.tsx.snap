@@ -2743,49 +2743,51 @@ exports[`Result panel query error Displays error message on query error 1`] = `
               </EuiFlexItem>
             </div>
           </EuiFlexGroup>
-          <EuiHorizontalRule
-            margin="s"
-          >
-            <hr
-              className="euiHorizontalRule euiHorizontalRule--full euiHorizontalRule--marginSmall"
-            />
-          </EuiHorizontalRule>
-          <EuiText
-            color="danger"
-          >
-            <div
-              className="euiText euiText--medium"
+          <ErrorMessage>
+            <EuiHorizontalRule
+              margin="s"
             >
-              <EuiTextColor
-                color="danger"
-                component="div"
-              >
-                <div
-                  className="euiTextColor euiTextColor--danger"
-                >
-                  Query Error
-                </div>
-              </EuiTextColor>
-            </div>
-          </EuiText>
-          <EuiText
-            color="danger"
-          >
-            <div
-              className="euiText euiText--medium"
+              <hr
+                className="euiHorizontalRule euiHorizontalRule--full euiHorizontalRule--marginSmall"
+              />
+            </EuiHorizontalRule>
+            <EuiText
+              color="danger"
             >
-              <EuiTextColor
-                color="danger"
-                component="div"
+              <div
+                className="euiText euiText--medium"
               >
-                <div
-                  className="euiTextColor euiTextColor--danger"
+                <EuiTextColor
+                  color="danger"
+                  component="div"
                 >
-                  Error: parsing_exception - Unknown key for a VALUE_STRING in [this].
-                </div>
-              </EuiTextColor>
-            </div>
-          </EuiText>
+                  <div
+                    className="euiTextColor euiTextColor--danger"
+                  >
+                    Query Error
+                  </div>
+                </EuiTextColor>
+              </div>
+            </EuiText>
+            <EuiText
+              color="danger"
+            >
+              <div
+                className="euiText euiText--medium"
+              >
+                <EuiTextColor
+                  color="danger"
+                  component="div"
+                >
+                  <div
+                    className="euiTextColor euiTextColor--danger"
+                  >
+                    Error: parsing_exception - Unknown key for a VALUE_STRING in [this].
+                  </div>
+                </EuiTextColor>
+              </div>
+            </EuiText>
+          </ErrorMessage>
         </div>
       </EuiPanel>
     </_EuiSplitPanelInner>

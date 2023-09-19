@@ -7,7 +7,7 @@ import { configure, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
-import { SearchConfigsPanel } from '../search_configs/search_configs';
+import { SearchConfig } from '../search_configs/search_config';
 import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { TEST_QUERY_STRING } from '../../../../../../test/constants';
 import { initialQueryErrorState } from '../../../../../../public/types/index';
@@ -16,25 +16,26 @@ describe('Flyout component', () => {
   configure({ adapter: new Adapter() });
 
   it('Renders flyout component', async () => {
+    const setQueryString = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
-        <SearchConfigsPanel
-          queryString1={TEST_QUERY_STRING}
-          queryString2={TEST_QUERY_STRING}
-          setQueryString1={() => {}}
-          setQueryString2={() => {}}
-          queryError1={initialQueryErrorState}
-          queryError2={initialQueryErrorState}
-          setQueryError1={() => {}}
-          setQueryError2={() => {}}
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={setQueryString}
+          selectedIndex={''}
+          setSelectedIndex={() => {}}
+          queryError={initialQueryErrorState}
+          setQueryError={() => {}}
         />
       </SearchRelevanceContextProvider>
     );
 
     wrapper.update();
-
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
+      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '{ "a": "a" }' } });
+      expect(setQueryString).toHaveBeenCalled();
     });
   });
 });

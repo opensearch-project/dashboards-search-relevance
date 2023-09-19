@@ -64,3 +64,12 @@ export interface QueryError {
   queryString: QueryStringError | string;
   errorResponse: ErrorResponse;
 }
+
+export const initialQueryErrorState: QueryError = {
+  selectIndex: '',
+  queryString: '',
+  errorResponse: {
+    body: '',
+    statusCode: 200,
+  },
+};

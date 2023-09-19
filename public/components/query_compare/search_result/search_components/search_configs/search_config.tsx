@@ -37,7 +37,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryError,
 }) => {
   const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
-
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);

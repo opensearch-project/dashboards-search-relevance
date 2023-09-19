@@ -28,7 +28,7 @@ interface ResultPanelProps {
 export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPanelProps) => {
   const { comparedResult1, comparedResult2 } = useSearchRelevanceContext();
 
-  const ErrorMessage = (
+  const ErrorMessage = () => (
     <>
       <EuiHorizontalRule margin="s" />
       <EuiText color="danger">Query Error</EuiText>
@@ -57,7 +57,7 @@ export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPan
         </EuiFlexItem>
       </EuiFlexGroup>
       {queryError.errorResponse.statusCode !== 200 || queryError.queryString.length ? (
-        ErrorMessage
+        <ErrorMessage />
       ) : queryResult?.hits?.hits?.length ? (
         <ResultGridComponent
           queryResult={queryResult}

@@ -9,7 +9,8 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { ResultComponents } from '../result_components';
 import { TEST_QUERY_RESPONSE } from '../../../../../../test/constants';
-import { SearchRelevanceContextProvider, initialQueryErrorState } from '../../../../../contexts';
+import { SearchRelevanceContextProvider } from '../../../../../contexts';
+import { initialQueryErrorState } from '../../../../../../public/types/index';
 
 describe('Result component', () => {
   configure({ adapter: new Adapter() });
