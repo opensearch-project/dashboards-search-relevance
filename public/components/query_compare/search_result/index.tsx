@@ -44,67 +44,100 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
-    const queryErrors = [{ ...initialQueryErrorState }, { ...initialQueryErrorState }];
     const jsonQueries = [{}, {}];
 
-    validateQuery(selectedIndex1, queryString1, queryErrors[0]);
-    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
+    validateQuery(selectedIndex1, queryString1, setQueryError1);
+    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, setQueryError1);
 
-    validateQuery(selectedIndex2, queryString2, queryErrors[1]);
-    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
+    validateQuery(selectedIndex2, queryString2, setQueryError2);
+    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, setQueryError2);
 
-    handleQuery(jsonQueries, queryErrors);
+    handleSearch(jsonQueries);
   };
 
-  const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
+  const validateQuery = (
+    selectedIndex: string,
+    queryString: string,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
+  ) => {
     // Check if select an index
     if (!selectedIndex.length) {
-      queryError.selectIndex = SelectIndexError.unselected;
+      setQueryError((error: QueryError) => ({
+        ...error,
+        selectIndex: SelectIndexError.unselected,
+      }));
     }
 
     // Check if query string is empty
     if (!queryString.length) {
-      queryError.queryString = QueryStringError.empty;
+      setQueryError((error: QueryError) => ({
+        ...error,
+        queryString: QueryStringError.empty,
+        errorRepsonse: {
+          body: '',
+          statusCode: 400,
+        },
+      }));
     }
   };
 
-  const rewriteQuery = (searchBarValue: string, queryString: string, queryError: QueryError) => {
+  const rewriteQuery = (
+    value: string,
+    queryString: string,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
+  ) => {
     if (queryString.trim().length > 0) {
       try {
-        return JSON.parse(queryString.replace(/%SearchText%/g, searchBarValue));
+        return JSON.parse(queryString.replace(/%SearchText%/g, value));
       } catch {
-        queryError.queryString = QueryStringError.invalid;
+        setQueryError((error: QueryError) => ({
+          ...error,
+          queryString: QueryStringError.invalid,
+          errorRepsonse: {
+            body: '',
+            statusCode: 400,
+          },
+        }));
       }
     }
   };
 
-  const handleQuery = (jsonQueries: any, queryErrors: QueryError[]) => {
-    let requestBody = {};
-
-    // Handle query1
-    if (queryErrors[0].queryString.length || queryErrors[0].selectIndex.length) {
-      setQueryError1(queryErrors[0]);
-      setQueryResult1({} as any);
-      updateComparedResult1({} as any);
-    } else if (!queryErrors[0].queryString.length && !queryErrors[0].selectIndex.length) {
-      setQueryError1(initialQueryErrorState);
-      requestBody = {
-        query1: { index: selectedIndex1, ...jsonQueries[0] },
-      };
+  const handleQuery = (
+    queryError: QueryError,
+    selectedIndex: string,
+    jsonQuery: any,
+    updateComparedResult: (result: SearchResults) => void,
+    setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
+  ) => {
+    if (queryError.queryString.length || queryError.selectIndex.length) {
+      setQueryResult({} as any);
+      updateComparedResult({} as any);
+    } else if (!queryError.queryString.length && !queryError.selectIndex) {
+      setQueryError(initialQueryErrorState);
+      return { index: selectedIndex, ...jsonQuery };
     }
+  };
 
-    // Handle query2
-    if (queryErrors[1].queryString.length || queryErrors[1].selectIndex.length) {
-      setQueryError2(queryErrors[1]);
-      setQueryResult2({} as any);
-      updateComparedResult2({} as any);
-    } else if (!queryErrors[1].queryString.length && !queryErrors[1].selectIndex.length) {
-      setQueryError2(initialQueryErrorState);
-      requestBody = {
-        ...requestBody,
-        query2: { index: selectedIndex2, ...jsonQueries[1] },
-      };
-    }
+  const handleSearch = (jsonQueries: any) => {
+    const requestBody = {
+      query1: handleQuery(
+        queryError1,
+        selectedIndex1,
+        jsonQueries[0],
+        updateComparedResult1,
+        setQueryResult1,
+        setQueryError1
+      ),
+      query2: handleQuery(
+        queryError2,
+        selectedIndex2,
+        jsonQueries[1],
+        updateComparedResult2,
+        setQueryResult2,
+        setQueryError2
+      ),
+    };
 
     if (Object.keys(requestBody).length !== 0) {
       http
@@ -123,22 +156,23 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           }
 
           if (res.errorMessage1) {
-            setQueryError1({
-              ...queryErrors[0],
+            setQueryError1((error: QueryError) => ({
+              ...error,
               queryString: res.errorMessage1,
               errorResponse: res.errorMessage1,
-            });
+            }));
           }
 
           if (res.errorMessage2) {
-            setQueryError2({
-              ...queryErrors[1],
+            setQueryError2((error: QueryError) => ({
+              ...error,
               queryString: res.errorMessage2,
               errorResponse: res.errorMessage2,
-            });
+            }));
           }
         })
         .catch((error: Error) => {
+          // eslint-disable-next-line no-console
           console.error(error);
         });
     }

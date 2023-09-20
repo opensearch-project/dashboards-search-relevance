@@ -73,6 +73,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     if (!queryString.length) {
       setQueryError((error: QueryError) => ({
         ...error,
+        errorResponse: {
+          body: '',
+          statusCode: 400,
+        },
         queryString: QueryStringError.empty,
       }));
     }

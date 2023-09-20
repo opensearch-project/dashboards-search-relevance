@@ -16,9 +16,9 @@ exports[`Flyout component Renders flyout component 1`] = `
     queryNumber={1}
     queryString="{}"
     selectedIndex=""
-    setQueryError={[Function]}
+    setQueryError={[MockFunction]}
     setQueryString={[MockFunction]}
-    setSelectedIndex={[Function]}
+    setSelectedIndex={[MockFunction]}
   >
     <EuiTitle
       size="xs"

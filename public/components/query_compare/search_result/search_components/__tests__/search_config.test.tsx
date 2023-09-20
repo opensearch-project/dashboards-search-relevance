@@ -17,6 +17,8 @@ describe('Flyout component', () => {
 
   it('Renders flyout component', async () => {
     const setQueryString = jest.fn();
+    const setSelectedIndex = jest.fn();
+    const setQueryError = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
         <SearchConfig
@@ -24,9 +26,9 @@ describe('Flyout component', () => {
           queryString={TEST_QUERY_STRING}
           setQueryString={setQueryString}
           selectedIndex={''}
-          setSelectedIndex={() => {}}
+          setSelectedIndex={setSelectedIndex}
           queryError={initialQueryErrorState}
-          setQueryError={() => {}}
+          setQueryError={setQueryError}
         />
       </SearchRelevanceContextProvider>
     );
@@ -34,8 +36,12 @@ describe('Flyout component', () => {
     wrapper.update();
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '{ "a": "a" }' } });
-      expect(setQueryString).toHaveBeenCalled();
+      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
+      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
+      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
     });
+    expect(setQueryString).toHaveBeenCalledTimes(1);
+    expect(setSelectedIndex).toHaveBeenCalledTimes(1);
+    expect(setQueryError).toHaveBeenCalledTimes(3);
   });
 });

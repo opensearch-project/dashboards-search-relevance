@@ -31,8 +31,11 @@ export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPan
   const ErrorMessage = () => (
     <>
       <EuiHorizontalRule margin="s" />
-      <EuiText color="danger">Query Error</EuiText>
+      <EuiText color="danger">
+        {queryError.errorResponse.statusCode >= 500 ? 'Internal' : 'Query'} Error
+      </EuiText>
       <EuiText color="danger">{queryError.errorResponse.body}</EuiText>
+      <EuiText color="danger">Status Code: {queryError.errorResponse.statusCode}</EuiText>
     </>
   );
 
