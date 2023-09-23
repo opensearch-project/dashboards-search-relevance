@@ -44,60 +44,41 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
+    const queryErrors = [
+      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
+      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
+    ];
     const jsonQueries = [{}, {}];
 
-    validateQuery(selectedIndex1, queryString1, setQueryError1);
-    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, setQueryError1);
+    validateQuery(selectedIndex1, queryString1, queryErrors[0]);
+    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
 
-    validateQuery(selectedIndex2, queryString2, setQueryError2);
-    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, setQueryError2);
+    validateQuery(selectedIndex2, queryString2, queryErrors[1]);
+    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
 
-    handleSearch(jsonQueries);
+    handleSearch(jsonQueries, queryErrors);
   };
 
-  const validateQuery = (
-    selectedIndex: string,
-    queryString: string,
-    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
-  ) => {
+  const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
     // Check if select an index
     if (!selectedIndex.length) {
-      setQueryError((error: QueryError) => ({
-        ...error,
-        selectIndex: SelectIndexError.unselected,
-      }));
+      queryError.selectIndex = SelectIndexError.unselected;
     }
 
     // Check if query string is empty
     if (!queryString.length) {
-      setQueryError((error: QueryError) => ({
-        ...error,
-        queryString: QueryStringError.empty,
-        errorRepsonse: {
-          body: '',
-          statusCode: 400,
-        },
-      }));
+      queryError.queryString = QueryStringError.empty;
+      queryError.errorResponse.statusCode = 400;
     }
   };
 
-  const rewriteQuery = (
-    value: string,
-    queryString: string,
-    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
-  ) => {
+  const rewriteQuery = (value: string, queryString: string, queryError: QueryError) => {
     if (queryString.trim().length > 0) {
       try {
         return JSON.parse(queryString.replace(/%SearchText%/g, value));
       } catch {
-        setQueryError((error: QueryError) => ({
-          ...error,
-          queryString: QueryStringError.invalid,
-          errorRepsonse: {
-            body: '',
-            statusCode: 400,
-          },
-        }));
+        queryError.queryString = QueryStringError.invalid;
+        queryError.errorResponse.statusCode = 400;
       }
     }
   };
@@ -111,6 +92,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
   ) => {
     if (queryError.queryString.length || queryError.selectIndex.length) {
+      setQueryError(queryError);
       setQueryResult({} as any);
       updateComparedResult({} as any);
     } else if (!queryError.queryString.length && !queryError.selectIndex) {
@@ -119,10 +101,10 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     }
   };
 
-  const handleSearch = (jsonQueries: any) => {
+  const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
     const requestBody = {
       query1: handleQuery(
-        queryError1,
+        queryErrors[0],
         selectedIndex1,
         jsonQueries[0],
         updateComparedResult1,
@@ -130,7 +112,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
         setQueryError1
       ),
       query2: handleQuery(
-        queryError2,
+        queryErrors[1],
         selectedIndex2,
         jsonQueries[1],
         updateComparedResult2,
@@ -138,7 +120,6 @@ export const SearchResult = ({ http }: SearchResultProps) => {
         setQueryError2
       ),
     };
-
     if (Object.keys(requestBody).length !== 0) {
       http
         .post(ServiceEndpoints.GetSearchResults, {

@@ -5,17 +5,8 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
-import { DocumentsIndex, SearchResults, QueryError } from '../types/index';
+import { DocumentsIndex, SearchResults } from '../types/index';
 import { getDocumentRank, DocumentRank } from './utils';
-
-export const initialQueryErrorState: QueryError = {
-  selectIndex: '',
-  queryString: '',
-  errorResponse: {
-    body: '',
-    statusCode: 200,
-  },
-};
 
 export interface SearchRelevanceContextProps {
   documentsIndexes: DocumentsIndex[];
