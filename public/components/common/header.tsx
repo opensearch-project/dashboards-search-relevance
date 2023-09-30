@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { EuiPageHeader, EuiCallOut, EuiText, EuiLink, EuiPanel } from '@elastic/eui';
+import { EuiPageHeader, EuiCallOut, EuiText, EuiLink, EuiPanel, EuiToken } from '@elastic/eui';
 
 interface HeaderProps {
   children?: React.ReactNode;
@@ -20,28 +20,17 @@ export const Header = ({ children }: HeaderProps) => {
       style={{ borderBottom: '1px solid #D3DAE6' }}
     >
       <EuiPageHeader pageTitle="Compare search results">
-        <EuiCallOut title="Experimental Feature" iconType="iInCircle">
-          <EuiText>
-            <p>
-              Compare results using the same search text with different queries. For more
-              information, see the{' '}
-              <EuiLink
-                href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                target="_blank"
-              >
-                Compare Search Results Documentation
-              </EuiLink>
-              . To leave feedback, visit{' '}
-              <EuiLink
-                href="https://forum.opensearch.org/t/feedback-experimental-feature-compare-search-results/11331"
-                target="_blank"
-              >
-                forums.opensearch.com
-              </EuiLink>
-              .
-            </p>
-          </EuiText>
-        </EuiCallOut>
+        <EuiText>
+          <p>
+            Compare results using the same search text with different queries.{' '}
+            <EuiLink
+              href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+              target="_blank"
+            >
+              Learn more
+            </EuiLink>
+          </p>
+        </EuiText>
         {children}
       </EuiPageHeader>
     </EuiPanel>
