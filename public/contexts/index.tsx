@@ -5,13 +5,8 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
-import { DocumentsIndex, SearchResults, QueryError } from '../types/index';
+import { DocumentsIndex, SearchResults } from '../types/index';
 import { getDocumentRank, DocumentRank } from './utils';
-
-export const initialQueryErrorState: QueryError = {
-  selectIndex: '',
-  queryString: '',
-};
 
 export interface SearchRelevanceContextProps {
   documentsIndexes: DocumentsIndex[];
@@ -26,10 +21,6 @@ export interface SearchRelevanceContextProps {
   setSelectedIndex1: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex2: string;
   setSelectedIndex2: React.Dispatch<React.SetStateAction<string>>;
-  queryError1: QueryError;
-  setQueryError1: React.Dispatch<React.SetStateAction<QueryError>>;
-  queryError2: QueryError;
-  setQueryError2: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
 export const SearchRelevanceContext = createContext<SearchRelevanceContextProps | null>(null);
@@ -51,8 +42,6 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
   const [comparedResult2, setComparedResult2] = useState<DocumentRank>({});
   const [selectedIndex1, setSelectedIndex1] = useState('');
   const [selectedIndex2, setSelectedIndex2] = useState('');
-  const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
-  const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
 
   const updateComparedResult1 = (result: SearchResults) => {
     setComparedResult1(getDocumentRank(result?.hits?.hits));
@@ -77,10 +66,6 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
         setSelectedIndex1,
         selectedIndex2,
         setSelectedIndex2,
-        queryError1,
-        setQueryError1,
-        queryError2,
-        setQueryError2,
       }}
     >
       {children}

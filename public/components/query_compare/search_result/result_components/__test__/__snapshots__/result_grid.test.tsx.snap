@@ -2467,3 +2467,350 @@ exports[`Result grid component Renders result grid component 1`] = `
   </ResultGridComponent>
 </SearchRelevanceContextProvider>
 `;
+
+exports[`Result panel query error Displays error message on query error 1`] = `
+<SearchRelevanceContextProvider>
+  <ResultPanel
+    queryError={
+      Object {
+        "errorResponse": Object {
+          "body": "Error: parsing_exception - Unknown key for a VALUE_STRING in [this].",
+          "statusCode": 400,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
+    queryResult={
+      Object {
+        "_shards": Object {
+          "failed": 0,
+          "skipped": 0,
+          "successful": 1,
+          "total": 1,
+        },
+        "hits": Object {
+          "hits": Array [
+            Object {
+              "_id": "WwLJC4QBuER5vZIv1tvg",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "arr": Array [
+                  "el1",
+                  "el2",
+                  "el3",
+                ],
+                "date_released": "2009-12-10T00:00:00Z",
+                "id": "3920564",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg",
+                "name": "006R90321",
+                "price": 4995,
+                "short_description": "Toner (6 Per Box) for CopyCentre C65 Digital Copier",
+                "supplier": "Xerox",
+                "title": "Xerox 006R90321 toner cartridge Original Black 6 pc(s)",
+              },
+            },
+            Object {
+              "_id": "XALJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "attr_t_product_colour": "Silver",
+                "date_released": "2008-12-19T00:00:00Z",
+                "id": "2101957",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg",
+                "name": "dv7-1211ea",
+                "nestObj": Object {
+                  "key1": Array [
+                    1,
+                    true,
+                    null,
+                  ],
+                  "key2": Object {
+                    "key21": "element",
+                  },
+                },
+                "price": 10995,
+                "short_description": "Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17\\" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit",
+                "supplier": "HP",
+                "title": "HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17\\") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium",
+              },
+            },
+            Object {
+              "_id": "XQLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "attr_t_product_colour": "Grey",
+                "date_released": "2007-08-09T00:00:00Z",
+                "id": "1128895",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg",
+                "name": "DB9 RS232 Serial Null Modem Adapter - M/F",
+                "price": 595,
+                "short_description": "StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F",
+                "supplier": "StarTech.com",
+                "title": "StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F",
+              },
+            },
+            Object {
+              "_id": "XgLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "date_released": "2008-03-07T00:00:00Z",
+                "id": "1449722",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg",
+                "name": "ProCurve 420 Wireless Access Point",
+                "price": 9495,
+                "short_description": "Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY",
+                "supplier": "HP",
+                "title": "HP ProCurve 420 Wireless Access Point",
+              },
+            },
+            Object {
+              "_id": "XwLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "date_released": "2008-06-23T00:00:00Z",
+                "id": "1625640",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg",
+                "name": "2GB SD Card",
+                "price": 1195,
+                "short_description": "2GB SD Card",
+                "supplier": "Integral",
+                "title": "Integral 2GB SD Card memory card",
+              },
+            },
+            Object {
+              "_id": "YALJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "date_released": "2009-04-08T00:00:00Z",
+                "id": "2067378",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg",
+                "name": "LC51C",
+                "price": 1795,
+                "short_description": "LC51C",
+                "supplier": "Brother",
+                "title": "Brother LC51C Original Cyan",
+              },
+            },
+            Object {
+              "_id": "YQLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "attr_t_product_colour": "Black",
+                "date_released": "2006-11-15T00:00:00Z",
+                "id": "636678",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg",
+                "name": "Emergency Power Off (EPO)",
+                "price": 69195,
+                "short_description": "Emergency Power Off (EPO)",
+                "supplier": "APC",
+                "title": "APC Emergency Power Off (EPO)",
+              },
+            },
+            Object {
+              "_id": "YgLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "date_released": "2008-04-11T00:00:00Z",
+                "id": "1570809",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg",
+                "name": "IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm",
+                "price": 53895,
+                "short_description": "IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm",
+                "supplier": "APC",
+                "title": "APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)",
+              },
+            },
+            Object {
+              "_id": "YwLJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "attr_t_product_colour": "White",
+                "date_released": "2005-07-15T00:00:00Z",
+                "id": "148843",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg",
+                "name": "Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.",
+                "price": 3795,
+                "short_description": "Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.",
+                "supplier": "HERMA",
+                "title": "HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.",
+              },
+            },
+            Object {
+              "_id": "ZALJC4QBuER5vZIv1tvh",
+              "_index": "chorus-ecommerce-data",
+              "_score": 1,
+              "_source": Object {
+                "date_released": "2007-08-09T00:00:00Z",
+                "id": "968447",
+                "img_500x500": "http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg",
+                "name": "Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'",
+                "price": 20395,
+                "short_description": "Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'",
+                "supplier": "OKI",
+                "title": "OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original",
+              },
+            },
+          ],
+          "max_score": 1,
+          "total": Object {
+            "relation": "gte",
+            "value": 10000,
+          },
+        },
+        "timed_out": false,
+        "took": 8,
+      }
+    }
+    resultNumber={1}
+  >
+    <_EuiSplitPanelInner
+      className="search-relevance-result-panel"
+    >
+      <EuiPanel
+        borderRadius="none"
+        className="euiSplitPanel__inner search-relevance-result-panel"
+        color="transparent"
+        element="div"
+        hasBorder={false}
+        hasShadow={false}
+      >
+        <div
+          className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiSplitPanel__inner search-relevance-result-panel"
+        >
+          <EuiFlexGroup
+            alignItems="center"
+            justifyContent="spaceBetween"
+          >
+            <div
+              className="euiFlexGroup euiFlexGroup--gutterLarge euiFlexGroup--alignItemsCenter euiFlexGroup--justifyContentSpaceBetween euiFlexGroup--directionRow euiFlexGroup--responsive"
+            >
+              <EuiFlexItem
+                grow={false}
+              >
+                <div
+                  className="euiFlexItem euiFlexItem--flexGrowZero"
+                >
+                  <EuiTitle
+                    size="s"
+                  >
+                    <h2
+                      className="euiTitle euiTitle--small"
+                      style={
+                        Object {
+                          "fontSize": "21px",
+                          "fontWeight": "300",
+                        }
+                      }
+                    >
+                      Result 1
+                    </h2>
+                  </EuiTitle>
+                </div>
+              </EuiFlexItem>
+              <EuiFlexItem
+                grow={false}
+              >
+                <div
+                  className="euiFlexItem euiFlexItem--flexGrowZero"
+                >
+                  <EuiTitle
+                    size="xs"
+                  >
+                    <h2
+                      className="euiTitle euiTitle--xsmall"
+                      style={
+                        Object {
+                          "fontSize": "14px",
+                          "fontWeight": "700",
+                        }
+                      }
+                    >
+                      10
+                       results
+                    </h2>
+                  </EuiTitle>
+                </div>
+              </EuiFlexItem>
+            </div>
+          </EuiFlexGroup>
+          <ErrorMessage>
+            <EuiHorizontalRule
+              margin="s"
+            >
+              <hr
+                className="euiHorizontalRule euiHorizontalRule--full euiHorizontalRule--marginSmall"
+              />
+            </EuiHorizontalRule>
+            <EuiText
+              color="danger"
+            >
+              <div
+                className="euiText euiText--medium"
+              >
+                <EuiTextColor
+                  color="danger"
+                  component="div"
+                >
+                  <div
+                    className="euiTextColor euiTextColor--danger"
+                  >
+                    Query
+                     Error
+                  </div>
+                </EuiTextColor>
+              </div>
+            </EuiText>
+            <EuiText
+              color="danger"
+            >
+              <div
+                className="euiText euiText--medium"
+              >
+                <EuiTextColor
+                  color="danger"
+                  component="div"
+                >
+                  <div
+                    className="euiTextColor euiTextColor--danger"
+                  >
+                    Error: parsing_exception - Unknown key for a VALUE_STRING in [this].
+                  </div>
+                </EuiTextColor>
+              </div>
+            </EuiText>
+            <EuiText
+              color="danger"
+            >
+              <div
+                className="euiText euiText--medium"
+              >
+                <EuiTextColor
+                  color="danger"
+                  component="div"
+                >
+                  <div
+                    className="euiTextColor euiTextColor--danger"
+                  >
+                    Status Code: 
+                    400
+                  </div>
+                </EuiTextColor>
+              </div>
+            </EuiText>
+          </ErrorMessage>
+        </div>
+      </EuiPanel>
+    </_EuiSplitPanelInner>
+  </ResultPanel>
+</SearchRelevanceContextProvider>
+`;

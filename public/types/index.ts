@@ -46,7 +46,7 @@ export interface SearchResults {
 }
 
 export enum SelectIndexError {
-  unselected = 'An index is required to compare search results. Select an index.'
+  unselected = 'An index is required to compare search results. Select an index.',
 }
 
 export enum QueryStringError {
@@ -54,7 +54,22 @@ export enum QueryStringError {
   invalid = 'Query syntax is invalid. Enter a valid query.',
 }
 
+export interface ErrorResponse {
+  body: string;
+  statusCode: number;
+}
+
 export interface QueryError {
   selectIndex: SelectIndexError | string;
   queryString: QueryStringError | string;
+  errorResponse: ErrorResponse;
 }
+
+export const initialQueryErrorState: QueryError = {
+  selectIndex: '',
+  queryString: '',
+  errorResponse: {
+    body: '',
+    statusCode: 200,
+  },
+};

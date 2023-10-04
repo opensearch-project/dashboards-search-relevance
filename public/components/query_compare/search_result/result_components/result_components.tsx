@@ -6,7 +6,7 @@
 import React, { useEffect, useState } from 'react';
 import { EuiSplitPanel, EuiTitle, EuiFlexGroup, EuiPanel } from '@elastic/eui';
 
-import { SearchResults } from '../../../../types/index';
+import { QueryError, SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
 
 import './result_components.scss';
@@ -14,6 +14,8 @@ import './result_components.scss';
 interface ResultComponentsProps {
   queryResult1: SearchResults;
   queryResult2: SearchResults;
+  queryError1: QueryError;
+  queryError2: QueryError;
 }
 
 const InitialState = () => {
@@ -33,16 +35,26 @@ const InitialState = () => {
   );
 };
 
-const ResultPanels = ({ queryResult1, queryResult2 }: ResultComponentsProps) => {
+const ResultPanels = ({
+  queryResult1,
+  queryResult2,
+  queryError1,
+  queryError2,
+}: ResultComponentsProps) => {
   return (
     <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
-      <ResultPanel resultNumber={1} queryResult={queryResult1} />
-      <ResultPanel resultNumber={2} queryResult={queryResult2} />
+      <ResultPanel resultNumber={1} queryResult={queryResult1} queryError={queryError1} />
+      <ResultPanel resultNumber={2} queryResult={queryResult2} queryError={queryError2} />
     </EuiSplitPanel.Outer>
   );
 };
 
-export const ResultComponents = ({ queryResult1, queryResult2 }: ResultComponentsProps) => {
+export const ResultComponents = ({
+  queryResult1,
+  queryResult2,
+  queryError1,
+  queryError2,
+}: ResultComponentsProps) => {
   const [initialState, setInitialState] = useState<boolean>(true);
 
   // Set initial state
@@ -59,7 +71,12 @@ export const ResultComponents = ({ queryResult1, queryResult2 }: ResultComponent
       {initialState === true ? (
         <InitialState />
       ) : (
-        <ResultPanels queryResult1={queryResult1} queryResult2={queryResult2} />
+        <ResultPanels
+          queryResult1={queryResult1}
+          queryResult2={queryResult2}
+          queryError1={queryError1}
+          queryError2={queryError2}
+        />
       )}
     </>
   );
