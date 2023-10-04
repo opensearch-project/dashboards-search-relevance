@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { QueryError } from '../public/types/index';
+
 export const TEST_SEARCH_TEXT = 'basic';
 
 export const TEST_QUERY_RESPONSE = {
@@ -200,3 +202,12 @@ export const TEST_COMPARED_DOCUMENTS_RANK = {
 };
 
 export const TEST_QUERY_STRING = '{}';
+
+export const TEST_QUERY_ERROR: QueryError = {
+  selectIndex: '',
+  queryString: '',
+  errorResponse: {
+    statusCode: 400,
+    body: 'Error: parsing_exception - Unknown key for a VALUE_STRING in [this].',
+  },
+};

@@ -6,14 +6,20 @@
 import React, { useState } from 'react';
 import { EuiPageContentBody } from '@elastic/eui';
 
-import { CoreStart, ChromeBreadcrumb } from '../../../../../../src/core/public';
+import { CoreStart } from '../../../../../../src/core/public';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 import { SearchInputBar } from './search_components/search_bar';
 import { ServiceEndpoints } from '../../../../common';
 import { Header } from '../../common/header';
-import { SearchResults, QueryError, QueryStringError, SelectIndexError } from '../../../types/index';
+import {
+  SearchResults,
+  QueryError,
+  QueryStringError,
+  SelectIndexError,
+  initialQueryErrorState,
+} from '../../../types/index';
 import { ResultComponents } from './result_components/result_components';
-import { useSearchRelevanceContext, initialQueryErrorState } from '../../../contexts';
+import { useSearchRelevanceContext } from '../../../contexts';
 
 const DEFAULT_QUERY = '{}';
 
@@ -26,6 +32,8 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
   const [queryResult2, setQueryResult2] = useState<SearchResults>({} as any);
+  const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
+  const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
   const [searchBarValue, setSearchBarValue] = useState('');
 
   const {
@@ -33,12 +41,13 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     updateComparedResult2,
     selectedIndex1,
     selectedIndex2,
-    setQueryError1,
-    setQueryError2,
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
-    const queryErrors = [{ ...initialQueryErrorState }, { ...initialQueryErrorState }];
+    const queryErrors = [
+      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
+      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
+    ];
     const jsonQueries = [{}, {}];
 
     validateQuery(selectedIndex1, queryString1, queryErrors[0]);
@@ -47,7 +56,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     validateQuery(selectedIndex2, queryString2, queryErrors[1]);
     jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
 
-    handleQuery(jsonQueries, queryErrors);
+    handleSearch(jsonQueries, queryErrors);
   };
 
   const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
@@ -59,45 +68,58 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     // Check if query string is empty
     if (!queryString.length) {
       queryError.queryString = QueryStringError.empty;
+      queryError.errorResponse.statusCode = 400;
     }
   };
 
-  const rewriteQuery = (searchBarValue: string, queryString: string, queryError: QueryError) => {
+  const rewriteQuery = (value: string, queryString: string, queryError: QueryError) => {
     if (queryString.trim().length > 0) {
       try {
-        return JSON.parse(queryString.replace(/%SearchText%/g, searchBarValue));
+        return JSON.parse(queryString.replace(/%SearchText%/g, value));
       } catch {
         queryError.queryString = QueryStringError.invalid;
+        queryError.errorResponse.statusCode = 400;
       }
     }
   };
 
-  const handleQuery = (jsonQueries: any, queryErrors: QueryError[]) => {
-    let requestBody = {};
-
-    // Handle query1
-    if (queryErrors[0].queryString.length || queryErrors[0].selectIndex.length) {
-      setQueryError1(queryErrors[0]);
-      setQueryResult1({} as any);
-      updateComparedResult1({} as any);
-    } else if (!queryErrors[0].queryString.length && !queryErrors[0].selectIndex.length) {
-      requestBody = {
-        query1: { index: selectedIndex1, ...jsonQueries[0] },
-      };
+  const handleQuery = (
+    queryError: QueryError,
+    selectedIndex: string,
+    jsonQuery: any,
+    updateComparedResult: (result: SearchResults) => void,
+    setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
+  ) => {
+    if (queryError.queryString.length || queryError.selectIndex.length) {
+      setQueryError(queryError);
+      setQueryResult({} as any);
+      updateComparedResult({} as any);
+    } else if (!queryError.queryString.length && !queryError.selectIndex) {
+      setQueryError(initialQueryErrorState);
+      return { index: selectedIndex, ...jsonQuery };
     }
+  };
 
-    // Handle query2
-    if (queryErrors[1].queryString.length || queryErrors[1].selectIndex.length) {
-      setQueryError2(queryErrors[1]);
-      setQueryResult2({} as any);
-      updateComparedResult2({} as any);
-    } else if (!queryErrors[1].queryString.length && !queryErrors[1].selectIndex.length) {
-      requestBody = {
-        ...requestBody,
-        query2: { index: selectedIndex2, ...jsonQueries[1] },
-      };
-    }
-
+  const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
+    const requestBody = {
+      query1: handleQuery(
+        queryErrors[0],
+        selectedIndex1,
+        jsonQueries[0],
+        updateComparedResult1,
+        setQueryResult1,
+        setQueryError1
+      ),
+      query2: handleQuery(
+        queryErrors[1],
+        selectedIndex2,
+        jsonQueries[1],
+        updateComparedResult2,
+        setQueryResult2,
+        setQueryError2
+      ),
+    };
     if (Object.keys(requestBody).length !== 0) {
       http
         .post(ServiceEndpoints.GetSearchResults, {
@@ -115,20 +137,23 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           }
 
           if (res.errorMessage1) {
-            setQueryError1({
-              ...queryErrors[0],
+            setQueryError1((error: QueryError) => ({
+              ...error,
               queryString: res.errorMessage1,
-            });
+              errorResponse: res.errorMessage1,
+            }));
           }
 
           if (res.errorMessage2) {
-            setQueryError2({
-              ...queryErrors[1],
+            setQueryError2((error: QueryError) => ({
+              ...error,
               queryString: res.errorMessage2,
-            });
+              errorResponse: res.errorMessage2,
+            }));
           }
         })
         .catch((error: Error) => {
+          // eslint-disable-next-line no-console
           console.error(error);
         });
     }
@@ -149,8 +174,17 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           queryString2={queryString2}
           setQueryString1={setQueryString1}
           setQueryString2={setQueryString2}
+          queryError1={queryError1}
+          queryError2={queryError2}
+          setQueryError1={setQueryError1}
+          setQueryError2={setQueryError2}
         />
-        <ResultComponents queryResult1={queryResult1} queryResult2={queryResult2} />
+        <ResultComponents
+          queryResult1={queryResult1}
+          queryResult2={queryResult2}
+          queryError1={queryError1}
+          queryError2={queryError2}
+        />
       </EuiPageContentBody>
     </>
   );

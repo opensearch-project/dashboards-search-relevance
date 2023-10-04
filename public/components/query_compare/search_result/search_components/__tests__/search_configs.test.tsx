@@ -10,6 +10,7 @@ import { waitFor } from '@testing-library/react';
 import { SearchConfigsPanel } from '../search_configs/search_configs';
 import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { TEST_QUERY_STRING } from '../../../../../../test/constants';
+import { initialQueryErrorState } from '../../../../../../public/types/index';
 
 describe('Flyout component', () => {
   configure({ adapter: new Adapter() });
@@ -22,6 +23,10 @@ describe('Flyout component', () => {
           queryString2={TEST_QUERY_STRING}
           setQueryString1={() => {}}
           setQueryString2={() => {}}
+          queryError1={initialQueryErrorState}
+          queryError2={initialQueryErrorState}
+          setQueryError1={() => {}}
+          setQueryError2={() => {}}
         />
       </SearchRelevanceContextProvider>
     );
