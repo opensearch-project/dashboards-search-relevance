@@ -1,0 +1,462 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Flyout component Renders flyout component 1`] = `
+<SearchRelevanceContextProvider>
+  <SearchConfig
+    queryError={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
+    queryNumber={1}
+    queryString="{}"
+    selectedIndex=""
+    setQueryError={[MockFunction]}
+    setQueryString={[MockFunction]}
+    setSelectedIndex={[MockFunction]}
+  >
+    <EuiTitle
+      size="xs"
+    >
+      <h2
+        className="euiTitle euiTitle--xsmall"
+        style={
+          Object {
+            "fontSize": "21px",
+            "fontWeight": "300",
+          }
+        }
+      >
+        Query 
+        1
+      </h2>
+    </EuiTitle>
+    <EuiSpacer
+      size="m"
+    >
+      <div
+        className="euiSpacer euiSpacer--m"
+      />
+    </EuiSpacer>
+    <EuiFormRow
+      describedByIds={Array []}
+      display="row"
+      error={false}
+      fullWidth={true}
+      hasChildLabel={true}
+      hasEmptyLabelSpace={false}
+      isInvalid={false}
+      label="Index"
+      labelType="label"
+    >
+      <div
+        className="euiFormRow euiFormRow--fullWidth"
+        id="random_html_id-row"
+      >
+        <div
+          className="euiFormRow__labelWrapper"
+        >
+          <EuiFormLabel
+            aria-invalid={false}
+            className="euiFormRow__label"
+            htmlFor="random_html_id"
+            isFocused={false}
+            isInvalid={false}
+            type="label"
+          >
+            <label
+              aria-invalid={false}
+              className="euiFormLabel euiFormRow__label"
+              htmlFor="random_html_id"
+            >
+              Index
+            </label>
+          </EuiFormLabel>
+        </div>
+        <div
+          className="euiFormRow__fieldWrapper"
+        >
+          <EuiSelect
+            aria-label="Search Index"
+            hasNoInitialSelection={true}
+            id="random_html_id"
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            options={Array []}
+            value=""
+          >
+            <EuiFormControlLayout
+              compressed={false}
+              fullWidth={false}
+              icon={
+                Object {
+                  "side": "right",
+                  "type": "arrowDown",
+                }
+              }
+              inputId="random_html_id"
+              isLoading={false}
+            >
+              <div
+                className="euiFormControlLayout"
+              >
+                <div
+                  className="euiFormControlLayout__childrenWrapper"
+                >
+                  <EuiValidatableControl>
+                    <select
+                      aria-label="Search Index"
+                      className="euiSelect"
+                      id="random_html_id"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      onMouseUp={[Function]}
+                      value=""
+                    >
+                      <option
+                        disabled={true}
+                        hidden={true}
+                        style={
+                          Object {
+                            "display": "none",
+                          }
+                        }
+                        value=""
+                      >
+                         
+                      </option>
+                    </select>
+                  </EuiValidatableControl>
+                  <EuiFormControlLayoutIcons
+                    compressed={false}
+                    icon={
+                      Object {
+                        "side": "right",
+                        "type": "arrowDown",
+                      }
+                    }
+                    isLoading={false}
+                  >
+                    <div
+                      className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
+                    >
+                      <EuiFormControlLayoutCustomIcon
+                        size="m"
+                        type="arrowDown"
+                      >
+                        <span
+                          className="euiFormControlLayoutCustomIcon"
+                        >
+                          <EuiIcon
+                            aria-hidden="true"
+                            className="euiFormControlLayoutCustomIcon__icon"
+                            size="m"
+                            type="arrowDown"
+                          >
+                            <EuiIconEmpty
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                              focusable="false"
+                              role="img"
+                              style={null}
+                            >
+                              <svg
+                                aria-hidden={true}
+                                className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                focusable="false"
+                                height={16}
+                                role="img"
+                                style={null}
+                                viewBox="0 0 16 16"
+                                width={16}
+                                xmlns="http://www.w3.org/2000/svg"
+                              />
+                            </EuiIconEmpty>
+                          </EuiIcon>
+                        </span>
+                      </EuiFormControlLayoutCustomIcon>
+                    </div>
+                  </EuiFormControlLayoutIcons>
+                </div>
+              </div>
+            </EuiFormControlLayout>
+          </EuiSelect>
+        </div>
+      </div>
+    </EuiFormRow>
+    <EuiFormRow
+      describedByIds={Array []}
+      display="row"
+      error={false}
+      fullWidth={true}
+      hasChildLabel={true}
+      hasEmptyLabelSpace={false}
+      helpText={
+        <p>
+          Enter a query in
+           
+          <a
+            href="https://opensearch.org/docs/latest/query-dsl/index/"
+          >
+            OpenSearch Query DSL
+          </a>
+          . Use %SearchText% to refer to the text in the search bar
+        </p>
+      }
+      isInvalid={false}
+      label="Query"
+      labelAppend={
+        <EuiText
+          size="xs"
+        >
+          <EuiButtonEmpty
+            color="primary"
+            onClick={[Function]}
+            size="xs"
+          >
+            Help
+          </EuiButtonEmpty>
+        </EuiText>
+      }
+      labelType="label"
+    >
+      <div
+        className="euiFormRow euiFormRow--fullWidth"
+        id="random_html_id-row"
+      >
+        <div
+          className="euiFormRow__labelWrapper"
+        >
+          <EuiFormLabel
+            aria-invalid={false}
+            className="euiFormRow__label"
+            htmlFor="random_html_id"
+            isFocused={false}
+            isInvalid={false}
+            type="label"
+          >
+            <label
+              aria-invalid={false}
+              className="euiFormLabel euiFormRow__label"
+              htmlFor="random_html_id"
+            >
+              Query
+            </label>
+          </EuiFormLabel>
+           
+          <EuiText
+            size="xs"
+          >
+            <div
+              className="euiText euiText--extraSmall"
+            >
+              <EuiButtonEmpty
+                color="primary"
+                onClick={[Function]}
+                size="xs"
+              >
+                <button
+                  className="euiButtonEmpty euiButtonEmpty--primary euiButtonEmpty--xSmall"
+                  disabled={false}
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <EuiButtonContent
+                    className="euiButtonEmpty__content"
+                    iconSide="left"
+                    iconSize="s"
+                    textProps={
+                      Object {
+                        "className": "euiButtonEmpty__text",
+                      }
+                    }
+                  >
+                    <span
+                      className="euiButtonContent euiButtonEmpty__content"
+                    >
+                      <span
+                        className="euiButtonEmpty__text"
+                      >
+                        Help
+                      </span>
+                    </span>
+                  </EuiButtonContent>
+                </button>
+              </EuiButtonEmpty>
+            </div>
+          </EuiText>
+        </div>
+        <div
+          className="euiFormRow__fieldWrapper"
+        >
+          <EuiCodeEditor
+            aria-describedby="random_html_id-help-0"
+            aria-label="Code Editor"
+            height="10rem"
+            id="random_html_id"
+            mode="json"
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            setOptions={
+              Object {
+                "enableBasicAutocompletion": true,
+                "enableLiveAutocompletion": true,
+                "fontSize": "14px",
+              }
+            }
+            showPrintMargin={false}
+            tabSize={2}
+            theme="sql_console"
+            value="{}"
+            width="100%"
+          >
+            <div
+              className="euiCodeEditorWrapper"
+              data-test-subj="codeEditorContainer"
+              style={
+                Object {
+                  "height": "10rem",
+                  "width": "100%",
+                }
+              }
+            >
+              <button
+                className="euiCodeEditorKeyboardHint"
+                data-test-subj="codeEditorHint"
+                id="random_html_id"
+                onClick={[Function]}
+              >
+                <p
+                  className="euiText"
+                >
+                  <EuiI18n
+                    default="Press Enter to start editing."
+                    token="euiCodeEditor.startEditing"
+                  >
+                    Press Enter to start editing.
+                  </EuiI18n>
+                </p>
+                <p
+                  className="euiText"
+                >
+                  <EuiI18n
+                    default="When you're done, press Escape to stop editing."
+                    token="euiCodeEditor.stopEditing"
+                  >
+                    When you're done, press Escape to stop editing.
+                  </EuiI18n>
+                </p>
+              </button>
+              <ReactAce
+                aria-describedby="random_html_id-help-0"
+                aria-label="Code Editor"
+                commands={
+                  Array [
+                    Object {
+                      "bindKey": Object {
+                        "mac": "Esc",
+                        "win": "Esc",
+                      },
+                      "exec": [Function],
+                      "name": "stopEditingOnEsc",
+                    },
+                  ]
+                }
+                cursorStart={1}
+                editorProps={
+                  Object {
+                    "$blockScrolling": Infinity,
+                  }
+                }
+                enableBasicAutocompletion={false}
+                enableLiveAutocompletion={false}
+                enableSnippets={false}
+                focus={false}
+                fontSize={12}
+                height="10rem"
+                highlightActiveLine={true}
+                id="random_html_id"
+                maxLines={null}
+                minLines={null}
+                mode="json"
+                name="random_html_id"
+                navigateToFileEnd={true}
+                onBlur={[Function]}
+                onChange={[Function]}
+                onFocus={[Function]}
+                onLoad={null}
+                onPaste={null}
+                onScroll={null}
+                placeholder={null}
+                readOnly={false}
+                scrollMargin={
+                  Array [
+                    0,
+                    0,
+                    0,
+                    0,
+                  ]
+                }
+                setOptions={
+                  Object {
+                    "enableBasicAutocompletion": true,
+                    "enableLiveAutocompletion": true,
+                    "fontSize": "14px",
+                  }
+                }
+                showGutter={true}
+                showPrintMargin={false}
+                style={Object {}}
+                tabSize={2}
+                theme="sql_console"
+                value="{}"
+                width="100%"
+                wrapEnabled={false}
+              >
+                <div
+                  id="random_html_id"
+                  style={
+                    Object {
+                      "height": "10rem",
+                      "width": "100%",
+                    }
+                  }
+                />
+              </ReactAce>
+            </div>
+          </EuiCodeEditor>
+          <EuiFormHelpText
+            className="euiFormRow__text"
+            id="random_html_id-help-0"
+            key="0"
+          >
+            <div
+              className="euiFormHelpText euiFormRow__text"
+              id="random_html_id-help-0"
+            >
+              <p>
+                Enter a query in
+                 
+                <a
+                  href="https://opensearch.org/docs/latest/query-dsl/index/"
+                >
+                  OpenSearch Query DSL
+                </a>
+                . Use %SearchText% to refer to the text in the search bar
+              </p>
+            </div>
+          </EuiFormHelpText>
+        </div>
+      </div>
+    </EuiFormRow>
+  </SearchConfig>
+</SearchRelevanceContextProvider>
+`;

@@ -3,6 +3,26 @@
 exports[`Result component Renders result component 1`] = `
 <SearchRelevanceContextProvider>
   <ResultComponents
+    queryError1={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
+    queryError2={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
     queryResult1={
       Object {
         "_shards": Object {
@@ -385,6 +405,26 @@ exports[`Result component Renders result component 1`] = `
     }
   >
     <ResultPanels
+      queryError1={
+        Object {
+          "errorResponse": Object {
+            "body": "",
+            "statusCode": 200,
+          },
+          "queryString": "",
+          "selectIndex": "",
+        }
+      }
+      queryError2={
+        Object {
+          "errorResponse": Object {
+            "body": "",
+            "statusCode": 200,
+          },
+          "queryString": "",
+          "selectIndex": "",
+        }
+      }
       queryResult1={
         Object {
           "_shards": Object {
@@ -782,6 +822,16 @@ exports[`Result component Renders result component 1`] = `
             className="euiPanel euiPanel--borderRadiusMedium euiPanel--plain euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero euiSplitPanel euiSplitPanel--row"
           >
             <ResultPanel
+              queryError={
+                Object {
+                  "errorResponse": Object {
+                    "body": "",
+                    "statusCode": 200,
+                  },
+                  "queryString": "",
+                  "selectIndex": "",
+                }
+              }
               queryResult={
                 Object {
                   "_shards": Object {
@@ -3749,6 +3799,16 @@ exports[`Result component Renders result component 1`] = `
               </_EuiSplitPanelInner>
             </ResultPanel>
             <ResultPanel
+              queryError={
+                Object {
+                  "errorResponse": Object {
+                    "body": "",
+                    "statusCode": 200,
+                  },
+                  "queryString": "",
+                  "selectIndex": "",
+                }
+              }
               queryResult={
                 Object {
                   "_shards": Object {

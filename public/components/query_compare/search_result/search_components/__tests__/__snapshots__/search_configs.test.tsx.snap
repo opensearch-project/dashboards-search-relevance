@@ -3,8 +3,30 @@
 exports[`Flyout component Renders flyout component 1`] = `
 <SearchRelevanceContextProvider>
   <SearchConfigsPanel
+    queryError1={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
+    queryError2={
+      Object {
+        "errorResponse": Object {
+          "body": "",
+          "statusCode": 200,
+        },
+        "queryString": "",
+        "selectIndex": "",
+      }
+    }
     queryString1="{}"
     queryString2="{}"
+    setQueryError1={[Function]}
+    setQueryError2={[Function]}
     setQueryString1={[Function]}
     setQueryString2={[Function]}
   >
@@ -41,6 +63,10 @@ exports[`Flyout component Renders flyout component 1`] = `
                 <SearchConfig
                   queryError={
                     Object {
+                      "errorResponse": Object {
+                        "body": "",
+                        "statusCode": 200,
+                      },
                       "queryString": "",
                       "selectIndex": "",
                     }
@@ -230,6 +256,18 @@ exports[`Flyout component Renders flyout component 1`] = `
                     fullWidth={true}
                     hasChildLabel={true}
                     hasEmptyLabelSpace={false}
+                    helpText={
+                      <p>
+                        Enter a query in
+                         
+                        <a
+                          href="https://opensearch.org/docs/latest/query-dsl/index/"
+                        >
+                          OpenSearch Query DSL
+                        </a>
+                        . Use %SearchText% to refer to the text in the search bar
+                      </p>
+                    }
                     isInvalid={false}
                     label="Query"
                     labelAppend={
@@ -317,6 +355,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         className="euiFormRow__fieldWrapper"
                       >
                         <EuiCodeEditor
+                          aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
                           height="10rem"
                           id="random_html_id"
@@ -375,6 +414,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               </p>
                             </button>
                             <ReactAce
+                              aria-describedby="random_html_id-help-0"
                               aria-label="Code Editor"
                               commands={
                                 Array [
@@ -451,26 +491,30 @@ exports[`Flyout component Renders flyout component 1`] = `
                             </ReactAce>
                           </div>
                         </EuiCodeEditor>
+                        <EuiFormHelpText
+                          className="euiFormRow__text"
+                          id="random_html_id-help-0"
+                          key="0"
+                        >
+                          <div
+                            className="euiFormHelpText euiFormRow__text"
+                            id="random_html_id-help-0"
+                          >
+                            <p>
+                              Enter a query in
+                               
+                              <a
+                                href="https://opensearch.org/docs/latest/query-dsl/index/"
+                              >
+                                OpenSearch Query DSL
+                              </a>
+                              . Use %SearchText% to refer to the text in the search bar
+                            </p>
+                          </div>
+                        </EuiFormHelpText>
                       </div>
                     </div>
                   </EuiFormRow>
-                  <EuiText>
-                    <div
-                      className="euiText euiText--medium"
-                    >
-                      <p
-                        style={
-                          Object {
-                            "fontSize": "14px",
-                            "fontWeight": "400",
-                            "lineHeight": "18px",
-                          }
-                        }
-                      >
-                        Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search bar.
-                      </p>
-                    </div>
-                  </EuiText>
                 </SearchConfig>
               </div>
             </EuiFlexItem>
@@ -483,6 +527,10 @@ exports[`Flyout component Renders flyout component 1`] = `
                 <SearchConfig
                   queryError={
                     Object {
+                      "errorResponse": Object {
+                        "body": "",
+                        "statusCode": 200,
+                      },
                       "queryString": "",
                       "selectIndex": "",
                     }
@@ -672,6 +720,18 @@ exports[`Flyout component Renders flyout component 1`] = `
                     fullWidth={true}
                     hasChildLabel={true}
                     hasEmptyLabelSpace={false}
+                    helpText={
+                      <p>
+                        Enter a query in
+                         
+                        <a
+                          href="https://opensearch.org/docs/latest/query-dsl/index/"
+                        >
+                          OpenSearch Query DSL
+                        </a>
+                        . Use %SearchText% to refer to the text in the search bar
+                      </p>
+                    }
                     isInvalid={false}
                     label="Query"
                     labelAppend={
@@ -759,6 +819,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         className="euiFormRow__fieldWrapper"
                       >
                         <EuiCodeEditor
+                          aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
                           height="10rem"
                           id="random_html_id"
@@ -817,6 +878,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               </p>
                             </button>
                             <ReactAce
+                              aria-describedby="random_html_id-help-0"
                               aria-label="Code Editor"
                               commands={
                                 Array [
@@ -893,26 +955,30 @@ exports[`Flyout component Renders flyout component 1`] = `
                             </ReactAce>
                           </div>
                         </EuiCodeEditor>
+                        <EuiFormHelpText
+                          className="euiFormRow__text"
+                          id="random_html_id-help-0"
+                          key="0"
+                        >
+                          <div
+                            className="euiFormHelpText euiFormRow__text"
+                            id="random_html_id-help-0"
+                          >
+                            <p>
+                              Enter a query in
+                               
+                              <a
+                                href="https://opensearch.org/docs/latest/query-dsl/index/"
+                              >
+                                OpenSearch Query DSL
+                              </a>
+                              . Use %SearchText% to refer to the text in the search bar
+                            </p>
+                          </div>
+                        </EuiFormHelpText>
                       </div>
                     </div>
                   </EuiFormRow>
-                  <EuiText>
-                    <div
-                      className="euiText euiText--medium"
-                    >
-                      <p
-                        style={
-                          Object {
-                            "fontSize": "14px",
-                            "fontWeight": "400",
-                            "lineHeight": "18px",
-                          }
-                        }
-                      >
-                        Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search bar.
-                      </p>
-                    </div>
-                  </EuiText>
                 </SearchConfig>
               </div>
             </EuiFlexItem>

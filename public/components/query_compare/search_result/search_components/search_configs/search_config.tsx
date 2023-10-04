@@ -37,45 +37,48 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryError,
 }) => {
   const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
-
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
 
-    setQueryError({
-      ...queryError,
+    setQueryError((error: QueryError) => ({
+      ...error,
       selectIndex: '',
-    });
+    }));
   };
 
   // Select index on blur
   const selectIndexOnBlur = () => {
     // If Index Select on blur without selecting an index, show error
     if (!selectedIndex.length) {
-      setQueryError({
-        ...queryError,
+      setQueryError((error: QueryError) => ({
+        ...error,
         selectIndex: SelectIndexError.unselected,
-      });
+      }));
     }
   };
 
   // On change query string
   const onChangeQueryString = (value: string) => {
     setQueryString(value);
-    setQueryError({
-      ...queryError,
+    setQueryError((error: QueryError) => ({
+      ...error,
       queryString: '',
-    });
+    }));
   };
 
   // Code editor on blur
   const codeEditorOnBlur = () => {
     // If no query string on blur, show error
     if (!queryString.length) {
-      setQueryError({
-        ...queryError,
+      setQueryError((error: QueryError) => ({
+        ...error,
+        errorResponse: {
+          body: '',
+          statusCode: 400,
+        },
         queryString: QueryStringError.empty,
-      });
+      }));
     }
   };
 
@@ -115,6 +118,13 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             </EuiButtonEmpty>
           </EuiText>
         }
+        helpText={
+          <p>
+            Enter a query in{' '}
+            <a href="https://opensearch.org/docs/latest/query-dsl/index/">OpenSearch Query DSL</a>.
+            Use %SearchText% to refer to the text in the search bar
+          </p>
+        }
       >
         <EuiCodeEditor
           mode="json"
@@ -134,12 +144,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           tabSize={2}
         />
       </EuiFormRow>
-      <EuiText>
-        <p style={{ fontSize: '14px', fontWeight: '400', lineHeight: '18px' }}>
-          Enter a query in OpenSearch Query DSL. Use %SearchText% to refer to the text in the search
-          bar.
-        </p>
-      </EuiText>
     </>
   );
 };
