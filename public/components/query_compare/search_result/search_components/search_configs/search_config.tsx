@@ -128,7 +128,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       >
         <EuiCodeEditor
           mode="json"
-          theme="sql_console"
+          theme="textmate"
           width="100%"
           height="10rem"
           value={queryString}
