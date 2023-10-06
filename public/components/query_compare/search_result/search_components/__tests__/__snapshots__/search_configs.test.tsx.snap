@@ -32,23 +32,13 @@ exports[`Flyout component Renders flyout component 1`] = `
   >
     <EuiPanel
       borderRadius="none"
+      className="left-right-borders"
       color="transparent"
       grow={false}
-      hasBorder={false}
       hasShadow={false}
-      style={
-        Object {
-          "borderBottom": "1px solid #D3DAE6",
-        }
-      }
     >
       <div
-        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
-        style={
-          Object {
-            "borderBottom": "1px solid #D3DAE6",
-          }
-        }
+        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--flexGrowZero left-right-borders"
       >
         <EuiFlexGroup>
           <div

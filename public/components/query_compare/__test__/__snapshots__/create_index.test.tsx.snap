@@ -5,22 +5,13 @@ exports[`Create index component Renders create index component 1`] = `
   <Header>
     <EuiPanel
       borderRadius="none"
+      color="transparent"
       grow={false}
       hasBorder={false}
       hasShadow={false}
-      style={
-        Object {
-          "borderBottom": "1px solid #D3DAE6",
-        }
-      }
     >
       <div
-        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--plain euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
-        style={
-          Object {
-            "borderBottom": "1px solid #D3DAE6",
-          }
-        }
+        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
       >
         <EuiTitle>
           <h1
