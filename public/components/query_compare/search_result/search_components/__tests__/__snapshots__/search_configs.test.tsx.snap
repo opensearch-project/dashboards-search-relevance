@@ -32,23 +32,13 @@ exports[`Flyout component Renders flyout component 1`] = `
   >
     <EuiPanel
       borderRadius="none"
+      className="right-border left-border"
       color="transparent"
       grow={false}
-      hasBorder={false}
       hasShadow={false}
-      style={
-        Object {
-          "borderBottom": "1px solid #D3DAE6",
-        }
-      }
     >
       <div
-        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
-        style={
-          Object {
-            "borderBottom": "1px solid #D3DAE6",
-          }
-        }
+        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--flexGrowZero right-border left-border"
       >
         <EuiFlexGroup>
           <div
@@ -372,7 +362,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           }
                           showPrintMargin={false}
                           tabSize={2}
-                          theme="sql_console"
+                          theme="textmate"
                           value="{}"
                           width="100%"
                         >
@@ -474,7 +464,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               showPrintMargin={false}
                               style={Object {}}
                               tabSize={2}
-                              theme="sql_console"
+                              theme="textmate"
                               value="{}"
                               width="100%"
                               wrapEnabled={false}
@@ -836,7 +826,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           }
                           showPrintMargin={false}
                           tabSize={2}
-                          theme="sql_console"
+                          theme="textmate"
                           value="{}"
                           width="100%"
                         >
@@ -938,7 +928,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               showPrintMargin={false}
                               style={Object {}}
                               tabSize={2}
-                              theme="sql_console"
+                              theme="textmate"
                               value="{}"
                               width="100%"
                               wrapEnabled={false}
