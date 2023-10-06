@@ -6,6 +6,13 @@
 .search-relevance-config:nth-child(1) {
   margin: 0;
   padding: 12px;
-  border-right: 1px solid #D3DAE6;
+  border-right: 1px solid $euiBorderColor;
 }
-  
+
+.right-border {
+  border-right: 0;
+}
+
+.left-border {
+  border-left: 0;
+}
