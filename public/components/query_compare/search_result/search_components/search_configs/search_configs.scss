@@ -9,10 +9,7 @@
   border-right: 1px solid $euiBorderColor;
 }
 
-.right-border {
-  border-right: 0;
-}
-
-.left-border {
+.left-right-borders {
   border-left: 0;
+  border-right: 0;
 }

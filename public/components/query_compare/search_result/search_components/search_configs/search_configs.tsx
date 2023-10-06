@@ -47,7 +47,7 @@ export const SearchConfigsPanel = ({
       color="transparent"
       grow={false}
       borderRadius="none"
-      className="right-border left-border"
+      className="left-right-borders"
     >
       <EuiFlexGroup>
         <EuiFlexItem className="search-relevance-config">
