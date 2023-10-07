@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiSplitPanel, EuiTitle, EuiFlexGroup, EuiPanel } from '@elastic/eui';
+import { EuiSplitPanel, EuiEmptyPrompt, EuiButton, EuiPanel } from '@elastic/eui';
 
 import { QueryError, SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
@@ -26,11 +26,20 @@ const InitialState = () => {
       grow={true}
       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
     >
-      <EuiFlexGroup justifyContent="center">
-        <EuiTitle>
-          <h2>Add queries to compare search results.</h2>
-        </EuiTitle>
-      </EuiFlexGroup>
+      <EuiEmptyPrompt
+        iconType="database"
+        title={<h2>No data available</h2>}
+        body={
+          <>
+            <p>Add queries to compare search results.</p>
+          </>
+        }
+        actions={
+          <EuiButton color="primary" fill href="home#/tutorial_directory">
+            Connect to a data source
+          </EuiButton>
+        }
+      />
     </EuiPanel>
   );
 };
