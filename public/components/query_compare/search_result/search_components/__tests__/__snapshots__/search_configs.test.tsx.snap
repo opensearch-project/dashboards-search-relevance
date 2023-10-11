@@ -362,7 +362,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           }
                           showPrintMargin={false}
                           tabSize={2}
-                          theme="sql_console"
+                          theme="textmate"
                           value="{}"
                           width="100%"
                         >
@@ -464,7 +464,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               showPrintMargin={false}
                               style={Object {}}
                               tabSize={2}
-                              theme="sql_console"
+                              theme="textmate"
                               value="{}"
                               width="100%"
                               wrapEnabled={false}
@@ -826,7 +826,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           }
                           showPrintMargin={false}
                           tabSize={2}
-                          theme="sql_console"
+                          theme="textmate"
                           value="{}"
                           width="100%"
                         >
@@ -928,7 +928,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               showPrintMargin={false}
                               style={Object {}}
                               tabSize={2}
-                              theme="sql_console"
+                              theme="textmate"
                               value="{}"
                               width="100%"
                               wrapEnabled={false}
