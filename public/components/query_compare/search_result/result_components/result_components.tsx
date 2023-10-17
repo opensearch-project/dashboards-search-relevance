@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { EuiSplitPanel, EuiTitle, EuiFlexGroup, EuiPanel } from '@elastic/eui';
+import { EuiSplitPanel, EuiEmptyPrompt, EuiPanel } from '@elastic/eui';
 
 import { QueryError, SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
@@ -26,11 +26,13 @@ const InitialState = () => {
       grow={true}
       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
     >
-      <EuiFlexGroup justifyContent="center">
-        <EuiTitle>
-          <h2>Add queries to compare search results.</h2>
-        </EuiTitle>
-      </EuiFlexGroup>
+      <EuiEmptyPrompt
+        iconType="search"
+        title={<h2>No results</h2>}
+        body={
+            <p>Add at least one query to display search results.</p>
+        }
+      />
     </EuiPanel>
   );
 };
