@@ -11,6 +11,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiHorizontalRule,
+  EuiEmptyPrompt,
 } from '@elastic/eui';
 
 import { ResultGridComponent } from './result_grid';
@@ -70,7 +71,15 @@ export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPan
       ) : (
         <>
           <EuiHorizontalRule margin="s" />
-          <EuiText>No results.</EuiText>
+          <EuiEmptyPrompt
+            iconType="search"
+            title={<h2>No results</h2>}
+            body={
+              <>
+                <p>Add a second query to display search comparison results.</p>
+              </>
+            }
+          />
         </>
       )}
     </EuiSplitPanel.Inner>
