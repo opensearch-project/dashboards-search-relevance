@@ -12,10 +12,12 @@ import {
   EuiCodeEditor,
   EuiText,
   EuiButtonEmpty,
+  EuiComboBox,
 } from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
+import { sort } from 'semver';
 
 interface SearchConfigProps {
   queryNumber: 1 | 2;
@@ -37,6 +39,11 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryError,
 }) => {
   const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
+
+  // Sort documentsIndexes based off of each individual index.
+  const sortedDocumentsIndexes = [...documentsIndexes].sort((a, b) => a.index.localeCompare(b.index));
+  console.log(sortedDocumentsIndexes);
+  
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -94,12 +101,17 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
         isInvalid={!!queryError.selectIndex.length}
       >
+        {/* <EuiComboBox
+        placeholder="Select a single option"
+        singleSelection={{ asPlainText: true }}
+        options={sortedDocumentsIndexes.map(({ index }) => ({
+          label: index,
+          // text: index,
+        }))}
+        onChange={onChange}
+      /> */}
         <EuiSelect
           hasNoInitialSelection={true}
-          options={documentsIndexes.map(({ index }) => ({
-            value: index,
-            text: index,
-          }))}
           aria-label="Search Index"
           onChange={onChangeSelectedIndex}
           value={selectedIndex}
