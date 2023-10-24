@@ -42,7 +42,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
 
   // Sort documentsIndexes based off of each individual index.
   const sortedDocumentsIndexes = [...documentsIndexes].sort((a, b) => a.index.localeCompare(b.index));
-  console.log(sortedDocumentsIndexes);
   
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
@@ -52,6 +51,15 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       ...error,
       selectIndex: '',
     }));
+  };
+
+  const onChangeSelectedIndex2 = (selectedOptions) => {
+    if (selectedOptions.length === 0) {
+      setSelectedIndex("");
+    } else {
+      setSelectedIndex(selectedOptions[0].label);
+      console.log(selectedOptions[0].label);
+    }
   };
 
   // Select index on blur
@@ -101,22 +109,24 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
         isInvalid={!!queryError.selectIndex.length}
       >
-        {/* <EuiComboBox
+        {<EuiComboBox
         placeholder="Select a single option"
         singleSelection={{ asPlainText: true }}
         options={sortedDocumentsIndexes.map(({ index }) => ({
           label: index,
           // text: index,
         }))}
-        onChange={onChange}
-      /> */}
-        <EuiSelect
+
+        onChange={onChangeSelectedIndex2}
+      /> }
+       {/* <EuiSelect
           hasNoInitialSelection={true}
           aria-label="Search Index"
           onChange={onChangeSelectedIndex}
           value={selectedIndex}
           onBlur={selectIndexOnBlur}
-        />
+        /> */}
+        
       </EuiFormRow>
       <EuiFormRow
         fullWidth
