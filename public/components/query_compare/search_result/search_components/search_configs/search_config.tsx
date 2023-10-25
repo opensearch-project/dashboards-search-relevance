@@ -42,18 +42,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
 
   // Sort documentsIndexes based off of each individual index.
   const sortedDocumentsIndexes = [...documentsIndexes].sort((a, b) => a.index.localeCompare(b.index));
-  
-  // On select index
-  const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
-    setSelectedIndex(e.target.value);
 
-    setQueryError((error: QueryError) => ({
-      ...error,
-      selectIndex: '',
-    }));
-  };
 
-  const onChangeSelectedIndex2 = (selectedOptions: string | any[]) => {
+  // On select index for ComboBox
+  const onChangeSelectedIndex = (selectedOptions: string | any[]) => {
     if (selectedOptions.length === 0) {
       setSelectedIndex("");
     } else {
@@ -113,19 +105,11 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         singleSelection={{ asPlainText: true }}
         options={sortedDocumentsIndexes.map(({ index }) => ({
           label: index,
-          // text: index,
         }))}
         selectedOptions={selectedIndex ? [{ label: selectedIndex }] : []}
-        onChange={onChangeSelectedIndex2}
+        onChange={onChangeSelectedIndex}
       /> }
-       {/* <EuiSelect
-          hasNoInitialSelection={true}
-          aria-label="Search Index"
-          onChange={onChangeSelectedIndex}
-          value={selectedIndex}
-          onBlur={selectIndexOnBlur}
-        /> */}
-        
+      
       </EuiFormRow>
       <EuiFormRow
         fullWidth
