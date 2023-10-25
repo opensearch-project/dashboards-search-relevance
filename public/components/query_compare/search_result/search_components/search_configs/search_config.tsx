@@ -53,12 +53,11 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     }));
   };
 
-  const onChangeSelectedIndex2 = (selectedOptions) => {
+  const onChangeSelectedIndex2 = (selectedOptions: string | any[]) => {
     if (selectedOptions.length === 0) {
       setSelectedIndex("");
     } else {
       setSelectedIndex(selectedOptions[0].label);
-      console.log(selectedOptions[0].label);
     }
   };
 
@@ -116,7 +115,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           label: index,
           // text: index,
         }))}
-
+        selectedOptions={selectedIndex ? [{ label: selectedIndex }] : []}
         onChange={onChangeSelectedIndex2}
       /> }
        {/* <EuiSelect
