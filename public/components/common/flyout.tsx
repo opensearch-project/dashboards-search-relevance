@@ -83,7 +83,14 @@ export const Flyout = () => {
                     />
                   </EuiLink>
                 ),
-                variableName: <EuiCode>{'%SearchText%'}</EuiCode>,
+                variableName: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.queryFormatDetail.variableNameCodeLabel"
+                      defaultMessage="%SearchText%"
+                    />
+                  </EuiCode>
+                ),
                 search: (
                   <strong>
                     <FormattedMessage
@@ -92,8 +99,22 @@ export const Flyout = () => {
                     />
                   </strong>
                 ),
-                methodName: <EuiCode>{'GET'}</EuiCode>,
-                endpointName: <EuiCode>{'_search'}</EuiCode>,
+                methodName: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.queryFormatDetail.methodNameCodeLabel"
+                      defaultMessage="GET"
+                    />
+                  </EuiCode>
+                ),
+                endpointName: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.queryFormatDetail.endpointNameCodeLabel"
+                      defaultMessage="_search"
+                    />
+                  </EuiCode>
+                ),
               }}
             />
           </p>
@@ -129,9 +150,30 @@ export const Flyout = () => {
               defaultMessage="The following example searches the {speaker} and {textEntry} fields of the 
               {shakespeare} index for the search text:"
               values={{
-                speaker: <EuiCode>{'speaker'}</EuiCode>,
-                textEntry: <EuiCode>{'text_entry'}</EuiCode>,
-                shakespeare: <EuiCode>{'shakespeare'}</EuiCode>,
+                speaker: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.exampleDetail.stepTwo.speakerCodeLabel"
+                      defaultMessage="speaker"
+                    />
+                  </EuiCode>
+                ),
+                textEntry: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.exampleDetail.stepTwo.textEntryCodeLabel"
+                      defaultMessage="text_entry"
+                    />
+                  </EuiCode>
+                ),
+                shakespeare: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.exampleDetail.stepTwo.shakespeareCodeLabel"
+                      defaultMessage="shakespeare"
+                    />
+                  </EuiCode>
+                ),
               }}
             />
           </p>
@@ -160,7 +202,14 @@ export const Flyout = () => {
               defaultMessage="You can see how boosting a field affects the results. The following 
               query boosts the {speaker} field:"
               values={{
-                speaker: <EuiCode>{'speaker'}</EuiCode>,
+                speaker: (
+                  <EuiCode>
+                    <FormattedMessage
+                      id="searchRelevance.flyout.exampleDetail.stepThree.speakerCodeLabel"
+                      defaultMessage="speaker"
+                    />
+                  </EuiCode>
+                ),
               }}
             />
           </p>

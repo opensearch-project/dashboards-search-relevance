@@ -124,7 +124,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    %SearchText%
+                                    <span>
+                                      %SearchText%
+                                    </span>
                                   </code>
                                 </span>
                                  variable to refer 
@@ -142,7 +144,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    GET
+                                    <span>
+                                      GET
+                                    </span>
                                   </code>
                                 </span>
                                  HTTP method and the 
@@ -152,7 +156,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    _search
+                                    <span>
+                                      _search
+                                    </span>
                                   </code>
                                 </span>
                                  endpoint.
@@ -189,7 +195,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    speaker
+                                    <span>
+                                      speaker
+                                    </span>
                                   </code>
                                 </span>
                                  and 
@@ -199,7 +207,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    text_entry
+                                    <span>
+                                      text_entry
+                                    </span>
                                   </code>
                                 </span>
                                  fields of the 
@@ -210,7 +220,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    shakespeare
+                                    <span>
+                                      shakespeare
+                                    </span>
                                   </code>
                                 </span>
                                  index for the search text:
@@ -455,7 +467,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <code
                                     class="euiCodeBlock__code"
                                   >
-                                    speaker
+                                    <span>
+                                      speaker
+                                    </span>
                                   </code>
                                 </span>
                                  field:
@@ -918,7 +932,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            %SearchText%
+                                            <span>
+                                              %SearchText%
+                                            </span>
                                           </code>
                                         </span>
                                          variable to refer 
@@ -936,7 +952,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            GET
+                                            <span>
+                                              GET
+                                            </span>
                                           </code>
                                         </span>
                                          HTTP method and the 
@@ -946,7 +964,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            _search
+                                            <span>
+                                              _search
+                                            </span>
                                           </code>
                                         </span>
                                          endpoint.
@@ -983,7 +1003,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            speaker
+                                            <span>
+                                              speaker
+                                            </span>
                                           </code>
                                         </span>
                                          and 
@@ -993,7 +1015,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            text_entry
+                                            <span>
+                                              text_entry
+                                            </span>
                                           </code>
                                         </span>
                                          fields of the 
@@ -1004,7 +1028,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            shakespeare
+                                            <span>
+                                              shakespeare
+                                            </span>
                                           </code>
                                         </span>
                                          index for the search text:
@@ -1249,7 +1275,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            speaker
+                                            <span>
+                                              speaker
+                                            </span>
                                           </code>
                                         </span>
                                          field:
@@ -1644,7 +1672,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              %SearchText%
+                                              <span>
+                                                %SearchText%
+                                              </span>
                                             </code>
                                           </span>
                                            variable to refer 
@@ -1662,7 +1692,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              GET
+                                              <span>
+                                                GET
+                                              </span>
                                             </code>
                                           </span>
                                            HTTP method and the 
@@ -1672,7 +1704,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              _search
+                                              <span>
+                                                _search
+                                              </span>
                                             </code>
                                           </span>
                                            endpoint.
@@ -1709,7 +1743,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              speaker
+                                              <span>
+                                                speaker
+                                              </span>
                                             </code>
                                           </span>
                                            and 
@@ -1719,7 +1755,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              text_entry
+                                              <span>
+                                                text_entry
+                                              </span>
                                             </code>
                                           </span>
                                            fields of the 
@@ -1730,7 +1768,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              shakespeare
+                                              <span>
+                                                shakespeare
+                                              </span>
                                             </code>
                                           </span>
                                            index for the search text:
@@ -1975,7 +2015,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              speaker
+                                              <span>
+                                                speaker
+                                              </span>
                                             </code>
                                           </span>
                                            field:
@@ -2370,7 +2412,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                %SearchText%
+                                                <span>
+                                                  %SearchText%
+                                                </span>
                                               </code>
                                             </span>
                                              variable to refer 
@@ -2388,7 +2432,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                GET
+                                                <span>
+                                                  GET
+                                                </span>
                                               </code>
                                             </span>
                                              HTTP method and the 
@@ -2398,7 +2444,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                _search
+                                                <span>
+                                                  _search
+                                                </span>
                                               </code>
                                             </span>
                                              endpoint.
@@ -2435,7 +2483,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                speaker
+                                                <span>
+                                                  speaker
+                                                </span>
                                               </code>
                                             </span>
                                              and 
@@ -2445,7 +2495,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                text_entry
+                                                <span>
+                                                  text_entry
+                                                </span>
                                               </code>
                                             </span>
                                              fields of the 
@@ -2456,7 +2508,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                shakespeare
+                                                <span>
+                                                  shakespeare
+                                                </span>
                                               </code>
                                             </span>
                                              index for the search text:
@@ -2701,7 +2755,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 class="euiCodeBlock__code"
                                               >
-                                                speaker
+                                                <span>
+                                                  speaker
+                                                </span>
                                               </code>
                                             </span>
                                              field:
@@ -3084,7 +3140,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  %SearchText%
+                                                  <span>
+                                                    %SearchText%
+                                                  </span>
                                                 </code>
                                               </span>
                                                variable to refer 
@@ -3102,7 +3160,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  GET
+                                                  <span>
+                                                    GET
+                                                  </span>
                                                 </code>
                                               </span>
                                                HTTP method and the 
@@ -3112,7 +3172,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  _search
+                                                  <span>
+                                                    _search
+                                                  </span>
                                                 </code>
                                               </span>
                                                endpoint.
@@ -3149,7 +3211,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  speaker
+                                                  <span>
+                                                    speaker
+                                                  </span>
                                                 </code>
                                               </span>
                                                and 
@@ -3159,7 +3223,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  text_entry
+                                                  <span>
+                                                    text_entry
+                                                  </span>
                                                 </code>
                                               </span>
                                                fields of the 
@@ -3170,7 +3236,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  shakespeare
+                                                  <span>
+                                                    shakespeare
+                                                  </span>
                                                 </code>
                                               </span>
                                                index for the search text:
@@ -3415,7 +3483,9 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <code
                                                   class="euiCodeBlock__code"
                                                 >
-                                                  speaker
+                                                  <span>
+                                                    speaker
+                                                  </span>
                                                 </code>
                                               </span>
                                                field:
@@ -3850,10 +3920,18 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             values={
                                               Object {
                                                 "endpointName": <EuiCode>
-                                                  _search
+                                                  <FormattedMessage
+                                                    defaultMessage="_search"
+                                                    id="searchRelevance.flyout.queryFormatDetail.endpointNameCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                                 "methodName": <EuiCode>
-                                                  GET
+                                                  <FormattedMessage
+                                                    defaultMessage="GET"
+                                                    id="searchRelevance.flyout.queryFormatDetail.methodNameCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                                 "queryDslLink": <EuiLink
                                                   href="https://opensearch.org/docs/latest/opensearch/query-dsl/index/"
@@ -3873,7 +3951,11 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                   />
                                                 </strong>,
                                                 "variableName": <EuiCode>
-                                                  %SearchText%
+                                                  <FormattedMessage
+                                                    defaultMessage="%SearchText%"
+                                                    id="searchRelevance.flyout.queryFormatDetail.variableNameCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                               }
                                             }
@@ -3953,7 +4035,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      %SearchText%
+                                                      <FormattedMessage
+                                                        defaultMessage="%SearchText%"
+                                                        id="searchRelevance.flyout.queryFormatDetail.variableNameCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          %SearchText%
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -3984,7 +4074,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      GET
+                                                      <FormattedMessage
+                                                        defaultMessage="GET"
+                                                        id="searchRelevance.flyout.queryFormatDetail.methodNameCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          GET
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -4001,7 +4099,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      _search
+                                                      <FormattedMessage
+                                                        defaultMessage="_search"
+                                                        id="searchRelevance.flyout.queryFormatDetail.endpointNameCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          _search
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -4074,13 +4180,25 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             values={
                                               Object {
                                                 "shakespeare": <EuiCode>
-                                                  shakespeare
+                                                  <FormattedMessage
+                                                    defaultMessage="shakespeare"
+                                                    id="searchRelevance.flyout.exampleDetail.stepTwo.shakespeareCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                                 "speaker": <EuiCode>
-                                                  speaker
+                                                  <FormattedMessage
+                                                    defaultMessage="speaker"
+                                                    id="searchRelevance.flyout.exampleDetail.stepTwo.speakerCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                                 "textEntry": <EuiCode>
-                                                  text_entry
+                                                  <FormattedMessage
+                                                    defaultMessage="text_entry"
+                                                    id="searchRelevance.flyout.exampleDetail.stepTwo.textEntryCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                               }
                                             }
@@ -4098,7 +4216,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      speaker
+                                                      <FormattedMessage
+                                                        defaultMessage="speaker"
+                                                        id="searchRelevance.flyout.exampleDetail.stepTwo.speakerCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          speaker
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -4115,7 +4241,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      text_entry
+                                                      <FormattedMessage
+                                                        defaultMessage="text_entry"
+                                                        id="searchRelevance.flyout.exampleDetail.stepTwo.textEntryCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          text_entry
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -4133,7 +4267,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      shakespeare
+                                                      <FormattedMessage
+                                                        defaultMessage="shakespeare"
+                                                        id="searchRelevance.flyout.exampleDetail.stepTwo.shakespeareCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          shakespeare
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
@@ -4499,7 +4641,11 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             values={
                                               Object {
                                                 "speaker": <EuiCode>
-                                                  speaker
+                                                  <FormattedMessage
+                                                    defaultMessage="speaker"
+                                                    id="searchRelevance.flyout.exampleDetail.stepThree.speakerCodeLabel"
+                                                    values={Object {}}
+                                                  />
                                                 </EuiCode>,
                                               }
                                             }
@@ -4518,7 +4664,15 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     <code
                                                       className="euiCodeBlock__code"
                                                     >
-                                                      speaker
+                                                      <FormattedMessage
+                                                        defaultMessage="speaker"
+                                                        id="searchRelevance.flyout.exampleDetail.stepThree.speakerCodeLabel"
+                                                        values={Object {}}
+                                                      >
+                                                        <span>
+                                                          speaker
+                                                        </span>
+                                                      </FormattedMessage>
                                                     </code>
                                                   </span>
                                                 </EuiCodeBlockImpl>
