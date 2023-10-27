@@ -8,16 +8,16 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { Header } from '../header';
-import { I18nProvider } from '@osd/i18n/react';
+import { IntlProvider } from 'react-intl';
 
 describe('Header component', () => {
   configure({ adapter: new Adapter() });
 
   it('Renders header component', async () => {
     const wrapper = mount(
-      <I18nProvider>
+      <IntlProvider locale="en">
         <Header />
-      </I18nProvider>
+      </IntlProvider>
     );
 
     wrapper.update();

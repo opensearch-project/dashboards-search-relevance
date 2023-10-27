@@ -9,18 +9,18 @@ import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { Flyout } from '../flyout';
 import { SearchRelevanceContextProvider } from '../../../contexts';
-import { I18nProvider } from '@osd/i18n/react';
+import { IntlProvider } from 'react-intl';
 
 describe('Flyout component', () => {
   configure({ adapter: new Adapter() });
 
   it('Renders flyout component', async () => {
     const wrapper = mount(
-      <I18nProvider>
+      <IntlProvider locale="en">
         <SearchRelevanceContextProvider>
           <Flyout />
         </SearchRelevanceContextProvider>
-      </I18nProvider>
+      </IntlProvider>
     );
 
     wrapper.update();
