@@ -15,18 +15,21 @@ import {
 } from '../../../../../../test/constants';
 import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { ResultPanel } from '../result_panel';
+import { I18nProvider } from '@osd/i18n/react';
 
 describe('Result grid component', () => {
   configure({ adapter: new Adapter() });
   it('Renders result grid component', async () => {
     const wrapper = mount(
-      <SearchRelevanceContextProvider>
-        <ResultGridComponent
-          queryResult={TEST_QUERY_RESPONSE}
-          resultNumber={1}
-          comparedDocumentsRank={TEST_COMPARED_DOCUMENTS_RANK}
-        />
-      </SearchRelevanceContextProvider>
+      <I18nProvider>
+        <SearchRelevanceContextProvider>
+          <ResultGridComponent
+            queryResult={TEST_QUERY_RESPONSE}
+            resultNumber={1}
+            comparedDocumentsRank={TEST_COMPARED_DOCUMENTS_RANK}
+          />
+        </SearchRelevanceContextProvider>
+      </I18nProvider>
     );
 
     wrapper.update();
@@ -41,13 +44,15 @@ describe('Result panel query error', () => {
   configure({ adapter: new Adapter() });
   it('Displays error message on query error', async () => {
     const wrapper = mount(
-      <SearchRelevanceContextProvider>
-        <ResultPanel
-          resultNumber={1}
-          queryResult={TEST_QUERY_RESPONSE}
-          queryError={TEST_QUERY_ERROR}
-        />
-      </SearchRelevanceContextProvider>
+      <I18nProvider>
+        <SearchRelevanceContextProvider>
+          <ResultPanel
+            resultNumber={1}
+            queryResult={TEST_QUERY_RESPONSE}
+            queryError={TEST_QUERY_ERROR}
+          />
+        </SearchRelevanceContextProvider>
+      </I18nProvider>
     );
 
     wrapper.update();

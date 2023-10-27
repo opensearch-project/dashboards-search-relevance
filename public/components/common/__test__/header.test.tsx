@@ -8,12 +8,17 @@ import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { Header } from '../header';
+import { I18nProvider } from '@osd/i18n/react';
 
 describe('Header component', () => {
   configure({ adapter: new Adapter() });
 
   it('Renders header component', async () => {
-    const wrapper = mount(<Header />);
+    const wrapper = mount(
+      <I18nProvider>
+        <Header />
+      </I18nProvider>
+    );
 
     wrapper.update();
 

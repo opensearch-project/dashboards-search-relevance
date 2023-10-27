@@ -1,227 +1,346 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Create index component Renders create index component 1`] = `
-<CreateIndex>
-  <Header>
-    <EuiPanel
-      borderRadius="none"
-      color="transparent"
-      grow={false}
-      hasBorder={false}
-      hasShadow={false}
-    >
-      <div
-        className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
-      >
-        <EuiTitle>
-          <h1
-            className="euiTitle euiTitle--medium"
+<I18nProvider>
+  <IntlProvider
+    defaultLocale="en"
+    formats={
+      Object {
+        "date": Object {
+          "full": Object {
+            "day": "numeric",
+            "month": "long",
+            "weekday": "long",
+            "year": "numeric",
+          },
+          "long": Object {
+            "day": "numeric",
+            "month": "long",
+            "year": "numeric",
+          },
+          "medium": Object {
+            "day": "numeric",
+            "month": "short",
+            "year": "numeric",
+          },
+          "short": Object {
+            "day": "numeric",
+            "month": "numeric",
+            "year": "2-digit",
+          },
+        },
+        "number": Object {
+          "currency": Object {
+            "style": "currency",
+          },
+          "percent": Object {
+            "style": "percent",
+          },
+        },
+        "relative": Object {
+          "days": Object {
+            "units": "day",
+          },
+          "hours": Object {
+            "units": "hour",
+          },
+          "minutes": Object {
+            "units": "minute",
+          },
+          "months": Object {
+            "units": "month",
+          },
+          "seconds": Object {
+            "units": "second",
+          },
+          "years": Object {
+            "units": "year",
+          },
+        },
+        "time": Object {
+          "full": Object {
+            "hour": "numeric",
+            "minute": "numeric",
+            "second": "numeric",
+            "timeZoneName": "short",
+          },
+          "long": Object {
+            "hour": "numeric",
+            "minute": "numeric",
+            "second": "numeric",
+            "timeZoneName": "short",
+          },
+          "medium": Object {
+            "hour": "numeric",
+            "minute": "numeric",
+            "second": "numeric",
+          },
+          "short": Object {
+            "hour": "numeric",
+            "minute": "numeric",
+          },
+        },
+      }
+    }
+    locale="en"
+    messages={Object {}}
+    textComponent={Symbol(react.fragment)}
+  >
+    <PseudoLocaleWrapper>
+      <CreateIndex>
+        <Header>
+          <EuiPanel
+            borderRadius="none"
+            color="transparent"
+            grow={false}
+            hasBorder={false}
+            hasShadow={false}
           >
-            Compare search results
-          </h1>
-        </EuiTitle>
-        <EuiText>
-          <div
-            className="euiText euiText--medium"
-          >
-            <p>
-              Compare results using the same search text with different queries.
-               
-              <EuiLink
-                href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                target="_blank"
-              >
-                <a
-                  className="euiLink euiLink--primary"
-                  href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                  rel="noopener noreferrer"
-                  target="_blank"
+            <div
+              className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
+            >
+              <EuiTitle>
+                <h1
+                  className="euiTitle euiTitle--medium"
                 >
-                  Learn more
-                  <EuiIcon
-                    aria-label="External link"
-                    className="euiLink__externalIcon"
-                    size="s"
-                    type="popout"
+                  <FormattedMessage
+                    defaultMessage="Compare search results"
+                    id="searchRelevance.header.title"
+                    values={Object {}}
                   >
-                    <EuiIconEmpty
-                      aria-hidden={true}
-                      aria-label="External link"
-                      className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                      focusable="false"
-                      role="img"
-                      style={null}
-                    >
-                      <svg
-                        aria-hidden={true}
-                        aria-label="External link"
-                        className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                        focusable="false"
-                        height={16}
-                        role="img"
-                        style={null}
-                        viewBox="0 0 16 16"
-                        width={16}
-                        xmlns="http://www.w3.org/2000/svg"
-                      />
-                    </EuiIconEmpty>
-                  </EuiIcon>
-                  <EuiScreenReaderOnly>
-                    <span
-                      className="euiScreenReaderOnly"
-                    >
-                      <EuiI18n
-                        default="(opens in a new tab or window)"
-                        token="euiLink.newTarget.screenReaderOnlyText"
-                      >
-                        (opens in a new tab or window)
-                      </EuiI18n>
-                    </span>
-                  </EuiScreenReaderOnly>
-                </a>
-              </EuiLink>
-            </p>
-          </div>
-        </EuiText>
-      </div>
-    </EuiPanel>
-  </Header>
-  <EuiPageBody>
-    <div
-      className="euiPageBody euiPageBody--borderRadiusNone"
-    >
-      <EuiEmptyPrompt
-        body={
-          <p>
-            Before you can query data, you need to index it.
-             
-            <EuiLink
-              href="https://opensearch.org/docs/latest/opensearch/index-data/"
-              target="_blank"
-            >
-              Learn how to index your data
-            </EuiLink>
-            , or 
-            <EuiLink
-              href="/app/home#/tutorial_directory"
-            >
-              add sample data 
-            </EuiLink>
-            to OpenSearch Dashboards.
-          </p>
-        }
-        title={
-          <h2>
-            Create an index to start comparing search results. 
-          </h2>
-        }
-      >
-        <div
-          className="euiEmptyPrompt"
-        >
-          <EuiTitle
-            size="m"
-          >
-            <h2
-              className="euiTitle euiTitle--medium"
-            >
-              Create an index to start comparing search results. 
-            </h2>
-          </EuiTitle>
-          <EuiTextColor
-            color="subdued"
-          >
-            <span
-              className="euiTextColor euiTextColor--subdued"
-            >
-              <EuiSpacer
-                size="m"
-              >
-                <div
-                  className="euiSpacer euiSpacer--m"
-                />
-              </EuiSpacer>
+                    Compare search results
+                  </FormattedMessage>
+                </h1>
+              </EuiTitle>
               <EuiText>
                 <div
                   className="euiText euiText--medium"
                 >
                   <p>
-                    Before you can query data, you need to index it.
-                     
-                    <EuiLink
-                      href="https://opensearch.org/docs/latest/opensearch/index-data/"
-                      target="_blank"
+                    <FormattedMessage
+                      defaultMessage="Compare results using the same search text with different queries. {learnMoreLink}"
+                      id="searchRelevance.header.description"
+                      values={
+                        Object {
+                          "learnMoreLink": <EuiLink
+                            href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                            target="_blank"
+                          >
+                            <FormattedMessage
+                              defaultMessage="Learn more"
+                              id="searchRelevance.header.description.learnMoreLinkLabel"
+                              values={Object {}}
+                            />
+                          </EuiLink>,
+                        }
+                      }
                     >
-                      <a
-                        className="euiLink euiLink--primary"
-                        href="https://opensearch.org/docs/latest/opensearch/index-data/"
-                        rel="noopener noreferrer"
+                      Compare results using the same search text with different queries. 
+                      <EuiLink
+                        href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
                         target="_blank"
                       >
-                        Learn how to index your data
-                        <EuiIcon
-                          aria-label="External link"
-                          className="euiLink__externalIcon"
-                          size="s"
-                          type="popout"
+                        <a
+                          className="euiLink euiLink--primary"
+                          href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                          rel="noopener noreferrer"
+                          target="_blank"
                         >
-                          <EuiIconEmpty
-                            aria-hidden={true}
-                            aria-label="External link"
-                            className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                            focusable="false"
-                            role="img"
-                            style={null}
+                          <FormattedMessage
+                            defaultMessage="Learn more"
+                            id="searchRelevance.header.description.learnMoreLinkLabel"
+                            values={Object {}}
                           >
-                            <svg
+                            Learn more
+                          </FormattedMessage>
+                          <EuiIcon
+                            aria-label="External link"
+                            className="euiLink__externalIcon"
+                            size="s"
+                            type="popout"
+                          >
+                            <EuiIconEmpty
                               aria-hidden={true}
                               aria-label="External link"
                               className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
                               focusable="false"
-                              height={16}
                               role="img"
                               style={null}
-                              viewBox="0 0 16 16"
-                              width={16}
-                              xmlns="http://www.w3.org/2000/svg"
-                            />
-                          </EuiIconEmpty>
-                        </EuiIcon>
-                        <EuiScreenReaderOnly>
-                          <span
-                            className="euiScreenReaderOnly"
-                          >
-                            <EuiI18n
-                              default="(opens in a new tab or window)"
-                              token="euiLink.newTarget.screenReaderOnlyText"
                             >
-                              (opens in a new tab or window)
-                            </EuiI18n>
-                          </span>
-                        </EuiScreenReaderOnly>
-                      </a>
-                    </EuiLink>
-                    , or 
-                    <EuiLink
-                      href="/app/home#/tutorial_directory"
-                    >
-                      <a
-                        className="euiLink euiLink--primary"
-                        href="/app/home#/tutorial_directory"
-                        rel="noreferrer"
-                      >
-                        add sample data 
-                      </a>
-                    </EuiLink>
-                    to OpenSearch Dashboards.
+                              <svg
+                                aria-hidden={true}
+                                aria-label="External link"
+                                className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                focusable="false"
+                                height={16}
+                                role="img"
+                                style={null}
+                                viewBox="0 0 16 16"
+                                width={16}
+                                xmlns="http://www.w3.org/2000/svg"
+                              />
+                            </EuiIconEmpty>
+                          </EuiIcon>
+                          <EuiScreenReaderOnly>
+                            <span
+                              className="euiScreenReaderOnly"
+                            >
+                              <EuiI18n
+                                default="(opens in a new tab or window)"
+                                token="euiLink.newTarget.screenReaderOnlyText"
+                              >
+                                (opens in a new tab or window)
+                              </EuiI18n>
+                            </span>
+                          </EuiScreenReaderOnly>
+                        </a>
+                      </EuiLink>
+                    </FormattedMessage>
                   </p>
                 </div>
               </EuiText>
-            </span>
-          </EuiTextColor>
-        </div>
-      </EuiEmptyPrompt>
-    </div>
-  </EuiPageBody>
-</CreateIndex>
+            </div>
+          </EuiPanel>
+        </Header>
+        <EuiPageBody>
+          <div
+            className="euiPageBody euiPageBody--borderRadiusNone"
+          >
+            <EuiEmptyPrompt
+              body={
+                <p>
+                  Before you can query data, you need to index it.
+                   
+                  <EuiLink
+                    href="https://opensearch.org/docs/latest/opensearch/index-data/"
+                    target="_blank"
+                  >
+                    Learn how to index your data
+                  </EuiLink>
+                  , or 
+                  <EuiLink
+                    href="/app/home#/tutorial_directory"
+                  >
+                    add sample data 
+                  </EuiLink>
+                  to OpenSearch Dashboards.
+                </p>
+              }
+              title={
+                <h2>
+                  Create an index to start comparing search results. 
+                </h2>
+              }
+            >
+              <div
+                className="euiEmptyPrompt"
+              >
+                <EuiTitle
+                  size="m"
+                >
+                  <h2
+                    className="euiTitle euiTitle--medium"
+                  >
+                    Create an index to start comparing search results. 
+                  </h2>
+                </EuiTitle>
+                <EuiTextColor
+                  color="subdued"
+                >
+                  <span
+                    className="euiTextColor euiTextColor--subdued"
+                  >
+                    <EuiSpacer
+                      size="m"
+                    >
+                      <div
+                        className="euiSpacer euiSpacer--m"
+                      />
+                    </EuiSpacer>
+                    <EuiText>
+                      <div
+                        className="euiText euiText--medium"
+                      >
+                        <p>
+                          Before you can query data, you need to index it.
+                           
+                          <EuiLink
+                            href="https://opensearch.org/docs/latest/opensearch/index-data/"
+                            target="_blank"
+                          >
+                            <a
+                              className="euiLink euiLink--primary"
+                              href="https://opensearch.org/docs/latest/opensearch/index-data/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              Learn how to index your data
+                              <EuiIcon
+                                aria-label="External link"
+                                className="euiLink__externalIcon"
+                                size="s"
+                                type="popout"
+                              >
+                                <EuiIconEmpty
+                                  aria-hidden={true}
+                                  aria-label="External link"
+                                  className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                  focusable="false"
+                                  role="img"
+                                  style={null}
+                                >
+                                  <svg
+                                    aria-hidden={true}
+                                    aria-label="External link"
+                                    className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                    focusable="false"
+                                    height={16}
+                                    role="img"
+                                    style={null}
+                                    viewBox="0 0 16 16"
+                                    width={16}
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  />
+                                </EuiIconEmpty>
+                              </EuiIcon>
+                              <EuiScreenReaderOnly>
+                                <span
+                                  className="euiScreenReaderOnly"
+                                >
+                                  <EuiI18n
+                                    default="(opens in a new tab or window)"
+                                    token="euiLink.newTarget.screenReaderOnlyText"
+                                  >
+                                    (opens in a new tab or window)
+                                  </EuiI18n>
+                                </span>
+                              </EuiScreenReaderOnly>
+                            </a>
+                          </EuiLink>
+                          , or 
+                          <EuiLink
+                            href="/app/home#/tutorial_directory"
+                          >
+                            <a
+                              className="euiLink euiLink--primary"
+                              href="/app/home#/tutorial_directory"
+                              rel="noreferrer"
+                            >
+                              add sample data 
+                            </a>
+                          </EuiLink>
+                          to OpenSearch Dashboards.
+                        </p>
+                      </div>
+                    </EuiText>
+                  </span>
+                </EuiTextColor>
+              </div>
+            </EuiEmptyPrompt>
+          </div>
+        </EuiPageBody>
+      </CreateIndex>
+    </PseudoLocaleWrapper>
+  </IntlProvider>
+</I18nProvider>
 `;
