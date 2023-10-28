@@ -48,9 +48,9 @@ export const ResultGridComponent = ({
     const sourceFields = Object.assign(doc._source, doc.fields);
 
     return (
-      <div className="truncate-by-heights">
+      <div className="truncate-by-height">
         <span>
-          <dl className="source truncate-by-heights">
+          <dl className="source truncate-by-height">
             {_.toPairs(sourceFields).map((entry: string[]) => {
               return (
                 <>
