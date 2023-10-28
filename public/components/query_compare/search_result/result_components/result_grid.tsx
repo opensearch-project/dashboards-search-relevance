@@ -44,17 +44,19 @@ export const ResultGridComponent = ({
     );
   };
 
-  const getDlTmpl = (doc: IDocType) => {
+  const getDlTmpl = (doc: Document) => {
+    const sourceFields = Object.assign(doc._source, doc.fields);
+
     return (
-      <div className="truncate-by-height">
+      <div className="truncate-by-heights">
         <span>
-          <dl className="source truncate-by-height">
-            {_.toPairs(doc).map((entry: string[]) => {
+          <dl className="source truncate-by-heights">
+            {_.toPairs(sourceFields).map((entry: string[]) => {
               return (
                 <>
                   <dt>{`${entry[0]}:`}</dt>
                   <dd>
-                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
+                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]}</span>
                   </dd>
                 </>
               );
@@ -165,11 +167,11 @@ export const ResultGridComponent = ({
     cols.push(getRankColumn(document._id, documentRank));
 
     // No field is selected
-    const _sourceLikeDOM = getDlTmpl(document._source);
+    const _sourceFieldsLikeDOM = getDlTmpl(document);
     cols.push(
       getTdTmpl({
         clsName: fieldClsName,
-        content: _sourceLikeDOM,
+        content: _sourceFieldsLikeDOM,
       })
     );
 
