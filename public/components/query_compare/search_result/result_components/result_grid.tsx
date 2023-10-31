@@ -56,7 +56,7 @@ export const ResultGridComponent = ({
                 <>
                   <dt>{`${entry[0]}:`}</dt>
                   <dd>
-                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]}</span>
+                    <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
                   </dd>
                 </>
               );

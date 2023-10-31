@@ -323,6 +323,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         ["el1","el2","el3"]
+                         
                       </span>
                     </dd>
                     <dt>
@@ -331,6 +332,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         3920564
+                         
                       </span>
                     </dd>
                     <dt>
@@ -339,6 +341,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         006R90321
+                         
                       </span>
                     </dd>
                     <dt>
@@ -347,6 +350,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Xerox 006R90321 toner cartridge Original Black 6 pc(s)
+                         
                       </span>
                     </dd>
                     <dt>
@@ -355,6 +359,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Toner (6 Per Box) for CopyCentre C65 Digital Copier
+                         
                       </span>
                     </dd>
                     <dt>
@@ -363,6 +368,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -371,6 +377,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2009-12-10T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -379,6 +386,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Xerox
+                         
                       </span>
                     </dd>
                     <dt>
@@ -387,6 +395,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         4995
+                         
                       </span>
                     </dd>
                   </dl>
@@ -506,6 +515,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         {"key1":[1,true,null],"key2":{"key21":"element"}}
+                         
                       </span>
                     </dd>
                     <dt>
@@ -514,6 +524,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2101957
+                         
                       </span>
                     </dd>
                     <dt>
@@ -522,6 +533,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         dv7-1211ea
+                         
                       </span>
                     </dd>
                     <dt>
@@ -530,6 +542,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium
+                         
                       </span>
                     </dd>
                     <dt>
@@ -538,6 +551,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit
+                         
                       </span>
                     </dd>
                     <dt>
@@ -546,6 +560,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -554,6 +569,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2008-12-19T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -562,6 +578,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HP
+                         
                       </span>
                     </dd>
                     <dt>
@@ -570,6 +587,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         10995
+                         
                       </span>
                     </dd>
                     <dt>
@@ -578,6 +596,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Silver
+                         
                       </span>
                     </dd>
                   </dl>
@@ -697,6 +716,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1128895
+                         
                       </span>
                     </dd>
                     <dt>
@@ -705,6 +725,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         DB9 RS232 Serial Null Modem Adapter - M/F
+                         
                       </span>
                     </dd>
                     <dt>
@@ -713,6 +734,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                         
                       </span>
                     </dd>
                     <dt>
@@ -721,6 +743,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                         
                       </span>
                     </dd>
                     <dt>
@@ -729,6 +752,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -737,6 +761,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2007-08-09T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -745,6 +770,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         StarTech.com
+                         
                       </span>
                     </dd>
                     <dt>
@@ -753,6 +779,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         595
+                         
                       </span>
                     </dd>
                     <dt>
@@ -761,6 +788,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Grey
+                         
                       </span>
                     </dd>
                   </dl>
@@ -880,6 +908,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1449722
+                         
                       </span>
                     </dd>
                     <dt>
@@ -888,6 +917,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         ProCurve 420 Wireless Access Point
+                         
                       </span>
                     </dd>
                     <dt>
@@ -896,6 +926,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HP ProCurve 420 Wireless Access Point
+                         
                       </span>
                     </dd>
                     <dt>
@@ -904,6 +935,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY
+                         
                       </span>
                     </dd>
                     <dt>
@@ -912,6 +944,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -920,6 +953,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2008-03-07T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -928,6 +962,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HP
+                         
                       </span>
                     </dd>
                     <dt>
@@ -936,6 +971,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         9495
+                         
                       </span>
                     </dd>
                   </dl>
@@ -1116,6 +1152,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1625640
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1124,6 +1161,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2GB SD Card
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1132,6 +1170,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Integral 2GB SD Card memory card
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1140,6 +1179,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2GB SD Card
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1148,6 +1188,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1156,6 +1197,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2008-06-23T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1164,6 +1206,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Integral
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1172,6 +1215,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1195
+                         
                       </span>
                     </dd>
                   </dl>
@@ -1352,6 +1396,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2067378
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1360,6 +1405,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         LC51C
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1368,6 +1414,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Brother LC51C Original Cyan
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1376,6 +1423,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         LC51C
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1384,6 +1432,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1392,6 +1441,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2009-04-08T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1400,6 +1450,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Brother
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1408,6 +1459,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1795
+                         
                       </span>
                     </dd>
                   </dl>
@@ -1588,6 +1640,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         636678
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1596,6 +1649,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Emergency Power Off (EPO)
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1604,6 +1658,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         APC Emergency Power Off (EPO)
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1612,6 +1667,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Emergency Power Off (EPO)
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1620,6 +1676,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1628,6 +1685,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2006-11-15T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1636,6 +1694,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         APC
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1644,6 +1703,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         69195
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1652,6 +1712,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Black
+                         
                       </span>
                     </dd>
                   </dl>
@@ -1832,6 +1893,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         1570809
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1840,6 +1902,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1848,6 +1911,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1856,6 +1920,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1864,6 +1929,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1872,6 +1938,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2008-04-11T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1880,6 +1947,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         APC
+                         
                       </span>
                     </dd>
                     <dt>
@@ -1888,6 +1956,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         53895
+                         
                       </span>
                     </dd>
                   </dl>
@@ -2068,6 +2137,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         148843
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2076,6 +2146,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2084,6 +2155,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2092,6 +2164,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2100,6 +2173,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2108,6 +2182,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2005-07-15T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2116,6 +2191,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         HERMA
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2124,6 +2200,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         3795
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2132,6 +2209,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         White
+                         
                       </span>
                     </dd>
                   </dl>
@@ -2312,6 +2390,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         968447
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2320,6 +2399,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2328,6 +2408,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2336,6 +2417,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2344,6 +2426,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2352,6 +2435,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         2007-08-09T00:00:00Z
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2360,6 +2444,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         OKI
+                         
                       </span>
                     </dd>
                     <dt>
@@ -2368,6 +2453,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                     <dd>
                       <span>
                         20395
+                         
                       </span>
                     </dd>
                   </dl>
