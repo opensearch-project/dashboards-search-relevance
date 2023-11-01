@@ -3,24 +3,24 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configure, mount } from 'enzyme';
+import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { Flyout } from '../flyout';
 import { SearchRelevanceContextProvider } from '../../../contexts';
-import { IntlProvider } from 'react-intl';
+import { I18nProvider } from '@osd/i18n/react';
 
 describe('Flyout component', () => {
   configure({ adapter: new Adapter() });
 
   it('Renders flyout component', async () => {
-    const wrapper = mount(
-      <IntlProvider locale="en">
+    const wrapper = shallow(
+      <I18nProvider>
         <SearchRelevanceContextProvider>
           <Flyout />
         </SearchRelevanceContextProvider>
-      </IntlProvider>
+      </I18nProvider>
     );
 
     wrapper.update();
