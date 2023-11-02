@@ -6,10 +6,93 @@ env:
   PLUGIN_NAME: dashboards-search-relevance
 
 jobs:
-  build:
+  Get-CI-Image-Tag:
+    uses: opensearch-project/opensearch-build/.github/workflows/get-ci-image-tag.yml@main
+    with:
+      product: opensearch-dashboards
+
+  build-linux:
+    needs: Get-CI-Image-Tag
+    runs-on: ubuntu-latest
+    container:
+      # using the same image which is used by opensearch-build team to build the OpenSearch Distribution
+      # this image tag is subject to change as more dependencies and updates will arrive over time
+      image: ${{ needs.Get-CI-Image-Tag.outputs.ci-image-version-linux }}
+      # need to switch to root so that github actions can install runner binary on container without permission issues.
+      options: --user root
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch Version Information
+        shell: bash
+        run: |
+          OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
+          if [[ "${{ github.event_name }}" == "push" ]]; then 
+            pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+                | jq -r '.[0].number')
+            url_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+                | jq -r '.[0].url')
+            pr_data=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                "$url_number")
+            echo "BRANCH_NAME is $BRANCH_NAME"
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
+            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
+          fi  
+          echo "Target branch: $BRANCH_NAME"
+          echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
+          echo "OPENSEARCH_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+
+      - name: Checkout Dashboards Search Relevance plugin
+        uses: actions/checkout@v3
+        with:
+          path: dashboards-search-relevance
+
+      - name: Checkout OpenSearch Dashboards
+        uses: actions/checkout@v3
+        with:
+          repository: opensearch-project/OpenSearch-Dashboards
+          ref: ${{ env.OPENSEARCH_VERSION }}
+          path: OpenSearch-Dashboards
+
+      - name: Move Search Relevance to Plugins Dir
+        run: mv dashboards-search-relevance OpenSearch-Dashboards/plugins/dashboards-search-relevance
+
+      - name: Plugin Bootstrap / test
+        run: |
+          chown -R 1000:1000 `pwd`
+          cd ./OpenSearch-Dashboards/
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
+                               cd ./plugins/dashboards-search-relevance &&
+                               whoami && yarn osd bootstrap && yarn test --coverage"
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
+        with:
+          flags: dashboards-search-relevance
+          directory: ./OpenSearch-Dashboards/plugins/dashboards-search-relevance
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Build Artifact
+        run: |
+          chown -R 1000:1000 `pwd`
+          cd ./OpenSearch-Dashboards/
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
+                               cd ./plugins/dashboards-search-relevance &&
+                               whoami && yarn build && mv -v ./build/*.zip ./build/${{ env.PLUGIN_NAME }}-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip"
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: dashboards-search-relevance-${{ matrix.os }}
+          path: ./OpenSearch-Dashboards/plugins/dashboards-search-relevance/build
+
+  build-macos-windows:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -80,14 +163,6 @@ jobs:
         run: |
           cd OpenSearch-Dashboards/plugins/dashboards-search-relevance
           yarn test --coverage
-
-      - name: Upload coverage
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        uses: codecov/codecov-action@v1
-        with:
-          flags: dashboards-search-relevance
-          directory: ./OpenSearch-Dashboards/plugins/dashboards-search-relevance
-          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build Artifact
         run: |
