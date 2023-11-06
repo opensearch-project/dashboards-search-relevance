@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   EuiButtonIcon,
   EuiLink,
@@ -14,6 +14,11 @@ import {
   EuiTitle,
   EuiIcon,
   EuiIconTip,
+  EuiDescriptionList,
+  EuiDescriptionListTitle,
+  EuiDescriptionListDescription,
+  EuiMark,
+  EuiPopover,
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
 
@@ -22,6 +27,7 @@ import { DocumentRank } from '../../../../contexts/utils';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_grid.scss';
+// import { unique } from 'vega-lite/src';
 
 interface ResultGridComponentProps {
   comparedDocumentsRank: DocumentRank;
@@ -36,10 +42,50 @@ export const ResultGridComponent = ({
 }: ResultGridComponentProps) => {
   const { selectedIndex1, selectedIndex2 } = useSearchRelevanceContext();
 
-  const getExpColapTd = () => {
+  const GetExpColapTd = (docSource: IDocType) => {
+    const [isResultDetailOpen, setIsResultDetailOpen] = useState(false);
+    const closeResultDetail = () => setIsResultDetailOpen(false);
     return (
       <td className="osdDocTableCell__toggleDetails" key={uniqueId('grid-td-')}>
-        <EuiButtonIcon className="euiButtonIcon euiButtonIcon--text" iconType="arrowLeft" />
+        <EuiPopover
+          button={
+            <EuiButtonIcon
+              aria-label="Toggle details"
+              className="euiButtonIcon euiButtonIcon--text"
+              iconType={isResultDetailOpen ? 'minimize' : 'expand'}
+              onClick={() => {
+                setIsResultDetailOpen(!isResultDetailOpen);
+              }}
+            />
+          }
+          isOpen={isResultDetailOpen}
+          closePopover={closeResultDetail}
+          anchorPosition="leftUp"
+        >
+          {/* <EuiText size="s" style={{ width: 300, height: 'fit-content', wordWrap: 'break-word' }}>
+            {JSON.stringify(docSource)}
+          </EuiText> */}
+          <EuiText
+            size="m"
+            className="eui-yScroll"
+            style={{
+              minWidth: 325,
+              width: '35vw',
+              wordWrap: 'break-word',
+              height: 220,
+              overflowY: 'auto',
+            }}
+          >
+            {_.toPairs(docSource).map((entry: string[]) => {
+              return (
+                <>
+                  <EuiMark>{`${entry[0]}: `}</EuiMark>
+                  {_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} <br />
+                </>
+              );
+            })}
+          </EuiText>
+        </EuiPopover>
       </td>
     );
   };
@@ -48,18 +94,22 @@ export const ResultGridComponent = ({
     return (
       <div className="truncate-by-height">
         <span>
-          <dl className="source truncate-by-height">
+          <EuiDescriptionList
+            className="source truncate-by-height"
+            textStyle="normal"
+            compressed={true}
+          >
             {_.toPairs(doc).map((entry: string[]) => {
               return (
                 <>
-                  <dt>{`${entry[0]}:`}</dt>
-                  <dd>
+                  <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>
+                  <EuiDescriptionListDescription>
                     <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
-                  </dd>
+                  </EuiDescriptionListDescription>
                 </>
               );
             })}
-          </dl>
+          </EuiDescriptionList>
         </span>
       </div>
     );
@@ -175,7 +225,7 @@ export const ResultGridComponent = ({
 
     // // Add detail toggling column
     // // cols.unshift(getExpColapTd());
-    // cols.push(getExpColapTd());
+    cols.push(GetExpColapTd(document._source));
 
     return cols;
   };
