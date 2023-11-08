@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Header component Renders header component 1`] = `
-<Header>
+<I18nProvider>
   <EuiPanel
     borderRadius="none"
     color="transparent"
@@ -9,80 +9,37 @@ exports[`Header component Renders header component 1`] = `
     hasBorder={false}
     hasShadow={false}
   >
-    <div
-      className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
-    >
-      <EuiTitle>
-        <h1
-          className="euiTitle euiTitle--medium"
-        >
-          Compare search results
-        </h1>
-      </EuiTitle>
-      <EuiText>
-        <div
-          className="euiText euiText--medium"
-        >
-          <p>
-            Compare results using the same search text with different queries.
-             
-            <EuiLink
-              href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-              target="_blank"
-            >
-              <a
-                className="euiLink euiLink--primary"
+    <EuiTitle>
+      <h1>
+        <FormattedMessage
+          defaultMessage="Compare search results"
+          id="searchRelevance.header.title"
+          values={Object {}}
+        />
+      </h1>
+    </EuiTitle>
+    <EuiText>
+      <p>
+        <FormattedMessage
+          defaultMessage="Compare results using the same search text with different queries. {learnMoreLink}"
+          id="searchRelevance.header.description"
+          values={
+            Object {
+              "learnMoreLink": <EuiLink
                 href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                rel="noopener noreferrer"
                 target="_blank"
               >
-                Learn more
-                <EuiIcon
-                  aria-label="External link"
-                  className="euiLink__externalIcon"
-                  size="s"
-                  type="popout"
-                >
-                  <EuiIconEmpty
-                    aria-hidden={true}
-                    aria-label="External link"
-                    className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                    focusable="false"
-                    role="img"
-                    style={null}
-                  >
-                    <svg
-                      aria-hidden={true}
-                      aria-label="External link"
-                      className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                      focusable="false"
-                      height={16}
-                      role="img"
-                      style={null}
-                      viewBox="0 0 16 16"
-                      width={16}
-                      xmlns="http://www.w3.org/2000/svg"
-                    />
-                  </EuiIconEmpty>
-                </EuiIcon>
-                <EuiScreenReaderOnly>
-                  <span
-                    className="euiScreenReaderOnly"
-                  >
-                    <EuiI18n
-                      default="(opens in a new tab or window)"
-                      token="euiLink.newTarget.screenReaderOnlyText"
-                    >
-                      (opens in a new tab or window)
-                    </EuiI18n>
-                  </span>
-                </EuiScreenReaderOnly>
-              </a>
-            </EuiLink>
-          </p>
-        </div>
-      </EuiText>
-    </div>
+                <FormattedMessage
+                  defaultMessage="Learn more"
+                  id="searchRelevance.header.description.learnMoreLinkLabel"
+                  values={Object {}}
+                />
+              </EuiLink>,
+            }
+          }
+        />
+      </p>
+    </EuiText>
   </EuiPanel>
-</Header>
+</I18nProvider>
 `;
