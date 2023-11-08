@@ -1,94 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Flyout component Renders flyout component 1`] = `
-<IntlProvider
-  defaultLocale="en"
-  formats={
+<ContextProvider
+  value={
     Object {
-      "date": Object {
-        "full": Object {
-          "day": "numeric",
-          "month": "long",
-          "weekday": "long",
-          "year": "numeric",
-        },
-        "long": Object {
-          "day": "numeric",
-          "month": "long",
-          "year": "numeric",
-        },
-        "medium": Object {
-          "day": "numeric",
-          "month": "short",
-          "year": "numeric",
-        },
-        "short": Object {
-          "day": "numeric",
-          "month": "numeric",
-          "year": "2-digit",
-        },
-      },
-      "number": Object {
-        "currency": Object {
-          "style": "currency",
-        },
-        "percent": Object {
-          "style": "percent",
-        },
-      },
-      "relative": Object {
-        "days": Object {
-          "units": "day",
-        },
-        "hours": Object {
-          "units": "hour",
-        },
-        "minutes": Object {
-          "units": "minute",
-        },
-        "months": Object {
-          "units": "month",
-        },
-        "seconds": Object {
-          "units": "second",
-        },
-        "years": Object {
-          "units": "year",
-        },
-      },
-      "time": Object {
-        "full": Object {
-          "hour": "numeric",
-          "minute": "numeric",
-          "second": "numeric",
-          "timeZoneName": "short",
-        },
-        "long": Object {
-          "hour": "numeric",
-          "minute": "numeric",
-          "second": "numeric",
-          "timeZoneName": "short",
-        },
-        "medium": Object {
-          "hour": "numeric",
-          "minute": "numeric",
-          "second": "numeric",
-        },
-        "short": Object {
-          "hour": "numeric",
-          "minute": "numeric",
-        },
-      },
+      "comparedResult1": Object {},
+      "comparedResult2": Object {},
+      "documentsIndexes": Array [],
+      "selectedIndex1": "",
+      "selectedIndex2": "",
+      "setDocumentsIndexes": [Function],
+      "setSelectedIndex1": [Function],
+      "setSelectedIndex2": [Function],
+      "setShowFlyout": [Function],
+      "showFlyout": false,
+      "updateComparedResult1": [Function],
+      "updateComparedResult2": [Function],
     }
   }
-  locale="en"
-  messages={Object {}}
-  textComponent={Symbol(react.fragment)}
 >
-  <PseudoLocaleWrapper>
-    <SearchRelevanceContextProvider>
-      <Flyout />
-    </SearchRelevanceContextProvider>
-  </PseudoLocaleWrapper>
-</IntlProvider>
+  <Flyout />
+</ContextProvider>
 `;

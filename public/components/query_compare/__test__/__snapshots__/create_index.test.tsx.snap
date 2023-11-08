@@ -89,118 +89,207 @@ exports[`Create index component Renders create index component 1`] = `
     <PseudoLocaleWrapper>
       <CreateIndex>
         <Header>
-          <EuiPanel
-            borderRadius="none"
-            color="transparent"
-            grow={false}
-            hasBorder={false}
-            hasShadow={false}
-          >
-            <div
-              className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
+          <I18nProvider>
+            <IntlProvider
+              defaultLocale="en"
+              formats={
+                Object {
+                  "date": Object {
+                    "full": Object {
+                      "day": "numeric",
+                      "month": "long",
+                      "weekday": "long",
+                      "year": "numeric",
+                    },
+                    "long": Object {
+                      "day": "numeric",
+                      "month": "long",
+                      "year": "numeric",
+                    },
+                    "medium": Object {
+                      "day": "numeric",
+                      "month": "short",
+                      "year": "numeric",
+                    },
+                    "short": Object {
+                      "day": "numeric",
+                      "month": "numeric",
+                      "year": "2-digit",
+                    },
+                  },
+                  "number": Object {
+                    "currency": Object {
+                      "style": "currency",
+                    },
+                    "percent": Object {
+                      "style": "percent",
+                    },
+                  },
+                  "relative": Object {
+                    "days": Object {
+                      "units": "day",
+                    },
+                    "hours": Object {
+                      "units": "hour",
+                    },
+                    "minutes": Object {
+                      "units": "minute",
+                    },
+                    "months": Object {
+                      "units": "month",
+                    },
+                    "seconds": Object {
+                      "units": "second",
+                    },
+                    "years": Object {
+                      "units": "year",
+                    },
+                  },
+                  "time": Object {
+                    "full": Object {
+                      "hour": "numeric",
+                      "minute": "numeric",
+                      "second": "numeric",
+                      "timeZoneName": "short",
+                    },
+                    "long": Object {
+                      "hour": "numeric",
+                      "minute": "numeric",
+                      "second": "numeric",
+                      "timeZoneName": "short",
+                    },
+                    "medium": Object {
+                      "hour": "numeric",
+                      "minute": "numeric",
+                      "second": "numeric",
+                    },
+                    "short": Object {
+                      "hour": "numeric",
+                      "minute": "numeric",
+                    },
+                  },
+                }
+              }
+              locale="en"
+              messages={Object {}}
+              textComponent={Symbol(react.fragment)}
             >
-              <EuiTitle>
-                <h1
-                  className="euiTitle euiTitle--medium"
+              <PseudoLocaleWrapper>
+                <EuiPanel
+                  borderRadius="none"
+                  color="transparent"
+                  grow={false}
+                  hasBorder={false}
+                  hasShadow={false}
                 >
-                  <FormattedMessage
-                    defaultMessage="Compare search results"
-                    id="searchRelevance.header.title"
-                    values={Object {}}
+                  <div
+                    className="euiPanel euiPanel--paddingMedium euiPanel--borderRadiusNone euiPanel--transparent euiPanel--noShadow euiPanel--noBorder euiPanel--flexGrowZero"
                   >
-                    Compare search results
-                  </FormattedMessage>
-                </h1>
-              </EuiTitle>
-              <EuiText>
-                <div
-                  className="euiText euiText--medium"
-                >
-                  <p>
-                    <FormattedMessage
-                      defaultMessage="Compare results using the same search text with different queries. {learnMoreLink}"
-                      id="searchRelevance.header.description"
-                      values={
-                        Object {
-                          "learnMoreLink": <EuiLink
-                            href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                            target="_blank"
-                          >
-                            <FormattedMessage
-                              defaultMessage="Learn more"
-                              id="searchRelevance.header.description.learnMoreLinkLabel"
-                              values={Object {}}
-                            />
-                          </EuiLink>,
-                        }
-                      }
-                    >
-                      Compare results using the same search text with different queries. 
-                      <EuiLink
-                        href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                        target="_blank"
+                    <EuiTitle>
+                      <h1
+                        className="euiTitle euiTitle--medium"
                       >
-                        <a
-                          className="euiLink euiLink--primary"
-                          href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
-                          rel="noopener noreferrer"
-                          target="_blank"
+                        <FormattedMessage
+                          defaultMessage="Compare search results"
+                          id="searchRelevance.header.title"
+                          values={Object {}}
                         >
+                          Compare search results
+                        </FormattedMessage>
+                      </h1>
+                    </EuiTitle>
+                    <EuiText>
+                      <div
+                        className="euiText euiText--medium"
+                      >
+                        <p>
                           <FormattedMessage
-                            defaultMessage="Learn more"
-                            id="searchRelevance.header.description.learnMoreLinkLabel"
-                            values={Object {}}
+                            defaultMessage="Compare results using the same search text with different queries. {learnMoreLink}"
+                            id="searchRelevance.header.description"
+                            values={
+                              Object {
+                                "learnMoreLink": <EuiLink
+                                  href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                                  target="_blank"
+                                >
+                                  <FormattedMessage
+                                    defaultMessage="Learn more"
+                                    id="searchRelevance.header.description.learnMoreLinkLabel"
+                                    values={Object {}}
+                                  />
+                                </EuiLink>,
+                              }
+                            }
                           >
-                            Learn more
-                          </FormattedMessage>
-                          <EuiIcon
-                            aria-label="External link"
-                            className="euiLink__externalIcon"
-                            size="s"
-                            type="popout"
-                          >
-                            <EuiIconEmpty
-                              aria-hidden={true}
-                              aria-label="External link"
-                              className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                              focusable="false"
-                              role="img"
-                              style={null}
+                            Compare results using the same search text with different queries. 
+                            <EuiLink
+                              href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                              target="_blank"
                             >
-                              <svg
-                                aria-hidden={true}
-                                aria-label="External link"
-                                className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
-                                focusable="false"
-                                height={16}
-                                role="img"
-                                style={null}
-                                viewBox="0 0 16 16"
-                                width={16}
-                                xmlns="http://www.w3.org/2000/svg"
-                              />
-                            </EuiIconEmpty>
-                          </EuiIcon>
-                          <EuiScreenReaderOnly>
-                            <span
-                              className="euiScreenReaderOnly"
-                            >
-                              <EuiI18n
-                                default="(opens in a new tab or window)"
-                                token="euiLink.newTarget.screenReaderOnlyText"
+                              <a
+                                className="euiLink euiLink--primary"
+                                href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                                rel="noopener noreferrer"
+                                target="_blank"
                               >
-                                (opens in a new tab or window)
-                              </EuiI18n>
-                            </span>
-                          </EuiScreenReaderOnly>
-                        </a>
-                      </EuiLink>
-                    </FormattedMessage>
-                  </p>
-                </div>
-              </EuiText>
-            </div>
-          </EuiPanel>
+                                <FormattedMessage
+                                  defaultMessage="Learn more"
+                                  id="searchRelevance.header.description.learnMoreLinkLabel"
+                                  values={Object {}}
+                                >
+                                  Learn more
+                                </FormattedMessage>
+                                <EuiIcon
+                                  aria-label="External link"
+                                  className="euiLink__externalIcon"
+                                  size="s"
+                                  type="popout"
+                                >
+                                  <EuiIconEmpty
+                                    aria-hidden={true}
+                                    aria-label="External link"
+                                    className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                    focusable="false"
+                                    role="img"
+                                    style={null}
+                                  >
+                                    <svg
+                                      aria-hidden={true}
+                                      aria-label="External link"
+                                      className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                      focusable="false"
+                                      height={16}
+                                      role="img"
+                                      style={null}
+                                      viewBox="0 0 16 16"
+                                      width={16}
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    />
+                                  </EuiIconEmpty>
+                                </EuiIcon>
+                                <EuiScreenReaderOnly>
+                                  <span
+                                    className="euiScreenReaderOnly"
+                                  >
+                                    <EuiI18n
+                                      default="(opens in a new tab or window)"
+                                      token="euiLink.newTarget.screenReaderOnlyText"
+                                    >
+                                      (opens in a new tab or window)
+                                    </EuiI18n>
+                                  </span>
+                                </EuiScreenReaderOnly>
+                              </a>
+                            </EuiLink>
+                          </FormattedMessage>
+                        </p>
+                      </div>
+                    </EuiText>
+                  </div>
+                </EuiPanel>
+              </PseudoLocaleWrapper>
+            </IntlProvider>
+          </I18nProvider>
         </Header>
         <EuiPageBody>
           <div
