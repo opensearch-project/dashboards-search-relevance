@@ -6,8 +6,6 @@
 import React, { useState } from 'react';
 import {
   EuiButtonIcon,
-  EuiLink,
-  EuiPanel,
   EuiText,
   EuiFlexGroup,
   EuiFlexItem,
@@ -27,7 +25,6 @@ import { DocumentRank } from '../../../../contexts/utils';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_grid.scss';
-// import { unique } from 'vega-lite/src';
 
 interface ResultGridComponentProps {
   comparedDocumentsRank: DocumentRank;
@@ -62,9 +59,6 @@ export const ResultGridComponent = ({
           closePopover={closeResultDetail}
           anchorPosition="leftUp"
         >
-          {/* <EuiText size="s" style={{ width: 300, height: 'fit-content', wordWrap: 'break-word' }}>
-            {JSON.stringify(docSource)}
-          </EuiText> */}
           <EuiText
             size="m"
             className="eui-yScroll"
@@ -223,8 +217,7 @@ export const ResultGridComponent = ({
       })
     );
 
-    // // Add detail toggling column
-    // // cols.unshift(getExpColapTd());
+    // Add detail toggling column
     cols.push(GetExpColapTd(document._source));
 
     return cols;
