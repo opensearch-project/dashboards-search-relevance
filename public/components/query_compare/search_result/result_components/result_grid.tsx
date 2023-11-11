@@ -20,7 +20,7 @@ import {
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
 
-import { IDocType, SearchResults, Document } from '../../../../types/index';
+import { IDocType, SearchResults, Document, QueryError } from '../../../../types/index';
 import { DocumentRank } from '../../../../contexts/utils';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
@@ -30,18 +30,29 @@ interface ResultGridComponentProps {
   comparedDocumentsRank: DocumentRank;
   queryResult: SearchResults;
   resultNumber: number;
+  setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
 export const ResultGridComponent = ({
   comparedDocumentsRank,
   queryResult,
   resultNumber,
+  setQueryError,
 }: ResultGridComponentProps) => {
   const { selectedIndex1, selectedIndex2 } = useSearchRelevanceContext();
 
   const GetExpColapTd = (docSource: IDocType) => {
     const [isResultDetailOpen, setIsResultDetailOpen] = useState(false);
     const closeResultDetail = () => setIsResultDetailOpen(false);
+
+    // Click on expand/collapse button
+    const toggleDetails = () => {
+      setIsResultDetailOpen(!isResultDetailOpen);
+      setQueryError((error: QueryError) => ({
+        ...error,
+      }));
+    };
+
     return (
       <td className="osdDocTableCell__toggleDetails" key={uniqueId('grid-td-')}>
         <EuiPopover
@@ -50,9 +61,7 @@ export const ResultGridComponent = ({
               aria-label="Toggle details"
               className="euiButtonIcon euiButtonIcon--text"
               iconType={isResultDetailOpen ? 'minimize' : 'expand'}
-              onClick={() => {
-                setIsResultDetailOpen(!isResultDetailOpen);
-              }}
+              onClick={toggleDetails}
             />
           }
           isOpen={isResultDetailOpen}
@@ -72,10 +81,10 @@ export const ResultGridComponent = ({
           >
             {_.toPairs(docSource).map((entry: string[]) => {
               return (
-                <>
+                <span key={uniqueId('popover-text-')}>
                   <EuiMark>{`${entry[0]}: `}</EuiMark>
                   {_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} <br />
-                </>
+                </span>
               );
             })}
           </EuiText>
@@ -95,12 +104,12 @@ export const ResultGridComponent = ({
           >
             {_.toPairs(doc).map((entry: string[]) => {
               return (
-                <>
-                  <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>
+                <span key={uniqueId('grid-dt-dd-')}>
+                  <EuiDescriptionListTitle>{`${entry[0]}`}</EuiDescriptionListTitle>
                   <EuiDescriptionListDescription>
                     <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
                   </EuiDescriptionListDescription>
-                </>
+                </span>
               );
             })}
           </EuiDescriptionList>
