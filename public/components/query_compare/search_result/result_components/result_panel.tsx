@@ -19,14 +19,21 @@ import { QueryError, SearchResults } from '../../../../types/index';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_components.scss';
+// import { set } from 'lodash';
 
 interface ResultPanelProps {
   resultNumber: number;
   queryResult: SearchResults;
   queryError: QueryError;
+  setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
-export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPanelProps) => {
+export const ResultPanel = ({
+  resultNumber,
+  queryResult,
+  queryError,
+  setQueryError,
+}: ResultPanelProps) => {
   const { comparedResult1, comparedResult2 } = useSearchRelevanceContext();
 
   const ErrorMessage = () => (
@@ -67,6 +74,7 @@ export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPan
           queryResult={queryResult}
           comparedDocumentsRank={getComparedDocumentsRank()}
           resultNumber={resultNumber}
+          setQueryError={setQueryError}
         />
       ) : (
         <>
