@@ -317,7 +317,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-2"
                     >
                       <dt>
@@ -329,8 +329,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-3"
                     >
                       <dt>
@@ -342,8 +342,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-4"
                     >
                       <dt>
@@ -355,8 +355,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-5"
                     >
                       <dt>
@@ -368,8 +368,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-6"
                     >
                       <dt>
@@ -381,8 +381,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-7"
                     >
                       <dt>
@@ -394,8 +394,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-8"
                     >
                       <dt>
@@ -407,8 +407,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-9"
                     >
                       <dt>
@@ -420,8 +420,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-10"
                     >
                       <dt>
@@ -433,7 +433,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -545,7 +545,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-13"
                     >
                       <dt>
@@ -557,8 +557,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-14"
                     >
                       <dt>
@@ -570,8 +570,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-15"
                     >
                       <dt>
@@ -583,8 +583,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-16"
                     >
                       <dt>
@@ -596,8 +596,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-17"
                     >
                       <dt>
@@ -609,8 +609,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-18"
                     >
                       <dt>
@@ -622,8 +622,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-19"
                     >
                       <dt>
@@ -635,8 +635,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-20"
                     >
                       <dt>
@@ -648,8 +648,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-21"
                     >
                       <dt>
@@ -661,8 +661,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-22"
                     >
                       <dt>
@@ -674,7 +674,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -786,7 +786,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-25"
                     >
                       <dt>
@@ -798,8 +798,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-26"
                     >
                       <dt>
@@ -811,8 +811,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-27"
                     >
                       <dt>
@@ -824,8 +824,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-28"
                     >
                       <dt>
@@ -837,8 +837,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-29"
                     >
                       <dt>
@@ -850,8 +850,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-30"
                     >
                       <dt>
@@ -863,8 +863,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-31"
                     >
                       <dt>
@@ -876,8 +876,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-32"
                     >
                       <dt>
@@ -889,8 +889,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-33"
                     >
                       <dt>
@@ -902,7 +902,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -1014,7 +1014,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-36"
                     >
                       <dt>
@@ -1026,8 +1026,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-37"
                     >
                       <dt>
@@ -1039,8 +1039,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-38"
                     >
                       <dt>
@@ -1052,8 +1052,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-39"
                     >
                       <dt>
@@ -1065,8 +1065,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-40"
                     >
                       <dt>
@@ -1078,8 +1078,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-41"
                     >
                       <dt>
@@ -1091,8 +1091,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-42"
                     >
                       <dt>
@@ -1104,8 +1104,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-43"
                     >
                       <dt>
@@ -1117,7 +1117,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -1290,7 +1290,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-46"
                     >
                       <dt>
@@ -1302,8 +1302,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-47"
                     >
                       <dt>
@@ -1315,8 +1315,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-48"
                     >
                       <dt>
@@ -1328,8 +1328,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-49"
                     >
                       <dt>
@@ -1341,8 +1341,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-50"
                     >
                       <dt>
@@ -1354,8 +1354,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-51"
                     >
                       <dt>
@@ -1367,8 +1367,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-52"
                     >
                       <dt>
@@ -1380,8 +1380,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-53"
                     >
                       <dt>
@@ -1393,7 +1393,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -1566,7 +1566,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-56"
                     >
                       <dt>
@@ -1578,8 +1578,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-57"
                     >
                       <dt>
@@ -1591,8 +1591,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-58"
                     >
                       <dt>
@@ -1604,8 +1604,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-59"
                     >
                       <dt>
@@ -1617,8 +1617,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-60"
                     >
                       <dt>
@@ -1630,8 +1630,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-61"
                     >
                       <dt>
@@ -1643,8 +1643,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-62"
                     >
                       <dt>
@@ -1656,8 +1656,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-63"
                     >
                       <dt>
@@ -1669,7 +1669,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -1842,7 +1842,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-66"
                     >
                       <dt>
@@ -1854,8 +1854,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-67"
                     >
                       <dt>
@@ -1867,8 +1867,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-68"
                     >
                       <dt>
@@ -1880,8 +1880,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-69"
                     >
                       <dt>
@@ -1893,8 +1893,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-70"
                     >
                       <dt>
@@ -1906,8 +1906,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-71"
                     >
                       <dt>
@@ -1919,8 +1919,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-72"
                     >
                       <dt>
@@ -1932,8 +1932,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-73"
                     >
                       <dt>
@@ -1945,8 +1945,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-74"
                     >
                       <dt>
@@ -1958,7 +1958,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -2131,7 +2131,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-77"
                     >
                       <dt>
@@ -2143,8 +2143,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-78"
                     >
                       <dt>
@@ -2156,8 +2156,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-79"
                     >
                       <dt>
@@ -2169,8 +2169,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-80"
                     >
                       <dt>
@@ -2182,8 +2182,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-81"
                     >
                       <dt>
@@ -2195,8 +2195,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-82"
                     >
                       <dt>
@@ -2208,8 +2208,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-83"
                     >
                       <dt>
@@ -2221,8 +2221,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-84"
                     >
                       <dt>
@@ -2234,7 +2234,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -2407,7 +2407,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-87"
                     >
                       <dt>
@@ -2419,8 +2419,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-88"
                     >
                       <dt>
@@ -2432,8 +2432,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-89"
                     >
                       <dt>
@@ -2445,8 +2445,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-90"
                     >
                       <dt>
@@ -2458,8 +2458,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-91"
                     >
                       <dt>
@@ -2471,8 +2471,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-92"
                     >
                       <dt>
@@ -2484,8 +2484,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-93"
                     >
                       <dt>
@@ -2497,8 +2497,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-94"
                     >
                       <dt>
@@ -2510,8 +2510,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-95"
                     >
                       <dt>
@@ -2523,7 +2523,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
@@ -2696,7 +2696,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                   <dl
                     className="source truncate-by-height"
                   >
-                    <div
+                    <span
                       key="grid-dt-dd-98"
                     >
                       <dt>
@@ -2708,8 +2708,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-99"
                     >
                       <dt>
@@ -2721,8 +2721,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-100"
                     >
                       <dt>
@@ -2734,8 +2734,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-101"
                     >
                       <dt>
@@ -2747,8 +2747,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-102"
                     >
                       <dt>
@@ -2760,8 +2760,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-103"
                     >
                       <dt>
@@ -2773,8 +2773,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-104"
                     >
                       <dt>
@@ -2786,8 +2786,8 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
-                    <div
+                    </span>
+                    <span
                       key="grid-dt-dd-105"
                     >
                       <dt>
@@ -2799,7 +2799,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                            
                         </span>
                       </dd>
-                    </div>
+                    </span>
                   </dl>
                 </span>
               </div>
