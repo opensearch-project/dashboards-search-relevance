@@ -12,6 +12,8 @@ import {
   EuiCodeEditor,
   EuiText,
   EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
 } from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
@@ -88,24 +90,48 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
       </EuiTitle>
       <EuiSpacer size="m" />
-      <EuiFormRow
-        fullWidth
-        label="Index"
-        error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
-        isInvalid={!!queryError.selectIndex.length}
-      >
-        <EuiSelect
-          hasNoInitialSelection={true}
-          options={documentsIndexes.map(({ index }) => ({
-            value: index,
-            text: index,
-          }))}
-          aria-label="Search Index"
-          onChange={onChangeSelectedIndex}
-          value={selectedIndex}
-          onBlur={selectIndexOnBlur}
-        />
-      </EuiFormRow>
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiFormRow
+            fullWidth
+            label="Index"
+            error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
+            isInvalid={!!queryError.selectIndex.length}
+          >
+            <EuiSelect
+              hasNoInitialSelection={true}
+              options={documentsIndexes.map(({ index }) => ({
+                value: index,
+                text: index,
+              }))}
+              aria-label="Search Index"
+              onChange={onChangeSelectedIndex}
+              value={selectedIndex}
+              onBlur={selectIndexOnBlur}
+            />
+          </EuiFormRow>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiFormRow
+            fullWidth
+            label="Pipeline"
+            error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
+            isInvalid={!!queryError.selectIndex.length}
+          >
+            <EuiSelect
+              hasNoInitialSelection={true}
+              options={documentsIndexes.map(({ index }) => ({
+                value: index,
+                text: index,
+              }))}
+              aria-label="Search Index"
+              onChange={onChangeSelectedIndex}
+              value={selectedIndex}
+              onBlur={selectIndexOnBlur}
+            />
+          </EuiFormRow>
+        </EuiFlexItem>
+      </EuiFlexGroup>
       <EuiFormRow
         fullWidth
         label="Query"
