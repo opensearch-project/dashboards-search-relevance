@@ -29,15 +29,23 @@ export function registerDslRoute(router: IRouter) {
       const { query1, query2 } = request.body;
       const actionName =
         query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
-      let resBody: SearchResultsResponse = {};
+      const resBody: SearchResultsResponse = {};
 
       if (query1) {
-        const { index, size, ...rest } = query1;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, pipeline, size, ...rest } = query1;
+        const params: RequestParams.Search =
+          pipeline !== ''
+            ? {
+                index,
+                size,
+                body: rest,
+                search_pipeline: pipeline,
+              }
+            : {
+                index,
+                size,
+                body: rest,
+              };
 
         const start = performance.now();
         try {
@@ -75,12 +83,20 @@ export function registerDslRoute(router: IRouter) {
       }
 
       if (query2) {
-        const { index, size, ...rest } = query2;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, pipeline, size, ...rest } = query2;
+        const params: RequestParams.Search =
+          pipeline !== ''
+            ? {
+                index,
+                size,
+                body: rest,
+                search_pipeline: pipeline,
+              }
+            : {
+                index,
+                size,
+                body: rest,
+              };
 
         const start = performance.now();
         try {
