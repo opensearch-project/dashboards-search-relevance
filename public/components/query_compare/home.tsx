@@ -25,7 +25,6 @@ interface QueryExplorerProps {
   setToast: (title: string, color?: string, text?: any, side?: string) => void;
   chrome: CoreStart['chrome'];
 }
-
 export const Home = ({
   parentBreadCrumbs,
   notifications,
@@ -35,18 +34,40 @@ export const Home = ({
   setToast,
   chrome,
 }: QueryExplorerProps) => {
-  const { documentsIndexes, setDocumentsIndexes, showFlyout } = useSearchRelevanceContext();
+  const {
+    documentsIndexes,
+    setDocumentsIndexes,
+    pipelines,
+    setPipelines,
+    showFlyout,
+  } = useSearchRelevanceContext();
 
   useEffect(() => {
     setBreadcrumbs([...parentBreadCrumbs]);
   }, [setBreadcrumbs, parentBreadCrumbs]);
 
-  // Get Indexes
+  // Get Indexes and Pipelines
   useEffect(() => {
     http.get(ServiceEndpoints.GetIndexes).then((res: DocumentsIndex[]) => {
       setDocumentsIndexes(res);
     });
-  }, [http, setDocumentsIndexes]);
+
+    http
+      .post('/api/console/proxy', {
+        query: {
+          path: '/_search/pipeline',
+          method: 'GET',
+        },
+        body: JSON.stringify({
+          prependBasePath: true,
+        }),
+        prependBasePath: true,
+        asResponse: true,
+      })
+      .then((res) => {
+        setPipelines(res?.body);
+      });
+  }, [http, setDocumentsIndexes, setPipelines]);
 
   return (
     <>

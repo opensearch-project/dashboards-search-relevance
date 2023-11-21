@@ -46,9 +46,9 @@ export const ResultGridComponent = ({
 
   const getDlTmpl = (doc: IDocType) => {
     return (
-      <div className="truncate-by-height">
+      <div className="truncate-by-heights">
         <span>
-          <dl className="source truncate-by-height">
+          <dl className="source truncate-by-heights">
             {_.toPairs(doc).map((entry: string[]) => {
               return (
                 <>

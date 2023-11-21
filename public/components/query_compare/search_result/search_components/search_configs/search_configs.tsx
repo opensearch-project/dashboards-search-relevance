@@ -39,6 +39,10 @@ export const SearchConfigsPanel = ({
     setSelectedIndex1,
     selectedIndex2,
     setSelectedIndex2,
+    pipeline1,
+    setPipeline1,
+    pipeline2,
+    setPipeline2,
   } = useSearchRelevanceContext();
 
   return (
@@ -59,6 +63,8 @@ export const SearchConfigsPanel = ({
             setSelectedIndex={setSelectedIndex1}
             queryError={queryError1}
             setQueryError={setQueryError1}
+            pipeline={pipeline1}
+            setPipeline={setPipeline1}
           />
         </EuiFlexItem>
         <EuiFlexItem className="search-relevance-config">
@@ -70,6 +76,8 @@ export const SearchConfigsPanel = ({
             setSelectedIndex={setSelectedIndex2}
             queryError={queryError2}
             setQueryError={setQueryError2}
+            pipeline={pipeline2}
+            setPipeline={setPipeline2}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
