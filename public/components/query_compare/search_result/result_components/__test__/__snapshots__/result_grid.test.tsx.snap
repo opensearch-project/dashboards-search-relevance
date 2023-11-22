@@ -311,11 +311,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-2"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       arr:
@@ -503,11 +503,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-4"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       nestObj:
@@ -704,11 +704,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-6"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -896,11 +896,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-8"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -1140,11 +1140,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-10"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -1384,11 +1384,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-12"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -1628,11 +1628,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-14"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -1881,11 +1881,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-16"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -2125,11 +2125,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-18"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:
@@ -2378,11 +2378,11 @@ exports[`Result grid component Renders result grid component 1`] = `
               key="datagrid-cell-20"
             >
               <div
-                className="truncate-by-height"
+                className="truncate-by-heights"
               >
                 <span>
                   <dl
-                    className="source truncate-by-height"
+                    className="source truncate-by-heights"
                   >
                     <dt>
                       id:

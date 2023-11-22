@@ -18,6 +18,7 @@ describe('Flyout component', () => {
   it('Renders flyout component', async () => {
     const setQueryString = jest.fn();
     const setSelectedIndex = jest.fn();
+    const setPipeline = jest.fn();
     const setQueryError = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
@@ -27,6 +28,8 @@ describe('Flyout component', () => {
           setQueryString={setQueryString}
           selectedIndex={''}
           setSelectedIndex={setSelectedIndex}
+          pipeline={''}
+          setPipeline={setPipeline}
           queryError={initialQueryErrorState}
           setQueryError={setQueryError}
         />
