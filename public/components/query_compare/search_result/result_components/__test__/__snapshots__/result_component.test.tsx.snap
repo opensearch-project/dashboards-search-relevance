@@ -1464,16 +1464,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-2"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               arr
                                             </dt>
@@ -1492,9 +1495,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-3"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -1513,9 +1518,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-4"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -1534,9 +1541,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-5"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -1555,9 +1564,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-6"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -1576,9 +1587,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-7"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -1597,9 +1610,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-8"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -1618,9 +1633,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-9"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -1639,9 +1656,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-10"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -1904,16 +1923,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-23"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               nestObj
                                             </dt>
@@ -1932,9 +1954,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-24"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -1953,9 +1977,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-25"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -1974,9 +2000,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-26"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -1995,9 +2023,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-27"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -2016,9 +2046,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-28"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -2037,9 +2069,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-29"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -2058,9 +2092,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-30"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -2079,9 +2115,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-31"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -2100,9 +2138,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-32"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -2365,16 +2405,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-46"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -2393,9 +2436,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-47"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -2414,9 +2459,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-48"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -2435,9 +2482,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-49"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -2456,9 +2505,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-50"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -2477,9 +2528,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-51"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -2498,9 +2551,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-52"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -2519,9 +2574,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-53"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -2540,9 +2597,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-54"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -2805,16 +2864,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-67"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -2833,9 +2895,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-68"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -2854,9 +2918,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-69"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -2875,9 +2941,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-70"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -2896,9 +2964,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-71"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -2917,9 +2987,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-72"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -2938,9 +3010,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-73"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -2959,9 +3033,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-74"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -3224,16 +3300,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-86"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -3252,9 +3331,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-87"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -3273,9 +3354,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-88"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -3294,9 +3377,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-89"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -3315,9 +3400,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-90"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -3336,9 +3423,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-91"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -3357,9 +3446,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-92"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -3378,9 +3469,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-93"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -3643,16 +3736,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-105"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -3671,9 +3767,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-106"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -3692,9 +3790,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-107"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -3713,9 +3813,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-108"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -3734,9 +3836,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-109"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -3755,9 +3859,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-110"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -3776,9 +3882,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-111"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -3797,9 +3905,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-112"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -4062,16 +4172,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-124"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -4090,9 +4203,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-125"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -4111,9 +4226,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-126"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -4132,9 +4249,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-127"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -4153,9 +4272,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-128"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -4174,9 +4295,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-129"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -4195,9 +4318,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-130"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -4216,9 +4341,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-131"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -4237,9 +4364,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-132"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -4502,16 +4631,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-145"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -4530,9 +4662,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-146"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -4551,9 +4685,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-147"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -4572,9 +4708,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-148"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -4593,9 +4731,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-149"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -4614,9 +4754,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-150"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -4635,9 +4777,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-151"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -4656,9 +4800,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-152"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -4921,16 +5067,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-164"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -4949,9 +5098,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-165"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -4970,9 +5121,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-166"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -4991,9 +5144,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-167"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -5012,9 +5167,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-168"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -5033,9 +5190,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-169"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -5054,9 +5213,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-170"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -5075,9 +5236,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-171"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -5096,9 +5259,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-172"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -5361,16 +5526,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-185"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -5389,9 +5557,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-186"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -5410,9 +5580,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-187"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -5431,9 +5603,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-188"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -5452,9 +5626,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-189"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -5473,9 +5649,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-190"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -5494,9 +5672,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-191"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -5515,9 +5695,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-192"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -6263,16 +6445,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-204"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               arr
                                             </dt>
@@ -6291,9 +6476,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-205"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -6312,9 +6499,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-206"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -6333,9 +6522,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-207"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -6354,9 +6545,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-208"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -6375,9 +6568,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-209"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -6396,9 +6591,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-210"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -6417,9 +6614,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-211"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -6438,9 +6637,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-212"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -6703,16 +6904,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-225"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               nestObj
                                             </dt>
@@ -6731,9 +6935,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-226"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -6752,9 +6958,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-227"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -6773,9 +6981,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-228"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -6794,9 +7004,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-229"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -6815,9 +7027,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-230"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -6836,9 +7050,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-231"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -6857,9 +7073,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-232"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -6878,9 +7096,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-233"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -6899,9 +7119,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-234"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -7164,16 +7386,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-248"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -7192,9 +7417,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-249"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -7213,9 +7440,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-250"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -7234,9 +7463,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-251"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -7255,9 +7486,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-252"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -7276,9 +7509,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-253"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -7297,9 +7532,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-254"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -7318,9 +7555,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-255"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -7339,9 +7578,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-256"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -7604,16 +7845,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-269"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -7632,9 +7876,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-270"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -7653,9 +7899,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-271"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -7674,9 +7922,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-272"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -7695,9 +7945,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-273"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -7716,9 +7968,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-274"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -7737,9 +7991,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-275"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -7758,9 +8014,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-276"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -8023,16 +8281,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-288"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -8051,9 +8312,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-289"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -8072,9 +8335,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-290"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -8093,9 +8358,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-291"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -8114,9 +8381,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-292"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -8135,9 +8404,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-293"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -8156,9 +8427,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-294"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -8177,9 +8450,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-295"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -8442,16 +8717,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-307"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -8470,9 +8748,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-308"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -8491,9 +8771,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-309"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -8512,9 +8794,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-310"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -8533,9 +8817,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-311"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -8554,9 +8840,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-312"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -8575,9 +8863,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-313"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -8596,9 +8886,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-314"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -8861,16 +9153,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-326"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -8889,9 +9184,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-327"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -8910,9 +9207,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-328"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -8931,9 +9230,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-329"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -8952,9 +9253,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-330"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -8973,9 +9276,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-331"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -8994,9 +9299,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-332"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -9015,9 +9322,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-333"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -9036,9 +9345,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-334"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -9301,16 +9612,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-347"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -9329,9 +9643,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-348"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -9350,9 +9666,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-349"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -9371,9 +9689,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-350"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -9392,9 +9712,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-351"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -9413,9 +9735,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-352"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -9434,9 +9758,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-353"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -9455,9 +9781,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-354"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -9720,16 +10048,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-366"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -9748,9 +10079,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-367"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -9769,9 +10102,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-368"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -9790,9 +10125,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-369"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -9811,9 +10148,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-370"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -9832,9 +10171,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-371"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -9853,9 +10194,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-372"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -9874,9 +10217,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-373"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>
@@ -9895,9 +10240,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-374"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               attr_t_product_colour
                                             </dt>
@@ -10160,16 +10507,19 @@ exports[`Result component Renders result component 1`] = `
                                       className="source truncate-by-height"
                                       compressed={true}
                                       textStyle="normal"
+                                      type="inline"
                                     >
                                       <dl
-                                        className="euiDescriptionList euiDescriptionList--row euiDescriptionList--compressed source truncate-by-height"
+                                        className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                                       >
                                         <span
                                           key="grid-dt-dd-387"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               id
                                             </dt>
@@ -10188,9 +10538,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-388"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               name
                                             </dt>
@@ -10209,9 +10561,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-389"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               title
                                             </dt>
@@ -10230,9 +10584,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-390"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               short_description
                                             </dt>
@@ -10251,9 +10607,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-391"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               img_500x500
                                             </dt>
@@ -10272,9 +10630,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-392"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               date_released
                                             </dt>
@@ -10293,9 +10653,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-393"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               supplier
                                             </dt>
@@ -10314,9 +10676,11 @@ exports[`Result component Renders result component 1`] = `
                                         <span
                                           key="grid-dt-dd-394"
                                         >
-                                          <EuiDescriptionListTitle>
+                                          <EuiDescriptionListTitle
+                                            className="osdDescriptionListFieldTitle"
+                                          >
                                             <dt
-                                              className="euiDescriptionList__title"
+                                              className="euiDescriptionList__title osdDescriptionListFieldTitle"
                                             >
                                               price
                                             </dt>

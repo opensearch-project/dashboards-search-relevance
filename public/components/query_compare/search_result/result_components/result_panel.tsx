@@ -19,7 +19,6 @@ import { QueryError, SearchResults } from '../../../../types/index';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
 import './result_components.scss';
-// import { set } from 'lodash';
 
 interface ResultPanelProps {
   resultNumber: number;
@@ -74,7 +73,6 @@ export const ResultPanel = ({
           queryResult={queryResult}
           comparedDocumentsRank={getComparedDocumentsRank()}
           resultNumber={resultNumber}
-          setQueryError={setQueryError}
         />
       ) : (
         <>

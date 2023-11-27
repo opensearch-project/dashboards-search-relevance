@@ -20,7 +20,7 @@ import {
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
 
-import { IDocType, SearchResults, Document, QueryError } from '../../../../types/index';
+import { IDocType, SearchResults, Document } from '../../../../types/index';
 import { DocumentRank } from '../../../../contexts/utils';
 import { useSearchRelevanceContext } from '../../../../contexts';
 
@@ -30,14 +30,12 @@ interface ResultGridComponentProps {
   comparedDocumentsRank: DocumentRank;
   queryResult: SearchResults;
   resultNumber: number;
-  setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
 export const ResultGridComponent = ({
   comparedDocumentsRank,
   queryResult,
   resultNumber,
-  setQueryError,
 }: ResultGridComponentProps) => {
   const { selectedIndex1, selectedIndex2 } = useSearchRelevanceContext();
 
@@ -48,9 +46,6 @@ export const ResultGridComponent = ({
     // Click on expand/collapse button
     const toggleDetails = () => {
       setIsResultDetailOpen(!isResultDetailOpen);
-      setQueryError((error: QueryError) => ({
-        ...error,
-      }));
     };
 
     return (
@@ -99,13 +94,14 @@ export const ResultGridComponent = ({
         <span>
           <EuiDescriptionList
             className="source truncate-by-height"
+            type="inline"
             textStyle="normal"
             compressed={true}
           >
             {_.toPairs(doc).map((entry: string[]) => {
               return (
                 <span key={uniqueId('grid-dt-dd-')}>
-                  <EuiDescriptionListTitle>{`${entry[0]}`}</EuiDescriptionListTitle>
+                  <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>
                   <EuiDescriptionListDescription>
                     <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
                   </EuiDescriptionListDescription>
@@ -245,20 +241,6 @@ export const ResultGridComponent = ({
       </>
     );
   };
-
-  // useEffect(() => {
-  //   console.log('query result changed');
-  //   if (!_.isEmpty(queryResult))
-  //     setResultGrid(
-  //       queryResult.hits.hits.map((doc: any, id: number) => {
-  //         return (
-  //           <>
-  //             <tr className="osdDocTable__row">{getTds(doc._source)}</tr>
-  //           </>
-  //         );
-  //       })
-  //     );
-  // }, [queryResult]);
 
   return (
     <div className="dscTable dscTableFixedScroll">
