@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { NavigationPublicPluginStart } from 'src/plugins/navigation/public';
+import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { CoreStart, ChromeBreadcrumb } from '../../../../../src/core/public';
 import '../../ace-themes/sql_console';
 import { CreateIndex } from './create_index';
@@ -52,23 +52,10 @@ export const Home = ({
       setDocumentsIndexes(res);
     });
 
-    http
-      .post('/api/console/proxy', {
-        query: {
-          path: '/_search/pipeline',
-          method: 'GET',
-        },
-        body: JSON.stringify({
-          prependBasePath: true,
-        }),
-        prependBasePath: true,
-        asResponse: true,
-      })
-      .then((res) => {
-        setPipelines(res?.body);
-      });
+    http.get(ServiceEndpoints.GetPipelines).then((res: {}) => {
+      setPipelines(res);
+    });
   }, [http, setDocumentsIndexes, setPipelines]);
-
   return (
     <>
       <div className="osdOverviewWrapper">
