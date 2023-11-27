@@ -19,14 +19,12 @@ import { ResultPanel } from '../result_panel';
 describe('Result grid component', () => {
   configure({ adapter: new Adapter() });
   it('Renders result grid component', async () => {
-    const setQueryError = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
         <ResultGridComponent
           queryResult={TEST_QUERY_RESPONSE}
           resultNumber={1}
           comparedDocumentsRank={TEST_COMPARED_DOCUMENTS_RANK}
-          setQueryError={setQueryError}
         />
       </SearchRelevanceContextProvider>
     );
@@ -37,7 +35,6 @@ describe('Result grid component', () => {
       expect(wrapper).toMatchSnapshot();
       wrapper.find('EuiButtonIcon').first().prop('onClick')?.({ target: {} });
     });
-    expect(setQueryError).toHaveBeenCalledTimes(1);
   });
 });
 
