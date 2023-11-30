@@ -1455,6 +1455,7 @@ exports[`Result component Renders result component 1`] = `
                               <td
                                 className="eui-textBreakAll eui-textBreakWord"
                                 key="datagrid-cell-11"
+                                key="datagrid-cell-11"
                               >
                                 <div
                                   className="truncate-by-height"

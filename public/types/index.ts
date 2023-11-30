@@ -24,6 +24,7 @@ export interface Document {
   _id: string;
   _score: number;
   _source: IDocType;
+  fields: IDocType;
 }
 
 export interface SearchResults {

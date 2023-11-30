@@ -88,7 +88,9 @@ export const ResultGridComponent = ({
     );
   };
 
-  const getDlTmpl = (doc: IDocType) => {
+  const getDlTmpl = (doc: Document) => {
+    const sourceFields = Object.assign(doc._source, doc.fields);
+
     return (
       <div className="truncate-by-height">
         <span>
@@ -214,11 +216,11 @@ export const ResultGridComponent = ({
     cols.push(getRankColumn(document._id, documentRank));
 
     // No field is selected
-    const _sourceLikeDOM = getDlTmpl(document._source);
+    const _sourceFieldsLikeDOM = getDlTmpl(document);
     cols.push(
       getTdTmpl({
         clsName: fieldClsName,
-        content: _sourceLikeDOM,
+        content: _sourceFieldsLikeDOM,
       })
     );
 
