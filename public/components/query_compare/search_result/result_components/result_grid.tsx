@@ -100,7 +100,7 @@ export const ResultGridComponent = ({
             textStyle="normal"
             compressed={true}
           >
-            {_.toPairs(doc).map((entry: string[]) => {
+            {_.toPairs(sourceFields).map((entry: string[]) => {
               return (
                 <span key={uniqueId('grid-dt-dd-')}>
                   <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>

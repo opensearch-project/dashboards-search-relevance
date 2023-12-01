@@ -24,15 +24,9 @@ interface ResultPanelProps {
   resultNumber: number;
   queryResult: SearchResults;
   queryError: QueryError;
-  setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
 }
 
-export const ResultPanel = ({
-  resultNumber,
-  queryResult,
-  queryError,
-  setQueryError,
-}: ResultPanelProps) => {
+export const ResultPanel = ({ resultNumber, queryResult, queryError }: ResultPanelProps) => {
   const { comparedResult1, comparedResult2 } = useSearchRelevanceContext();
 
   const ErrorMessage = () => (
