@@ -13,7 +13,7 @@
     "@babel/plugin-transform-modules-commonjs",
     ["@babel/plugin-transform-runtime", { "regenerator": true }],
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-transform-object-rest-spread"
+    "@babel/plugin-proposal-object-rest-spread"
   ]
 }
 
