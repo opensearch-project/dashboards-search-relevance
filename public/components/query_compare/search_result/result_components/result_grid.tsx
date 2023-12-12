@@ -63,17 +63,7 @@ export const ResultGridComponent = ({
           closePopover={closeResultDetail}
           anchorPosition="leftUp"
         >
-          <EuiText
-            size="m"
-            className="eui-yScroll"
-            style={{
-              minWidth: 325,
-              width: '35vw',
-              wordWrap: 'break-word',
-              height: 220,
-              overflowY: 'auto',
-            }}
-          >
+          <EuiText size="m" className="eui-yScroll osdDocTableCell__detailsExpanded">
             {_.toPairs(docSource).map((entry: string[]) => {
               return (
                 <span key={uniqueId('popover-text-')}>

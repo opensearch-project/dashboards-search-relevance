@@ -171,6 +171,14 @@ table {
   padding: 4px 0 0 0 !important;
 }
 
+.osdDocTableCell__detailsExpanded {
+  min-width: 325px;
+  width: 35vw;
+  word-wrap: break-word;
+  height: 220px;
+  overflow-y: auto;
+}
+
 .osdDocTableCell__filter {
   position: absolute;
   white-space: nowrap;
