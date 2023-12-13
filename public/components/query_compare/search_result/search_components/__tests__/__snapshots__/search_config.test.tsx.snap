@@ -251,8 +251,14 @@ exports[`Flyout component Renders flyout component 1`] = `
                     onBlur={[Function]}
                     onChange={[Function]}
                     onFocus={[Function]}
-                    options={Array []}
-                    placeholder="No pipeline"
+                    options={
+                      Array [
+                        Object {
+                          "label": "_none",
+                        },
+                      ]
+                    }
+                    placeholder=""
                     selectedOptions={Array []}
                     singleSelection={
                       Object {
@@ -285,7 +291,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         onFocus={[Function]}
                         onOpenListClick={[Function]}
                         onRemoveOption={[Function]}
-                        placeholder="No pipeline"
+                        placeholder=""
                         rootId={[Function]}
                         searchValue=""
                         selectedOptions={Array []}
@@ -325,11 +331,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 onClick={[Function]}
                                 tabIndex={-1}
                               >
-                                <p
-                                  className="euiComboBoxPlaceholder"
-                                >
-                                  No pipeline
-                                </p>
                                 <AutosizeInput
                                   aria-controls=""
                                   className="euiComboBox__input"

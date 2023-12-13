@@ -56,6 +56,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
 
   // Sort search pipelines based off of each individual pipeline name.
   const sortedPipelines = [...Object.keys(pipelines)].sort((a, b) => a.localeCompare(b));
+  sortedPipelines.push('_none');
 
   // On select index for ComboBox
   const onChangePipeline = (selectedOptions: string | any[]) => {
@@ -132,7 +133,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           <EuiFormRow fullWidth label="Pipeline" helpText="Optional">
             {
               <EuiComboBox
-                placeholder="No pipeline"
+                placeholder=""
                 singleSelection={{ asPlainText: true }}
                 options={sortedPipelines.map((searchPipeline) => ({
                   label: searchPipeline,
