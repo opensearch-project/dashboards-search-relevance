@@ -63,17 +63,7 @@ export const ResultGridComponent = ({
           closePopover={closeResultDetail}
           anchorPosition="leftUp"
         >
-          <EuiText
-            size="m"
-            className="eui-yScroll"
-            style={{
-              minWidth: 325,
-              width: '35vw',
-              wordWrap: 'break-word',
-              height: 220,
-              overflowY: 'auto',
-            }}
-          >
+          <EuiText size="m" className="eui-yScroll osdDocTableCell__detailsExpanded">
             {_.toPairs(docSource).map((entry: string[]) => {
               return (
                 <span key={uniqueId('popover-text-')}>
@@ -88,7 +78,9 @@ export const ResultGridComponent = ({
     );
   };
 
-  const getDlTmpl = (doc: IDocType) => {
+  const getDlTmpl = (doc: Document) => {
+    const sourceFields = Object.assign(doc._source, doc.fields);
+
     return (
       <div className="truncate-by-height">
         <span>
@@ -98,7 +90,7 @@ export const ResultGridComponent = ({
             textStyle="normal"
             compressed={true}
           >
-            {_.toPairs(doc).map((entry: string[]) => {
+            {_.toPairs(sourceFields).map((entry: string[]) => {
               return (
                 <span key={uniqueId('grid-dt-dd-')}>
                   <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>
@@ -214,11 +206,11 @@ export const ResultGridComponent = ({
     cols.push(getRankColumn(document._id, documentRank));
 
     // No field is selected
-    const _sourceLikeDOM = getDlTmpl(document._source);
+    const _sourceFieldsLikeDOM = getDlTmpl(document);
     cols.push(
       getTdTmpl({
         clsName: fieldClsName,
-        content: _sourceLikeDOM,
+        content: _sourceFieldsLikeDOM,
       })
     );
 

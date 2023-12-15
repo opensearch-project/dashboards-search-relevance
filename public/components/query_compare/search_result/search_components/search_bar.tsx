@@ -23,6 +23,7 @@ export const SearchInputBar = ({
       <EuiFlexGroup>
         <EuiFlexItem grow={true}>
           <EuiFieldSearch
+            id="searchRelevance-searchBar"
             fullWidth={true}
             placeholder="Search"
             value={searchBarValue}
