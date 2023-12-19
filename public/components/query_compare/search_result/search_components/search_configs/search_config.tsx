@@ -63,9 +63,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   // Add the '_none' option to the pipeline dropdown (runs the index without a pipeline).
   sortedPipelines.push({ label: '_none' });
 
-  // On select index for ComboBox
-  const onChangePipeline = (selectedOptions: string | any[]) => {
-    setPipeline(selectedOptions[0]?.label || '');
+  // On select pipeline for ComboBox
+  const onChangePipeline = (selectedPipelineOptions: string | any[]) => {
+    setPipeline(selectedPipelineOptions[0]?.label || '');
   };
 
   // Select index on blur
