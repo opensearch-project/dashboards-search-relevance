@@ -42,9 +42,14 @@ describe('Flyout component', () => {
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
       wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
       wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
+      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedOptions: [] } });
+      wrapper.find('EuiComboBox').prop('onChange')?.({
+        target: { selectedOptions: [{ label: '_none' }] },
+      });
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
     expect(setSelectedIndex).toHaveBeenCalledTimes(1);
+    expect(setPipeline).toHaveBeenCalledTimes(2);
     expect(setQueryError).toHaveBeenCalledTimes(3);
   });
 });

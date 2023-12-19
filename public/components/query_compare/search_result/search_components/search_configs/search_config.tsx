@@ -55,16 +55,17 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   };
 
   // Sort search pipelines based off of each individual pipeline name.
-  const sortedPipelines = [...Object.keys(pipelines)].sort((a, b) => a.localeCompare(b));
-  sortedPipelines.push('_none');
+  const sortedPipelines = [...Object.keys(pipelines)]
+    .sort((a, b) => a.localeCompare(b))
+    .map((searchPipeline) => ({
+      label: searchPipeline,
+    }));
+  // Add the '_none' option to the pipeline dropdown (runs the index without a pipeline).
+  sortedPipelines.push({ label: '_none' });
 
   // On select index for ComboBox
   const onChangePipeline = (selectedOptions: string | any[]) => {
-    if (selectedOptions.length === 0) {
-      setPipeline('');
-    } else {
-      setPipeline(selectedOptions[0].label);
-    }
+    setPipeline(selectedOptions[0]?.label || '');
   };
 
   // Select index on blur
@@ -131,17 +132,13 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiFormRow fullWidth label="Pipeline" helpText="Optional">
-            {
-              <EuiComboBox
-                placeholder=""
-                singleSelection={{ asPlainText: true }}
-                options={sortedPipelines.map((searchPipeline) => ({
-                  label: searchPipeline,
-                }))}
-                selectedOptions={pipeline ? [{ label: pipeline }] : []}
-                onChange={onChangePipeline}
-              />
-            }
+            <EuiComboBox
+              placeholder=""
+              singleSelection={{ asPlainText: true }}
+              options={sortedPipelines}
+              selectedOptions={pipeline ? [{ label: pipeline }] : []}
+              onChange={onChangePipeline}
+            />
           </EuiFormRow>
         </EuiFlexItem>
       </EuiFlexGroup>
