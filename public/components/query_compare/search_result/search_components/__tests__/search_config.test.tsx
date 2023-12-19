@@ -37,11 +37,10 @@ describe('Flyout component', () => {
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
-      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
+      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedIndexOptions: [] } });
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
     expect(setSelectedIndex).toHaveBeenCalledTimes(1);
-    expect(setQueryError).toHaveBeenCalledTimes(3);
+    expect(setQueryError).toHaveBeenCalledTimes(1);
   });
 });

@@ -8,10 +8,10 @@ import {
   EuiTitle,
   EuiSpacer,
   EuiFormRow,
-  EuiSelect,
   EuiCodeEditor,
   EuiText,
   EuiButtonEmpty,
+  EuiComboBox,
 } from '@elastic/eui';
 
 import { useSearchRelevanceContext } from '../../../../../contexts';
@@ -37,25 +37,16 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryError,
 }) => {
   const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
-  // On select index
-  const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
-    setSelectedIndex(e.target.value);
-
-    setQueryError((error: QueryError) => ({
-      ...error,
-      selectIndex: '',
+  // Sort documents indexes based off of each individual index.
+  const sortedDocumentsIndexes = [...documentsIndexes]
+    .sort((a, b) => a.index.localeCompare(b.index))
+    .map(({ index }) => ({
+      label: index,
     }));
-  };
 
-  // Select index on blur
-  const selectIndexOnBlur = () => {
-    // If Index Select on blur without selecting an index, show error
-    if (!selectedIndex.length) {
-      setQueryError((error: QueryError) => ({
-        ...error,
-        selectIndex: SelectIndexError.unselected,
-      }));
-    }
+  // On select index for ComboBox
+  const onChangeSelectedIndex = (selectedIndexOptions: string | any[]) => {
+    setSelectedIndex(selectedIndexOptions[0]?.label || '');
   };
 
   // On change query string
@@ -94,17 +85,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
         isInvalid={!!queryError.selectIndex.length}
       >
-        <EuiSelect
-          hasNoInitialSelection={true}
-          options={documentsIndexes.map(({ index }) => ({
-            value: index,
-            text: index,
-          }))}
-          aria-label="Search Index"
-          onChange={onChangeSelectedIndex}
-          value={selectedIndex}
-          onBlur={selectIndexOnBlur}
-        />
+        {
+          <EuiComboBox
+            singleSelection={{ asPlainText: true }}
+            options={sortedDocumentsIndexes}
+            selectedOptions={selectedIndex ? [{ label: selectedIndex }] : []}
+            onChange={onChangeSelectedIndex}
+          />
+        }
       </EuiFormRow>
       <EuiFormRow
         fullWidth
