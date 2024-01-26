@@ -29,9 +29,7 @@ const InitialState = () => {
       <EuiEmptyPrompt
         iconType="search"
         title={<h2>No results</h2>}
-        body={
-            <p>Add at least one query to display search results.</p>
-        }
+        body={<p>Add at least one query to display search results.</p>}
       />
     </EuiPanel>
   );

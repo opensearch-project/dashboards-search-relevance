@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { NavigationPublicPluginStart } from 'src/plugins/navigation/public';
+import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { CoreStart, ChromeBreadcrumb } from '../../../../../src/core/public';
 import '../../ace-themes/sql_console';
 import { CreateIndex } from './create_index';
@@ -25,7 +25,6 @@ interface QueryExplorerProps {
   setToast: (title: string, color?: string, text?: any, side?: string) => void;
   chrome: CoreStart['chrome'];
 }
-
 export const Home = ({
   parentBreadCrumbs,
   notifications,
@@ -35,19 +34,28 @@ export const Home = ({
   setToast,
   chrome,
 }: QueryExplorerProps) => {
-  const { documentsIndexes, setDocumentsIndexes, showFlyout } = useSearchRelevanceContext();
+  const {
+    documentsIndexes,
+    setDocumentsIndexes,
+    pipelines,
+    setPipelines,
+    showFlyout,
+  } = useSearchRelevanceContext();
 
   useEffect(() => {
     setBreadcrumbs([...parentBreadCrumbs]);
   }, [setBreadcrumbs, parentBreadCrumbs]);
 
-  // Get Indexes
+  // Get Indexes and Pipelines
   useEffect(() => {
     http.get(ServiceEndpoints.GetIndexes).then((res: DocumentsIndex[]) => {
       setDocumentsIndexes(res);
     });
-  }, [http, setDocumentsIndexes]);
 
+    http.get(ServiceEndpoints.GetPipelines).then((res: {}) => {
+      setPipelines(res);
+    });
+  }, [http, setDocumentsIndexes, setPipelines]);
   return (
     <>
       <div className="osdOverviewWrapper">

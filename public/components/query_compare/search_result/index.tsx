@@ -41,6 +41,8 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     updateComparedResult2,
     selectedIndex1,
     selectedIndex2,
+    pipeline1,
+    pipeline2,
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
@@ -86,6 +88,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const handleQuery = (
     queryError: QueryError,
     selectedIndex: string,
+    pipeline: string,
     jsonQuery: any,
     updateComparedResult: (result: SearchResults) => void,
     setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
@@ -97,7 +100,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       updateComparedResult({} as any);
     } else if (!queryError.queryString.length && !queryError.selectIndex) {
       setQueryError(initialQueryErrorState);
-      return { index: selectedIndex, ...jsonQuery };
+      return { index: selectedIndex, pipeline, ...jsonQuery };
     }
   };
 
@@ -106,6 +109,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       query1: handleQuery(
         queryErrors[0],
         selectedIndex1,
+        pipeline1,
         jsonQueries[0],
         updateComparedResult1,
         setQueryResult1,
@@ -114,6 +118,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
       query2: handleQuery(
         queryErrors[1],
         selectedIndex2,
+        pipeline2,
         jsonQueries[1],
         updateComparedResult2,
         setQueryResult2,
