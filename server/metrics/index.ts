@@ -20,4 +20,5 @@ export enum METRIC_ACTION {
   COMPARISON_SEARCH = 'comparison_search',
   SINGLE_SEARCH = 'single_search',
   FETCH_INDEX = 'fetch_index',
+  FETCH_PIPELINE = 'fetch_pipeline',
 }

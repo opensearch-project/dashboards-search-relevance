@@ -8,7 +8,7 @@ import { RequestParams } from '@opensearch-project/opensearch';
 
 import { IRouter } from '../../../../src/core/server';
 import { METRIC_NAME, METRIC_ACTION } from '../metrics';
-import { ServiceEndpoints } from '../../common';
+import { ServiceEndpoints, SEARCH_API } from '../../common';
 
 interface SearchResultsResponse {
   result1?: Object;
@@ -29,15 +29,23 @@ export function registerDslRoute(router: IRouter) {
       const { query1, query2 } = request.body;
       const actionName =
         query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
-      let resBody: SearchResultsResponse = {};
+      const resBody: SearchResultsResponse = {};
 
       if (query1) {
-        const { index, size, ...rest } = query1;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, pipeline, size, ...rest } = query1;
+        const params: RequestParams.Search =
+          pipeline !== ''
+            ? {
+                index,
+                size,
+                body: rest,
+                search_pipeline: pipeline,
+              }
+            : {
+                index,
+                size,
+                body: rest,
+              };
 
         const start = performance.now();
         try {
@@ -75,12 +83,20 @@ export function registerDslRoute(router: IRouter) {
       }
 
       if (query2) {
-        const { index, size, ...rest } = query2;
-        const params: RequestParams.Search = {
-          index,
-          size,
-          body: rest,
-        };
+        const { index, pipeline, size, ...rest } = query2;
+        const params: RequestParams.Search =
+          pipeline !== ''
+            ? {
+                index,
+                size,
+                body: rest,
+                search_pipeline: pipeline,
+              }
+            : {
+                index,
+                size,
+                body: rest,
+              };
 
         const start = performance.now();
         try {
@@ -122,6 +138,7 @@ export function registerDslRoute(router: IRouter) {
     }
   );
 
+  // Get Indices
   router.get(
     {
       path: ServiceEndpoints.GetIndexes,
@@ -152,6 +169,48 @@ export function registerDslRoute(router: IRouter) {
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
           METRIC_ACTION.FETCH_INDEX,
+          error.statusCode,
+          end - start
+        );
+        if (error.statusCode !== 404) console.error(error);
+        return response.custom({
+          statusCode: error.statusCode || 500,
+          body: error.message,
+        });
+      }
+    }
+  );
+
+  // Get Pipelines
+  router.get(
+    {
+      path: ServiceEndpoints.GetPipelines,
+      validate: {},
+    },
+    async (context, request, response) => {
+      const start = performance.now();
+      let resBody: any = {};
+      try {
+        const resp = await context.core.opensearch.client.asCurrentUser.transport.request({
+          method: 'GET',
+          path: `${SEARCH_API}/pipeline`,
+        });
+        resBody = resp.body;
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_PIPELINE,
+          200,
+          end - start
+        );
+        return response.ok({
+          body: resBody,
+        });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_PIPELINE,
           error.statusCode,
           end - start
         );
