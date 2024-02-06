@@ -276,7 +276,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                             <EuiIcon
                               type="sortUp"
                             >
-                              <EuiIconEmpty
+                              <EuiIconBeaker
                                 aria-hidden={true}
                                 className="euiIcon euiIcon--medium euiIcon-isLoading"
                                 focusable="false"
@@ -293,8 +293,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   viewBox="0 0 16 16"
                                   width={16}
                                   xmlns="http://www.w3.org/2000/svg"
-                                />
-                              </EuiIconEmpty>
+                                >
+                                  <path
+                                    d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                  />
+                                </svg>
+                              </EuiIconBeaker>
                             </EuiIcon>
                              Up 
                             1
@@ -504,7 +508,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                             <EuiIcon
                               type="sortDown"
                             >
-                              <EuiIconEmpty
+                              <EuiIconBeaker
                                 aria-hidden={true}
                                 className="euiIcon euiIcon--medium euiIcon-isLoading"
                                 focusable="false"
@@ -521,8 +525,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   viewBox="0 0 16 16"
                                   width={16}
                                   xmlns="http://www.w3.org/2000/svg"
-                                />
-                              </EuiIconEmpty>
+                                >
+                                  <path
+                                    d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                  />
+                                </svg>
+                              </EuiIconBeaker>
                             </EuiIcon>
                              Down 
                             1
@@ -745,7 +753,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                             <EuiIcon
                               type="sortUp"
                             >
-                              <EuiIconEmpty
+                              <EuiIconBeaker
                                 aria-hidden={true}
                                 className="euiIcon euiIcon--medium euiIcon-isLoading"
                                 focusable="false"
@@ -762,8 +770,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   viewBox="0 0 16 16"
                                   width={16}
                                   xmlns="http://www.w3.org/2000/svg"
-                                />
-                              </EuiIconEmpty>
+                                >
+                                  <path
+                                    d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                  />
+                                </svg>
+                              </EuiIconBeaker>
                             </EuiIcon>
                              Up 
                             7
@@ -973,7 +985,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                             <EuiIcon
                               type="sortUp"
                             >
-                              <EuiIconEmpty
+                              <EuiIconBeaker
                                 aria-hidden={true}
                                 className="euiIcon euiIcon--medium euiIcon-isLoading"
                                 focusable="false"
@@ -990,8 +1002,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   viewBox="0 0 16 16"
                                   width={16}
                                   xmlns="http://www.w3.org/2000/svg"
-                                />
-                              </EuiIconEmpty>
+                                >
+                                  <path
+                                    d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                  />
+                                </svg>
+                              </EuiIconBeaker>
                             </EuiIcon>
                              Up 
                             96
@@ -1233,7 +1249,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -1266,8 +1282,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
@@ -1509,7 +1529,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -1542,8 +1562,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
@@ -1785,7 +1809,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -1818,8 +1842,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
@@ -2074,7 +2102,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -2107,8 +2135,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
@@ -2350,7 +2382,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -2383,8 +2415,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
@@ -2639,7 +2675,7 @@ exports[`Result grid component Renders result grid component 1`] = `
                                   tabIndex={0}
                                   type="questionInCircle"
                                 >
-                                  <EuiIconEmpty
+                                  <EuiIconBeaker
                                     aria-hidden={true}
                                     aria-label="IconTip"
                                     className="euiIcon euiIcon--medium euiIcon--customColor euiIcon-isLoading"
@@ -2672,8 +2708,12 @@ exports[`Result grid component Renders result grid component 1`] = `
                                       viewBox="0 0 16 16"
                                       width={16}
                                       xmlns="http://www.w3.org/2000/svg"
-                                    />
-                                  </EuiIconEmpty>
+                                    >
+                                      <path
+                                        d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                      />
+                                    </svg>
+                                  </EuiIconBeaker>
                                 </EuiIcon>
                               </span>
                             </EuiToolTip>
