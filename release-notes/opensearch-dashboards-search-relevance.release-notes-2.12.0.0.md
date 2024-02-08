@@ -19,7 +19,9 @@ Compatible with OpenSearch 2.12.0
 ### Documentation
 * Updating CONTRIBUTING.md by adding DCO section ([#337](https://github.com/opensearch-project/dashboards-search-relevance/pull/337)) ([#341](https://github.com/opensearch-project/dashboards-search-relevance/pull/341))
 * Update CONTRIBUTING.md by adding command for running tests to PR directions ([#335](https://github.com/opensearch-project/dashboards-search-relevance/pull/335)) ([#347](https://github.com/opensearch-project/dashboards-search-relevance/pull/347))
-* Add DCO section ([#337](https://github.com/opensearch-project/dashboards-search-relevance/commit/8c0c9d95b7ae92776a241a8b7c480bed2504d058) )([#341](https://github.com/opensearch-project/dashboards-search-relevance/pull/341))
 
 ### Refactoring
 * Add id attribute to search bar ([#338](https://github.com/opensearch-project/dashboards-search-relevance/pull/338)) ([#353](https://github.com/opensearch-project/dashboards-search-relevance/pull/353))
+
+## New Contributors
+* @nung22 made their first contribution in [#300](https://github.com/opensearch-project/dashboards-search-relevance/pull/300)
