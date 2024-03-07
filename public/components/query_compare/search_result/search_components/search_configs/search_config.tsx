@@ -71,8 +71,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   navigation,
   setActionMenu,
 }) => {
-  const queryID: string = queryNumber.toString()
-  const { documentsIndexes1, documentsIndexes2, pipelines, setShowFlyout, datasourceItems, setDatasourceItems} = useSearchRelevanceContext();
+  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout} = useSearchRelevanceContext();
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -84,9 +83,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   };
   
   const documentIndex = queryNumber == 1? documentsIndexes1: documentsIndexes2
-
+  const pipelines = queryNumber == 1? fetchedPipelines1: fetchedPipelines2
   // Sort search pipelines based off of each individual pipeline name.
-  const sortedPipelines = [...Object.keys(datasourceItems[queryID].pipeline)]
+  const sortedPipelines = [...Object.keys(pipelines)]
     .sort((a, b) => a.localeCompare(b))
     .map((searchPipeline) => ({
       label: searchPipeline,
@@ -135,14 +134,12 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   };
   const onSelectedDataSource = (e) => {
     const dataConnectionId = e[0] ? e[0].id : undefined;
-    setDatasourceItems(prevDatasources => ({
-      ...prevDatasources,
-      [queryNumber]: {
-          index: [],
-          dataConnectionId: dataConnectionId,
-          pipeline:{}
-      }
-    }));
+    if(queryNumber == 1){
+      setDataSource1(dataConnectionId)
+    }
+    else{
+      setDataSource2(dataConnectionId)
+    }   
   }
 
 
@@ -153,24 +150,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiFlexGroup>
-      {/* <EuiFormRow
-            fullWidth
-            label="Data source"
-            error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
-            isInvalid={!!queryError.selectIndex.length}
-          >
-            <dataSourceManagement.getDataSourcePicker 
-               savedObjectsClient={savedObjects.client}
-               notifications={notifications.toasts} 
-               onSelectedDataSource={onSelectedDataSource}
-               disabled={false} 
-               hideLocalCluster={false} 
-               fullWidth={false}
-              //  removePrepend={true}
-              //  compressed={false}
-              //  defaultOption={[]}
-            />
-            </EuiFormRow> */}
         {dataSourceEnabled && (
           <EuiFlexItem>
             <EuiFormRow 

@@ -7,7 +7,7 @@ import React, { useEffect } from 'react';
 import { ChromeBreadcrumb, CoreStart, MountPoint } from '../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
-import { ServiceEndpoints } from '../../../common';
+import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
 import '../../ace-themes/sql_console';
 import { useSearchRelevanceContext } from '../../contexts';
 import { DocumentsIndex } from '../../types/index';
@@ -44,14 +44,15 @@ export const Home = ({
   setActionMenu,
 }: QueryExplorerProps) => {
   const {
-    documentsIndexes,
-    setDocumentsIndexes,
-    pipelines,
-    setPipelines,
     showFlyout,
-    datasourceItems,
+    documentsIndexes1,
+    documentsIndexes2,
     setDocumentsIndexes1,
-    setDocumentsIndexes2
+    setDocumentsIndexes2,
+    datasource1,
+    datasource2,
+    setFetchedPipelines1,
+    setFetchedPipelines2
   } = useSearchRelevanceContext();
 
   useEffect(() => {
@@ -67,12 +68,11 @@ export const Home = ({
             else{
               setDocumentsIndexes2(res)
             }
-            // setDocumentsIndexes(res)
           });
     }
     else{
       http.get(ServiceEndpoints.GetIndexes).then((res: DocumentsIndex[]) => {
-        setDocumentsIndexes(res)
+        // setDocumentsIndexes(res)
         if(queryNumber == "1"){
           setDocumentsIndexes1(res)
         }
@@ -82,49 +82,42 @@ export const Home = ({
       })
     }
   }
-  // const fetchPipelines = (dataConnectionId: string) => {
-  //   if(dataConnectionId){
-  //     http.get(ServiceEndpoints.GetIndexes+"/"+data.dataConnectionId).then((res: DocumentsIndex[]) => {
-  //       return res
-  //       // setDocumentsIndexes(res)
-  //     });
-  //   }
-  //   else{
-  //     http.get(ServiceEndpoints.GetIndexes).then((res: DocumentsIndex[]) => {
-  //       return res
-  //     })
-  //   }
-  // }
+  const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
+    if(dataConnectionId){
+      http.get(ServiceEndpoints.GetPipelines+"/"+dataConnectionId).then((res: {}) => {
+        if(queryNumber == QUERY_NUMBER_ONE){
+          setFetchedPipelines1(res)
+        }
+        else{
+          setFetchedPipelines2(res)
+        }
+      });
+    }
+    else{
+      http.get(ServiceEndpoints.GetPipelines).then((res: {}) => {
+        if(queryNumber == QUERY_NUMBER_ONE){
+          setFetchedPipelines1(res)
+        }
+        else{
+          setFetchedPipelines2(res)
+        }
+      })
+    }
+  }
 
   // Get Indexes and Pipelines
   useEffect(() => {
 
-    for (const key in datasourceItems){
-      if(datasourceItems.hasOwnProperty(key)) {
-        const {dataConnectionId} = datasourceItems[key]
-
-        fetchIndexes(dataConnectionId,key)
-      }
-    }
+    fetchIndexes(datasource1,QUERY_NUMBER_ONE)
+    fetchIndexes(datasource2,QUERY_NUMBER_TWO)
+    fetchPipelines(datasource1,QUERY_NUMBER_ONE)
+    fetchPipelines(datasource2,QUERY_NUMBER_TWO)
     
-  }, [http, setDocumentsIndexes1, setDocumentsIndexes2, setPipelines, datasourceItems]);
+  }, [http, setDocumentsIndexes1, setDocumentsIndexes2, setFetchedPipelines1, setFetchedPipelines2, datasource1, datasource2]);
   return (
     <>
-      <navigation.ui.TopNavMenu
-        appName={'searchRelevance'}
-        setMenuMountPoint={setActionMenu}
-        showSearchBar={true}
-        showFilterBar={false}
-        showDatePicker={false}
-        showQueryBar={false}
-        showSaveQuery={false}
-        showQueryInput={false}
-        showDataSourcePicker={true}
-        dataSourceCallBackFunc={(id) => console.log(id)}
-        disableDataSourcePicker={false}
-      />
       <div className="osdOverviewWrapper">
-        {documentsIndexes.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={datasourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} /> : <CreateIndex />}
+        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={datasourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} /> : <CreateIndex />}
       </div>
       {showFlyout && <Flyout />}
     </>

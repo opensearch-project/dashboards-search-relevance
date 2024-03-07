@@ -7,6 +7,7 @@ import { EuiPageContentBody } from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../../src/plugins/navigation/public';
 import { ServiceEndpoints } from '../../../../common';
 import { useSearchRelevanceContext } from '../../../contexts';
@@ -30,6 +31,7 @@ interface SearchResultProps {
   dataSourceEnabled: boolean
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
 export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation}: SearchResultProps) => {
@@ -47,7 +49,8 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
     selectedIndex2,
     pipeline1,
     pipeline2,
-    datasourceItems
+    datasource1,
+    datasource2
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
@@ -133,7 +136,7 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
         // First Query
         if (Object.keys(requestBody1).length !== 0) {
             http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasourceItems["1"].dataConnectionId? datasourceItems["1"].dataConnectionId: '' }),
+                body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
             })
             .then((res) => {
                 if (res.result1) {
@@ -157,7 +160,7 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
         // Second Query
         if (Object.keys(requestBody2).length !== 0) {
             http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasourceItems["2"].dataConnectionId? datasourceItems["2"].dataConnectionId: '' }),
+                body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
             })
             .then((res) => {
                 if (res.result2) {

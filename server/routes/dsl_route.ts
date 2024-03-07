@@ -210,17 +210,31 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
   // Get Pipelines
   router.get(
     {
-      path: ServiceEndpoints.GetPipelines,
-      validate: {},
+      path: `${ServiceEndpoints.GetPipelines}/{dataSourceId?}`,
+      validate: {
+        params: schema.object({
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+        }),
+      },
     },
     async (context, request, response) => {
       const start = performance.now();
       let resBody: any = {};
+      let resp;
       try {
-        const resp = await context.core.opensearch.client.asCurrentUser.transport.request({
-          method: 'GET',
-          path: `${SEARCH_API}/pipeline`,
-        });
+        const dataSourceId  = request.params.dataSourceId;
+        if(dataSourceEnabled && dataSourceId){
+          let client = await context.dataSource.opensearch.legacy.getClient(dataSourceId);
+          
+          resp = await client.callAPI('search.pipeline');
+        }
+        else{
+          resp = await context.core.opensearch.client.asCurrentUser.transport.request({
+            method: 'GET',
+            path: `${SEARCH_API}/pipeline`,
+          });
+        }
+        console.log(resp)
         resBody = resp.body;
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
