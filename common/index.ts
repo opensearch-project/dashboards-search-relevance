@@ -14,3 +14,5 @@ export enum ServiceEndpoints {
 }
 
 export const SEARCH_API = '/_search';
+export const QUERY_NUMBER_ONE = '1';
+export const QUERY_NUMBER_TWO = '2';
