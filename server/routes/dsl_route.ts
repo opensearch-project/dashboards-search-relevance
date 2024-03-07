@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { schema } from '@osd/config-schema';
 import { RequestParams } from '@opensearch-project/opensearch';
+import { schema } from '@osd/config-schema';
 
-import { IRouter } from '../../../../src/core/server';
-import { METRIC_NAME, METRIC_ACTION } from '../metrics';
-import { ServiceEndpoints, SEARCH_API } from '../../common';
+import { IRouter, OpenSearchServiceSetup } from '../../../../src/core/server';
+import { SEARCH_API, ServiceEndpoints } from '../../common';
+import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
 interface SearchResultsResponse {
   result1?: Object;
@@ -19,14 +19,14 @@ interface SearchResultsResponse {
 
 const performance = require('perf_hooks').performance;
 
-export function registerDslRoute(router: IRouter) {
+export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenSearchServiceSetup, dataSourceEnabled: boolean) {
   router.post(
     {
       path: ServiceEndpoints.GetSearchResults,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
-      const { query1, query2 } = request.body;
+      const { query1, dataSourceId1, query2, dataSourceId2 } = request.body;
       const actionName =
         query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
       const resBody: SearchResultsResponse = {};
@@ -46,13 +46,19 @@ export function registerDslRoute(router: IRouter) {
                 size,
                 body: rest,
               };
-
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          let resp;
+          if(dataSourceEnabled && dataSourceId1){
+            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
+            resp = await client.callAPI('search', params);
+          }
+          else{
+              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+                'search',
+                params
+              );
+          }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -100,10 +106,17 @@ export function registerDslRoute(router: IRouter) {
 
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          let resp;
+          if(dataSourceEnabled && dataSourceId2){
+            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
+            resp = await client.callAPI('search', params);
+          }
+          else{
+              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+                'search',
+                params
+              );
+          }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -141,8 +154,12 @@ export function registerDslRoute(router: IRouter) {
   // Get Indices
   router.get(
     {
-      path: ServiceEndpoints.GetIndexes,
-      validate: {},
+      path: `${ServiceEndpoints.GetIndexes}/{dataSourceId?}`,
+      validate: {
+        params: schema.object({
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+        }),
+      },
     },
     async (context, request, response) => {
       const params = {
@@ -150,10 +167,19 @@ export function registerDslRoute(router: IRouter) {
       };
       const start = performance.now();
       try {
-        const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-          'cat.indices',
-          params
-        );
+        let resp;
+        const dataSourceId  = request.params.dataSourceId;
+          if(dataSourceEnabled && dataSourceId){
+            let client = await context.dataSource.opensearch.legacy.getClient(dataSourceId);
+            
+            resp = await client.callAPI('cat.indices', params);
+          }
+          else{
+              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+                'cat.indices',
+                params
+              );
+          }
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,

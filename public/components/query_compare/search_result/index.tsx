@@ -3,31 +3,36 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
 import { EuiPageContentBody } from '@elastic/eui';
+import React, { useState } from 'react';
 
-import { CoreStart } from '../../../../../../src/core/public';
-import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { SearchInputBar } from './search_components/search_bar';
+import { CoreStart, MountPoint } from '../../../../../../src/core/public';
+import { NavigationPublicPluginStart } from '../../../../../../src/plugins/navigation/public';
 import { ServiceEndpoints } from '../../../../common';
-import { Header } from '../../common/header';
+import { useSearchRelevanceContext } from '../../../contexts';
 import {
-  SearchResults,
   QueryError,
   QueryStringError,
+  SearchResults,
   SelectIndexError,
   initialQueryErrorState,
 } from '../../../types/index';
+import { Header } from '../../common/header';
 import { ResultComponents } from './result_components/result_components';
-import { useSearchRelevanceContext } from '../../../contexts';
+import { SearchInputBar } from './search_components/search_bar';
+import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 
 const DEFAULT_QUERY = '{}';
 
 interface SearchResultProps {
   http: CoreStart['http'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean
+  navigation: NavigationPublicPluginStart;
+  setActionMenu: (menuMount: MountPoint | undefined) => void;
 }
 
-export const SearchResult = ({ http }: SearchResultProps) => {
+export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation}: SearchResultProps) => {
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -35,7 +40,6 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
   const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
   const [searchBarValue, setSearchBarValue] = useState('');
-
   const {
     updateComparedResult1,
     updateComparedResult2,
@@ -43,6 +47,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     selectedIndex2,
     pipeline1,
     pipeline2,
+    datasourceItems
   } = useSearchRelevanceContext();
 
   const onClickSearch = () => {
@@ -92,7 +97,7 @@ export const SearchResult = ({ http }: SearchResultProps) => {
     jsonQuery: any,
     updateComparedResult: (result: SearchResults) => void,
     setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
-    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>,
   ) => {
     if (queryError.queryString.length || queryError.selectIndex.length) {
       setQueryError(queryError);
@@ -105,64 +110,75 @@ export const SearchResult = ({ http }: SearchResultProps) => {
   };
 
   const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
-    const requestBody = {
-      query1: handleQuery(
+    const requestBody1 = handleQuery(
         queryErrors[0],
         selectedIndex1,
         pipeline1,
         jsonQueries[0],
         updateComparedResult1,
         setQueryResult1,
-        setQueryError1
-      ),
-      query2: handleQuery(
+        setQueryError1,
+    );
+
+    const requestBody2 = handleQuery(
         queryErrors[1],
         selectedIndex2,
         pipeline2,
         jsonQueries[1],
         updateComparedResult2,
         setQueryResult2,
-        setQueryError2
-      ),
-    };
-    if (Object.keys(requestBody).length !== 0) {
-      http
-        .post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify(requestBody),
-        })
-        .then((res) => {
-          if (res.result1) {
-            setQueryResult1(res.result1);
-            updateComparedResult1(res.result1);
-          }
+        setQueryError2,
+    );
+    if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
+        // First Query
+        if (Object.keys(requestBody1).length !== 0) {
+            http.post(ServiceEndpoints.GetSearchResults, {
+                body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasourceItems["1"].dataConnectionId? datasourceItems["1"].dataConnectionId: '' }),
+            })
+            .then((res) => {
+                if (res.result1) {
+                    setQueryResult1(res.result1);
+                    updateComparedResult1(res.result1);
+                }
 
-          if (res.result2) {
-            setQueryResult2(res.result2);
-            updateComparedResult2(res.result2);
-          }
+                if (res.errorMessage1) {
+                    setQueryError1((error: QueryError) => ({
+                        ...error,
+                        queryString: res.errorMessage1,
+                        errorResponse: res.errorMessage1,
+                    }));
+                }
+            })
+            .catch((error: Error) => {
+                console.error(error);
+            });
+        }
 
-          if (res.errorMessage1) {
-            setQueryError1((error: QueryError) => ({
-              ...error,
-              queryString: res.errorMessage1,
-              errorResponse: res.errorMessage1,
-            }));
-          }
+        // Second Query
+        if (Object.keys(requestBody2).length !== 0) {
+            http.post(ServiceEndpoints.GetSearchResults, {
+                body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasourceItems["2"].dataConnectionId? datasourceItems["2"].dataConnectionId: '' }),
+            })
+            .then((res) => {
+                if (res.result2) {
+                    setQueryResult2(res.result2);
+                    updateComparedResult2(res.result2);
+                }
 
-          if (res.errorMessage2) {
-            setQueryError2((error: QueryError) => ({
-              ...error,
-              queryString: res.errorMessage2,
-              errorResponse: res.errorMessage2,
-            }));
-          }
-        })
-        .catch((error: Error) => {
-          // eslint-disable-next-line no-console
-          console.error(error);
-        });
+                if (res.errorMessage2) {
+                    setQueryError2((error: QueryError) => ({
+                        ...error,
+                        queryString: res.errorMessage2,
+                        errorResponse: res.errorMessage2,
+                    }));
+                }
+            })
+            .catch((error: Error) => {
+                console.error(error);
+            });
+        }
     }
-  };
+};
 
   return (
     <>
@@ -181,8 +197,13 @@ export const SearchResult = ({ http }: SearchResultProps) => {
           setQueryString2={setQueryString2}
           queryError1={queryError1}
           queryError2={queryError2}
+          dataSourceManagement={dataSourceManagement}
           setQueryError1={setQueryError1}
           setQueryError2={setQueryError2}
+          dataSourceEnabled={dataSourceEnabled}
+          savedObjects={savedObjects}
+          navigation={navigation}
+          setActionMenu={setActionMenu}
         />
         <ResultComponents
           queryResult1={queryResult1}

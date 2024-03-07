@@ -7,20 +7,25 @@ import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
 import {
-  PluginInitializerContext,
   CoreSetup,
   CoreStart,
-  IContextProvider,
+  ILegacyClusterClient,
   Logger,
   Plugin,
-  ILegacyClusterClient,
-  RequestHandler,
+  PluginInitializerContext
 } from '../../../src/core/server';
 import { defineRoutes } from './routes';
 
-import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
+import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
+import { DataSourceManagementPlugin } from '../../../src/plugins/data_source_management/public/plugin';
 import { SearchRelevancePluginConfigType } from '../config';
+import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
 import { SearchRelevancePluginSetup, SearchRelevancePluginStart } from './types';
+
+export interface SearchRelevancePluginSetupDependencies {
+  dataSourceManagement: ReturnType<DataSourceManagementPlugin['setup']>;
+  dataSource: DataSourcePluginSetup;
+}
 
 export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart>
@@ -35,7 +40,9 @@ export class SearchRelevancePlugin
     this.metricsService = new MetricsService(this.logger.get('metrics-service'));
   }
 
-  public async setup(core: CoreSetup) {
+  public async setup(core: CoreSetup, {dataSource}: SearchRelevancePluginSetupDependencies) {
+
+    const dataSourceEnabled = !!dataSource;
     this.logger.debug('SearchRelevance: Setup');
 
     const config: SearchRelevancePluginConfigType = await this.config$.pipe(first()).toPromise();
@@ -47,8 +54,12 @@ export class SearchRelevancePlugin
 
     const router = core.http.createRouter();
 
-    const opensearchSearchRelevanceClient: ILegacyClusterClient =
-      core.opensearch.legacy.createClient('opensearch_search_relevance');
+    let opensearchSearchRelevanceClient: ILegacyClusterClient | undefined = undefined;
+    if (!dataSourceEnabled) {
+      opensearchSearchRelevanceClient = core.opensearch.legacy.createClient(
+        'opensearch_search_relevance',
+      )
+    } 
 
     // @ts-ignore
     core.http.registerRouteHandlerContext('searchRelevance', (context, request) => {
@@ -60,7 +71,7 @@ export class SearchRelevancePlugin
     });
 
     // Register server side APIs
-    defineRoutes(router);
+    defineRoutes(router,core.opensearch,dataSourceEnabled);
 
     return {};
   }
