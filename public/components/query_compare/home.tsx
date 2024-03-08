@@ -5,7 +5,7 @@
 
 import React, { useEffect } from 'react';
 import { ChromeBreadcrumb, CoreStart, MountPoint } from '../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../src/plugins/data_source_management/public';
+import { DataSourceManagementPluginSetup, DataSourceMenu } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
 import '../../ace-themes/sql_console';
@@ -115,6 +115,18 @@ export const Home = ({
   }, [http, setDocumentsIndexes1, setDocumentsIndexes2, setFetchedPipelines1, setFetchedPipelines2, datasource1, datasource2]);
   return (
     <>
+      <DataSourceMenu
+        setMenuMountPoint={setActionMenu}
+        showDataSourceSelectable={true}
+        dataSourceCallBackFunc={(id, label) => console.log(id, label)}
+        disableDataSourceSelectable={true}
+        savedObjects={savedObjects.client}
+        notifications={notifications}
+        appName={'searchRelevance'}
+        hideLocalCluster={false}
+        selectedOption={[{label: 'Local Cluster', id: 'a'}]}
+        fullWidth={true}
+      />
       <div className="osdOverviewWrapper">
         {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={datasourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} /> : <CreateIndex />}
       </div>
