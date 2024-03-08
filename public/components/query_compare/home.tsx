@@ -62,7 +62,7 @@ export const Home = ({
   const fetchIndexes = (dataConnectionId: string, queryNumber: string) => {
     if(dataConnectionId){
           http.get(ServiceEndpoints.GetIndexes+"/"+dataConnectionId).then((res: DocumentsIndex[]) => {
-            if(queryNumber == "1"){
+            if(queryNumber == QUERY_NUMBER_ONE){
               setDocumentsIndexes1(res)
             }
             else{
@@ -72,8 +72,7 @@ export const Home = ({
     }
     else{
       http.get(ServiceEndpoints.GetIndexes).then((res: DocumentsIndex[]) => {
-        // setDocumentsIndexes(res)
-        if(queryNumber == "1"){
+        if(queryNumber == QUERY_NUMBER_ONE){
           setDocumentsIndexes1(res)
         }
         else{

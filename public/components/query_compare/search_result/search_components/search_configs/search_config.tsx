@@ -18,7 +18,7 @@ import {
 import React, { FunctionComponent } from 'react';
 
 import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
-import { ClusterSelector, DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
+import { DataSourceManagementPluginSetup, DataSourceSelector } from '../../../../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
@@ -156,13 +156,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               fullWidth
               label="Data Source"
             >
-            <ClusterSelector 
-              savedObjectsClient={savedObjects.client}
-              notifications={notifications} 
-              onSelectedDataSource={onSelectedDataSource}
-              disabled={false} 
-              hideLocalCluster={false} 
-              fullWidth={true}              
+            <DataSourceSelector
+               savedObjectsClient={savedObjects.client}
+               notifications={notifications} 
+               onSelectedDataSource={onSelectedDataSource}
+               disabled={false} 
+               hideLocalCluster={false} 
+               fullWidth={false}
+               removePrepend={true}
             />
             </EuiFormRow>
           </EuiFlexItem> )}

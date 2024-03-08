@@ -6,7 +6,7 @@
 import { RequestParams } from '@opensearch-project/opensearch';
 import { schema } from '@osd/config-schema';
 
-import { IRouter, OpenSearchServiceSetup } from '../../../../src/core/server';
+import { ILegacyScopedClusterClient, IRouter, OpenSearchServiceSetup } from '../../../../src/core/server';
 import { SEARCH_API, ServiceEndpoints } from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
@@ -167,19 +167,14 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
       };
       const start = performance.now();
       try {
-        let resp;
         const dataSourceId  = request.params.dataSourceId;
-          if(dataSourceEnabled && dataSourceId){
-            let client = await context.dataSource.opensearch.legacy.getClient(dataSourceId);
-            
-            resp = await client.callAPI('cat.indices', params);
-          }
-          else{
-              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-                'cat.indices',
-                params
-              );
-          }
+        let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+        if(dataSourceEnabled && dataSourceId){
+          callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+        } else {
+          callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        }
+        const resp = await callApi('cat.indices', params);
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
