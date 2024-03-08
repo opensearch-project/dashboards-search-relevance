@@ -6,5 +6,7 @@
   "ui": true,
   "requiredPlugins": [
     "navigation"
-  ]
+  ],
+  "optionalPlugins": ["dataSource"],
+  "requiredBundles": ["dataSourceManagement"]
 }

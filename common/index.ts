@@ -14,3 +14,7 @@ export enum ServiceEndpoints {
 }
 
 export const SEARCH_API = '/_search';
+
+//Query1 for the left search and Query2 for the right search page
+export const QUERY_NUMBER_ONE = '1';
+export const QUERY_NUMBER_TWO = '2';

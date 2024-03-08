@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { DataSourcePluginStart } from '../../../src/plugins/data_source/public/types';
 import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/public';
 
 export interface SearchRelevancePluginSetup {
@@ -13,4 +14,5 @@ export interface SearchRelevancePluginStart {}
 
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
+  dataSource: DataSourcePluginStart;
 }

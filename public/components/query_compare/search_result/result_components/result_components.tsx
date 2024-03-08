@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { EuiEmptyPrompt, EuiPanel, EuiSplitPanel } from '@elastic/eui';
 import React, { useEffect, useState } from 'react';
-import { EuiSplitPanel, EuiEmptyPrompt, EuiPanel } from '@elastic/eui';
 
 import { QueryError, SearchResults } from '../../../../types/index';
 import { ResultPanel } from './result_panel';
