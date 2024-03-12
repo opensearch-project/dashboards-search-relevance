@@ -18,6 +18,7 @@ describe('Flyout component', () => {
   it('Renders flyout component', async () => {
     const setQueryString = jest.fn();
     const setSelectedIndex = jest.fn();
+    const setPipeline = jest.fn();
     const setQueryError = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
@@ -27,6 +28,8 @@ describe('Flyout component', () => {
           setQueryString={setQueryString}
           selectedIndex={''}
           setSelectedIndex={setSelectedIndex}
+          pipeline={''}
+          setPipeline={setPipeline}
           queryError={initialQueryErrorState}
           setQueryError={setQueryError}
         />
@@ -37,10 +40,16 @@ describe('Flyout component', () => {
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedIndexOptions: [] } });
+      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
+      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
+      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
+      wrapper.find('EuiComboBox').prop('onChange')?.({
+        target: { selectedPipelineOptions: [{ label: '_none' }] },
+      });
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
     expect(setSelectedIndex).toHaveBeenCalledTimes(1);
-    expect(setQueryError).toHaveBeenCalledTimes(1);
+    expect(setPipeline).toHaveBeenCalledTimes(2);
+    expect(setQueryError).toHaveBeenCalledTimes(3);
   });
 });

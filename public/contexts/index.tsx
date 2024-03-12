@@ -21,6 +21,12 @@ export interface SearchRelevanceContextProps {
   setSelectedIndex1: React.Dispatch<React.SetStateAction<string>>;
   selectedIndex2: string;
   setSelectedIndex2: React.Dispatch<React.SetStateAction<string>>;
+  pipelines: {};
+  setPipelines: React.Dispatch<React.SetStateAction<{}>>;
+  pipeline1: string;
+  setPipeline1: React.Dispatch<React.SetStateAction<string>>;
+  pipeline2: string;
+  setPipeline2: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const SearchRelevanceContext = createContext<SearchRelevanceContextProps | null>(null);
@@ -42,6 +48,9 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
   const [comparedResult2, setComparedResult2] = useState<DocumentRank>({});
   const [selectedIndex1, setSelectedIndex1] = useState('');
   const [selectedIndex2, setSelectedIndex2] = useState('');
+  const [pipelines, setPipelines] = useState<{}>({});
+  const [pipeline1, setPipeline1] = useState('');
+  const [pipeline2, setPipeline2] = useState('');
 
   const updateComparedResult1 = (result: SearchResults) => {
     setComparedResult1(getDocumentRank(result?.hits?.hits));
@@ -66,6 +75,12 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
         setSelectedIndex1,
         selectedIndex2,
         setSelectedIndex2,
+        pipelines,
+        setPipelines,
+        pipeline1,
+        setPipeline1,
+        pipeline2,
+        setPipeline2,
       }}
     >
       {children}

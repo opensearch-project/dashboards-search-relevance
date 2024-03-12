@@ -11,6 +11,8 @@ import {
   EuiCodeEditor,
   EuiText,
   EuiButtonEmpty,
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiComboBox,
 } from '@elastic/eui';
 
@@ -25,6 +27,8 @@ interface SearchConfigProps {
   setSelectedIndex: React.Dispatch<React.SetStateAction<string>>;
   queryError: QueryError;
   setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
+  pipeline: string;
+  setPipeline: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -35,18 +39,43 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setSelectedIndex,
   queryError,
   setQueryError,
+  pipeline,
+  setPipeline,
 }) => {
-  const { documentsIndexes, setShowFlyout } = useSearchRelevanceContext();
-  // Sort documents indexes based off of each individual index.
-  const sortedDocumentsIndexes = [...documentsIndexes]
-    .sort((a, b) => a.index.localeCompare(b.index))
-    .map(({ index }) => ({
-      label: index,
-    }));
+  const { documentsIndexes, pipelines, setShowFlyout } = useSearchRelevanceContext();
+  // On select index
+  const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
+    setSelectedIndex(e.target.value);
 
-  // On select index for ComboBox
-  const onChangeSelectedIndex = (selectedIndexOptions: string | any[]) => {
-    setSelectedIndex(selectedIndexOptions[0]?.label || '');
+    setQueryError((error: QueryError) => ({
+      ...error,
+      selectIndex: '',
+    }));
+  };
+
+  // Sort search pipelines based off of each individual pipeline name.
+  const sortedPipelines = [...Object.keys(pipelines)]
+    .sort((a, b) => a.localeCompare(b))
+    .map((searchPipeline) => ({
+      label: searchPipeline,
+    }));
+  // Add the '_none' option to the pipeline dropdown (runs the index without a pipeline).
+  sortedPipelines.push({ label: '_none' });
+
+  // On select pipeline for ComboBox
+  const onChangePipeline = (selectedPipelineOptions: string | any[]) => {
+    setPipeline(selectedPipelineOptions[0]?.label || '');
+  };
+
+  // Select index on blur
+  const selectIndexOnBlur = () => {
+    // If Index Select on blur without selecting an index, show error
+    if (!selectedIndex.length) {
+      setQueryError((error: QueryError) => ({
+        ...error,
+        selectIndex: SelectIndexError.unselected,
+      }));
+    }
   };
 
   // On change query string
@@ -79,21 +108,39 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
       </EuiTitle>
       <EuiSpacer size="m" />
-      <EuiFormRow
-        fullWidth
-        label="Index"
-        error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
-        isInvalid={!!queryError.selectIndex.length}
-      >
-        {
-          <EuiComboBox
-            singleSelection={{ asPlainText: true }}
-            options={sortedDocumentsIndexes}
-            selectedOptions={selectedIndex ? [{ label: selectedIndex }] : []}
-            onChange={onChangeSelectedIndex}
-          />
-        }
-      </EuiFormRow>
+      <EuiFlexGroup>
+        <EuiFlexItem>
+          <EuiFormRow
+            fullWidth
+            label="Index"
+            error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
+            isInvalid={!!queryError.selectIndex.length}
+          >
+            <EuiSelect
+              hasNoInitialSelection={true}
+              options={documentsIndexes.map(({ index }) => ({
+                value: index,
+                text: index,
+              }))}
+              aria-label="Search Index"
+              onChange={onChangeSelectedIndex}
+              value={selectedIndex}
+              onBlur={selectIndexOnBlur}
+            />
+          </EuiFormRow>
+        </EuiFlexItem>
+        <EuiFlexItem>
+          <EuiFormRow fullWidth label="Pipeline" helpText="Optional">
+            <EuiComboBox
+              placeholder=""
+              singleSelection={{ asPlainText: true }}
+              options={sortedPipelines}
+              selectedOptions={pipeline ? [{ label: pipeline }] : []}
+              onChange={onChangePipeline}
+            />
+          </EuiFormRow>
+        </EuiFlexItem>
+      </EuiFlexGroup>
       <EuiFormRow
         fullWidth
         label="Query"
