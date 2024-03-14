@@ -52,7 +52,9 @@ export const Home = ({
     datasource1,
     datasource2,
     setFetchedPipelines1,
-    setFetchedPipelines2
+    setFetchedPipelines2,
+    dataSourceOptions,
+    setDataSourceOptions
   } = useSearchRelevanceContext();
 
   useEffect(() => {
@@ -104,6 +106,16 @@ export const Home = ({
     }
   }
 
+  const selectedDatasources = (e) => {
+    console.log(e)
+    e.forEach(item  => {
+      if (item.checked === "on" && !dataSourceOptions.find(option => option.id === item.id)) {
+          dataSourceOptions.push({ id: item.id, label: item.name });;
+      }
+    });
+    setDataSourceOptions(dataSourceOptions)
+  }
+
   // Get Indexes and Pipelines
   useEffect(() => {
 
@@ -117,14 +129,13 @@ export const Home = ({
     <>
       <DataSourceMenu
         setMenuMountPoint={setActionMenu}
-        showDataSourceSelectable={true}
-        dataSourceCallBackFunc={(id, label) => console.log(id, label)}
+        showDataSourceMultiSelectable={true}
         disableDataSourceSelectable={true}
         savedObjects={savedObjects.client}
         notifications={notifications}
         appName={'searchRelevance'}
         hideLocalCluster={false}
-        selectedOption={[{label: 'Local Cluster', id: 'a'}]}
+        selectedDataSourcesCallBackFunc={selectedDatasources}
         fullWidth={true}
       />
       <div className="osdOverviewWrapper">

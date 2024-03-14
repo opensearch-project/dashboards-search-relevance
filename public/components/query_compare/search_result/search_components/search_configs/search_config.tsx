@@ -71,7 +71,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   navigation,
   setActionMenu,
 }) => {
-  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout} = useSearchRelevanceContext();
+  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout, dataSourceOptions} = useSearchRelevanceContext();
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -164,6 +164,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                hideLocalCluster={false} 
                fullWidth={false}
                removePrepend={true}
+               dataSourceOptions={dataSourceOptions}
             />
             </EuiFormRow>
           </EuiFlexItem> )}
