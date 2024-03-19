@@ -58,7 +58,7 @@ doc-table {
     }
 
     dt {
-      background-color: transparentize(shade($euiColorPrimary, 20%), 0.9);
+      background-color: tintOrShade($euiColorPrimary, 90%, 70%);
       color: $euiTextColor;
       padding: ($euiSizeXS / 2) $euiSizeXS;
       margin-right: $euiSizeXS;
@@ -171,10 +171,22 @@ table {
   padding: 4px 0 0 0 !important;
 }
 
+.osdDocTableCell__detailsExpanded {
+  min-width: 325px;
+  width: 35vw;
+  word-wrap: break-word;
+  height: 220px;
+  overflow-y: auto;
+}
+
 .osdDocTableCell__filter {
   position: absolute;
   white-space: nowrap;
   right: 0;
+}
+
+.euiDescriptionList.euiDescriptionList--inline .euiDescriptionList__title.osdDescriptionListFieldTitle {
+  background-color: tintOrShade($euiColorPrimary, 90%, 70%);
 }
 
 /**

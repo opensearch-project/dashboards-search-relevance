@@ -318,134 +318,308 @@ exports[`Result grid component Renders result grid component 1`] = `
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-2"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        arr:
-                      </dt>
-                      <dd>
-                        <span>
-                          ["el1","el2","el3"]
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-3"
-                    >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          3920564
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-4"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          006R90321
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-5"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          Xerox 006R90321 toner cartridge Original Black 6 pc(s)
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-6"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Toner (6 Per Box) for CopyCentre C65 Digital Copier
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-7"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-8"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2009-12-10T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-9"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          Xerox
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-10"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          4995
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-2"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            arr
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              ["el1","el2","el3"]
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-3"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              3920564
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-4"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              006R90321
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-5"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Xerox 006R90321 toner cartridge Original Black 6 pc(s)
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-6"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Toner (6 Per Box) for CopyCentre C65 Digital Copier
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-7"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_3920564_medium_1472618727_1445_7091.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-8"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2009-12-10T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-9"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Xerox
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-10"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              4995
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-12"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-12"
+            key="documentId-22"
           >
             <td
               key="1-XALJC4QBuER5vZIv1tvh"
@@ -544,153 +718,337 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-23"
+              key="datagrid-cell-33"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-13"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        nestObj:
-                      </dt>
-                      <dd>
-                        <span>
-                          {"key1":[1,true,null],"key2":{"key21":"element"}}
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-14"
-                    >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          2101957
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-15"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          dv7-1211ea
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-16"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-17"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-18"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-19"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-12-19T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-20"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          HP
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-21"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          10995
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-22"
-                    >
-                      <dt>
-                        attr_t_product_colour:
-                      </dt>
-                      <dd>
-                        <span>
-                          Silver
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-23"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            nestObj
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              {"key1":[1,true,null],"key2":{"key21":"element"}}
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-24"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2101957
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-25"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              dv7-1211ea
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-26"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HP Pavilion dv7-1211ea Notebook Silver 43.2 cm (17") 1440 x 900 pixels Intel® Core™2 Duo 4 GB DDR2-SDRAM 250 GB HDD NVIDIA® GeForce® 9200M GS Windows Vista Home Premium
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-27"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Intel Core 2 Duo Processor P7450 (3M Cache, 2.13 GHz, 1066 MHz FSB), 4GB DDR2, 250GB SATA HDD, 17" WXGA+ HD BrightView 1440 x 900, nVidia GeForce 9200M GS, DVD Super Multi DL, Gigabit Ethernet, WLAN 802.11 b/g, WebCam, Windows Vista Home Premium 32-bit
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-28"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/2101957_8011415648.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-29"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2008-12-19T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-30"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HP
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-31"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              10995
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-32"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            attr_t_product_colour
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Silver
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-34"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-24"
+            key="documentId-45"
           >
             <td
               key="1-XQLJC4QBuER5vZIv1tvh"
@@ -789,140 +1147,314 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-34"
+              key="datagrid-cell-55"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-25"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          1128895
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-26"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          DB9 RS232 Serial Null Modem Adapter - M/F
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-27"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-28"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-29"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-30"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2007-08-09T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-31"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          StarTech.com
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-32"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          595
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-33"
-                    >
-                      <dt>
-                        attr_t_product_colour:
-                      </dt>
-                      <dd>
-                        <span>
-                          Grey
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-46"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1128895
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-47"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              DB9 RS232 Serial Null Modem Adapter - M/F
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-48"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-49"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              StarTech.com DB9 RS232 Serial Null Modem Adapter - M/F
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-50"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/1128895_4034494654.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-51"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2007-08-09T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-52"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              StarTech.com
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-53"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              595
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-54"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            attr_t_product_colour
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Grey
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-56"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-35"
+            key="documentId-66"
           >
             <td
               key="1-XgLJC4QBuER5vZIv1tvh"
@@ -1021,127 +1553,291 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-44"
+              key="datagrid-cell-75"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-36"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          1449722
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-37"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          ProCurve 420 Wireless Access Point
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-38"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          HP ProCurve 420 Wireless Access Point
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-39"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-40"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-41"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-03-07T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-42"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          HP
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-43"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          9495
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-67"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1449722
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-68"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              ProCurve 420 Wireless Access Point
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-69"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HP ProCurve 420 Wireless Access Point
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-70"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Refurbished A FULL-FEATURED IEEE 802.11G SINGLE-RADIO ACCESS POINT IDEALLY
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-71"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_1449722_medium_1480997766_6498_5955.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-72"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2008-03-07T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-73"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HP
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-74"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              9495
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-76"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-45"
+            key="documentId-85"
           >
             <td
               key="1-XwLJC4QBuER5vZIv1tvh"
@@ -1301,127 +1997,291 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-54"
+              key="datagrid-cell-94"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-46"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          1625640
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-47"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          2GB SD Card
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-48"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          Integral 2GB SD Card memory card
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-49"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          2GB SD Card
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-50"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-51"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-06-23T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-52"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          Integral
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-53"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          1195
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-86"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1625640
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-87"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2GB SD Card
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-88"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Integral 2GB SD Card memory card
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-89"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2GB SD Card
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-90"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_1625640_medium_1480990774_7102_6217.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-91"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2008-06-23T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-92"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Integral
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-93"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1195
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-95"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-55"
+            key="documentId-104"
           >
             <td
               key="1-YALJC4QBuER5vZIv1tvh"
@@ -1581,127 +2441,291 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-64"
+              key="datagrid-cell-113"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-56"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          2067378
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-57"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          LC51C
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-58"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          Brother LC51C Original Cyan
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-59"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          LC51C
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-60"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-61"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2009-04-08T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-62"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          Brother
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-63"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          1795
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-105"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2067378
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-106"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              LC51C
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-107"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Brother LC51C Original Cyan
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-108"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              LC51C
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-109"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_2067378_medium_1481020819_0464_12184.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-110"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2009-04-08T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-111"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Brother
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-112"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1795
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-114"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-65"
+            key="documentId-123"
           >
             <td
               key="1-YQLJC4QBuER5vZIv1tvh"
@@ -1861,140 +2885,314 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-75"
+              key="datagrid-cell-133"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-66"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          636678
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-67"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          Emergency Power Off (EPO)
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-68"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          APC Emergency Power Off (EPO)
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-69"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Emergency Power Off (EPO)
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-70"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-71"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2006-11-15T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-72"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          APC
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-73"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          69195
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-74"
-                    >
-                      <dt>
-                        attr_t_product_colour:
-                      </dt>
-                      <dd>
-                        <span>
-                          Black
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-124"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              636678
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-125"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Emergency Power Off (EPO)
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-126"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              APC Emergency Power Off (EPO)
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-127"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Emergency Power Off (EPO)
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-128"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_636678_medium_1480944064_4778_26509.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-129"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2006-11-15T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-130"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              APC
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-131"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              69195
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-132"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            attr_t_product_colour
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Black
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-134"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-76"
+            key="documentId-144"
           >
             <td
               key="1-YgLJC4QBuER5vZIv1tvh"
@@ -2154,127 +3352,291 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-85"
+              key="datagrid-cell-153"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-77"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          1570809
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-78"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-79"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-80"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-81"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-82"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2008-04-11T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-83"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          APC
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-84"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          53895
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-145"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              1570809
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-146"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-147"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              APC IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm power distribution unit (PDU)
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-148"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              IT Power Distribution Module 3 Pole 5 Wire 32A IEC309 620cm
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-149"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_1570809_medium_1480983343_7059_6217.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-150"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2008-04-11T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-151"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              APC
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-152"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              53895
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-154"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-86"
+            key="documentId-163"
           >
             <td
               key="1-YwLJC4QBuER5vZIv1tvh"
@@ -2434,140 +3796,314 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-96"
+              key="datagrid-cell-173"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-87"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          148843
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-88"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-89"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-90"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-91"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-92"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2005-07-15T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-93"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          HERMA
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-94"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          3795
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-95"
-                    >
-                      <dt>
-                        attr_t_product_colour:
-                      </dt>
-                      <dd>
-                        <span>
-                          White
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-164"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              148843
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-165"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-166"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HERMA Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-167"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Labels Premium A4 64.6x33.8 mm white paper matt 2400 pcs.
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-168"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/148843_2449.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-169"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2005-07-15T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-170"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              HERMA
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-171"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              3795
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-172"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            attr_t_product_colour
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              White
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-174"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
           <tr
             className="osdDocTable__row"
-            key="documentId-97"
+            key="documentId-184"
           >
             <td
               key="1-ZALJC4QBuER5vZIv1tvh"
@@ -2727,122 +4263,286 @@ exports[`Result grid component Renders result grid component 1`] = `
             </td>
             <td
               className="eui-textBreakAll eui-textBreakWord"
-              key="datagrid-cell-106"
+              key="datagrid-cell-193"
             >
               <div
                 className="truncate-by-height"
               >
                 <span>
-                  <dl
+                  <EuiDescriptionList
                     className="source truncate-by-height"
+                    compressed={true}
+                    textStyle="normal"
+                    type="inline"
                   >
-                    <span
-                      key="grid-dt-dd-98"
+                    <dl
+                      className="euiDescriptionList euiDescriptionList--inline euiDescriptionList--compressed source truncate-by-height"
                     >
-                      <dt>
-                        id:
-                      </dt>
-                      <dd>
-                        <span>
-                          968447
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-99"
-                    >
-                      <dt>
-                        name:
-                      </dt>
-                      <dd>
-                        <span>
-                          Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-100"
-                    >
-                      <dt>
-                        title:
-                      </dt>
-                      <dd>
-                        <span>
-                          OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-101"
-                    >
-                      <dt>
-                        short_description:
-                      </dt>
-                      <dd>
-                        <span>
-                          Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-102"
-                    >
-                      <dt>
-                        img_500x500:
-                      </dt>
-                      <dd>
-                        <span>
-                          http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-103"
-                    >
-                      <dt>
-                        date_released:
-                      </dt>
-                      <dd>
-                        <span>
-                          2007-08-09T00:00:00Z
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-104"
-                    >
-                      <dt>
-                        supplier:
-                      </dt>
-                      <dd>
-                        <span>
-                          OKI
-                           
-                        </span>
-                      </dd>
-                    </span>
-                    <span
-                      key="grid-dt-dd-105"
-                    >
-                      <dt>
-                        price:
-                      </dt>
-                      <dd>
-                        <span>
-                          20395
-                           
-                        </span>
-                      </dd>
-                    </span>
-                  </dl>
+                      <span
+                        key="grid-dt-dd-185"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            id
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              968447
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-186"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            name
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-187"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            title
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              OKI Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4' Original
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-188"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            short_description
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              Cyan Toner Cartridge for C7100/C7300/C7500 Series 'Type C4'
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-189"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            img_500x500
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              http://images.icecat.biz/img/gallery_mediums/img_968447_medium_1480985748_8727_5647.jpg
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-190"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            date_released
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              2007-08-09T00:00:00Z
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-191"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            supplier
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              OKI
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                      <span
+                        key="grid-dt-dd-192"
+                      >
+                        <EuiDescriptionListTitle
+                          className="osdDescriptionListFieldTitle"
+                        >
+                          <dt
+                            className="euiDescriptionList__title osdDescriptionListFieldTitle"
+                          >
+                            price
+                          </dt>
+                        </EuiDescriptionListTitle>
+                        <EuiDescriptionListDescription>
+                          <dd
+                            className="euiDescriptionList__description"
+                          >
+                            <span>
+                              20395
+                               
+                            </span>
+                          </dd>
+                        </EuiDescriptionListDescription>
+                      </span>
+                    </dl>
+                  </EuiDescriptionList>
                 </span>
               </div>
+            </td>
+            <td
+              className="osdDocTableCell__toggleDetails"
+              key="grid-td-194"
+            >
+              <EuiPopover
+                anchorPosition="leftUp"
+                button={
+                  <EuiButtonIcon
+                    aria-label="Toggle details"
+                    className="euiButtonIcon euiButtonIcon--text"
+                    iconType="expand"
+                    onClick={[Function]}
+                  />
+                }
+                closePopover={[Function]}
+                display="inlineBlock"
+                hasArrow={true}
+                isOpen={false}
+                ownFocus={true}
+                panelPaddingSize="m"
+              >
+                <div
+                  className="euiPopover euiPopover--anchorLeftUp"
+                >
+                  <div
+                    className="euiPopover__anchor"
+                  >
+                    <EuiButtonIcon
+                      aria-label="Toggle details"
+                      className="euiButtonIcon euiButtonIcon--text"
+                      iconType="expand"
+                      onClick={[Function]}
+                    >
+                      <button
+                        aria-label="Toggle details"
+                        className="euiButtonIcon euiButtonIcon--primary euiButtonIcon--empty euiButtonIcon--xSmall euiButtonIcon euiButtonIcon--text"
+                        disabled={false}
+                        onClick={[Function]}
+                        type="button"
+                      >
+                        <EuiIcon
+                          aria-hidden="true"
+                          className="euiButtonIcon__icon"
+                          color="inherit"
+                          size="m"
+                          type="expand"
+                        >
+                          <EuiIconBeaker
+                            aria-hidden={true}
+                            className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                            focusable="false"
+                            role="img"
+                            style={null}
+                          >
+                            <svg
+                              aria-hidden={true}
+                              className="euiIcon euiIcon--medium euiIcon--inherit euiIcon-isLoading euiButtonIcon__icon"
+                              focusable="false"
+                              height={16}
+                              role="img"
+                              style={null}
+                              viewBox="0 0 16 16"
+                              width={16}
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                              />
+                            </svg>
+                          </EuiIconBeaker>
+                        </EuiIcon>
+                      </button>
+                    </EuiButtonIcon>
+                  </div>
+                </div>
+              </EuiPopover>
             </td>
           </tr>
         </tbody>
@@ -3056,6 +4756,7 @@ exports[`Result panel query error Displays error message on query error 1`] = `
       }
     }
     resultNumber={1}
+    setQueryError={[MockFunction]}
   >
     <_EuiSplitPanelInner
       className="search-relevance-result-panel"
