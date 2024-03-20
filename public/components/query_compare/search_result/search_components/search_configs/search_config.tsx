@@ -8,7 +8,6 @@ import {
   EuiTitle,
   EuiSpacer,
   EuiFormRow,
-  EuiSelect,
   EuiCodeEditor,
   EuiText,
   EuiButtonEmpty,
