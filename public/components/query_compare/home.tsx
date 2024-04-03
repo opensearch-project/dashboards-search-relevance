@@ -62,7 +62,7 @@ export const Home = ({
   const [dataSourceOptions, setDataSourceOptions] = useState<DataSourceOption[]>([]);
   const fetchIndexes = (dataConnectionId: string, queryNumber: string) => {
     if(dataConnectionId){
-          http.get(ServiceEndpoints.GetIndexes+"/"+dataConnectionId).then((res: DocumentsIndex[]) => {
+      http.get(`${ServiceEndpoints.GetIndexes}/${dataConnectionId}`).then((res: DocumentsIndex[]) => {
             if(queryNumber == QUERY_NUMBER_ONE){
               setDocumentsIndexes1(res)
             }
@@ -84,7 +84,7 @@ export const Home = ({
   }
   const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
     if(dataConnectionId){
-      http.get(ServiceEndpoints.GetPipelines+"/"+dataConnectionId).then((res: {}) => {
+      http.get(`${ServiceEndpoints.GetPipelines}/${dataConnectionId}`).then((res: {}) => {
         if(queryNumber == QUERY_NUMBER_ONE){
           setFetchedPipelines1(res)
         }
@@ -132,7 +132,6 @@ export const Home = ({
         componentConfig={{
           savedObjects: savedObjects.client,
           notifications: notifications,
-          hideLocalCluster: false,
           fullWidth: true,
           onSelectedDataSources: selectedDatasources,
         }} 

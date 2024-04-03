@@ -55,11 +55,9 @@ export class SearchRelevancePlugin
     const router = core.http.createRouter();
 
     let opensearchSearchRelevanceClient: ILegacyClusterClient | undefined = undefined;
-    if (!dataSourceEnabled) {
       opensearchSearchRelevanceClient = core.opensearch.legacy.createClient(
         'opensearch_search_relevance',
       )
-    } 
 
     // @ts-ignore
     core.http.registerRouteHandlerContext('searchRelevance', (context, request) => {

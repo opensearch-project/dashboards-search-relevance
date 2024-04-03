@@ -85,8 +85,8 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     }));
   };
   
-  const documentIndex = queryNumber == 1? documentsIndexes1: documentsIndexes2
-  const pipelines = queryNumber == 1? fetchedPipelines1: fetchedPipelines2
+  const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
+  const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
   // Sort search pipelines based off of each individual pipeline name.
   const sortedPipelines = [...Object.keys(pipelines)]
     .sort((a, b) => a.localeCompare(b))
@@ -163,7 +163,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 notifications={notifications} 
                 onSelectedDataSource={onSelectedDataSource}
                 disabled={false} 
-                hideLocalCluster={false} 
                 fullWidth={false}
                 removePrepend={true}
                 dataSourceFilter={(dataSource) => dataSourceOptions.some(item => item.id === dataSource.id)}

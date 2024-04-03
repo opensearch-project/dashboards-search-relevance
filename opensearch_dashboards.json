@@ -5,8 +5,7 @@
   "server": true,
   "ui": true,
   "requiredPlugins": [
-    "navigation",
-    "dataSourceManagement"
+    "navigation"
   ],
-  "optionalPlugins": ["dataSource"]
+  "optionalPlugins": ["dataSource","dataSourceManagement"]
 }
