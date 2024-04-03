@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+
+import React, { useState } from 'react';
 import {
   EuiButtonIcon,
   EuiFlexGroup,
@@ -11,6 +13,11 @@ import {
   EuiIconTip,
   EuiText,
   EuiTitle
+  EuiDescriptionList,
+  EuiDescriptionListTitle,
+  EuiDescriptionListDescription,
+  EuiMark,
+  EuiPopover,
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
 import React from 'react';
@@ -34,10 +41,41 @@ export const ResultGridComponent = ({
 }: ResultGridComponentProps) => {
   const { selectedIndex1, selectedIndex2 } = useSearchRelevanceContext();
 
-  const getExpColapTd = () => {
+  const GetExpColapTd = (docSource: IDocType) => {
+    const [isResultDetailOpen, setIsResultDetailOpen] = useState(false);
+    const closeResultDetail = () => setIsResultDetailOpen(false);
+
+    // Click on expand/collapse button
+    const toggleDetails = () => {
+      setIsResultDetailOpen(!isResultDetailOpen);
+    };
+
     return (
       <td className="osdDocTableCell__toggleDetails" key={uniqueId('grid-td-')}>
-        <EuiButtonIcon className="euiButtonIcon euiButtonIcon--text" iconType="arrowLeft" />
+        <EuiPopover
+          button={
+            <EuiButtonIcon
+              aria-label="Toggle details"
+              className="euiButtonIcon euiButtonIcon--text"
+              iconType={isResultDetailOpen ? 'minimize' : 'expand'}
+              onClick={toggleDetails}
+            />
+          }
+          isOpen={isResultDetailOpen}
+          closePopover={closeResultDetail}
+          anchorPosition="leftUp"
+        >
+          <EuiText size="m" className="eui-yScroll osdDocTableCell__detailsExpanded">
+            {_.toPairs(docSource).map((entry: string[]) => {
+              return (
+                <span key={uniqueId('popover-text-')}>
+                  <EuiMark>{`${entry[0]}: `}</EuiMark>
+                  {_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} <br />
+                </span>
+              );
+            })}
+          </EuiText>
+        </EuiPopover>
       </td>
     );
   };
@@ -48,18 +86,23 @@ export const ResultGridComponent = ({
     return (
       <div className="truncate-by-height">
         <span>
-          <dl className="source truncate-by-height">
+          <EuiDescriptionList
+            className="source truncate-by-height"
+            type="inline"
+            textStyle="normal"
+            compressed={true}
+          >
             {_.toPairs(sourceFields).map((entry: string[]) => {
               return (
                 <span key={uniqueId('grid-dt-dd-')}>
-                  <dt>{`${entry[0]}:`}</dt>
-                  <dd>
+                  <EuiDescriptionListTitle className="osdDescriptionListFieldTitle">{`${entry[0]}`}</EuiDescriptionListTitle>
+                  <EuiDescriptionListDescription>
                     <span>{_.isObject(entry[1]) ? JSON.stringify(entry[1]) : entry[1]} </span>
-                  </dd>
+                  </EuiDescriptionListDescription>
                 </span>
               );
             })}
-          </dl>
+          </EuiDescriptionList>
         </span>
       </div>
     );
@@ -173,9 +216,8 @@ export const ResultGridComponent = ({
       })
     );
 
-    // // Add detail toggling column
-    // // cols.unshift(getExpColapTd());
-    // cols.push(getExpColapTd());
+    // Add detail toggling column
+    cols.push(GetExpColapTd(document._source));
 
     return cols;
   };
@@ -193,20 +235,6 @@ export const ResultGridComponent = ({
       </>
     );
   };
-
-  // useEffect(() => {
-  //   console.log('query result changed');
-  //   if (!_.isEmpty(queryResult))
-  //     setResultGrid(
-  //       queryResult.hits.hits.map((doc: any, id: number) => {
-  //         return (
-  //           <>
-  //             <tr className="osdDocTable__row">{getTds(doc._source)}</tr>
-  //           </>
-  //         );
-  //       })
-  //     );
-  // }, [queryResult]);
 
   return (
     <div className="dscTable dscTableFixedScroll">

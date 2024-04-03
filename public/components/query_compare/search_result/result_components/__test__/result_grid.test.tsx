@@ -33,6 +33,7 @@ describe('Result grid component', () => {
 
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
+      wrapper.find('EuiButtonIcon').first().prop('onClick')?.({ target: {} });
     });
   });
 });
@@ -40,12 +41,14 @@ describe('Result grid component', () => {
 describe('Result panel query error', () => {
   configure({ adapter: new Adapter() });
   it('Displays error message on query error', async () => {
+    const setQueryError = jest.fn();
     const wrapper = mount(
       <SearchRelevanceContextProvider>
         <ResultPanel
           resultNumber={1}
           queryResult={TEST_QUERY_RESPONSE}
           queryError={TEST_QUERY_ERROR}
+          setQueryError={setQueryError}
         />
       </SearchRelevanceContextProvider>
     );
