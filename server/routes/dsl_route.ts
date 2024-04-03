@@ -229,7 +229,6 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
             path: `${SEARCH_API}/pipeline`,
           });
         }
-        console.log(resp)
         resBody = resp.body;
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
