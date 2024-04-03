@@ -18,7 +18,8 @@ import {
 import React, { FunctionComponent } from 'react';
 
 import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup, DataSourceSelector } from '../../../../../../../../src/plugins/data_source_management/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
+import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
@@ -52,6 +53,7 @@ interface SearchConfigProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  dataSourceOptions: DataSourceOption[] 
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -70,8 +72,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   dataSourceManagement,
   navigation,
   setActionMenu,
+  dataSourceOptions,
 }) => {
-  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout, dataSourceOptions} = useSearchRelevanceContext();
+  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout} = useSearchRelevanceContext();
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -141,8 +144,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       setDataSource2(dataConnectionId)
     }   
   }
-
-
+  const DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   return (
     <>
       <EuiTitle size="xs">
@@ -156,16 +158,16 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               fullWidth
               label="Data Source"
             >
-            <DataSourceSelector
-               savedObjectsClient={savedObjects.client}
-               notifications={notifications} 
-               onSelectedDataSource={onSelectedDataSource}
-               disabled={false} 
-               hideLocalCluster={false} 
-               fullWidth={false}
-               removePrepend={true}
-               dataSourceOptions={dataSourceOptions}
-            />
+              <DataSourceSelector
+                savedObjectsClient={savedObjects.client}
+                notifications={notifications} 
+                onSelectedDataSource={onSelectedDataSource}
+                disabled={false} 
+                hideLocalCluster={false} 
+                fullWidth={false}
+                removePrepend={true}
+                dataSourceFilter={(dataSource) => dataSourceOptions.some(item => item.id === dataSource.id)}
+              />
             </EuiFormRow>
           </EuiFlexItem> )}
         <EuiFlexItem>

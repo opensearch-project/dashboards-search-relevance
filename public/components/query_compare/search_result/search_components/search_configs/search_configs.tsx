@@ -12,6 +12,7 @@ import { SearchConfig } from './search_config';
 
 import { CoreStart, MountPoint } from '../../../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
+import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { QueryError } from '../../../../../../public/types/index';
 import './search_configs.scss';
@@ -31,6 +32,7 @@ interface SearchConfigsPanelProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  dataSourceOptions: DataSourceOption[];
 }
 
 export const SearchConfigsPanel = ({
@@ -47,6 +49,8 @@ export const SearchConfigsPanel = ({
   dataSourceManagement,
   setActionMenu,
   navigation,
+  dataSourceOptions,
+  notifications
 }: SearchConfigsPanelProps) => {
   const {
     selectedIndex1,
@@ -89,6 +93,8 @@ export const SearchConfigsPanel = ({
             dataSourceManagement={dataSourceManagement}
             navigation={navigation}
             setActionMenu={setActionMenu}
+            dataSourceOptions={dataSourceOptions}
+            notifications={notifications}
           />
         </EuiFlexItem>
         <EuiFlexItem className="search-relevance-config">
@@ -108,6 +114,8 @@ export const SearchConfigsPanel = ({
             dataSourceManagement={dataSourceManagement}
             navigation={navigation}
             setActionMenu={setActionMenu}
+            dataSourceOptions={dataSourceOptions}
+            notifications={notifications}
           />
         </EuiFlexItem>
       </EuiFlexGroup>

@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect } from 'react';
-import { ChromeBreadcrumb, CoreStart, MountPoint } from '../../../../../src/core/public';
-import { DataSourceManagementPluginSetup, DataSourceMenu } from '../../../../../src/plugins/data_source_management/public';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ChromeBreadcrumb, CoreStart, MountPoint, NotificationsStart } from '../../../../../src/core/public';
+import { DataSourceManagementPluginSetup, DataSourceMultiSelectableConfig } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
 import '../../ace-themes/sql_console';
@@ -15,18 +15,19 @@ import { Flyout } from '../common/flyout';
 import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
 
+import { DataSourceOption } from '../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import './home.scss';
 
 interface QueryExplorerProps {
   parentBreadCrumbs: ChromeBreadcrumb[];
-  notifications: CoreStart['notifications'];
+  notifications: NotificationsStart;
   http: CoreStart['http'];
   navigation: NavigationPublicPluginStart;
   setBreadcrumbs: (newBreadcrumbs: ChromeBreadcrumb[]) => void;
   setToast: (title: string, color?: string, text?: any, side?: string) => void;
   chrome: CoreStart['chrome'];
   savedObjects: CoreStart['savedObjects'];
-  datasourceEnabled: boolean
+  dataSourceEnabled: boolean
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
 }
@@ -39,7 +40,7 @@ export const Home = ({
   setToast,
   chrome,
   savedObjects,
-  datasourceEnabled,
+  dataSourceEnabled,
   dataSourceManagement,
   setActionMenu,
 }: QueryExplorerProps) => {
@@ -53,14 +54,12 @@ export const Home = ({
     datasource2,
     setFetchedPipelines1,
     setFetchedPipelines2,
-    dataSourceOptions,
-    setDataSourceOptions
   } = useSearchRelevanceContext();
 
   useEffect(() => {
     setBreadcrumbs([...parentBreadCrumbs]);
   }, [setBreadcrumbs, parentBreadCrumbs]);
-
+  const [dataSourceOptions, setDataSourceOptions] = useState<DataSourceOption[]>([]);
   const fetchIndexes = (dataConnectionId: string, queryNumber: string) => {
     if(dataConnectionId){
           http.get(ServiceEndpoints.GetIndexes+"/"+dataConnectionId).then((res: DocumentsIndex[]) => {
@@ -107,15 +106,14 @@ export const Home = ({
   }
 
   const selectedDatasources = (e) => {
-    console.log(e)
-    e.forEach(item  => {
-      if (item.checked === "on" && !dataSourceOptions.find(option => option.id === item.id)) {
-          dataSourceOptions.push({ id: item.id, label: item.name });;
-      }
-    });
-    setDataSourceOptions(dataSourceOptions)
-  }
-
+    setDataSourceOptions([]);
+    const selectedOptions = e.filter(item => item.checked === "on");
+    if (selectedOptions.length >= 1) {
+      setDataSourceOptions(selectedOptions);
+    }
+  };
+  
+  const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceMultiSelectableConfig>();
   // Get Indexes and Pipelines
   useEffect(() => {
 
@@ -125,21 +123,27 @@ export const Home = ({
     fetchPipelines(datasource2,QUERY_NUMBER_TWO)
     
   }, [http, setDocumentsIndexes1, setDocumentsIndexes2, setFetchedPipelines1, setFetchedPipelines2, datasource1, datasource2]);
-  return (
-    <>
+
+  const dataSourceMenuComponent = useMemo(() => {
+    return (
       <DataSourceMenu
         setMenuMountPoint={setActionMenu}
-        showDataSourceMultiSelectable={true}
-        disableDataSourceSelectable={true}
-        savedObjects={savedObjects.client}
-        notifications={notifications}
-        appName={'searchRelevance'}
-        hideLocalCluster={false}
-        selectedDataSourcesCallBackFunc={selectedDatasources}
-        fullWidth={true}
+        componentType={'DataSourceMultiSelectable'}
+        componentConfig={{
+          savedObjects: savedObjects.client,
+          notifications: notifications,
+          hideLocalCluster: false,
+          fullWidth: true,
+          onSelectedDataSources: selectedDatasources,
+        }} 
       />
+    );
+  }, [setActionMenu, savedObjects.client, notifications]);
+  return (
+    <>
+      {dataSourceEnabled && dataSourceMenuComponent}
       <div className="osdOverviewWrapper">
-        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={datasourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} /> : <CreateIndex />}
+        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions}/> : <CreateIndex />}
       </div>
       {showFlyout && <Flyout />}
     </>

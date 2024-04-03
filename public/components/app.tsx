@@ -73,7 +73,7 @@ export const SearchRelevanceApp = ({
                       setToast={setToast}
                       chrome={chrome}
                       savedObjects={savedObjects}
-                      datasourceEnabled={dataSourceEnabled}
+                      dataSourceEnabled={dataSourceEnabled}
                       dataSourceManagement={dataSourceManagement}
                       setActionMenu={setActionMenu}
                     />

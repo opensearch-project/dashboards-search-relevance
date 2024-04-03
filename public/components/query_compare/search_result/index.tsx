@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceOption } from '../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { NavigationPublicPluginStart } from '../../../../../../src/plugins/navigation/public';
 import { ServiceEndpoints } from '../../../../common';
 import { useSearchRelevanceContext } from '../../../contexts';
@@ -32,9 +33,11 @@ interface SearchResultProps {
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   dataSourceManagement: DataSourceManagementPluginSetup;
+  dataSourceOptions: DataSourceOption[]
+  notifications: NotificationsStart
 }
 
-export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation}: SearchResultProps) => {
+export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -207,6 +210,8 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
           savedObjects={savedObjects}
           navigation={navigation}
           setActionMenu={setActionMenu}
+          dataSourceOptions={dataSourceOptions}
+          notifications={notifications}
         />
         <ResultComponents
           queryResult1={queryResult1}
