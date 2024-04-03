@@ -4,23 +4,22 @@
  */
 
 
-import React, { useState } from 'react';
 import {
   EuiButtonIcon,
+  EuiDescriptionList,
+  EuiDescriptionListDescription,
+  EuiDescriptionListTitle,
   EuiFlexGroup,
   EuiFlexItem,
   EuiIcon,
   EuiIconTip,
-  EuiText,
-  EuiTitle
-  EuiDescriptionList,
-  EuiDescriptionListTitle,
-  EuiDescriptionListDescription,
   EuiMark,
   EuiPopover,
+  EuiText,
+  EuiTitle,
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { useSearchRelevanceContext } from '../../../../contexts';
 import { DocumentRank } from '../../../../contexts/utils';
