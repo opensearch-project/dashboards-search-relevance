@@ -3,6 +3,13 @@
 exports[`Flyout component Renders flyout component 1`] = `
 <SearchRelevanceContextProvider>
   <SearchConfigsPanel
+    dataSourceManagement={
+      Object {
+        "ui": Object {
+          "DataSourceSelector": <React.Fragment />,
+        },
+      }
+    }
     queryError1={
       Object {
         "errorResponse": Object {
@@ -51,6 +58,13 @@ exports[`Flyout component Renders flyout component 1`] = `
                 className="euiFlexItem search-relevance-config"
               >
                 <SearchConfig
+                  dataSourceManagement={
+                    Object {
+                      "ui": Object {
+                        "DataSourceSelector": <React.Fragment />,
+                      },
+                    }
+                  }
                   pipeline=""
                   queryError={
                     Object {
@@ -65,6 +79,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                   queryNumber={1}
                   queryString="{}"
                   selectedIndex=""
+                  setDataSource={[Function]}
                   setPipeline={[Function]}
                   setQueryError={[Function]}
                   setQueryString={[Function]}
@@ -810,6 +825,13 @@ exports[`Flyout component Renders flyout component 1`] = `
                 className="euiFlexItem search-relevance-config"
               >
                 <SearchConfig
+                  dataSourceManagement={
+                    Object {
+                      "ui": Object {
+                        "DataSourceSelector": <React.Fragment />,
+                      },
+                    }
+                  }
                   pipeline=""
                   queryError={
                     Object {
@@ -824,6 +846,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                   queryNumber={2}
                   queryString="{}"
                   selectedIndex=""
+                  setDataSource={[Function]}
                   setPipeline={[Function]}
                   setQueryError={[Function]}
                   setQueryString={[Function]}

@@ -3,6 +3,13 @@
 exports[`Flyout component Renders flyout component 1`] = `
 <SearchRelevanceContextProvider>
   <SearchConfig
+    dataSourceManagement={
+      Object {
+        "ui": Object {
+          "DataSourceSelector": <React.Fragment />,
+        },
+      }
+    }
     pipeline=""
     queryError={
       Object {
