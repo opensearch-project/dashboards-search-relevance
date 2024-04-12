@@ -221,7 +221,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
         if(dataSourceEnabled && dataSourceId){
           let client = await context.dataSource.opensearch.legacy.getClient(dataSourceId);
           
-          resp = await client.callAPI('search.pipeline');
+          resp = await client.callAPI('search_pipeline');
         }
         else{
           resp = await context.core.opensearch.client.asCurrentUser.transport.request({

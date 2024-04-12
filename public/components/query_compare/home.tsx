@@ -5,7 +5,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { ChromeBreadcrumb, CoreStart, MountPoint, NotificationsStart } from '../../../../../src/core/public';
-import { DataSourceManagementPluginSetup, DataSourceMultiSelectableConfig } from '../../../../../src/plugins/data_source_management/public';
+import { DataSourceAggregatedViewConfig, DataSourceManagementPluginSetup } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
 import '../../ace-themes/sql_console';
@@ -86,6 +86,7 @@ export const Home = ({
     if(dataConnectionId){
       http.get(`${ServiceEndpoints.GetPipelines}/${dataConnectionId}`).then((res: {}) => {
         if(queryNumber == QUERY_NUMBER_ONE){
+          console.log(res)
           setFetchedPipelines1(res)
         }
         else{
@@ -105,15 +106,7 @@ export const Home = ({
     }
   }
 
-  const selectedDatasources = (e) => {
-    setDataSourceOptions([]);
-    const selectedOptions = e.filter(item => item.checked === "on");
-    if (selectedOptions.length >= 1) {
-      setDataSourceOptions(selectedOptions);
-    }
-  };
-  
-  const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceMultiSelectableConfig>();
+  const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
   // Get Indexes and Pipelines
   useEffect(() => {
 
@@ -128,21 +121,21 @@ export const Home = ({
     return (
       <DataSourceMenu
         setMenuMountPoint={setActionMenu}
-        componentType={'DataSourceMultiSelectable'}
+        componentType={'DataSourceAggregatedView'}
         componentConfig={{
           savedObjects: savedObjects.client,
           notifications: notifications,
           fullWidth: true,
-          onSelectedDataSources: selectedDatasources,
+          displayAllCompatibleDataSources: true,
         }} 
       />
     );
-  }, [setActionMenu, savedObjects.client, notifications]);
+  }, [setActionMenu, savedObjects.client, notifications, datasource1, datasource2]);
   return (
     <>
       {dataSourceEnabled && dataSourceMenuComponent}
       <div className="osdOverviewWrapper">
-        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions}/> : <CreateIndex />}
+        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions} notifications={notifications}/> : <CreateIndex />}
       </div>
       {showFlyout && <Flyout />}
     </>

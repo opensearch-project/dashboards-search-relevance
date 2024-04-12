@@ -38,4 +38,27 @@ describe('Flyout component', () => {
       expect(wrapper).toMatchSnapshot();
     });
   });
+  it('Renders flyout component when multi dataSource enabled', async () => {
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfigsPanel
+          queryString1={TEST_QUERY_STRING}
+          queryString2={TEST_QUERY_STRING}
+          setQueryString1={() => {}}
+          setQueryString2={() => {}}
+          queryError1={initialQueryErrorState}
+          queryError2={initialQueryErrorState}
+          setQueryError1={() => {}}
+          setQueryError2={() => {}}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    wrapper.update();
+
+    await waitFor(() => {
+      expect(wrapper).toMatchSnapshot();
+    });
+  });
 });

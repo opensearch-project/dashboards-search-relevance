@@ -15,7 +15,7 @@ import {
   EuiText,
   EuiTitle,
 } from '@elastic/eui';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 
 import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
@@ -74,7 +74,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setActionMenu,
   dataSourceOptions,
 }) => {
-  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout} = useSearchRelevanceContext();
+  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout, datasource1, datasource2} = useSearchRelevanceContext();
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -144,7 +144,16 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       setDataSource2(dataConnectionId)
     }   
   }
-  const DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
+  useEffect(() => {
+    setSelectedIndex('')
+    setPipeline('')
+  }, [datasource1, datasource2]);
+
+  let DataSourceSelector;
+
+  if (dataSourceEnabled) {
+    DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
+  } 
   return (
     <>
       <EuiTitle size="xs">
@@ -165,7 +174,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 disabled={false} 
                 fullWidth={false}
                 removePrepend={true}
-                dataSourceFilter={(dataSource) => dataSourceOptions.some(item => item.id === dataSource.id)}
+                defaultOption= {[]}
               />
             </EuiFormRow>
           </EuiFlexItem> )}
