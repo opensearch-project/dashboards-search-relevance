@@ -69,6 +69,14 @@ export const Home = ({
             else{
               setDocumentsIndexes2(res)
             }
+          }).catch((err) => {
+            if(queryNumber === QUERY_NUMBER_ONE){
+              setDocumentsIndexes1([])
+            }
+            else{
+              setDocumentsIndexes2([])
+            }
+            console.log(err)
           });
     }
     else{
@@ -79,7 +87,15 @@ export const Home = ({
         else{
           setDocumentsIndexes2(res)
         }
-      })
+      }).catch((err) => {
+        if(queryNumber === QUERY_NUMBER_ONE){
+          setDocumentsIndexes1([])
+        }
+        else{
+          setDocumentsIndexes2([])
+        }
+        console.log(err)
+      });
     }
   }
   const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
