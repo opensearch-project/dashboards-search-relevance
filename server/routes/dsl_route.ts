@@ -213,15 +213,20 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
       },
     },
     async (context, request, response) => {
+      const params = {
+        format: 'json',
+      };
       const start = performance.now();
       let resBody: any = {};
       let resp;
       try {
         const dataSourceId  = request.params.dataSourceId;
         if(dataSourceEnabled && dataSourceId){
-          let client = await context.dataSource.opensearch.legacy.getClient(dataSourceId);
-          
-          resp = await client.callAPI('search_pipeline');
+          resp = (await context.dataSource.opensearch.getClient(dataSourceId)).transport
+          resp = await resp.request({
+            method: 'GET',
+            path: `${SEARCH_API}/pipeline`,
+          })
         }
         else{
           resp = await context.core.opensearch.client.asCurrentUser.transport.request({
@@ -230,6 +235,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
           });
         }
         resBody = resp.body;
+        console.log('inside pipleine',resBody)
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
@@ -249,9 +255,10 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
           end - start
         );
         if (error.statusCode !== 404) console.error(error);
-        return response.custom({
-          statusCode: error.statusCode || 500,
-          body: error.message,
+        console.log(error,'inside error')
+        return response.customError({
+          statusCode: 404,
+          body: error,
         });
       }
     }

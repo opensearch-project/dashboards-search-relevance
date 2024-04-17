@@ -83,27 +83,44 @@ export const Home = ({
     }
   }
   const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
-    if(dataConnectionId){
-      http.get(`${ServiceEndpoints.GetPipelines}/${dataConnectionId}`).then((res: {}) => {
-        if(queryNumber == QUERY_NUMBER_ONE){
-          console.log(res)
-          setFetchedPipelines1(res)
-        }
-        else{
-          setFetchedPipelines2(res)
-        }
-      });
-    }
-    else{
-      http.get(ServiceEndpoints.GetPipelines).then((res: {}) => {
-        if(queryNumber == QUERY_NUMBER_ONE){
-          setFetchedPipelines1(res)
-        }
-        else{
-          setFetchedPipelines2(res)
-        }
-      })
-    }
+      if(dataConnectionId){
+        http.get(`${ServiceEndpoints.GetPipelines}/${dataConnectionId}`).then((res: {}) => {
+          if(queryNumber === QUERY_NUMBER_ONE){
+            console.log(res)
+            setFetchedPipelines1(res)
+          }
+          else{
+            setFetchedPipelines2(res)
+          }
+        }).catch((err) => {
+          if(queryNumber === QUERY_NUMBER_ONE){
+            setFetchedPipelines1('')
+          }
+          else{
+            setFetchedPipelines2('')
+          }
+          console.log(err)
+        });
+      }
+      else{
+        http.get(ServiceEndpoints.GetPipelines).then((res: {}) => {
+          if(queryNumber === QUERY_NUMBER_ONE){
+            console.log(res)
+            setFetchedPipelines1(res)
+          }
+          else{
+            setFetchedPipelines2(res)
+          }
+        }).catch((err) => {
+          if(queryNumber === QUERY_NUMBER_ONE){
+            setFetchedPipelines1('')
+          }
+          else{
+            setFetchedPipelines2('')
+          }
+          console.log(err)
+        });
+      }
   }
 
   const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();

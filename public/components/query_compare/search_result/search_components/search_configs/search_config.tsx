@@ -86,6 +86,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   };
   
   const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
+  console.log(fetchedPipelines1)
   const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
   // Sort search pipelines based off of each individual pipeline name.
   const sortedPipelines = [...Object.keys(pipelines)]
@@ -143,6 +144,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     else{
       setDataSource2(dataConnectionId)
     }   
+    setPipeline('')
   }
   useEffect(() => {
     setSelectedIndex('')
