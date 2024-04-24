@@ -5,16 +5,27 @@
 
 import { i18n } from '@osd/i18n';
 import { AppMountParameters, CoreSetup, CoreStart, Plugin } from '../../../src/core/public';
+import { DataSourcePluginSetup, DataSourcePluginStart } from '../../../src/plugins/data_source/public';
+import { DataSourceManagementPluginSetup } from '../../../src/plugins/data_source_management/public';
+import { PLUGIN_ID, PLUGIN_NAME } from '../common';
 import {
+  AppPluginStartDependencies,
   SearchRelevancePluginSetup,
   SearchRelevancePluginStart,
-  AppPluginStartDependencies,
 } from './types';
-import { PLUGIN_NAME, PLUGIN_ID } from '../common';
+
+export interface SearchRelevancePluginSetupDependencies {
+  dataSource: DataSourcePluginSetup;
+  dataSourceManagement: DataSourceManagementPluginSetup
+}
+
+export interface SearchRelevanceStartDependencies {
+  dataSource: DataSourcePluginStart;
+}
 
 export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
-  public setup(core: CoreSetup): SearchRelevancePluginSetup {
+  public setup(core: CoreSetup,  {dataSource, dataSourceManagement} : SearchRelevancePluginSetupDependencies): SearchRelevancePluginSetup {
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
@@ -30,7 +41,7 @@ export class SearchRelevancePlugin
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
         // Render the application
-        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params);
+        return renderApp(coreStart, depsStart as AppPluginStartDependencies, params, dataSourceManagement);
       },
     });
 
@@ -47,7 +58,7 @@ export class SearchRelevancePlugin
     };
   }
 
-  public start(core: CoreStart): SearchRelevancePluginStart {
+  public start(core: CoreStart, {dataSource}: SearchRelevanceStartDependencies): SearchRelevancePluginStart {
     return {};
   }
 

@@ -3,22 +3,26 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { I18nProvider } from '@osd/i18n/react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
-import { useState } from 'react';
 import { EuiGlobalToastList } from '@elastic/eui';
-import { CoreStart, Toast } from '../../../../src/core/public';
+import { I18nProvider } from '@osd/i18n/react';
+import React, { useState } from 'react';
+import { HashRouter, Route, Switch } from 'react-router-dom';
+import { CoreStart, MountPoint, Toast } from '../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { Home as QueryCompareHome } from './query_compare/home';
 import { PLUGIN_NAME } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
+import { Home as QueryCompareHome } from './query_compare/home';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
   http: CoreStart['http'];
   navigation: NavigationPublicPluginStart;
   chrome: CoreStart['chrome'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
+  setActionMenu: (menuMount: MountPoint | undefined) => void;
 }
 
 export const SearchRelevanceApp = ({
@@ -26,6 +30,10 @@ export const SearchRelevanceApp = ({
   http,
   navigation,
   chrome,
+  savedObjects,
+  dataSourceEnabled,
+  setActionMenu,
+  dataSourceManagement,
 }: SearchRelevanceAppDeps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
@@ -64,6 +72,10 @@ export const SearchRelevanceApp = ({
                       setBreadcrumbs={chrome.setBreadcrumbs}
                       setToast={setToast}
                       chrome={chrome}
+                      savedObjects={savedObjects}
+                      dataSourceEnabled={dataSourceEnabled}
+                      dataSourceManagement={dataSourceManagement}
+                      setActionMenu={setActionMenu}
                     />
                   );
                 }}
