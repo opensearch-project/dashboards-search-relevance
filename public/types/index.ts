@@ -74,3 +74,9 @@ export const initialQueryErrorState: QueryError = {
     statusCode: 200,
   },
 };
+
+export interface datasourceElements {
+  index : DocumentsIndex [],
+  dataConnectionId: string,
+  pipeline: {}
+}

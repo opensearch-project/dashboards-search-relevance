@@ -5,12 +5,17 @@
 
 import React, { createContext, useContext, useState } from 'react';
 
+import { DataSourceOption } from '../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { DocumentsIndex, SearchResults } from '../types/index';
-import { getDocumentRank, DocumentRank } from './utils';
+import { DocumentRank, getDocumentRank } from './utils';
 
 export interface SearchRelevanceContextProps {
   documentsIndexes: DocumentsIndex[];
   setDocumentsIndexes: React.Dispatch<React.SetStateAction<DocumentsIndex[]>>;
+  documentsIndexes1: DocumentsIndex[];
+  setDocumentsIndexes1: React.Dispatch<React.SetStateAction<DocumentsIndex[]>>;
+  documentsIndexes2: DocumentsIndex[];
+  setDocumentsIndexes2: React.Dispatch<React.SetStateAction<DocumentsIndex[]>>;
   showFlyout: boolean;
   setShowFlyout: React.Dispatch<React.SetStateAction<boolean>>;
   comparedResult1: DocumentRank;
@@ -27,6 +32,18 @@ export interface SearchRelevanceContextProps {
   setPipeline1: React.Dispatch<React.SetStateAction<string>>;
   pipeline2: string;
   setPipeline2: React.Dispatch<React.SetStateAction<string>>;
+  datasource1: string;
+  setDataSource1: React.Dispatch<React.SetStateAction<string>>;
+  datasource2: string;
+  setDataSource2: React.Dispatch<React.SetStateAction<string>>;
+  datasourceItems: {}
+  setDatasourceItems: React.Dispatch<React.SetStateAction<{}>>;
+  fetchedPipelines1: {};
+  setFetchedPipelines1: React.Dispatch<React.SetStateAction<{}>>;
+  fetchedPipelines2: {};
+  setFetchedPipelines2: React.Dispatch<React.SetStateAction<{}>>;
+  dataSourceOptions: DataSourceOption[]
+  setDataSourceOptions: React.Dispatch<React.SetStateAction<DataSourceOption[]>>;
 }
 
 export const SearchRelevanceContext = createContext<SearchRelevanceContextProps | null>(null);
@@ -42,7 +59,10 @@ export const useSearchRelevanceContext = () => {
 };
 
 export const SearchRelevanceContextProvider = ({ children }: { children: React.ReactNode }) => {
+
   const [documentsIndexes, setDocumentsIndexes] = useState<DocumentsIndex[]>([]);
+  const [documentsIndexes1, setDocumentsIndexes1] = useState<DocumentsIndex[]>([]);
+  const [documentsIndexes2, setDocumentsIndexes2] = useState<DocumentsIndex[]>([]);
   const [showFlyout, setShowFlyout] = useState(false);
   const [comparedResult1, setComparedResult1] = useState<DocumentRank>({});
   const [comparedResult2, setComparedResult2] = useState<DocumentRank>({});
@@ -51,6 +71,11 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
   const [pipelines, setPipelines] = useState<{}>({});
   const [pipeline1, setPipeline1] = useState('');
   const [pipeline2, setPipeline2] = useState('');
+  const [datasource1, setDataSource1] = useState('');
+  const [datasource2, setDataSource2] = useState('');
+  const [fetchedPipelines1, setFetchedPipelines1] = useState<{}>({});
+  const [fetchedPipelines2, setFetchedPipelines2] = useState<{}>({});
+  const [dataSourceOptions, setDataSourceOptions] = useState<DataSourceOption[]>([])
 
   const updateComparedResult1 = (result: SearchResults) => {
     setComparedResult1(getDocumentRank(result?.hits?.hits));
@@ -65,6 +90,10 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
       value={{
         documentsIndexes,
         setDocumentsIndexes,
+        documentsIndexes1,
+        setDocumentsIndexes1,
+        documentsIndexes2,
+        setDocumentsIndexes2,
         showFlyout,
         setShowFlyout,
         comparedResult1,
@@ -81,6 +110,16 @@ export const SearchRelevanceContextProvider = ({ children }: { children: React.R
         setPipeline1,
         pipeline2,
         setPipeline2,
+        datasource1,
+        setDataSource1,
+        datasource2,
+        setDataSource2,
+        fetchedPipelines1,
+        setFetchedPipelines1,
+        fetchedPipelines2,
+        setFetchedPipelines2,
+        dataSourceOptions,
+        setDataSourceOptions
       }}
     >
       {children}
