@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { schema } from '@osd/config-schema';
 import { RequestParams } from '@opensearch-project/opensearch';
+import { schema } from '@osd/config-schema';
 
-import { IRouter } from '../../../../src/core/server';
-import { METRIC_NAME, METRIC_ACTION } from '../metrics';
-import { ServiceEndpoints, SEARCH_API } from '../../common';
+import { ILegacyScopedClusterClient, IRouter, OpenSearchServiceSetup } from '../../../../src/core/server';
+import { SEARCH_API, ServiceEndpoints } from '../../common';
+import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
 interface SearchResultsResponse {
   result1?: Object;
@@ -19,14 +19,14 @@ interface SearchResultsResponse {
 
 const performance = require('perf_hooks').performance;
 
-export function registerDslRoute(router: IRouter) {
+export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenSearchServiceSetup, dataSourceEnabled: boolean) {
   router.post(
     {
       path: ServiceEndpoints.GetSearchResults,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
-      const { query1, query2 } = request.body;
+      const { query1, dataSourceId1, query2, dataSourceId2 } = request.body;
       const actionName =
         query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
       const resBody: SearchResultsResponse = {};
@@ -46,13 +46,19 @@ export function registerDslRoute(router: IRouter) {
                 size,
                 body: rest,
               };
-
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          let resp;
+          if(dataSourceEnabled && dataSourceId1){
+            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
+            resp = await client.callAPI('search', params);
+          }
+          else{
+              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+                'search',
+                params
+              );
+          }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -100,10 +106,17 @@ export function registerDslRoute(router: IRouter) {
 
         const start = performance.now();
         try {
-          const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-            'search',
-            params
-          );
+          let resp;
+          if(dataSourceEnabled && dataSourceId2){
+            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
+            resp = await client.callAPI('search', params);
+          }
+          else{
+              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+                'search',
+                params
+              );
+          }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
             METRIC_NAME.SEARCH_RELEVANCE,
@@ -141,8 +154,12 @@ export function registerDslRoute(router: IRouter) {
   // Get Indices
   router.get(
     {
-      path: ServiceEndpoints.GetIndexes,
-      validate: {},
+      path: `${ServiceEndpoints.GetIndexes}/{dataSourceId?}`,
+      validate: {
+        params: schema.object({
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+        }),
+      },
     },
     async (context, request, response) => {
       const params = {
@@ -150,10 +167,14 @@ export function registerDslRoute(router: IRouter) {
       };
       const start = performance.now();
       try {
-        const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-          'cat.indices',
-          params
-        );
+        const dataSourceId  = request.params.dataSourceId;
+        let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+        if(dataSourceEnabled && dataSourceId){
+          callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+        } else {
+          callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        }
+        const resp = await callApi('cat.indices', params);
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
@@ -184,18 +205,37 @@ export function registerDslRoute(router: IRouter) {
   // Get Pipelines
   router.get(
     {
-      path: ServiceEndpoints.GetPipelines,
-      validate: {},
+      path: `${ServiceEndpoints.GetPipelines}/{dataSourceId?}`,
+      validate: {
+        params: schema.object({
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+        }),
+      },
     },
     async (context, request, response) => {
+      const params = {
+        format: 'json',
+      };
       const start = performance.now();
       let resBody: any = {};
+      let resp;
       try {
-        const resp = await context.core.opensearch.client.asCurrentUser.transport.request({
-          method: 'GET',
-          path: `${SEARCH_API}/pipeline`,
-        });
+        const dataSourceId  = request.params.dataSourceId;
+        if(dataSourceEnabled && dataSourceId){
+          resp = (await context.dataSource.opensearch.getClient(dataSourceId)).transport
+          resp = await resp.request({
+            method: 'GET',
+            path: `${SEARCH_API}/pipeline`,
+          })
+        }
+        else{
+          resp = await context.core.opensearch.client.asCurrentUser.transport.request({
+            method: 'GET',
+            path: `${SEARCH_API}/pipeline`,
+          });
+        }
         resBody = resp.body;
+        console.log('inside pipleine',resBody)
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
@@ -215,9 +255,10 @@ export function registerDslRoute(router: IRouter) {
           end - start
         );
         if (error.statusCode !== 404) console.error(error);
-        return response.custom({
-          statusCode: error.statusCode || 500,
-          body: error.message,
+        console.log(error,'inside error')
+        return response.customError({
+          statusCode: 404,
+          body: error,
         });
       }
     }

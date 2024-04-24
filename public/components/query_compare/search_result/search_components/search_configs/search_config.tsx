@@ -3,22 +3,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { FunctionComponent } from 'react';
 import {
-  EuiTitle,
-  EuiSpacer,
-  EuiFormRow,
-  EuiSelect,
-  EuiCodeEditor,
-  EuiText,
   EuiButtonEmpty,
+  EuiCodeEditor,
+  EuiComboBox,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiComboBox,
+  EuiFormRow,
+  EuiSelect,
+  EuiSpacer,
+  EuiText,
+  EuiTitle,
 } from '@elastic/eui';
+import React, { FunctionComponent, useEffect } from 'react';
 
+import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
+import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
+import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
+
+export interface SearchRelevanceServices extends CoreStart {
+  setHeaderActionMenu: AppMountParameters['setHeaderActionMenu'];
+  appBasePath: AppMountParameters['history'];
+  element: AppMountParameters['element'];
+  navigation: NavigationPublicPluginStart;
+  toastNotifications: ToastsStart;
+  history: AppMountParameters['history'];
+  overlays: CoreStart['overlays'];
+  chrome: CoreStart['chrome'];
+  uiSettings: CoreStart['uiSettings'];
+}
 
 interface SearchConfigProps {
   queryNumber: 1 | 2;
@@ -30,6 +46,14 @@ interface SearchConfigProps {
   setQueryError: React.Dispatch<React.SetStateAction<QueryError>>;
   pipeline: string;
   setPipeline: React.Dispatch<React.SetStateAction<string>>;
+  dataSourceEnabled: boolean;
+  notifications: NotificationsStart;
+  savedObjects: SavedObjectsStart;
+  setDataSource: React.Dispatch<React.SetStateAction<string>>;
+  dataSourceManagement: DataSourceManagementPluginSetup;
+  navigation: NavigationPublicPluginStart;
+  setActionMenu: (menuMount: MountPoint | undefined) => void;
+  dataSourceOptions: DataSourceOption[] 
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -42,8 +66,15 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setQueryError,
   pipeline,
   setPipeline,
+  dataSourceEnabled,
+  savedObjects,
+  notifications,
+  dataSourceManagement,
+  navigation,
+  setActionMenu,
+  dataSourceOptions,
 }) => {
-  const { documentsIndexes, pipelines, setShowFlyout } = useSearchRelevanceContext();
+  const { documentsIndexes1, setDataSource1, setDataSource2, documentsIndexes2, fetchedPipelines1, fetchedPipelines2, setShowFlyout, datasource1, datasource2} = useSearchRelevanceContext();
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -53,7 +84,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       selectIndex: '',
     }));
   };
-
+  
+  const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
+  console.log(fetchedPipelines1)
+  const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
   // Sort search pipelines based off of each individual pipeline name.
   const sortedPipelines = [...Object.keys(pipelines)]
     .sort((a, b) => a.localeCompare(b))
@@ -102,7 +136,26 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       }));
     }
   };
+  const onSelectedDataSource = (e) => {
+    const dataConnectionId = e[0] ? e[0].id : undefined;
+    if(queryNumber == 1){
+      setDataSource1(dataConnectionId)
+    }
+    else{
+      setDataSource2(dataConnectionId)
+    }   
+    setPipeline('')
+  }
+  useEffect(() => {
+    setSelectedIndex('')
+    setPipeline('')
+  }, [datasource1, datasource2]);
 
+  let DataSourceSelector;
+
+  if (dataSourceEnabled) {
+    DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
+  } 
   return (
     <>
       <EuiTitle size="xs">
@@ -110,6 +163,23 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiFlexGroup>
+        {dataSourceEnabled && (
+          <EuiFlexItem>
+            <EuiFormRow 
+              fullWidth
+              label="Data Source"
+            >
+              <DataSourceSelector
+                savedObjectsClient={savedObjects.client}
+                notifications={notifications} 
+                onSelectedDataSource={onSelectedDataSource}
+                disabled={false} 
+                fullWidth={false}
+                removePrepend={true}
+                defaultOption= {[]}
+              />
+            </EuiFormRow>
+          </EuiFlexItem> )}
         <EuiFlexItem>
           <EuiFormRow
             fullWidth
@@ -119,7 +189,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           >
             <EuiSelect
               hasNoInitialSelection={true}
-              options={documentsIndexes.map(({ index }) => ({
+              options={documentIndex.map(({ index }) => ({
                 value: index,
                 text: index,
               }))}

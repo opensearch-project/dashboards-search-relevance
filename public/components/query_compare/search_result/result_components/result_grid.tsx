@@ -3,26 +3,27 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+
 import {
   EuiButtonIcon,
-  EuiText,
+  EuiDescriptionList,
+  EuiDescriptionListDescription,
+  EuiDescriptionListTitle,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiTitle,
   EuiIcon,
   EuiIconTip,
-  EuiDescriptionList,
-  EuiDescriptionListTitle,
-  EuiDescriptionListDescription,
   EuiMark,
   EuiPopover,
+  EuiText,
+  EuiTitle,
 } from '@elastic/eui';
 import _, { uniqueId } from 'lodash';
+import React, { useState } from 'react';
 
-import { IDocType, SearchResults, Document } from '../../../../types/index';
-import { DocumentRank } from '../../../../contexts/utils';
 import { useSearchRelevanceContext } from '../../../../contexts';
+import { DocumentRank } from '../../../../contexts/utils';
+import { Document, SearchResults } from '../../../../types/index';
 
 import './result_grid.scss';
 
