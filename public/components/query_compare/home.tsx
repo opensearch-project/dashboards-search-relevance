@@ -139,7 +139,7 @@ export const Home = ({
       }
   }
 
-  const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
+  const DataSourceMenu = dataSourceManagement?.ui?.getDataSourceMenu<DataSourceAggregatedViewConfig>() ?? undefined;
   // Get Indexes and Pipelines
   useEffect(() => {
 
