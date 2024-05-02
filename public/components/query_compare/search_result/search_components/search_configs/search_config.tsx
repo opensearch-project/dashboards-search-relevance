@@ -19,7 +19,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 
 import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
-import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
+import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
