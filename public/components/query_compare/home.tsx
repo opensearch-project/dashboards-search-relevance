@@ -15,7 +15,7 @@ import { Flyout } from '../common/flyout';
 import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
 
-import { DataSourceOption } from '../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
+import { DataSourceMenuProps, DataSourceOption } from '../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
 import './home.scss';
 
 interface QueryExplorerProps {
@@ -138,8 +138,10 @@ export const Home = ({
         });
       }
   }
-
-  const DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
+  let DataSourceMenu: React.JSX.IntrinsicAttributes | React.ComponentType<DataSourceMenuProps<DataSourceAggregatedViewConfig>>;
+  if(dataSourceEnabled){
+    DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
+  }
   // Get Indexes and Pipelines
   useEffect(() => {
 
