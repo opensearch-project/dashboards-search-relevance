@@ -10,7 +10,7 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiCompressedFormRow,
-  EuiSelect,
+  EuiCompressedSelect,
   EuiSpacer,
   EuiText,
   EuiTitle,
@@ -187,7 +187,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
             isInvalid={!!queryError.selectIndex.length}
           >
-            <EuiSelect
+            <EuiCompressedSelect
               hasNoInitialSelection={true}
               options={documentIndex.map(({ index }) => ({
                 value: index,
