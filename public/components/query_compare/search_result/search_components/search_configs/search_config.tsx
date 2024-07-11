@@ -9,7 +9,7 @@ import {
   EuiComboBox,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
+  EuiCompressedFormRow,
   EuiSelect,
   EuiSpacer,
   EuiText,
@@ -165,7 +165,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       <EuiFlexGroup>
         {dataSourceEnabled && (
           <EuiFlexItem>
-            <EuiFormRow
+            <EuiCompressedFormRow
               fullWidth
               label="Data Source"
             >
@@ -178,10 +178,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 removePrepend={true}
                 defaultOption= {[]}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </EuiFlexItem> )}
         <EuiFlexItem>
-          <EuiFormRow
+          <EuiCompressedFormRow
             fullWidth
             label="Index"
             error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
@@ -198,10 +198,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               value={selectedIndex}
               onBlur={selectIndexOnBlur}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiFormRow fullWidth label="Pipeline" helpText="Optional">
+          <EuiCompressedFormRow fullWidth label="Pipeline" helpText="Optional">
             <EuiComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}
@@ -209,10 +209,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               selectedOptions={pipeline ? [{ label: pipeline }] : []}
               onChange={onChangePipeline}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiFlexItem>
       </EuiFlexGroup>
-      <EuiFormRow
+      <EuiCompressedFormRow
         fullWidth
         label="Query"
         error={!!queryError.queryString.length && <span>{queryError.queryString}</span>}
@@ -249,7 +249,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           onBlur={codeEditorOnBlur}
           tabSize={2}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     </>
   );
 };
