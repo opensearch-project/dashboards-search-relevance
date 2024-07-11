@@ -6,7 +6,7 @@
 import {
   EuiButtonEmpty,
   EuiCodeEditor,
-  EuiComboBox,
+  EuiCompressedComboBox,
   EuiFlexGroup,
   EuiFlexItem,
   EuiCompressedFormRow,
@@ -202,7 +202,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         </EuiFlexItem>
         <EuiFlexItem>
           <EuiCompressedFormRow fullWidth label="Pipeline" helpText="Optional">
-            <EuiComboBox
+            <EuiCompressedComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}
               options={sortedPipelines}
