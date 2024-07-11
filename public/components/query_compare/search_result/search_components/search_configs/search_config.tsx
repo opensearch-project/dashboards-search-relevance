@@ -53,7 +53,7 @@ interface SearchConfigProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
-  dataSourceOptions: DataSourceOption[] 
+  dataSourceOptions: DataSourceOption[]
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -84,7 +84,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       selectIndex: '',
     }));
   };
-  
+
   const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
   console.log(fetchedPipelines1)
   const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
@@ -143,7 +143,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     }
     else{
       setDataSource2(dataConnectionId)
-    }   
+    }
     setPipeline('')
   }
   useEffect(() => {
@@ -155,7 +155,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
 
   if (dataSourceEnabled) {
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
-  } 
+  }
   return (
     <>
       <EuiTitle size="xs">
@@ -165,15 +165,15 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       <EuiFlexGroup>
         {dataSourceEnabled && (
           <EuiFlexItem>
-            <EuiFormRow 
+            <EuiFormRow
               fullWidth
               label="Data Source"
             >
               <DataSourceSelector
                 savedObjectsClient={savedObjects.client}
-                notifications={notifications} 
+                notifications={notifications}
                 onSelectedDataSource={onSelectedDataSource}
-                disabled={false} 
+                disabled={false}
                 fullWidth={false}
                 removePrepend={true}
                 defaultOption= {[]}
