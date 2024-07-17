@@ -13,6 +13,7 @@ import {
   SearchRelevancePluginSetup,
   SearchRelevancePluginStart,
 } from './types';
+import { registerAllPluginNavGroups } from './plugin_nav';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSource: DataSourcePluginSetup;
@@ -44,7 +45,7 @@ export class SearchRelevancePlugin
         return renderApp(coreStart, depsStart as AppPluginStartDependencies, params, dataSourceManagement);
       },
     });
-
+    registerAllPluginNavGroups(core);
     // Return methods that should be available to other plugins
     return {
       getGreeting() {
