@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ChromeBreadcrumb, CoreStart, MountPoint, NotificationsStart } from '../../../../../src/core/public';
+import { ChromeBreadcrumb, CoreStart, MountPoint, NotificationsStart, SavedObject } from '../../../../../src/core/public';
 import { DataSourceAggregatedViewConfig, DataSourceManagementPluginSetup } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
 import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
@@ -15,7 +15,10 @@ import { Flyout } from '../common/flyout';
 import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
 
+import semver from "semver";
+import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
 import { DataSourceMenuProps, DataSourceOption } from '../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
+import * as pluginManifest from "../../../opensearch_dashboards.json";
 import './home.scss';
 
 interface QueryExplorerProps {
@@ -142,6 +145,14 @@ export const Home = ({
   if(dataSourceEnabled){
     DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
   }
+
+  const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
+    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || "";
+    return (
+      semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions)
+    );
+  };
+
   // Get Indexes and Pipelines
   useEffect(() => {
 
@@ -162,6 +173,7 @@ export const Home = ({
           notifications: notifications,
           fullWidth: true,
           displayAllCompatibleDataSources: true,
+          dataSourceFilterFn: dataSourceFilterFn
         }} 
       />
     );
