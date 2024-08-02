@@ -23,9 +23,9 @@ exports[`Search bar component Renders search bar component 1`] = `
         <div
           className="euiFlexItem"
         >
-          <EuiFieldSearch
+          <EuiCompressedFieldSearch
             aria-label="Enter your Search query"
-            compressed={false}
+            compressed={true}
             fullWidth={true}
             id="searchRelevance-searchBar"
             incremental={false}
@@ -42,13 +42,13 @@ exports[`Search bar component Renders search bar component 1`] = `
                   "onClick": [Function],
                 }
               }
-              compressed={false}
+              compressed={true}
               fullWidth={true}
               icon="search"
               isLoading={false}
             >
               <div
-                className="euiFormControlLayout euiFormControlLayout--fullWidth"
+                className="euiFormControlLayout euiFormControlLayout--fullWidth euiFormControlLayout--compressed"
               >
                 <div
                   className="euiFormControlLayout__childrenWrapper"
@@ -56,7 +56,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                   <EuiValidatableControl>
                     <input
                       aria-label="Enter your Search query"
-                      className="euiFieldSearch euiFieldSearch--fullWidth euiFieldSearch-isClearable"
+                      className="euiFieldSearch euiFieldSearch--fullWidth euiFieldSearch--compressed euiFieldSearch-isClearable"
                       id="searchRelevance-searchBar"
                       onChange={[Function]}
                       onKeyUp={[Function]}
@@ -71,7 +71,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                         "onClick": [Function],
                       }
                     }
-                    compressed={false}
+                    compressed={true}
                     icon="search"
                     isLoading={false}
                   >
@@ -79,7 +79,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                       className="euiFormControlLayoutIcons"
                     >
                       <EuiFormControlLayoutCustomIcon
-                        size="m"
+                        size="s"
                         type="search"
                       >
                         <span
@@ -88,19 +88,19 @@ exports[`Search bar component Renders search bar component 1`] = `
                           <EuiIcon
                             aria-hidden="true"
                             className="euiFormControlLayoutCustomIcon__icon"
-                            size="m"
+                            size="s"
                             type="search"
                           >
                             <EuiIconBeaker
                               aria-hidden={true}
-                              className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                              className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
                               focusable="false"
                               role="img"
                               style={null}
                             >
                               <svg
                                 aria-hidden={true}
-                                className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
                                 focusable="false"
                                 height={16}
                                 role="img"
@@ -123,7 +123,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                     >
                       <EuiFormControlLayoutClearButton
                         onClick={[Function]}
-                        size="m"
+                        size="s"
                       >
                         <EuiI18n
                           default="Clear input"
@@ -131,7 +131,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                         >
                           <button
                             aria-label="Clear input"
-                            className="euiFormControlLayoutClearButton"
+                            className="euiFormControlLayoutClearButton euiFormControlLayoutClearButton--small"
                             onClick={[Function]}
                             type="button"
                           >
@@ -171,7 +171,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                 </div>
               </div>
             </EuiFormControlLayout>
-          </EuiFieldSearch>
+          </EuiCompressedFieldSearch>
         </div>
       </EuiFlexItem>
       <EuiFlexItem
@@ -180,55 +180,63 @@ exports[`Search bar component Renders search bar component 1`] = `
         <div
           className="euiFlexItem euiFlexItem--flexGrowZero"
         >
-          <EuiButton
+          <EuiSmallButton
             aria-label="searchRelevance-searchButton"
             fill={true}
             onClick={[Function]}
           >
-            <EuiButtonDisplay
+            <EuiButton
               aria-label="searchRelevance-searchButton"
-              baseClassName="euiButton"
-              disabled={false}
-              element="button"
               fill={true}
-              isDisabled={false}
               onClick={[Function]}
-              type="button"
+              size="s"
             >
-              <button
+              <EuiButtonDisplay
                 aria-label="searchRelevance-searchButton"
-                className="euiButton euiButton--primary euiButton--fill"
+                baseClassName="euiButton"
                 disabled={false}
+                element="button"
+                fill={true}
+                isDisabled={false}
                 onClick={[Function]}
-                style={
-                  Object {
-                    "minWidth": undefined,
-                  }
-                }
+                size="s"
                 type="button"
               >
-                <EuiButtonContent
-                  className="euiButton__content"
-                  iconSide="left"
-                  textProps={
+                <button
+                  aria-label="searchRelevance-searchButton"
+                  className="euiButton euiButton--primary euiButton--small euiButton--fill"
+                  disabled={false}
+                  onClick={[Function]}
+                  style={
                     Object {
-                      "className": "euiButton__text",
+                      "minWidth": undefined,
                     }
                   }
+                  type="button"
                 >
-                  <span
-                    className="euiButtonContent euiButton__content"
+                  <EuiButtonContent
+                    className="euiButton__content"
+                    iconSide="left"
+                    textProps={
+                      Object {
+                        "className": "euiButton__text",
+                      }
+                    }
                   >
                     <span
-                      className="euiButton__text"
+                      className="euiButtonContent euiButton__content"
                     >
-                      Search
+                      <span
+                        className="euiButton__text"
+                      >
+                        Search
+                      </span>
                     </span>
-                  </span>
-                </EuiButtonContent>
-              </button>
-            </EuiButtonDisplay>
-          </EuiButton>
+                  </EuiButtonContent>
+                </button>
+              </EuiButtonDisplay>
+            </EuiButton>
+          </EuiSmallButton>
         </div>
       </EuiFlexItem>
     </div>
