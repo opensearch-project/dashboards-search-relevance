@@ -5,7 +5,7 @@
 
 
 import {
-  EuiButtonIcon,
+  EuiSmallButtonIcon,
   EuiDescriptionList,
   EuiDescriptionListDescription,
   EuiDescriptionListTitle,
@@ -53,7 +53,7 @@ export const ResultGridComponent = ({
       <td className="osdDocTableCell__toggleDetails" key={uniqueId('grid-td-')}>
         <EuiPopover
           button={
-            <EuiButtonIcon
+            <EuiSmallButtonIcon
               aria-label="Toggle details"
               className="euiButtonIcon euiButtonIcon--text"
               iconType={isResultDetailOpen ? 'minimize' : 'expand'}

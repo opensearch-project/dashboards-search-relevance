@@ -6,11 +6,11 @@
 import {
   EuiButtonEmpty,
   EuiCodeEditor,
-  EuiComboBox,
+  EuiCompressedComboBox,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFormRow,
-  EuiSelect,
+  EuiCompressedFormRow,
+  EuiCompressedSelect,
   EuiSpacer,
   EuiText,
   EuiTitle,
@@ -53,7 +53,7 @@ interface SearchConfigProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
-  dataSourceOptions: DataSourceOption[] 
+  dataSourceOptions: DataSourceOption[]
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -84,7 +84,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       selectIndex: '',
     }));
   };
-  
+
   const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
   console.log(fetchedPipelines1)
   const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
@@ -143,7 +143,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     }
     else{
       setDataSource2(dataConnectionId)
-    }   
+    }
     setPipeline('')
   }
   useEffect(() => {
@@ -155,7 +155,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
 
   if (dataSourceEnabled) {
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
-  } 
+  }
   return (
     <>
       <EuiTitle size="xs">
@@ -165,29 +165,29 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       <EuiFlexGroup>
         {dataSourceEnabled && (
           <EuiFlexItem>
-            <EuiFormRow 
+            <EuiCompressedFormRow
               fullWidth
               label="Data Source"
             >
               <DataSourceSelector
                 savedObjectsClient={savedObjects.client}
-                notifications={notifications} 
+                notifications={notifications}
                 onSelectedDataSource={onSelectedDataSource}
-                disabled={false} 
+                disabled={false}
                 fullWidth={false}
                 removePrepend={true}
                 defaultOption= {[]}
               />
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </EuiFlexItem> )}
         <EuiFlexItem>
-          <EuiFormRow
+          <EuiCompressedFormRow
             fullWidth
             label="Index"
             error={!!queryError.selectIndex.length && <span>{queryError.selectIndex}</span>}
             isInvalid={!!queryError.selectIndex.length}
           >
-            <EuiSelect
+            <EuiCompressedSelect
               hasNoInitialSelection={true}
               options={documentIndex.map(({ index }) => ({
                 value: index,
@@ -198,21 +198,21 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               value={selectedIndex}
               onBlur={selectIndexOnBlur}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiFormRow fullWidth label="Pipeline" helpText="Optional">
-            <EuiComboBox
+          <EuiCompressedFormRow fullWidth label="Pipeline" helpText="Optional">
+            <EuiCompressedComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}
               options={sortedPipelines}
               selectedOptions={pipeline ? [{ label: pipeline }] : []}
               onChange={onChangePipeline}
             />
-          </EuiFormRow>
+          </EuiCompressedFormRow>
         </EuiFlexItem>
       </EuiFlexGroup>
-      <EuiFormRow
+      <EuiCompressedFormRow
         fullWidth
         label="Query"
         error={!!queryError.queryString.length && <span>{queryError.queryString}</span>}
@@ -249,7 +249,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           onBlur={codeEditorOnBlur}
           tabSize={2}
         />
-      </EuiFormRow>
+      </EuiCompressedFormRow>
     </>
   );
 };
