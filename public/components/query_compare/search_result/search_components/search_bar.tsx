@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiButton, EuiFieldSearch, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
+import { EuiSmallButton, EuiCompressedFieldSearch, EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
 import React from 'react';
 
 interface SearchBarProps {
@@ -22,7 +22,7 @@ export const SearchInputBar = ({
       <EuiSpacer size="m" />
       <EuiFlexGroup>
         <EuiFlexItem grow={true}>
-          <EuiFieldSearch
+          <EuiCompressedFieldSearch
             id="searchRelevance-searchBar"
             fullWidth={true}
             placeholder="Search"
@@ -34,9 +34,9 @@ export const SearchInputBar = ({
           />
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiButton fill onClick={onClickSearch} aria-label="searchRelevance-searchButton">
+          <EuiSmallButton fill onClick={onClickSearch} aria-label="searchRelevance-searchButton">
             Search
-          </EuiButton>
+          </EuiSmallButton>
         </EuiFlexItem>
       </EuiFlexGroup>
     </>

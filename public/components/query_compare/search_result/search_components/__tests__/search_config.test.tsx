@@ -44,8 +44,8 @@ describe('Flyout component', () => {
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
       wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
       wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiComboBox').prop('onChange')?.({
+      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
+      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
         target: { selectedPipelineOptions: [{ label: '_none' }] },
       });
     });
@@ -84,8 +84,8 @@ describe('Flyout component', () => {
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
       wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
       wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiComboBox').prop('onChange')?.({
+      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
+      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
         target: { selectedPipelineOptions: [{ label: '_none' }] },
       });
     });
