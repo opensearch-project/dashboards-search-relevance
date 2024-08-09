@@ -7,6 +7,9 @@
   "requiredPlugins": [
     "navigation"
   ],
-  "optionalPlugins": ["dataSource","dataSourceManagement"],
+  "optionalPlugins": [
+    "dataSource",
+    "dataSourceManagement"
+  ],
   "supportedOSDataSourceVersions": ">=2.8.0"
 }
