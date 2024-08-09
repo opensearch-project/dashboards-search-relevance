@@ -82,9 +82,9 @@ exports[`Flyout component Renders flyout component 1`] = `
           <div
             className="euiFlexItem"
           >
-            <EuiFormRow
+            <EuiCompressedFormRow
               describedByIds={Array []}
-              display="row"
+              display="rowCompressed"
               error={false}
               fullWidth={true}
               hasChildLabel={true}
@@ -94,7 +94,7 @@ exports[`Flyout component Renders flyout component 1`] = `
               labelType="label"
             >
               <div
-                className="euiFormRow euiFormRow--fullWidth"
+                className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
                 id="random_html_id-row"
               >
                 <div
@@ -120,7 +120,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                 <div
                   className="euiFormRow__fieldWrapper"
                 >
-                  <EuiSelect
+                  <EuiCompressedSelect
                     aria-label="Search Index"
                     hasNoInitialSelection={true}
                     id="random_html_id"
@@ -130,120 +130,132 @@ exports[`Flyout component Renders flyout component 1`] = `
                     options={Array []}
                     value=""
                   >
-                    <EuiFormControlLayout
-                      compressed={false}
-                      fullWidth={false}
-                      icon={
-                        Object {
-                          "side": "right",
-                          "type": "arrowDown",
-                        }
-                      }
-                      inputId="random_html_id"
-                      isLoading={false}
+                    <EuiSelect
+                      aria-label="Search Index"
+                      compressed={true}
+                      hasNoInitialSelection={true}
+                      id="random_html_id"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      options={Array []}
+                      value=""
                     >
-                      <div
-                        className="euiFormControlLayout"
+                      <EuiFormControlLayout
+                        compressed={true}
+                        fullWidth={false}
+                        icon={
+                          Object {
+                            "side": "right",
+                            "type": "arrowDown",
+                          }
+                        }
+                        inputId="random_html_id"
+                        isLoading={false}
                       >
                         <div
-                          className="euiFormControlLayout__childrenWrapper"
+                          className="euiFormControlLayout euiFormControlLayout--compressed"
                         >
-                          <EuiValidatableControl>
-                            <select
-                              aria-label="Search Index"
-                              className="euiSelect"
-                              id="random_html_id"
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onMouseUp={[Function]}
-                              value=""
-                            >
-                              <option
-                                disabled={true}
-                                hidden={true}
-                                style={
-                                  Object {
-                                    "display": "none",
-                                  }
-                                }
+                          <div
+                            className="euiFormControlLayout__childrenWrapper"
+                          >
+                            <EuiValidatableControl>
+                              <select
+                                aria-label="Search Index"
+                                className="euiSelect euiSelect--compressed"
+                                id="random_html_id"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                onFocus={[Function]}
+                                onMouseUp={[Function]}
                                 value=""
                               >
-                                 
-                              </option>
-                            </select>
-                          </EuiValidatableControl>
-                          <EuiFormControlLayoutIcons
-                            compressed={false}
-                            icon={
-                              Object {
-                                "side": "right",
-                                "type": "arrowDown",
-                              }
-                            }
-                            isLoading={false}
-                          >
-                            <div
-                              className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
-                            >
-                              <EuiFormControlLayoutCustomIcon
-                                size="m"
-                                type="arrowDown"
-                              >
-                                <span
-                                  className="euiFormControlLayoutCustomIcon"
+                                <option
+                                  disabled={true}
+                                  hidden={true}
+                                  style={
+                                    Object {
+                                      "display": "none",
+                                    }
+                                  }
+                                  value=""
                                 >
-                                  <EuiIcon
-                                    aria-hidden="true"
-                                    className="euiFormControlLayoutCustomIcon__icon"
-                                    size="m"
-                                    type="arrowDown"
+                                   
+                                </option>
+                              </select>
+                            </EuiValidatableControl>
+                            <EuiFormControlLayoutIcons
+                              compressed={true}
+                              icon={
+                                Object {
+                                  "side": "right",
+                                  "type": "arrowDown",
+                                }
+                              }
+                              isLoading={false}
+                            >
+                              <div
+                                className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
+                              >
+                                <EuiFormControlLayoutCustomIcon
+                                  size="s"
+                                  type="arrowDown"
+                                >
+                                  <span
+                                    className="euiFormControlLayoutCustomIcon"
                                   >
-                                    <EuiIconArrowDown
-                                      aria-hidden={true}
-                                      className="euiIcon euiIcon--medium euiFormControlLayoutCustomIcon__icon"
-                                      focusable="false"
-                                      role="img"
-                                      style={null}
+                                    <EuiIcon
+                                      aria-hidden="true"
+                                      className="euiFormControlLayoutCustomIcon__icon"
+                                      size="s"
+                                      type="arrowDown"
                                     >
-                                      <svg
+                                      <EuiIconArrowDown
                                         aria-hidden={true}
-                                        className="euiIcon euiIcon--medium euiFormControlLayoutCustomIcon__icon"
+                                        className="euiIcon euiIcon--small euiFormControlLayoutCustomIcon__icon"
                                         focusable="false"
-                                        height={16}
                                         role="img"
                                         style={null}
-                                        viewBox="0 0 16 16"
-                                        width={16}
-                                        xmlns="http://www.w3.org/2000/svg"
                                       >
-                                        <path
-                                          d="M13.069 5.157 8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0Z"
-                                          fillRule="non-zero"
-                                        />
-                                      </svg>
-                                    </EuiIconArrowDown>
-                                  </EuiIcon>
-                                </span>
-                              </EuiFormControlLayoutCustomIcon>
-                            </div>
-                          </EuiFormControlLayoutIcons>
+                                        <svg
+                                          aria-hidden={true}
+                                          className="euiIcon euiIcon--small euiFormControlLayoutCustomIcon__icon"
+                                          focusable="false"
+                                          height={16}
+                                          role="img"
+                                          style={null}
+                                          viewBox="0 0 16 16"
+                                          width={16}
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            d="M13.069 5.157 8.384 9.768a.546.546 0 0 1-.768 0L2.93 5.158a.552.552 0 0 0-.771 0 .53.53 0 0 0 0 .759l4.684 4.61c.641.631 1.672.63 2.312 0l4.684-4.61a.53.53 0 0 0 0-.76.552.552 0 0 0-.771 0Z"
+                                            fillRule="non-zero"
+                                          />
+                                        </svg>
+                                      </EuiIconArrowDown>
+                                    </EuiIcon>
+                                  </span>
+                                </EuiFormControlLayoutCustomIcon>
+                              </div>
+                            </EuiFormControlLayoutIcons>
+                          </div>
                         </div>
-                      </div>
-                    </EuiFormControlLayout>
-                  </EuiSelect>
+                      </EuiFormControlLayout>
+                    </EuiSelect>
+                  </EuiCompressedSelect>
                 </div>
               </div>
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
         </EuiFlexItem>
         <EuiFlexItem>
           <div
             className="euiFlexItem"
           >
-            <EuiFormRow
+            <EuiCompressedFormRow
               describedByIds={Array []}
-              display="row"
+              display="rowCompressed"
               fullWidth={true}
               hasChildLabel={true}
               hasEmptyLabelSpace={false}
@@ -252,7 +264,7 @@ exports[`Flyout component Renders flyout component 1`] = `
               labelType="label"
             >
               <div
-                className="euiFormRow euiFormRow--fullWidth"
+                className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
                 id="random_html_id-row"
               >
                 <div
@@ -275,10 +287,10 @@ exports[`Flyout component Renders flyout component 1`] = `
                 <div
                   className="euiFormRow__fieldWrapper"
                 >
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     aria-describedby="random_html_id-help-0"
                     async={false}
-                    compressed={false}
+                    compressed={true}
                     fullWidth={false}
                     id="random_html_id"
                     isClearable={true}
@@ -305,13 +317,13 @@ exports[`Flyout component Renders flyout component 1`] = `
                       aria-describedby="random_html_id-help-0"
                       aria-expanded={false}
                       aria-haspopup="listbox"
-                      className="euiComboBox"
+                      className="euiComboBox euiComboBox--compressed"
                       onKeyDown={[Function]}
                       role="combobox"
                     >
                       <EuiComboBoxInput
                         autoSizeInputRef={[Function]}
-                        compressed={false}
+                        compressed={true}
                         fullWidth={false}
                         hasSelectedOptions={false}
                         id="random_html_id"
@@ -339,7 +351,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         value=""
                       >
                         <EuiFormControlLayout
-                          compressed={false}
+                          compressed={true}
                           fullWidth={false}
                           icon={
                             Object {
@@ -354,13 +366,13 @@ exports[`Flyout component Renders flyout component 1`] = `
                           }
                         >
                           <div
-                            className="euiFormControlLayout"
+                            className="euiFormControlLayout euiFormControlLayout--compressed"
                           >
                             <div
                               className="euiFormControlLayout__childrenWrapper"
                             >
                               <div
-                                className="euiComboBox__inputWrap euiComboBox__inputWrap--noWrap euiComboBox__inputWrap-isClearable"
+                                className="euiComboBox__inputWrap euiComboBox__inputWrap--compressed euiComboBox__inputWrap--noWrap euiComboBox__inputWrap-isClearable"
                                 data-test-subj="comboBoxInput"
                                 onClick={[Function]}
                                 tabIndex={-1}
@@ -426,7 +438,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 </AutosizeInput>
                               </div>
                               <EuiFormControlLayoutIcons
-                                compressed={false}
+                                compressed={true}
                                 icon={
                                   Object {
                                     "aria-label": "Open list of options",
@@ -447,7 +459,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     data-test-subj="comboBoxToggleListButton"
                                     iconRef={[Function]}
                                     onClick={[Function]}
-                                    size="m"
+                                    size="s"
                                     type="arrowDown"
                                   >
                                     <button
@@ -460,19 +472,19 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <EuiIcon
                                         aria-hidden="true"
                                         className="euiFormControlLayoutCustomIcon__icon"
-                                        size="m"
+                                        size="s"
                                         type="arrowDown"
                                       >
                                         <EuiIconArrowDown
                                           aria-hidden={true}
-                                          className="euiIcon euiIcon--medium euiFormControlLayoutCustomIcon__icon"
+                                          className="euiIcon euiIcon--small euiFormControlLayoutCustomIcon__icon"
                                           focusable="false"
                                           role="img"
                                           style={null}
                                         >
                                           <svg
                                             aria-hidden={true}
-                                            className="euiIcon euiIcon--medium euiFormControlLayoutCustomIcon__icon"
+                                            className="euiIcon euiIcon--small euiFormControlLayoutCustomIcon__icon"
                                             focusable="false"
                                             height={16}
                                             role="img"
@@ -497,7 +509,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         </EuiFormControlLayout>
                       </EuiComboBoxInput>
                     </div>
-                  </EuiComboBox>
+                  </EuiCompressedComboBox>
                   <EuiFormHelpText
                     className="euiFormRow__text"
                     id="random_html_id-help-0"
@@ -512,14 +524,14 @@ exports[`Flyout component Renders flyout component 1`] = `
                   </EuiFormHelpText>
                 </div>
               </div>
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
         </EuiFlexItem>
       </div>
     </EuiFlexGroup>
-    <EuiFormRow
+    <EuiCompressedFormRow
       describedByIds={Array []}
-      display="row"
+      display="rowCompressed"
       error={false}
       fullWidth={true}
       hasChildLabel={true}
@@ -554,7 +566,7 @@ exports[`Flyout component Renders flyout component 1`] = `
       labelType="label"
     >
       <div
-        className="euiFormRow euiFormRow--fullWidth"
+        className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
         id="random_html_id-row"
       >
         <div
@@ -782,7 +794,7 @@ exports[`Flyout component Renders flyout component 1`] = `
           </EuiFormHelpText>
         </div>
       </div>
-    </EuiFormRow>
+    </EuiCompressedFormRow>
   </SearchConfig>
 </SearchRelevanceContextProvider>
 `;
@@ -875,9 +887,9 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
           <div
             className="euiFlexItem"
           >
-            <EuiFormRow
+            <EuiCompressedFormRow
               describedByIds={Array []}
-              display="row"
+              display="rowCompressed"
               error={false}
               fullWidth={true}
               hasChildLabel={true}
@@ -887,7 +899,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
               labelType="label"
             >
               <div
-                className="euiFormRow euiFormRow--fullWidth"
+                className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
                 id="random_html_id-row"
               >
                 <div
@@ -913,7 +925,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                 <div
                   className="euiFormRow__fieldWrapper"
                 >
-                  <EuiSelect
+                  <EuiCompressedSelect
                     aria-label="Search Index"
                     hasNoInitialSelection={true}
                     id="random_html_id"
@@ -923,119 +935,131 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                     options={Array []}
                     value=""
                   >
-                    <EuiFormControlLayout
-                      compressed={false}
-                      fullWidth={false}
-                      icon={
-                        Object {
-                          "side": "right",
-                          "type": "arrowDown",
-                        }
-                      }
-                      inputId="random_html_id"
-                      isLoading={false}
+                    <EuiSelect
+                      aria-label="Search Index"
+                      compressed={true}
+                      hasNoInitialSelection={true}
+                      id="random_html_id"
+                      onBlur={[Function]}
+                      onChange={[Function]}
+                      onFocus={[Function]}
+                      options={Array []}
+                      value=""
                     >
-                      <div
-                        className="euiFormControlLayout"
+                      <EuiFormControlLayout
+                        compressed={true}
+                        fullWidth={false}
+                        icon={
+                          Object {
+                            "side": "right",
+                            "type": "arrowDown",
+                          }
+                        }
+                        inputId="random_html_id"
+                        isLoading={false}
                       >
                         <div
-                          className="euiFormControlLayout__childrenWrapper"
+                          className="euiFormControlLayout euiFormControlLayout--compressed"
                         >
-                          <EuiValidatableControl>
-                            <select
-                              aria-label="Search Index"
-                              className="euiSelect"
-                              id="random_html_id"
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onMouseUp={[Function]}
-                              value=""
-                            >
-                              <option
-                                disabled={true}
-                                hidden={true}
-                                style={
-                                  Object {
-                                    "display": "none",
-                                  }
-                                }
+                          <div
+                            className="euiFormControlLayout__childrenWrapper"
+                          >
+                            <EuiValidatableControl>
+                              <select
+                                aria-label="Search Index"
+                                className="euiSelect euiSelect--compressed"
+                                id="random_html_id"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                onFocus={[Function]}
+                                onMouseUp={[Function]}
                                 value=""
                               >
-                                 
-                              </option>
-                            </select>
-                          </EuiValidatableControl>
-                          <EuiFormControlLayoutIcons
-                            compressed={false}
-                            icon={
-                              Object {
-                                "side": "right",
-                                "type": "arrowDown",
-                              }
-                            }
-                            isLoading={false}
-                          >
-                            <div
-                              className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
-                            >
-                              <EuiFormControlLayoutCustomIcon
-                                size="m"
-                                type="arrowDown"
-                              >
-                                <span
-                                  className="euiFormControlLayoutCustomIcon"
+                                <option
+                                  disabled={true}
+                                  hidden={true}
+                                  style={
+                                    Object {
+                                      "display": "none",
+                                    }
+                                  }
+                                  value=""
                                 >
-                                  <EuiIcon
-                                    aria-hidden="true"
-                                    className="euiFormControlLayoutCustomIcon__icon"
-                                    size="m"
-                                    type="arrowDown"
+                                   
+                                </option>
+                              </select>
+                            </EuiValidatableControl>
+                            <EuiFormControlLayoutIcons
+                              compressed={true}
+                              icon={
+                                Object {
+                                  "side": "right",
+                                  "type": "arrowDown",
+                                }
+                              }
+                              isLoading={false}
+                            >
+                              <div
+                                className="euiFormControlLayoutIcons euiFormControlLayoutIcons--right"
+                              >
+                                <EuiFormControlLayoutCustomIcon
+                                  size="s"
+                                  type="arrowDown"
+                                >
+                                  <span
+                                    className="euiFormControlLayoutCustomIcon"
                                   >
-                                    <EuiIconBeaker
-                                      aria-hidden={true}
-                                      className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
-                                      focusable="false"
-                                      role="img"
-                                      style={null}
+                                    <EuiIcon
+                                      aria-hidden="true"
+                                      className="euiFormControlLayoutCustomIcon__icon"
+                                      size="s"
+                                      type="arrowDown"
                                     >
-                                      <svg
+                                      <EuiIconBeaker
                                         aria-hidden={true}
-                                        className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                        className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
                                         focusable="false"
-                                        height={16}
                                         role="img"
                                         style={null}
-                                        viewBox="0 0 16 16"
-                                        width={16}
-                                        xmlns="http://www.w3.org/2000/svg"
                                       >
-                                        <path
-                                          d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
-                                        />
-                                      </svg>
-                                    </EuiIconBeaker>
-                                  </EuiIcon>
-                                </span>
-                              </EuiFormControlLayoutCustomIcon>
-                            </div>
-                          </EuiFormControlLayoutIcons>
+                                        <svg
+                                          aria-hidden={true}
+                                          className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                          focusable="false"
+                                          height={16}
+                                          role="img"
+                                          style={null}
+                                          viewBox="0 0 16 16"
+                                          width={16}
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                          />
+                                        </svg>
+                                      </EuiIconBeaker>
+                                    </EuiIcon>
+                                  </span>
+                                </EuiFormControlLayoutCustomIcon>
+                              </div>
+                            </EuiFormControlLayoutIcons>
+                          </div>
                         </div>
-                      </div>
-                    </EuiFormControlLayout>
-                  </EuiSelect>
+                      </EuiFormControlLayout>
+                    </EuiSelect>
+                  </EuiCompressedSelect>
                 </div>
               </div>
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
         </EuiFlexItem>
         <EuiFlexItem>
           <div
             className="euiFlexItem"
           >
-            <EuiFormRow
+            <EuiCompressedFormRow
               describedByIds={Array []}
-              display="row"
+              display="rowCompressed"
               fullWidth={true}
               hasChildLabel={true}
               hasEmptyLabelSpace={false}
@@ -1044,7 +1068,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
               labelType="label"
             >
               <div
-                className="euiFormRow euiFormRow--fullWidth"
+                className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
                 id="random_html_id-row"
               >
                 <div
@@ -1067,10 +1091,10 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                 <div
                   className="euiFormRow__fieldWrapper"
                 >
-                  <EuiComboBox
+                  <EuiCompressedComboBox
                     aria-describedby="random_html_id-help-0"
                     async={false}
-                    compressed={false}
+                    compressed={true}
                     fullWidth={false}
                     id="random_html_id"
                     isClearable={true}
@@ -1097,13 +1121,13 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                       aria-describedby="random_html_id-help-0"
                       aria-expanded={false}
                       aria-haspopup="listbox"
-                      className="euiComboBox"
+                      className="euiComboBox euiComboBox--compressed"
                       onKeyDown={[Function]}
                       role="combobox"
                     >
                       <EuiComboBoxInput
                         autoSizeInputRef={[Function]}
-                        compressed={false}
+                        compressed={true}
                         fullWidth={false}
                         hasSelectedOptions={false}
                         id="random_html_id"
@@ -1131,7 +1155,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                         value=""
                       >
                         <EuiFormControlLayout
-                          compressed={false}
+                          compressed={true}
                           fullWidth={false}
                           icon={
                             Object {
@@ -1146,13 +1170,13 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                           }
                         >
                           <div
-                            className="euiFormControlLayout"
+                            className="euiFormControlLayout euiFormControlLayout--compressed"
                           >
                             <div
                               className="euiFormControlLayout__childrenWrapper"
                             >
                               <div
-                                className="euiComboBox__inputWrap euiComboBox__inputWrap--noWrap euiComboBox__inputWrap-isClearable"
+                                className="euiComboBox__inputWrap euiComboBox__inputWrap--compressed euiComboBox__inputWrap--noWrap euiComboBox__inputWrap-isClearable"
                                 data-test-subj="comboBoxInput"
                                 onClick={[Function]}
                                 tabIndex={-1}
@@ -1218,7 +1242,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                                 </AutosizeInput>
                               </div>
                               <EuiFormControlLayoutIcons
-                                compressed={false}
+                                compressed={true}
                                 icon={
                                   Object {
                                     "aria-label": "Open list of options",
@@ -1239,7 +1263,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                                     data-test-subj="comboBoxToggleListButton"
                                     iconRef={[Function]}
                                     onClick={[Function]}
-                                    size="m"
+                                    size="s"
                                     type="arrowDown"
                                   >
                                     <button
@@ -1252,19 +1276,19 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                                       <EuiIcon
                                         aria-hidden="true"
                                         className="euiFormControlLayoutCustomIcon__icon"
-                                        size="m"
+                                        size="s"
                                         type="arrowDown"
                                       >
                                         <EuiIconBeaker
                                           aria-hidden={true}
-                                          className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                          className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
                                           focusable="false"
                                           role="img"
                                           style={null}
                                         >
                                           <svg
                                             aria-hidden={true}
-                                            className="euiIcon euiIcon--medium euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
+                                            className="euiIcon euiIcon--small euiIcon-isLoading euiFormControlLayoutCustomIcon__icon"
                                             focusable="false"
                                             height={16}
                                             role="img"
@@ -1288,7 +1312,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                         </EuiFormControlLayout>
                       </EuiComboBoxInput>
                     </div>
-                  </EuiComboBox>
+                  </EuiCompressedComboBox>
                   <EuiFormHelpText
                     className="euiFormRow__text"
                     id="random_html_id-help-0"
@@ -1303,14 +1327,14 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
                   </EuiFormHelpText>
                 </div>
               </div>
-            </EuiFormRow>
+            </EuiCompressedFormRow>
           </div>
         </EuiFlexItem>
       </div>
     </EuiFlexGroup>
-    <EuiFormRow
+    <EuiCompressedFormRow
       describedByIds={Array []}
-      display="row"
+      display="rowCompressed"
       error={false}
       fullWidth={true}
       hasChildLabel={true}
@@ -1345,7 +1369,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
       labelType="label"
     >
       <div
-        className="euiFormRow euiFormRow--fullWidth"
+        className="euiFormRow euiFormRow--fullWidth euiFormRow--compressed"
         id="random_html_id-row"
       >
         <div
@@ -1573,7 +1597,7 @@ exports[`Flyout component Renders flyout component when multi-datasource is enab
           </EuiFormHelpText>
         </div>
       </div>
-    </EuiFormRow>
+    </EuiCompressedFormRow>
   </SearchConfig>
 </SearchRelevanceContextProvider>
 `;
