@@ -28,10 +28,6 @@ The output file : `./build/searchRelevanceDashboards-?.?.?.zip` (`?.?.?` stands 
 
 Cd back to `OpenSearch-Dashboards` directory and run `yarn start` to start OpenSearch Dashboards including this plugin. OpenSearch Dashboards will be available on `localhost:5601`.
 
-### Run Docker
-
-Run `docker-compose up -d` after changing the [Dockerfile](Dockerfile) as described in this [tutorial](Using-Docker.md)
-
 ### Submitting Changes
 
 See [CONTRIBUTING](CONTRIBUTING.md).
