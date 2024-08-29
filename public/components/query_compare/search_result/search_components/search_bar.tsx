@@ -19,7 +19,6 @@ export const SearchInputBar = ({
   onClickSearch,
   getNavGroupEnabled,
 }: SearchBarProps) => {
-  console.log('getNavGroupEnabled sb', getNavGroupEnabled);
   return (
     <>
       {!getNavGroupEnabled && <EuiSpacer size="m" />}
