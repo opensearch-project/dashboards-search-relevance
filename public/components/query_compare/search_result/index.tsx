@@ -208,19 +208,10 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
   return (
     <>
-      {!getNavGroupEnabled && (
-        <Header>
-          <SearchInputBar
-            searchBarValue={searchBarValue}
-            setSearchBarValue={setSearchBarValue}
-            onClickSearch={onClickSearch}
-          />
-        </Header>
-      )}
-      {getNavGroupEnabled && (
+      {getNavGroupEnabled ? (
         <>
           <HeaderControlledPopoverWrapper>
-            <EuiText size='s'>
+            <EuiText size="s">
               <p>
                 Compare results using the same search text with different queries.{' '}
                 <EuiLink
@@ -232,13 +223,21 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
               </p>
             </EuiText>
           </HeaderControlledPopoverWrapper>
-          <EuiSpacer size="m" />
           <SearchInputBar
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch} 
           />
-        </>      
+          <EuiSpacer size="m" />
+        </>
+      ) : (
+        <Header>
+          <SearchInputBar
+            searchBarValue={searchBarValue}
+            setSearchBarValue={setSearchBarValue}
+            onClickSearch={onClickSearch}
+          />
+        </Header>
       )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
