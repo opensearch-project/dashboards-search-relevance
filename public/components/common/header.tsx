@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { EuiText, EuiLink, EuiPanel, EuiTitle, EuiSpacer } from '@elastic/eui';
+import { EuiText, EuiLink, EuiPanel, EuiTitle } from '@elastic/eui';
 
 interface HeaderProps {
   children?: React.ReactNode;
