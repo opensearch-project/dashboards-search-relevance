@@ -74,6 +74,8 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     return <>{children}</>;
   };
 
+  const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+
   const onClickSearch = () => {
     const queryErrors = [
       { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
@@ -206,15 +208,22 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
   return (
     <>
-      <HeaderControlledPopoverWrapper>
+      {!getNavGroupEnabled && (
         <Header>
-          {/* <SearchInputBar
+          <SearchInputBar
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
-          /> */}
+          />
         </Header>
-      </HeaderControlledPopoverWrapper>
+      )}
+      {getNavGroupEnabled && (
+        <SearchInputBar
+          searchBarValue={searchBarValue}
+          setSearchBarValue={setSearchBarValue}
+          onClickSearch={onClickSearch}
+        />      
+      )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
           queryString1={queryString1}
