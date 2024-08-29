@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer} from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -220,15 +220,24 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
                 >
                   Learn more
                 </EuiLink>
+                <EuiSpacer size="m" />
               </p>
             </EuiText>
           </HeaderControlledPopoverWrapper>
-          <SearchInputBar
-            searchBarValue={searchBarValue}
-            setSearchBarValue={setSearchBarValue}
-            onClickSearch={onClickSearch} 
-          />
-          <EuiSpacer size="m" />
+          <EuiPanel
+            hasBorder={false}
+            hasShadow={false}
+            color="transparent"
+            grow={false}
+            borderRadius="none"
+          >
+            <SearchInputBar
+              searchBarValue={searchBarValue}
+              setSearchBarValue={setSearchBarValue}
+              onClickSearch={onClickSearch}
+              getNavGroupEnabled={getNavGroupEnabled}
+            />
+          </EuiPanel>
         </>
       ) : (
         <Header>
@@ -236,6 +245,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
+            getNavGroupEnabled={getNavGroupEnabled}
           />
         </Header>
       )}
