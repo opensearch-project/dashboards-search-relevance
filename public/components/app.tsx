@@ -23,6 +23,7 @@ interface SearchRelevanceAppDeps {
   dataSourceEnabled: boolean;
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  application: CoreStart['application'];
 }
 
 export const SearchRelevanceApp = ({
@@ -34,6 +35,7 @@ export const SearchRelevanceApp = ({
   dataSourceEnabled,
   setActionMenu,
   dataSourceManagement,
+  application,
 }: SearchRelevanceAppDeps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
@@ -65,6 +67,7 @@ export const SearchRelevanceApp = ({
                 render={(props) => {
                   return (
                     <QueryCompareHome
+                      application={application}
                       parentBreadCrumbs={parentBreadCrumbs}
                       notifications={notifications}
                       http={http}

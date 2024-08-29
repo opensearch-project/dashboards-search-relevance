@@ -35,9 +35,11 @@ interface SearchResultProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   dataSourceOptions: DataSourceOption[]
   notifications: NotificationsStart
+  chrome: CoreStart['chrome'];
+  application: CoreStart['application'];
 }
 
-export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
+export const SearchResult = ({ application, chrome, http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -55,6 +57,22 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
     datasource1,
     datasource2
   } = useSearchRelevanceContext();
+
+  const HeaderControlledPopoverWrapper = ({ children }: { children: React.ReactElement }) => {
+    const HeaderControl = navigation.ui.HeaderControl;
+    const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+  
+    if (getNavGroupEnabled && HeaderControl) {
+      return (
+        <HeaderControl
+          setMountPoint={application.setAppDescriptionControls}
+          controls={[{ renderComponent: children }]}
+        />
+      );
+    }
+  
+    return <>{children}</>;
+  };
 
   const onClickSearch = () => {
     const queryErrors = [
@@ -188,13 +206,15 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
 
   return (
     <>
-      <Header>
-        <SearchInputBar
-          searchBarValue={searchBarValue}
-          setSearchBarValue={setSearchBarValue}
-          onClickSearch={onClickSearch}
-        />
-      </Header>
+      <HeaderControlledPopoverWrapper>
+        <Header>
+          {/* <SearchInputBar
+            searchBarValue={searchBarValue}
+            setSearchBarValue={setSearchBarValue}
+            onClickSearch={onClickSearch}
+          /> */}
+        </Header>
+      </HeaderControlledPopoverWrapper>
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
           queryString1={queryString1}

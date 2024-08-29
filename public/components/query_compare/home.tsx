@@ -33,6 +33,7 @@ interface QueryExplorerProps {
   dataSourceEnabled: boolean
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  application: CoreStart['application'];
 }
 export const Home = ({
   parentBreadCrumbs,
@@ -46,6 +47,7 @@ export const Home = ({
   dataSourceEnabled,
   dataSourceManagement,
   setActionMenu,
+  application,
 }: QueryExplorerProps) => {
   const {
     showFlyout,
@@ -182,7 +184,7 @@ export const Home = ({
     <>
       {dataSourceEnabled && dataSourceMenuComponent}
       <div className="osdOverviewWrapper">
-        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions} notifications={notifications}/> : <CreateIndex />}
+        {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult application={application} chrome={chrome} http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions} notifications={notifications}/> : <CreateIndex />}
       </div>
       {showFlyout && <Flyout />}
     </>
