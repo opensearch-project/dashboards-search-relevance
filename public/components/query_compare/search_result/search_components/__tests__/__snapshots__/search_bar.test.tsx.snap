@@ -216,6 +216,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                 >
                   <EuiButtonContent
                     className="euiButton__content"
+                    iconGap="m"
                     iconSide="left"
                     textProps={
                       Object {
