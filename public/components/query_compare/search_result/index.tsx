@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiPageContentBody } from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -218,11 +218,27 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
         </Header>
       )}
       {getNavGroupEnabled && (
-        <SearchInputBar
-          searchBarValue={searchBarValue}
-          setSearchBarValue={setSearchBarValue}
-          onClickSearch={onClickSearch}
-        />      
+        <>
+          <HeaderControlledPopoverWrapper>
+            <EuiText size='s'>
+              <p>
+                Compare results using the same search text with different queries.{' '}
+                <EuiLink
+                  href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                  target="_blank"
+                >
+                  Learn more
+                </EuiLink>
+              </p>
+            </EuiText>
+          </HeaderControlledPopoverWrapper>
+          <EuiSpacer size="m" />
+          <SearchInputBar
+            searchBarValue={searchBarValue}
+            setSearchBarValue={setSearchBarValue}
+            onClickSearch={onClickSearch} 
+          />
+        </>      
       )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
