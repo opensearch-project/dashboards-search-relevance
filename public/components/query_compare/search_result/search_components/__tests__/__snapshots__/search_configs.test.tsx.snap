@@ -640,6 +640,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               >
                                 <EuiButtonContent
                                   className="euiButtonEmpty__content"
+                                  iconGap="m"
                                   iconSide="left"
                                   iconSize="s"
                                   textProps={
@@ -1419,6 +1420,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               >
                                 <EuiButtonContent
                                   className="euiButtonEmpty__content"
+                                  iconGap="m"
                                   iconSide="left"
                                   iconSize="s"
                                   textProps={
@@ -2247,6 +2249,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                               >
                                 <EuiButtonContent
                                   className="euiButtonEmpty__content"
+                                  iconGap="m"
                                   iconSide="left"
                                   iconSize="s"
                                   textProps={
@@ -3022,6 +3025,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                               >
                                 <EuiButtonContent
                                   className="euiButtonEmpty__content"
+                                  iconGap="m"
                                   iconSide="left"
                                   iconSize="s"
                                   textProps={
