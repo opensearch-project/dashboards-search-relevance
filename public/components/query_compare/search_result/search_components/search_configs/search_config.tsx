@@ -180,6 +180,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 defaultOption= {[]}
               />
             </EuiCompressedFormRow>
+            <EuiSpacer size="s" />
           </EuiFlexItem> )}
         <EuiFlexItem>
           <EuiCompressedFormRow
