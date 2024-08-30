@@ -170,6 +170,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
               label="Data Source"
             >
               <DataSourceSelector
+                compressed={true}
                 savedObjectsClient={savedObjects.client}
                 notifications={notifications}
                 onSelectedDataSource={onSelectedDataSource}
@@ -201,7 +202,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiCompressedFormRow fullWidth label="Pipeline" helpText="Optional">
+          <EuiCompressedFormRow fullWidth label="Pipeline-optional">
             <EuiCompressedComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}

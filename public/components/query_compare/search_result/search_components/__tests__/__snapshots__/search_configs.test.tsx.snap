@@ -292,8 +292,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            helpText="Optional"
-                            label="Pipeline"
+                            label="Pipeline-optional"
                             labelType="label"
                           >
                             <div
@@ -313,7 +312,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline
+                                    Pipeline-optional
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -321,7 +320,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 className="euiFormRow__fieldWrapper"
                               >
                                 <EuiCompressedComboBox
-                                  aria-describedby="random_html_id-help-0"
                                   async={false}
                                   compressed={true}
                                   fullWidth={false}
@@ -347,7 +345,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   sortMatchesBy="none"
                                 >
                                   <div
-                                    aria-describedby="random_html_id-help-0"
                                     aria-expanded={false}
                                     aria-haspopup="listbox"
                                     className="euiComboBox euiComboBox--compressed"
@@ -542,18 +539,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     </EuiComboBoxInput>
                                   </div>
                                 </EuiCompressedComboBox>
-                                <EuiFormHelpText
-                                  className="euiFormRow__text"
-                                  id="random_html_id-help-0"
-                                  key="Optional"
-                                >
-                                  <div
-                                    className="euiFormHelpText euiFormRow__text"
-                                    id="random_html_id-help-0"
-                                  >
-                                    Optional
-                                  </div>
-                                </EuiFormHelpText>
                               </div>
                             </div>
                           </EuiCompressedFormRow>
@@ -1072,8 +1057,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            helpText="Optional"
-                            label="Pipeline"
+                            label="Pipeline-optional"
                             labelType="label"
                           >
                             <div
@@ -1093,7 +1077,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline
+                                    Pipeline-optional
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -1101,7 +1085,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 className="euiFormRow__fieldWrapper"
                               >
                                 <EuiCompressedComboBox
-                                  aria-describedby="random_html_id-help-0"
                                   async={false}
                                   compressed={true}
                                   fullWidth={false}
@@ -1127,7 +1110,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   sortMatchesBy="none"
                                 >
                                   <div
-                                    aria-describedby="random_html_id-help-0"
                                     aria-expanded={false}
                                     aria-haspopup="listbox"
                                     className="euiComboBox euiComboBox--compressed"
@@ -1322,18 +1304,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     </EuiComboBoxInput>
                                   </div>
                                 </EuiCompressedComboBox>
-                                <EuiFormHelpText
-                                  className="euiFormRow__text"
-                                  id="random_html_id-help-0"
-                                  key="Optional"
-                                >
-                                  <div
-                                    className="euiFormHelpText euiFormRow__text"
-                                    id="random_html_id-help-0"
-                                  >
-                                    Optional
-                                  </div>
-                                </EuiFormHelpText>
                               </div>
                             </div>
                           </EuiCompressedFormRow>
@@ -1900,8 +1870,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            helpText="Optional"
-                            label="Pipeline"
+                            label="Pipeline-optional"
                             labelType="label"
                           >
                             <div
@@ -1921,7 +1890,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline
+                                    Pipeline-optional
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -1929,7 +1898,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                 className="euiFormRow__fieldWrapper"
                               >
                                 <EuiCompressedComboBox
-                                  aria-describedby="random_html_id-help-0"
                                   async={false}
                                   compressed={true}
                                   fullWidth={false}
@@ -1955,7 +1923,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                   sortMatchesBy="none"
                                 >
                                   <div
-                                    aria-describedby="random_html_id-help-0"
                                     aria-expanded={false}
                                     aria-haspopup="listbox"
                                     className="euiComboBox euiComboBox--compressed"
@@ -2151,18 +2118,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     </EuiComboBoxInput>
                                   </div>
                                 </EuiCompressedComboBox>
-                                <EuiFormHelpText
-                                  className="euiFormRow__text"
-                                  id="random_html_id-help-0"
-                                  key="Optional"
-                                >
-                                  <div
-                                    className="euiFormHelpText euiFormRow__text"
-                                    id="random_html_id-help-0"
-                                  >
-                                    Optional
-                                  </div>
-                                </EuiFormHelpText>
                               </div>
                             </div>
                           </EuiCompressedFormRow>
@@ -2676,8 +2631,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            helpText="Optional"
-                            label="Pipeline"
+                            label="Pipeline-optional"
                             labelType="label"
                           >
                             <div
@@ -2697,7 +2651,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline
+                                    Pipeline-optional
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -2705,7 +2659,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                 className="euiFormRow__fieldWrapper"
                               >
                                 <EuiCompressedComboBox
-                                  aria-describedby="random_html_id-help-0"
                                   async={false}
                                   compressed={true}
                                   fullWidth={false}
@@ -2731,7 +2684,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                   sortMatchesBy="none"
                                 >
                                   <div
-                                    aria-describedby="random_html_id-help-0"
                                     aria-expanded={false}
                                     aria-haspopup="listbox"
                                     className="euiComboBox euiComboBox--compressed"
@@ -2927,18 +2879,6 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     </EuiComboBoxInput>
                                   </div>
                                 </EuiCompressedComboBox>
-                                <EuiFormHelpText
-                                  className="euiFormRow__text"
-                                  id="random_html_id-help-0"
-                                  key="Optional"
-                                >
-                                  <div
-                                    className="euiFormHelpText euiFormRow__text"
-                                    id="random_html_id-help-0"
-                                  >
-                                    Optional
-                                  </div>
-                                </EuiFormHelpText>
                               </div>
                             </div>
                           </EuiCompressedFormRow>

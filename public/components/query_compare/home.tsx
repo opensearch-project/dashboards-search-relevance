@@ -165,24 +165,24 @@ export const Home = ({
     
   }, [http, setDocumentsIndexes1, setDocumentsIndexes2, setFetchedPipelines1, setFetchedPipelines2, datasource1, datasource2]);
 
-  const dataSourceMenuComponent = useMemo(() => {
-    return (
-      <DataSourceMenu
-        setMenuMountPoint={setActionMenu}
-        componentType={'DataSourceAggregatedView'}
-        componentConfig={{
-          savedObjects: savedObjects.client,
-          notifications: notifications,
-          fullWidth: true,
-          displayAllCompatibleDataSources: true,
-          dataSourceFilterFn: dataSourceFilterFn
-        }} 
-      />
-    );
-  }, [setActionMenu, savedObjects.client, notifications, datasource1, datasource2]);
+  // const dataSourceMenuComponent = useMemo(() => {
+  //   return (
+  //     <DataSourceMenu
+  //       setMenuMountPoint={setActionMenu}
+  //       componentType={'DataSourceAggregatedView'}
+  //       componentConfig={{
+  //         savedObjects: savedObjects.client,
+  //         notifications: notifications,
+  //         fullWidth: true,
+  //         displayAllCompatibleDataSources: true,
+  //         dataSourceFilterFn: dataSourceFilterFn
+  //       }} 
+  //     />
+  //   );
+  // }, [setActionMenu, savedObjects.client, notifications, datasource1, datasource2]);
   return (
     <>
-      {dataSourceEnabled && dataSourceMenuComponent}
+      {dataSourceEnabled}
       <div className="osdOverviewWrapper">
         {documentsIndexes1.length || documentsIndexes2.length ? <SearchResult application={application} chrome={chrome} http={http} savedObjects={savedObjects} dataSourceEnabled={dataSourceEnabled} dataSourceManagement={dataSourceManagement} navigation={navigation} setActionMenu={setActionMenu} dataSourceOptions={dataSourceOptions} notifications={notifications}/> : <CreateIndex />}
       </div>
