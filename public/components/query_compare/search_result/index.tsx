@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiPageContentBody } from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -35,9 +35,11 @@ interface SearchResultProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   dataSourceOptions: DataSourceOption[]
   notifications: NotificationsStart
+  chrome: CoreStart['chrome'];
+  application: CoreStart['application'];
 }
 
-export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
+export const SearchResult = ({ application, chrome, http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -55,6 +57,24 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
     datasource1,
     datasource2
   } = useSearchRelevanceContext();
+
+  const HeaderControlledPopoverWrapper = ({ children }: { children: React.ReactElement }) => {
+    const HeaderControl = navigation.ui.HeaderControl;
+    const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+  
+    if (getNavGroupEnabled && HeaderControl) {
+      return (
+        <HeaderControl
+          setMountPoint={application.setAppDescriptionControls}
+          controls={[{ renderComponent: children }]}
+        />
+      );
+    }
+  
+    return <>{children}</>;
+  };
+
+  const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
   const onClickSearch = () => {
     const queryErrors = [
@@ -188,13 +208,47 @@ export const SearchResult = ({ http, savedObjects, dataSourceEnabled, dataSource
 
   return (
     <>
-      <Header>
-        <SearchInputBar
-          searchBarValue={searchBarValue}
-          setSearchBarValue={setSearchBarValue}
-          onClickSearch={onClickSearch}
-        />
-      </Header>
+      {getNavGroupEnabled ? (
+        <>
+          <HeaderControlledPopoverWrapper>
+            <EuiText size="s">
+              <p>
+                Compare results using the same search text with different queries.{' '}
+                <EuiLink
+                  href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
+                  target="_blank"
+                >
+                  Learn more
+                </EuiLink>
+                <EuiSpacer size="m" />
+              </p>
+            </EuiText>
+          </HeaderControlledPopoverWrapper>
+          <EuiPanel
+            hasBorder={false}
+            hasShadow={false}
+            color="transparent"
+            grow={false}
+            borderRadius="none"
+          >
+            <SearchInputBar
+              searchBarValue={searchBarValue}
+              setSearchBarValue={setSearchBarValue}
+              onClickSearch={onClickSearch}
+              getNavGroupEnabled={getNavGroupEnabled}
+            />
+          </EuiPanel>
+        </>
+      ) : (
+        <Header>
+          <SearchInputBar
+            searchBarValue={searchBarValue}
+            setSearchBarValue={setSearchBarValue}
+            onClickSearch={onClickSearch}
+            getNavGroupEnabled={getNavGroupEnabled}
+          />
+        </Header>
+      )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
           queryString1={queryString1}
