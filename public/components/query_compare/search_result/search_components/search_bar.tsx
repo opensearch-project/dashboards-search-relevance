@@ -10,16 +10,18 @@ interface SearchBarProps {
   searchBarValue: string;
   setSearchBarValue: React.Dispatch<React.SetStateAction<string>>;
   onClickSearch: () => void;
+  getNavGroupEnabled?: boolean;
 }
 
 export const SearchInputBar = ({
   searchBarValue,
   setSearchBarValue,
   onClickSearch,
+  getNavGroupEnabled,
 }: SearchBarProps) => {
   return (
     <>
-      <EuiSpacer size="m" />
+      {!getNavGroupEnabled && <EuiSpacer size="m" />}
       <EuiFlexGroup>
         <EuiFlexItem grow={true}>
           <EuiCompressedFieldSearch
