@@ -10,7 +10,7 @@ import { HashRouter, Route, Switch } from 'react-router-dom';
 import { CoreStart, MountPoint, Toast } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { PLUGIN_NAME } from '../../common';
+import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 
@@ -23,6 +23,7 @@ interface SearchRelevanceAppDeps {
   dataSourceEnabled: boolean;
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
+  application: CoreStart['application'];
 }
 
 export const SearchRelevanceApp = ({
@@ -34,13 +35,20 @@ export const SearchRelevanceApp = ({
   dataSourceEnabled,
   setActionMenu,
   dataSourceManagement,
+  application,
 }: SearchRelevanceAppDeps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
 
   // Render the application DOM.
   // Note that `navigation.ui.TopNavMenu` is a stateful component exported on the `navigation` plugin's start contract.
-  const parentBreadCrumbs = [{ text: PLUGIN_NAME, href: '#' }];
+
+  const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+
+  const parentBreadCrumbs = getNavGroupEnabled 
+    ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
+    : [{ text: PLUGIN_NAME, href: '#' }];
+
   const setToast = (title: string, color = 'success', text?: ReactChild, side?: string) => {
     if (!text) text = '';
     setToastRightSide(!side ? true : false);
@@ -65,6 +73,7 @@ export const SearchRelevanceApp = ({
                 render={(props) => {
                   return (
                     <QueryCompareHome
+                      application={application}
                       parentBreadCrumbs={parentBreadCrumbs}
                       notifications={notifications}
                       http={http}

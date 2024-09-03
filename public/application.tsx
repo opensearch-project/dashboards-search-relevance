@@ -11,7 +11,7 @@ import { SearchRelevanceApp } from './components/app';
 import { AppPluginStartDependencies } from './types';
 
 export const renderApp = (
-  { notifications, http, chrome, savedObjects }: CoreStart,
+  { notifications, http, chrome, savedObjects, application }: CoreStart,
   { navigation, dataSource }: AppPluginStartDependencies,
   { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
@@ -26,6 +26,7 @@ export const renderApp = (
       dataSourceEnabled={!!dataSource}
       setActionMenu={setHeaderActionMenu}
       dataSourceManagement={dataSourceManagement}
+      application={application}
     />,
     element
   );
