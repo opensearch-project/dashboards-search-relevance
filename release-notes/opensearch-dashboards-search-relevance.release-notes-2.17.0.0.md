@@ -9,6 +9,10 @@ Compatible with OpenSearch 2.17.0
 * Use smaller and compressed varients of buttons and form components ([#421](https://github.com/opensearch-project/dashboards-search-relevance/pull/421))([#424](https://github.com/opensearch-project/dashboards-search-relevance/pull/424))
 * New page header for search relevance ([#428](https://github.com/opensearch-project/dashboards-search-relevance/pull/428)) ([#430](https://github.com/opensearch-project/dashboards-search-relevance/pull/430))
 
+### Documentation
+* Update Links in Documentation ([#420](https://github.com/opensearch-project/dashboards-search-relevance/pull/420))([#440](https://github.com/opensearch-project/dashboards-search-relevance/pull/440))
+* Adding sumukhswamy as maintainer ([#437](https://github.com/opensearch-project/dashboards-search-relevance/pull/437))([#438](https://github.com/opensearch-project/dashboards-search-relevance/pull/438))
+
 ### Bug Fixes
 * Fix sass division warning ([#426](https://github.com/opensearch-project/dashboards-search-relevance/pull/426))([#435](https://github.com/opensearch-project/dashboards-search-relevance/pull/435))
 
