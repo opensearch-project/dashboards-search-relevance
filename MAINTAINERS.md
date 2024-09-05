@@ -11,3 +11,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Mingshi Liu  | [mingshl](https://github.com/mingshl) | Amazon      |
 | Louis Chu    | [noCharger](https://github.com/noCharger) | Amazon  |
 | Sean Li      | [sejli](https://github.com/sejli)     | Amazon |
+| Sumukh Swamy | [sumukhswamy](https://github.com/sumukhswamy) | Amazon |
