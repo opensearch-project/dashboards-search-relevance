@@ -1,12 +1,16 @@
 {
   "id": "searchRelevanceDashboards",
-  "version": "2.17.0.0",
-  "opensearchDashboardsVersion": "2.17.0",
+  "version": "2.17.1.0",
+  "opensearchDashboardsVersion": "2.17.1",
   "server": true,
   "ui": true,
   "requiredPlugins": [
     "navigation"
   ],
-  "optionalPlugins": ["dataSource","dataSourceManagement","contentManagement"],
+  "optionalPlugins": [
+    "dataSource",
+    "dataSourceManagement",
+    "contentManagement"
+  ],
   "supportedOSDataSourceVersions": ">=2.8.0"
 }
