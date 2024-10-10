@@ -17,12 +17,15 @@ import {
 } from '@elastic/eui';
 import React, { FunctionComponent, useEffect } from 'react';
 
-import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
+import { AppMountParameters, CoreStart, MountPoint, NotificationsStart, SavedObject, SavedObjectsStart, ToastsStart } from '../../../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
 import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
+import semver from "semver";
+import { DataSourceAttributes } from '../../../../../../../../src/plugins/data_source/common/data_sources';
+import * as pluginManifest from "../../../../../../opensearch_dashboards.json";
 
 export interface SearchRelevanceServices extends CoreStart {
   setHeaderActionMenu: AppMountParameters['setHeaderActionMenu'];
@@ -86,7 +89,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   };
 
   const documentIndex = queryNumber === 1? documentsIndexes1: documentsIndexes2
-  console.log(fetchedPipelines1)
   const pipelines = queryNumber === 1? fetchedPipelines1: fetchedPipelines2
   // Sort search pipelines based off of each individual pipeline name.
   const sortedPipelines = [...Object.keys(pipelines)]
@@ -156,6 +158,12 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   if (dataSourceEnabled) {
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   }
+  const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
+    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || "";
+    return (
+      semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions)
+    );
+  };
   return (
     <>
       <EuiTitle size="xs">
@@ -177,7 +185,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 disabled={false}
                 fullWidth={false}
                 removePrepend={true}
-                defaultOption= {[]}
+                dataSourceFilter={dataSourceFilterFn}
               />
             </EuiCompressedFormRow>
             <EuiSpacer size="s" />
