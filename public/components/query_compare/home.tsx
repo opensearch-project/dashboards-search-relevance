@@ -143,17 +143,6 @@ export const Home = ({
         });
       }
   }
-  let DataSourceMenu: React.JSX.IntrinsicAttributes | React.ComponentType<DataSourceMenuProps<DataSourceAggregatedViewConfig>>;
-  if(dataSourceEnabled){
-    DataSourceMenu = dataSourceManagement.ui.getDataSourceMenu<DataSourceAggregatedViewConfig>();
-  }
-
-  const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
-    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || "";
-    return (
-      semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions)
-    );
-  };
 
   // Get Indexes and Pipelines
   useEffect(() => {
