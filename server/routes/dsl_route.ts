@@ -235,7 +235,6 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
           });
         }
         resBody = resp.body;
-        console.log('inside pipleine',resBody)
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
@@ -255,7 +254,6 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
           end - start
         );
         if (error.statusCode !== 404) console.error(error);
-        console.log(error,'inside error')
         return response.customError({
           statusCode: 404,
           body: error,
