@@ -1,7 +1,30 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Create index component Renders create index component 1`] = `
-<CreateIndex>
+<CreateIndex
+  application={
+    Object {
+      "navigateToApp": [MockFunction],
+    }
+  }
+  chrome={
+    Object {
+      "navGroup": Object {
+        "getNavGroupEnabled": [MockFunction] {
+          "calls": Array [
+            Array [],
+          ],
+          "results": Array [
+            Object {
+              "type": "return",
+              "value": false,
+            },
+          ],
+        },
+      },
+    }
+  }
+>
   <Header>
     <EuiPanel
       borderRadius="none"
@@ -105,12 +128,14 @@ exports[`Create index component Renders create index component 1`] = `
             >
               Learn how to index your data
             </EuiLink>
-            , or 
+            , or
+             
             <EuiLink
               href="/app/home#/tutorial_directory"
             >
-              add sample data 
+              add sample data
             </EuiLink>
+             
             to OpenSearch Dashboards.
           </p>
         }
@@ -209,7 +234,8 @@ exports[`Create index component Renders create index component 1`] = `
                         </EuiScreenReaderOnly>
                       </a>
                     </EuiLink>
-                    , or 
+                    , or
+                     
                     <EuiLink
                       href="/app/home#/tutorial_directory"
                     >
@@ -218,9 +244,10 @@ exports[`Create index component Renders create index component 1`] = `
                         href="/app/home#/tutorial_directory"
                         rel="noreferrer"
                       >
-                        add sample data 
+                        add sample data
                       </a>
                     </EuiLink>
+                     
                     to OpenSearch Dashboards.
                   </p>
                 </div>
