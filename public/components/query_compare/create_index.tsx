@@ -7,8 +7,15 @@ import React from 'react';
 import { EuiPageBody, EuiEmptyPrompt, EuiLink } from '@elastic/eui';
 
 import { Header } from '../common/header';
+import { CoreStart } from '../../../../../src/core/public';
 
-export const CreateIndex = () => {
+interface CreateIndexProps {
+  chrome: CoreStart['chrome'];
+  application: CoreStart['application'];
+}
+
+export const CreateIndex = ({ chrome, application }: CreateIndexProps) => {
+  const navGroupEnabled = chrome.navGroup.getNavGroupEnabled();
   return (
     <>
       <Header />
@@ -24,8 +31,19 @@ export const CreateIndex = () => {
               >
                 Learn how to index your data
               </EuiLink>
-              , or <EuiLink href="/app/home#/tutorial_directory">add sample data </EuiLink>to
-              OpenSearch Dashboards.
+              , or{' '}
+              <EuiLink
+                {...(navGroupEnabled
+                  ? {
+                      onClick: () => {
+                        application.navigateToApp('import_sample_data');
+                      },
+                    }
+                  : { href: '/app/home#/tutorial_directory' })}
+              >
+                add sample data
+              </EuiLink>{' '}
+              to OpenSearch Dashboards.
             </p>
           }
         />

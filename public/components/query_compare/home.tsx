@@ -32,7 +32,6 @@ import {
 } from '../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
 import * as pluginManifest from '../../../opensearch_dashboards.json';
 import './home.scss';
-import { uiSettingsService } from '../common/utils';
 
 interface QueryExplorerProps {
   parentBreadCrumbs: ChromeBreadcrumb[];
@@ -155,7 +154,7 @@ export const Home = ({
     <>
       <div className="osdOverviewWrapper">
         {shouldShowCreateIndex ? (
-          <CreateIndex />
+          <CreateIndex application={application} chrome={chrome} />
         ) : (
           <SearchResult
             application={application}
