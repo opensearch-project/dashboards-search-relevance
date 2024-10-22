@@ -49,6 +49,19 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
         const start = performance.now();
         try {
           let resp;
+          const invalidCharactersPattern = /[\s,:\"*+\/\\|?#><]/;
+          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
+            resBody.errorMessage1 = {
+              statusCode: 400,
+              body: 'Invalid Index or missing',
+            };
+          }
+          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
+            resBody.errorMessage1 = {
+              statusCode: 400,
+              body: 'Invalid Pipepline',
+            }; 
+          }
           if(dataSourceEnabled && dataSourceId1){
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
             resp = await client.callAPI('search', params);
@@ -107,6 +120,16 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
         const start = performance.now();
         try {
           let resp;
+          const invalidCharactersPattern = /[\s,:\"*+\/\\|?#><]/;
+          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
+            throw new Error("Index invalid or missing.");
+          }
+          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
+            resBody.errorMessage1 = {
+              statusCode: 400,
+              body: 'Invalid Pipepline',
+            }; 
+          }
           if(dataSourceEnabled && dataSourceId2){
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
             resp = await client.callAPI('search', params);
@@ -195,7 +218,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
         );
         if (error.statusCode !== 404) console.error(error);
         return response.custom({
-          statusCode: error.statusCode || 500,
+          statusCode: error.statusCode || 400,
           body: error.message,
         });
       }
