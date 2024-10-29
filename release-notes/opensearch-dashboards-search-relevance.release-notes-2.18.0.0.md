@@ -12,4 +12,4 @@ Compatible with OpenSearch 2.18.0
 ### Maintenance
 * Bumping actions/upload-artifact ([#450](https://github.com/opensearch-project/dashboards-search-relevance/pull/450))([#452](https://github.com/opensearch-project/dashboards-search-relevance/pull/452))
 * Increment version to 2.18.0.0([#445](https://github.com/opensearch-project/dashboards-search-relevance/pull/445))
-update to latest svg ([#449](https://github.com/opensearch-project/dashboards-search-relevance/pull/449)) ([#453](https://github.com/opensearch-project/dashboards-search-relevance/pull/453))
+* update to latest svg ([#449](https://github.com/opensearch-project/dashboards-search-relevance/pull/449)) ([#453](https://github.com/opensearch-project/dashboards-search-relevance/pull/453))
