@@ -11,6 +11,3 @@ Compatible with OpenSearch 2.18.0
 
 ### Maintenance
 * Bumping actions/upload-artifact ([#450](https://github.com/opensearch-project/dashboards-search-relevance/pull/450))
-
-## New Contributors
-* @Hailong-am made their first contribution in ([#449](https://github.com/opensearch-project/dashboards-search-relevance/pull/449))
