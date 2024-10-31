@@ -23,6 +23,7 @@ import { DocumentsIndex } from '../../types/index';
 import { Flyout } from '../common/flyout';
 import { CreateIndex } from './create_index';
 import { SearchResult } from './search_result';
+import { Header } from '../common/header';
 
 import semver from 'semver';
 import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
@@ -153,6 +154,7 @@ export const Home = ({
   return (
     <>
       <div className="osdOverviewWrapper">
+        <Header />
         {shouldShowCreateIndex ? (
           <CreateIndex application={application} chrome={chrome} />
         ) : (
