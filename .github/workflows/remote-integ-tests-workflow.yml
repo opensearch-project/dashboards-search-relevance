@@ -24,12 +24,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Java 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'corretto'
           java-version: '11'
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Fetch Version Information
         id: fetch_version
         run: |
@@ -69,7 +69,7 @@ jobs:
       # from a plugin repo, we don't need to checkout and build
       # OpenSearch itself.
       - name: Checkout search-processor
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: search-processor
           repository: opensearch-project/search-processor
@@ -90,14 +90,14 @@ jobs:
         shell: bash
 
       - name: Checkout OpenSearch Dashboards
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
           path: OpenSearch-Dashboards
 
       - name: Checkout Search Relevance OpenSearch Dashboards plugin
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: OpenSearch-Dashboards/plugins/dashboards-search-relevance
 
@@ -131,7 +131,7 @@ jobs:
         shell: bash
 
       - name: Checkout opensearch-dashboards-functional-test
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: opensearch-dashboards-functional-test
           repository: opensearch-project/opensearch-dashboards-functional-test
@@ -154,7 +154,7 @@ jobs:
       - run: npx cypress cache path
 
       - name: Run search-relevance cypress tests
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
           working-directory: opensearch-dashboards-functional-test
           command: yarn run cypress run --env SECURITY_ENABLED=false --browser chrome --spec cypress/integration/plugins/search-relevance-dashboards/*.js
