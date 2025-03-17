@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java: [11]
+        java: [21]
         include:
           - os: windows-latest
             cypress_cache_folder: ~/AppData/Local/Cypress/Cache
@@ -23,11 +23,11 @@ jobs:
             cypress_cache_folder: ~/.cache/Cypress
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Set up Java 11
+      - name: Set up Java 21
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
-          java-version: '11'
+          java-version: '21'
 
       - uses: actions/checkout@v2
       - name: Fetch Version Information
@@ -144,7 +144,7 @@ jobs:
 
       - name: Cache Cypress
         id: cache-cypress
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
           path: ${{ matrix.cypress_cache_folder }}
           key: cypress-cache-v2-${{ runner.os }}-${{ hashFiles('**/package.json') }}
