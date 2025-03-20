@@ -6,6 +6,7 @@
 export const PLUGIN_ID = 'searchRelevance';
 export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
+export const SEARCH_RELEVANCE_WORKBENCH = 'Search Relevance Workbench';
 
 export enum ServiceEndpoints {
   GetIndexes = '/api/relevancy/search/indexes',
