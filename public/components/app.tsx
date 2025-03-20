@@ -13,6 +13,7 @@ import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/
 import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
+import { ExperimentPage } from "./experiment/experiment_page";
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -45,7 +46,7 @@ export const SearchRelevanceApp = ({
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
-  const parentBreadCrumbs = getNavGroupEnabled 
+  const parentBreadCrumbs = getNavGroupEnabled
     ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
     : [{ text: PLUGIN_NAME, href: '#' }];
 
@@ -68,27 +69,17 @@ export const SearchRelevanceApp = ({
               toastLifeTimeMs={6000}
             />
             <Switch>
-              <Route
-                path={['/']}
-                render={(props) => {
-                  return (
-                    <QueryCompareHome
-                      application={application}
-                      parentBreadCrumbs={parentBreadCrumbs}
-                      notifications={notifications}
-                      http={http}
-                      navigation={navigation}
-                      setBreadcrumbs={chrome.setBreadcrumbs}
-                      setToast={setToast}
-                      chrome={chrome}
-                      savedObjects={savedObjects}
-                      dataSourceEnabled={dataSourceEnabled}
-                      dataSourceManagement={dataSourceManagement}
-                      setActionMenu={setActionMenu}
-                    />
-                  );
-                }}
-              />
+                <Route
+                  path={['/']}
+                  render={(props) => {
+                    return (
+                      <ExperimentPage
+                        application={application}
+                        chrome={chrome}
+                      />
+                    );
+                  }}
+                />
             </Switch>
           </>
         </SearchRelevanceContextProvider>
