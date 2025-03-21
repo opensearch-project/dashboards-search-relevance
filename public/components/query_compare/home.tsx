@@ -16,7 +16,12 @@ import {
   DataSourceManagementPluginSetup,
 } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
-import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
+import {
+  INDEX_NODE_API_PATH,
+  QUERY_NUMBER_ONE,
+  QUERY_NUMBER_TWO,
+  SEARCH_PIPELINE_NODE_API_PATH,
+} from '../../../common';
 import '../../ace-themes/sql_console';
 import { useSearchRelevanceContext } from '../../contexts';
 import { DocumentsIndex } from '../../types/index';
@@ -82,9 +87,9 @@ export const Home = ({
   const [shouldShowCreateIndex, setShouldShowCreateIndex] = useState(false);
   const fetchIndexes = (dataConnectionId: string, queryNumber: string) => {
     http
-      .get(`${ServiceEndpoints.GetIndexes}/${dataConnectionId}`)
+      .get(`${INDEX_NODE_API_PATH}/${dataConnectionId}`)
       .then((res: DocumentsIndex[]) => {
-        if (queryNumber == QUERY_NUMBER_ONE) {
+        if (queryNumber === QUERY_NUMBER_ONE) {
           setDocumentsIndexes1(res);
         } else {
           setDocumentsIndexes2(res);
@@ -101,7 +106,7 @@ export const Home = ({
   };
   const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
     http
-      .get(`${ServiceEndpoints.GetPipelines}/${dataConnectionId}`)
+      .get(`${SEARCH_PIPELINE_NODE_API_PATH}/${dataConnectionId}`)
       .then((res: {}) => {
         if (queryNumber === QUERY_NUMBER_ONE) {
           setFetchedPipelines1(res);
