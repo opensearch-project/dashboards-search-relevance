@@ -6,23 +6,29 @@
 import { RequestParams } from '@opensearch-project/opensearch';
 import { schema } from '@osd/config-schema';
 
-import { ILegacyScopedClusterClient, IRouter, OpenSearchServiceSetup } from '../../../../src/core/server';
-import { SEARCH_API, ServiceEndpoints } from '../../common';
+import { ILegacyScopedClusterClient, IRouter } from '../../../../src/core/server';
+import {
+  INDEX_NODE_API_PATH,
+  SEARCH_API,
+  SEARCH_NODE_API_PATH,
+  SEARCH_PIPELINE_NODE_API_PATH,
+} from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
 interface SearchResultsResponse {
-  result1?: Object;
-  result2?: Object;
-  errorMessage1?: Object;
-  errorMessage2?: Object;
+  result1?: any;
+  result2?: any;
+  errorMessage1?: any;
+  errorMessage2?: any;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const performance = require('perf_hooks').performance;
 
-export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenSearchServiceSetup, dataSourceEnabled: boolean) {
+export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   router.post(
     {
-      path: ServiceEndpoints.GetSearchResults,
+      path: SEARCH_NODE_API_PATH,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
@@ -60,7 +66,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
             resBody.errorMessage1 = {
               statusCode: 400,
               body: 'Invalid Pipepline',
-            }; 
+            };
           }
           if(dataSourceEnabled && dataSourceId1){
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
@@ -128,7 +134,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
             resBody.errorMessage1 = {
               statusCode: 400,
               body: 'Invalid Pipepline',
-            }; 
+            };
           }
           if(dataSourceEnabled && dataSourceId2){
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
@@ -177,7 +183,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
   // Get Indices
   router.get(
     {
-      path: `${ServiceEndpoints.GetIndexes}/{dataSourceId?}`,
+      path: `${INDEX_NODE_API_PATH}/{dataSourceId?}`,
       validate: {
         params: schema.object({
           dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
@@ -228,7 +234,7 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
   // Get Pipelines
   router.get(
     {
-      path: `${ServiceEndpoints.GetPipelines}/{dataSourceId?}`,
+      path: `${SEARCH_PIPELINE_NODE_API_PATH}/{dataSourceId?}`,
       validate: {
         params: schema.object({
           dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
