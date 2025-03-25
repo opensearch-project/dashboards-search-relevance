@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel} from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel, EuiSwitch} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -21,6 +21,7 @@ import {
 } from '../../../types/index';
 import { Header } from '../../common/header';
 import { ResultComponents } from './result_components/result_components';
+import { VisualComparison } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 
@@ -206,6 +207,16 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     }
 };
 
+const [useOldVersion, setUseOldVersion] = useState(true);
+const versionToggle = (
+  <EuiSwitch
+    label="Use New Version"
+    checked={!useOldVersion}
+    onChange={() => setUseOldVersion(!useOldVersion)}
+    style={{ marginBottom: '16px' }}
+  />
+);
+
   return (
     <>
       {getNavGroupEnabled ? (
@@ -267,12 +278,22 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        <ResultComponents
-          queryResult1={queryResult1}
-          queryResult2={queryResult2}
-          queryError1={queryError1}
-          queryError2={queryError2}
-        />
+        { versionToggle }
+        { useOldVersion ? (
+            <ResultComponents
+              queryResult1={queryResult1}
+              queryResult2={queryResult2}
+              queryError1={queryError1}
+              queryError2={queryError2}
+            />
+        ) : (
+            <VisualComparison
+              queryResult1={queryResult1}
+              queryResult2={queryResult2}
+              queryError1={queryError1}
+              queryError2={queryError2}
+            />
+        )}
       </EuiPageContentBody>
     </>
   );
