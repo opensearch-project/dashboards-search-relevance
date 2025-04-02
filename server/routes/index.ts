@@ -16,4 +16,4 @@ export function defineRoutes(
   registerMetricsRoute(router);
 }
 
-export * from './search_relevance_route_servce';
+export * from './search_relevance_route_service';
