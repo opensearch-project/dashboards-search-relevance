@@ -11,12 +11,12 @@ import {
   CoreStart,
   Logger,
   Plugin,
-  PluginInitializerContext
+  PluginInitializerContext,
 } from '../../../src/core/server';
 import {
   defineRoutes,
   registerSearchRelevanceRoutes,
-  SearchRelevanceRoutesService
+  SearchRelevanceRoutesService,
 } from './routes';
 
 import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
@@ -32,8 +32,7 @@ export interface SearchRelevancePluginSetupDependencies {
 }
 
 export class SearchRelevancePlugin
-  implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart>
-{
+  implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
   private readonly globalConfig$;
   private readonly config$: Observable<SearchRelevancePluginConfigType>;
   private readonly logger: Logger;
@@ -46,8 +45,7 @@ export class SearchRelevancePlugin
     this.metricsService = new MetricsService(this.logger.get('metrics-service'));
   }
 
-  public async setup(core: CoreSetup, {dataSource}: SearchRelevancePluginSetupDependencies) {
-
+  public async setup(core: CoreSetup, { dataSource }: SearchRelevancePluginSetupDependencies) {
     const dataSourceEnabled = !!dataSource;
     this.logger.debug('SearchRelevance: Setup');
 
