@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BASE_QUERYSET_NODE_API_PATH, BASE_SEARCH_CONFIGURATION_NODE_API_PATH } from '../common';
+import { BASE_QUERYSET_NODE_API_PATH } from '../common';
 
 export const postQuerySet = async (name: string, description: string, http: any) => {
   try {
@@ -21,20 +21,6 @@ export const postQuerySet = async (name: string, description: string, http: any)
 export const getQuerySets = async (id: string, http: any) => {
   try {
     const response = await http.get(`..${BASE_QUERYSET_NODE_API_PATH}/${id}`);
-    // Add logging to debug
-    // eslint-disable-next-line no-console
-    console.log('GET Response:', response);
-    return response;
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('GET Error:', e);
-    return e;
-  }
-};
-
-export const getSearchConfigurations = async (http: any) => {
-  try {
-    const response = await http.get(`..${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`);
     // Add logging to debug
     // eslint-disable-next-line no-console
     console.log('GET Response:', response);
