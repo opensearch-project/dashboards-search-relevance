@@ -11,7 +11,7 @@ import {
   OpenSearchDashboardsResponseFactory,
   RequestHandlerContext,
 } from '../../../../src/core/server';
-import { BASE_QUERYSET_NODE_API_PATH, BASE_SEARCH_CONFIGURATION_NODE_API_PATH } from '../../common';
+import { BASE_QUERYSET_NODE_API_PATH } from '../../common';
 import { getClientBasedOnDataSource } from '../common/helper';
 
 export function registerSearchRelevanceRoutes(
@@ -59,13 +59,6 @@ export function registerSearchRelevanceRoutes(
       },
     },
     searchRelevanceRoutesService.listQuerySets
-  );
-  router.get(
-    {
-      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
-      validate: false
-    },
-    searchRelevanceRoutesService.listSearchConfigurations
   );
 }
 
@@ -137,37 +130,6 @@ export class SearchRelevanceRoutesService {
         body: {
           ok: true,
           resp: querysetResponse,
-        },
-      });
-    } catch (err) {
-      return res.ok({
-        body: {
-          resp: err.message,
-        },
-      });
-    }
-  };
-
-  listSearchConfigurations = async (
-    context: RequestHandlerContext,
-    req: OpenSearchDashboardsRequest,
-    res: OpenSearchDashboardsResponseFactory
-  ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
-    try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.listSearchConfigurations');
-      return res.ok({
-        body: {
-          ok: true,
-          resp: SearchConfigurationsResponse,
         },
       });
     } catch (err) {
