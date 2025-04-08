@@ -95,8 +95,8 @@ export const QuerySetTester = ({ http }: TestProps) => {
         <EuiFormRow label="Get Search Configs:">
           <EuiFieldText
             placeholder="Enter Judgment List ID"
-            value={}
-            onChange={}
+            value={id}
+            onChange={(e) => setId(e.target.value)}
             fullWidth
           />
         </EuiFormRow>
