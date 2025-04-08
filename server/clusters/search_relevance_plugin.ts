@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { SEARCH_RELEVANCE_QUERY_SET_API } from '../../common';
+import { SEARCH_RELEVANCE_QUERY_SET_API, SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API } from '../../common';
 
 /**
  * Register client actions representing search relevance plugin APIs.
@@ -20,5 +20,25 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
       fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}`,
     },
     method: 'POST',
+  });
+
+  searchRelevance.listQuerySets = ca({
+    url: {
+      fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}/\${id}`,
+      req: {
+        id: {
+          type: 'string',
+          required: true,
+        },
+      },
+    },
+    method: 'GET',
+  });
+
+  searchRelevance.listSearchConfigurations = ca({
+    url: {
+      fmt: `${SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API}`,
+    },
+    method: 'GET',
   });
 }
