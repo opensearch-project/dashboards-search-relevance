@@ -12,7 +12,10 @@ export const SEARCH_RELEVANCE_WORKBENCH = 'Search Relevance Workbench';
  * BACKEND SEARCH RELEVANCE APIs
  */
 export const SEARCH_RELEVANCE_BASE_API = '/_plugins/search_relevance';
-export const SEARCH_RELEVANCE_QUERY_SET_API = `${SEARCH_RELEVANCE_BASE_API}/queryset`;
+export const SEARCH_RELEVANCE_QUERY_SET_API = `${SEARCH_RELEVANCE_BASE_API}/query_sets`;
+export const SEARCH_RELEVANCE_EXPERIMENT_API = `${SEARCH_RELEVANCE_BASE_API}/experiments`;
+export const SEARCH_RELEVANCE_JUDGMENT_API = `${SEARCH_RELEVANCE_BASE_API}/judgments`;
+export const SEARCH_RELEVANCE_SEARCH_CONFIGURATION = `${SEARCH_RELEVANCE_BASE_API}/search_configurations`;
 
 /**
  * OPEN SEARCH CORE APIs
@@ -32,6 +35,11 @@ export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
 
 // Search Relevance node APIs
 export const BASE_QUERYSET_NODE_API_PATH = `${BASE_NODE_API_PATH}/queryset`;
+export const BASE_EXPERIMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/experiment`;
+export const BASE_JUDGMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/judgment`;
+export const BASE_SEARCH_CONFIG_NODE_API_PATH = `${BASE_NODE_API_PATH}/search_configuration`;
+
+
 
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',

@@ -49,6 +49,17 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.createQuerySet
   );
+  router.get(
+    {
+      path: `${BASE_QUERYSET_NODE_API_PATH}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    searchRelevanceRoutesService.listQuerySets
+  );
 }
 
 export class SearchRelevanceRoutesService {
@@ -90,6 +101,40 @@ export class SearchRelevanceRoutesService {
       return res.ok({
         body: {
           ok: false,
+          resp: err.message,
+        },
+      });
+    }
+  };
+
+  listQuerySets = async (
+    context: RequestHandlerContext,
+    req: OpenSearchDashboardsRequest,
+    res: OpenSearchDashboardsResponseFactory
+  ): Promise<IOpenSearchDashboardsResponse<any>> => {
+    const { id } = req.params;
+    const { data_source_id = '' } = req.params as { data_source_id?: string };
+    try {
+      const callWithRequest = getClientBasedOnDataSource(
+        context,
+        this.dataSourceEnabled,
+        req,
+        data_source_id,
+        this.client
+      );
+
+      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {
+        id,
+      });
+      return res.ok({
+        body: {
+          ok: true,
+          resp: querysetResponse,
+        },
+      });
+    } catch (err) {
+      return res.ok({
+        body: {
           resp: err.message,
         },
       });
