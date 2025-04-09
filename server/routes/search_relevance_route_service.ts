@@ -163,11 +163,11 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const SearchConfigurations = await callWithRequest('searchRelevance.listSearchConfigurations');
+      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.listSearchConfigurations');
       return res.ok({
         body: {
           ok: true,
-          resp: SearchConfigurations,
+          resp: SearchConfigurationsResponse,
         },
       });
     } catch (err) {
