@@ -22,15 +22,21 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
       sortable: true,
     },
     {
+      field: 'sampling',
+      name: "Sampling Method",
+      dataType: 'string',
+      sortable: true,
+    },
+    {
       field: 'description',
       name: "Description",
       dataType: 'string',
       sortable: true,
     },
     {
-      field: 'sampling',
-      name: "Sampling",
-      dataType: 'string',
+      field: 'numQueries',
+      name: "Query Set Size",
+      dataType: 'number',
       sortable: true,
     },
     {
@@ -41,11 +47,21 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
     },
   ];
 
+  const mapQuerySetFields = (obj: any) => {
+    return {
+      name: obj.name,
+      sampling: obj.sampling,
+      description: obj.description,
+      timestamp: obj.timestamp,
+      numQueries: obj.querySetQueries.length,
+    };
+  };
+
   // Data fetching function
   const findQuerySets = async (search: any) => {
     const response = await getQuerySets(http);
     // TODO: how to report error
-    const list = response ? JSON.parse(response.resp) : [];
+    const list = response ? JSON.parse(response.resp).map(mapQuerySetFields) : [];
     // Filtering functionality could be implemented here
     // if (search) {
     //   list.filter((item) => item.name.includes(search));
