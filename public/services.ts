@@ -32,7 +32,7 @@ export const getQuerySets = async (id: string, http: any) => {
   }
 };
 
-export const getSearchConfigurations = async () => {
+export const getSearchConfigurations = async (http: any) => {
   try {
     const response = await http.get(`..${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`);
     // Add logging to debug
