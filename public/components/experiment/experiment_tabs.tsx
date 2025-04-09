@@ -2,7 +2,7 @@ import React from 'react';
 import { EuiTabbedContent } from '@elastic/eui';
 import { ExperimentTabsProps } from './types';
 import { ExperimentTable } from "./experiment_table";
-import { QuerySetListing } from '../query_set_listing';
+import { QuerySetListingWithRoute } from '../query_set_listing';
 
 export const ExperimentTabs = ({
                                  experiments,
@@ -29,7 +29,7 @@ export const ExperimentTabs = ({
     {
       id: 'query-set-id',
       name: 'Query Set',
-      content: <QuerySetListing http={http} />,
+      content: <QuerySetListingWithRoute http={http} />,
     },
   ];
 
