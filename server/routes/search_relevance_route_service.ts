@@ -51,12 +51,8 @@ export function registerSearchRelevanceRoutes(
   );
   router.get(
     {
-      path: `${BASE_QUERYSET_NODE_API_PATH}/{id}`,
-      validate: {
-        params: schema.object({
-          id: schema.string(),
-        }),
-      },
+      path: `${BASE_QUERYSET_NODE_API_PATH}`,
+      validate: false,
     },
     searchRelevanceRoutesService.listQuerySets
   );
@@ -112,7 +108,6 @@ export class SearchRelevanceRoutesService {
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { id } = req.params;
     const { data_source_id = '' } = req.params as { data_source_id?: string };
     try {
       const callWithRequest = getClientBasedOnDataSource(
@@ -123,9 +118,7 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {
-        id,
-      });
+      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {});
       return res.ok({
         body: {
           ok: true,

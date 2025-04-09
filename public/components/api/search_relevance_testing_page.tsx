@@ -53,7 +53,7 @@ export const QuerySetTester = ({ http }: TestProps) => {
     setError(null);
 
     try {
-      const listResult = await getQuerySets(id, http);
+      const listResult = await getQuerySets(http);
       setGetResponse(listResult);
     } catch (err) {
       setError(err.message || 'An error occurred');
