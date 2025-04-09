@@ -18,6 +18,15 @@ import {
 import { postQuerySet, getQuerySets, getSearchConfigurations } from '../../services';
 import { CoreStart } from '../../../../../src/core/public';
 
+// To be extracted
+// --------
+import {
+  TableListView,
+} from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { useCallback } from 'react';
+
+// --------
+
 export interface TestProps {
   http: CoreStart['http'];
 }
@@ -62,6 +71,46 @@ export const QuerySetTester = ({ http }: TestProps) => {
     }
   };
 
+  // To be extracted
+    // ---------------------
+    // Column names: search_configuration_name, query_body, timestamp,
+    // todo: i18n
+    const tableColumns = [
+      {
+        field: 'search_configuration_name',
+        name: "Name",
+        dataType: 'string',
+        sortable: true,
+      },
+      {
+        field: 'query_body',
+        name: "Query DSL Body",
+        dataType: 'string',
+        sortable: false,
+      },
+      {
+        field: 'timestamp',
+        name: "Timestamp",
+        dataType: 'string',
+        sortable: true,
+      },
+    ]
+
+    const find = async (search: any) => {
+      const response = await getSearchConfigurations(http);
+      // TODO: how to report error
+      const list = response ? JSON.parse(response.resp) : [];
+      // if (search) {
+      //   list.filter((item) => item.name.includes(search));
+      // }
+      return {
+        total: list.length,
+        hits: list,
+      };
+    };
+
+    // ---------------------
+
   return (
     <EuiPanel paddingSize="l">
       <EuiText>
@@ -92,17 +141,9 @@ export const QuerySetTester = ({ http }: TestProps) => {
         <EuiSpacer size="m" />
       </EuiForm>
       <EuiForm component="form" onSubmit={handleGetSubmit}>
-        <EuiFormRow label="Get Search Configs:">
-          <EuiFieldText
-            placeholder="Enter Judgment List ID"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            fullWidth
-          />
-        </EuiFormRow>
         <EuiSpacer size="m" />
         <EuiButton type="get submit" fill isGetLoading={isGetLoading}>
-          {isCreateLoading ? 'Sending...' : 'Send Get Request'}
+          {isCreateLoading ? 'Sending...' : 'Get Search Configurations'}
         </EuiButton>
         <EuiSpacer size="m" />
       </EuiForm>
@@ -137,6 +178,18 @@ export const QuerySetTester = ({ http }: TestProps) => {
           </EuiCodeBlock>
         </>
       )}
+
+      {getResponse && JSON.stringify(JSON.parse(getResponse.resp), null, 2)}
+
+      <TableListView
+        headingId="dashboardListingHeading"
+        entityName="Search Configuration"
+        entityNamePlural="Search Configurations"
+        tableListTitle="Search Configurations"
+        tableColumns={tableColumns}
+        findItems={find}
+      />
+
     </EuiPanel>
   );
 };
