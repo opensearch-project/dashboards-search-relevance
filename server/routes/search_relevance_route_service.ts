@@ -53,6 +53,20 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.createQuerySet
   );
+  router.put(
+    {
+      path: BASE_QUERYSET_NODE_API_PATH,
+      validate: {
+        body: schema.any(),
+      },
+      options: {
+        body: {
+          accepts: 'application/json',
+        },
+      },
+    },
+    searchRelevanceRoutesService.putQuerySet
+  );
   router.get(
     {
       path: `${BASE_QUERYSET_NODE_API_PATH}/{id}`,
@@ -84,7 +98,7 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.deleteQuerySet
   );
-  router.post(
+  router.put(
     {
       path: BASE_SEARCH_CONFIG_NODE_API_PATH,
       validate: {
@@ -96,7 +110,7 @@ export function registerSearchRelevanceRoutes(
         },
       },
     },
-    searchRelevanceRoutesService.createSearchConfig
+    searchRelevanceRoutesService.putSearchConfig
   );
   router.get(
     {
@@ -129,7 +143,7 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.deleteSearchConfig
   );
-  router.post(
+  router.put(
     {
       path: BASE_EXPERIMENT_NODE_API_PATH,
       validate: {
@@ -141,7 +155,7 @@ export function registerSearchRelevanceRoutes(
         },
       },
     },
-    searchRelevanceRoutesService.createExperiment
+    searchRelevanceRoutesService.putExperiment
   );
   router.get(
     {
@@ -202,6 +216,42 @@ export class SearchRelevanceRoutesService {
       );
 
       const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {
+        body,
+      });
+
+      return res.ok({
+        body: {
+          ok: true,
+          resp: querysetResponse,
+        },
+      });
+    } catch (err) {
+      return res.ok({
+        body: {
+          ok: false,
+          resp: err.message,
+        },
+      });
+    }
+  };
+
+  putQuerySet = async (
+    context: RequestHandlerContext,
+    req: OpenSearchDashboardsRequest,
+    res: OpenSearchDashboardsResponseFactory
+  ): Promise<IOpenSearchDashboardsResponse<any>> => {
+    const body = req.body;
+    const { data_source_id = '' } = req.params as { data_source_id?: string };
+    try {
+      const callWithRequest = getClientBasedOnDataSource(
+        context,
+        this.dataSourceEnabled,
+        req,
+        data_source_id,
+        this.client
+      );
+
+      const querysetResponse = await callWithRequest('searchRelevance.putQuerySet', {
         body,
       });
 
@@ -320,7 +370,7 @@ export class SearchRelevanceRoutesService {
     }
   };
 
-  createSearchConfig = async (
+  putSearchConfig = async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
@@ -336,7 +386,7 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const querysetResponse = await callWithRequest('searchRelevance.createSearchConfig', {
+      const querysetResponse = await callWithRequest('searchRelevance.putSearchConfig', {
         body,
       });
 
@@ -455,7 +505,7 @@ export class SearchRelevanceRoutesService {
     }
   };
 
-  createExperiment = async (
+  putExperiment = async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
@@ -471,7 +521,7 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const querysetResponse = await callWithRequest('searchRelevance.createExperiment', {
+      const querysetResponse = await callWithRequest('searchRelevance.putExperiment', {
         body,
       });
 

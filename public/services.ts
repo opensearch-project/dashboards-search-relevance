@@ -9,9 +9,22 @@ import {
   BASE_SEARCH_CONFIG_NODE_API_PATH,
 } from '../common';
 
-export const postQuerySet = async (name: string, description: string, http: any) => {
+export const createQuerySet = async (name: string, description: string, http: any) => {
   try {
     return await http.post(`..${BASE_QUERYSET_NODE_API_PATH}`, {
+      body: JSON.stringify({
+        name,
+        description,
+      }),
+    });
+  } catch (e) {
+    return e;
+  }
+};
+
+export const postQuerySet = async (name: string, description: string, http: any) => {
+  try {
+    return await http.put(`..${BASE_QUERYSET_NODE_API_PATH}`, {
       body: JSON.stringify({
         name,
         description,
@@ -52,12 +65,12 @@ export const deleteQuerySet = async (id: string, http: any) => {
   }
 };
 
-export const postSearchConfig = async (name: string, description: string, http: any) => {
+export const postSearchConfig = async (name: string, queryBody: string, http: any) => {
   try {
-    return await http.post(`..${BASE_SEARCH_CONFIG_NODE_API_PATH}`, {
+    return await http.put(`..${BASE_SEARCH_CONFIG_NODE_API_PATH}`, {
       body: JSON.stringify({
         name,
-        description,
+        queryBody,
       }),
     });
   } catch (e) {
@@ -91,7 +104,7 @@ export const deleteSearchConfig = async (id: string, http: any) => {
 
 export const postExperiment = async (name: string, description: string, http: any) => {
   try {
-    return await http.post(`..${BASE_EXPERIMENT_NODE_API_PATH}`, {
+    return await http.put(`..${BASE_EXPERIMENT_NODE_API_PATH}`, {
       body: JSON.stringify({
         name,
         description,

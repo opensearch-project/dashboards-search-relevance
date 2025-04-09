@@ -26,6 +26,13 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
     method: 'POST',
   });
 
+  searchRelevance.putQuerySet = ca({
+    url: {
+      fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}`,
+    },
+    method: 'PUT',
+  });
+
   searchRelevance.getQuerySet = ca({
     url: {
       fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}/\${id}`,
@@ -59,11 +66,11 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
     method: 'DELETE',
   });
 
-  searchRelevance.createSearchConfig = ca({
+  searchRelevance.putSearchConfig = ca({
     url: {
       fmt: `${SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API}`,
     },
-    method: 'POST',
+    method: 'PUT',
   });
 
   searchRelevance.getSearchConfig = ca({
@@ -99,11 +106,11 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
     method: 'DELETE',
   });
 
-  searchRelevance.createExperiment = ca({
+  searchRelevance.putExperiment = ca({
     url: {
       fmt: `${SEARCH_RELEVANCE_EXPERIMENT_API}`,
     },
-    method: 'POST',
+    method: 'PUT',
   });
 
   searchRelevance.getExperiment = ca({
