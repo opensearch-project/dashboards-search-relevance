@@ -3,16 +3,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import {
+  EuiButtonEmpty,
+} from '@elastic/eui';
 import React from 'react';
-import { TableListView } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { TableListView, reactRouterNavigate } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
 import { getQuerySets } from '../../services';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
-interface QuerySetListingProps {
+
+interface QuerySetListingProps  extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
-export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
+export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
   // Column definitions
   const tableColumns = [
     {
@@ -20,6 +25,21 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
       name: "Name",
       dataType: 'string',
       sortable: true,
+      render: (
+        name: string,
+        querySet: {
+          id: string;
+        }
+      ) => (
+        <>
+          <EuiButtonEmpty
+            size="xs"
+            {...reactRouterNavigate(history, `querySet/${querySet.id}`)}
+          >
+            {name}
+          </EuiButtonEmpty>
+        </>
+      ),
     },
     {
       field: 'sampling',
@@ -49,6 +69,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
 
   const mapQuerySetFields = (obj: any) => {
     return {
+      id: obj.id,
       name: obj.name,
       sampling: obj.sampling,
       description: obj.description,
@@ -84,4 +105,6 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http }) => {
   );
 };
 
-export default QuerySetListing;
+export const QuerySetListingWithRoute = withRouter(QuerySetListing);
+
+export default QuerySetListingWithRoute;

@@ -3,4 +3,4 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export { QuerySetListingWithRoute } from './query_set_listing';
+export { QuerySetView } from './query_set_view';
