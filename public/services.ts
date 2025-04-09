@@ -18,9 +18,9 @@ export const postQuerySet = async (name: string, description: string, http: any)
   }
 };
 
-export const getQuerySets = async (id: string, http: any) => {
+export const getQuerySets = async (http: any) => {
   try {
-    const response = await http.get(`..${BASE_QUERYSET_NODE_API_PATH}/${id}`);
+    const response = await http.get(`..${BASE_QUERYSET_NODE_API_PATH}`);
     // Add logging to debug
     // eslint-disable-next-line no-console
     console.log('GET Response:', response);
