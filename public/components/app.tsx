@@ -24,6 +24,7 @@ import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { ExperimentPage } from './experiment';
+import QuerySetTester from "./api/search_relevance_testing_page";
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -156,7 +157,7 @@ export const SearchRelevanceApp = ({
                           setActionMenu={setActionMenu}
                         />
                       ) : (
-                        <ExperimentPage application={application} chrome={chrome} />
+                        <QuerySetTester http={http} />
                       )}
                     </>
                   );
