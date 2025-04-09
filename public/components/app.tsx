@@ -157,7 +157,11 @@ export const SearchRelevanceApp = ({
                           setActionMenu={setActionMenu}
                         />
                       ) : (
-                        <QuerySetTester http={http} />
+                        <ExperimentPage
+                          application={application}
+                          chrome={chrome}
+                          http={http}
+                        />
                       )}
                     </>
                   );
