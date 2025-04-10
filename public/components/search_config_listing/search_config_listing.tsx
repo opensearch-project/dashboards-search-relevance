@@ -91,6 +91,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   );
 };
 
-export const findSearchConfigurationWithRoute = withRouter(findSearchConfigurationListing);
+export const SearchConfigurationWithRoute = withRouter(SearchConfigurationListing);
 
 export default SearchConfigurationListingWithRoute;
