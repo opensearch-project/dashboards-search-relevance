@@ -2,12 +2,14 @@ import React from 'react';
 import { EuiTabbedContent } from '@elastic/eui';
 import { ExperimentTabsProps } from './types';
 import { ExperimentTable } from "./experiment_table";
+import { SearchConfigurationListingWithRoute } from '../search_config_listing';
 
 export const ExperimentTabs = ({
                                  experiments,
                                  pairwiseExperiments,
                                  searchConfigurations,
-                                 querySets}: ExperimentTabsProps) => {
+                                 querySets,
+                                 http}: ExperimentTabsProps) => {
   const tabs = [
     {
       id: 'experiment-id',
@@ -22,7 +24,7 @@ export const ExperimentTabs = ({
     {
       id: 'search-configuration-id',
       name: 'Search Configuration',
-      content: <ExperimentTable items={searchConfigurations} />,
+      content: <SearchConfigurationListingWithRoute http={http} />,
     },
     {
       id: 'query-set-id',
