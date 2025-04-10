@@ -15,6 +15,7 @@ export interface TableContent {
 
 export interface ExperimentHeaderProps {
   onAddExperiment: () => void;
+  history: CoreStart['history'];
 }
 
 export interface ExperimentTabsProps {
