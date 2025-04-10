@@ -48,3 +48,19 @@ export const getSearchConfigurations = async (http: any) => {
     return e;
   }
 };
+
+export const postSearchConfiguration = async (name: string, description: string, sampling: string, query_set_size: number, http: any) => {
+  try {
+    const response = await http.post(`..${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`, {
+      body: JSON.stringify({
+        name,
+        description,
+        sampling,
+        query_set_size,
+      }),
+    });
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
