@@ -19,6 +19,8 @@ interface SearchConfigurationListingProps  extends RouteComponentProps {
 
 export const SearchConfigurationListing: React.FC<SearchConfigurationListingProps> = ({ http, history }) => {
   // Column definitions
+  // TODO: extend the table columns by adding search_pipeline & search_template once they
+  // are available
   const tableColumns = [
     {
       field: 'search_configuration_name',
@@ -55,6 +57,8 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
     },
   ];
 
+  // TODO: extend mapping by adding search_pipeline & search_template once they
+  // are available
   const mapSearchConfigurationFields = (obj: any) => {
     return {
       id: obj.id,
