@@ -18,7 +18,7 @@ interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string 
 }
 
 export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ match, http }) => {
-  const [SearchConfiguration, setSearchConfiguration] = useState<SearchConfiguration | null>(null);
+  const [searchConfiguration, setSearchConfiguration] = useState<SearchConfiguration | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +57,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
   return (
     <>
       <h1>Search Configuration Visualization</h1>
-      <pre>{JSON.stringify(SearchConfiguration, null, 2)}</pre>
+      <pre>{JSON.stringify(searchConfiguration, null, 2)}</pre>
     </>
   );
 };

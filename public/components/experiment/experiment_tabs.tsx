@@ -30,6 +30,7 @@ export const ExperimentTabs = ({
       id: 'query-set-id',
       name: 'Query Set',
       content: <QuerySetListingWithRoute http={http} />,
+      //content: <ExperimentTable items={querySets} />,
     },
   ];
 
