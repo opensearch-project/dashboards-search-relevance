@@ -13,7 +13,7 @@ import { AppPluginStartDependencies } from './types';
 export const renderApp = (
   { notifications, http, chrome, savedObjects, application }: CoreStart,
   { navigation, dataSource }: AppPluginStartDependencies,
-  { element, setHeaderActionMenu }: AppMountParameters,
+  { element, setHeaderActionMenu, history }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
   ReactDOM.render(
@@ -27,6 +27,7 @@ export const renderApp = (
       setActionMenu={setHeaderActionMenu}
       dataSourceManagement={dataSourceManagement}
       application={application}
+      history={history}
     />,
     element
   );
