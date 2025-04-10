@@ -16,7 +16,7 @@ import {
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import React, { useState } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Router, Route, Switch, withRouter } from 'react-router-dom';
 import { CoreStart, MountPoint, Toast } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
@@ -25,6 +25,7 @@ import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { ExperimentPage } from './experiment';
 import QuerySetTester from "./api/search_relevance_testing_page";
+import { SearchConfigurationView } from  "./search_config_view/search_config_view";
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -36,6 +37,7 @@ interface SearchRelevanceAppDeps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
+  history: CoreStart['history'];
 }
 
 export const SearchRelevanceApp = ({
@@ -48,6 +50,7 @@ export const SearchRelevanceApp = ({
   setActionMenu,
   dataSourceManagement,
   application,
+  history,
 }: SearchRelevanceAppDeps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
@@ -135,6 +138,7 @@ export const SearchRelevanceApp = ({
             <Switch>
               <Route
                 path={['/']}
+                exact
                 render={(props) => {
                   return (
                     <>
@@ -162,6 +166,15 @@ export const SearchRelevanceApp = ({
                     </>
                   );
                 }}
+              />
+              <Route
+                path={['/searchConfiguration/:id']}
+                render={(props) => (
+                  <SearchConfigurationView
+                    {...props}
+                    http={http}
+                  />
+                )}
               />
             </Switch>
           </>

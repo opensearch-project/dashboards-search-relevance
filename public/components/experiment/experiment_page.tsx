@@ -13,7 +13,7 @@ import { TemplateCards } from "./template_card/template_cards";
 import { ExperimentTabs } from "./experiment_tabs";
 import { experiments, pairwiseExperiments, querySets, searchConfigurations } from "./mockup_data";
 
-export const ExperimentPage = ({ chrome, application }: ExperimentPageProps) => {
+export const ExperimentPage = ({ chrome, application, http }: ExperimentPageProps) => {
   const [isTemplateCards, setIsTemplateCards] = useState(false);
   const showTemplate = () => setIsTemplateCards(true);
   const hideTemplate = () => setIsTemplateCards(false);
@@ -38,6 +38,7 @@ export const ExperimentPage = ({ chrome, application }: ExperimentPageProps) => 
                 pairwiseExperiments={pairwiseExperiments}
                 searchConfigurations={searchConfigurations}
                 querySets={querySets}
+                http={http}
               />
             )}
           </EuiFlexItem>

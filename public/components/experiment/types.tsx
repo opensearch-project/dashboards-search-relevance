@@ -3,6 +3,7 @@ import { CoreStart } from '../../../../../src/core/public';
 export interface ExperimentPageProps {
   chrome: CoreStart['chrome'];
   application: CoreStart['application'];
+  http: CoreStart['http'];
 }
 
 export interface TableContent {
@@ -21,6 +22,7 @@ export interface ExperimentTabsProps {
   pairwiseExperiments: TableContent[];
   searchConfigurations: TableContent[];
   querySets: TableContent[];
+  http: CoreStart['http'];
 }
 
 export interface ExperimentTableProps {
