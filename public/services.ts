@@ -34,6 +34,7 @@ export const getQuerySets = async (http: any) => {
     return e;
   }
 };
+
 export const getSearchConfigurations = async (http: any) => {
   try {
     const response = await http.get(`..${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`);

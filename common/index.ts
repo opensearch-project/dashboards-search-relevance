@@ -37,7 +37,7 @@ export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
 export const BASE_QUERYSET_NODE_API_PATH = `${BASE_NODE_API_PATH}/queryset`;
 export const BASE_EXPERIMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/experiment`;
 export const BASE_JUDGMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/judgments`;
-export const BASE_SEARCH_CONFIGURATION_NODE_API_PATH = `${BASE_NODE_API_PATH}/search_configuration`;
+export const BASE_SEARCH_CONFIGURATION_NODE_API_PATH = `${BASE_NODE_API_PATH}/search_configurations`;
 
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
