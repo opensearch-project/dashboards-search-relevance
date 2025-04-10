@@ -5,14 +5,17 @@
 
 import { BASE_QUERYSET_NODE_API_PATH } from '../common';
 
-export const postQuerySet = async (name: string, description: string, http: any) => {
+export const postQuerySet = async (name: string, description: string, sampling: string, query_set_size: number, http: any) => {
   try {
-    return await http.post(`..${BASE_QUERYSET_NODE_API_PATH}`, {
+    const response = await http.post(`..${BASE_QUERYSET_NODE_API_PATH}`, {
       body: JSON.stringify({
         name,
         description,
+        sampling,
+        query_set_size,
       }),
     });
+    return response;
   } catch (e) {
     return e;
   }
