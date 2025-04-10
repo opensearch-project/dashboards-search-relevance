@@ -58,8 +58,8 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   const mapSearchConfigurationFields = (obj: any) => {
     return {
       id: obj.id,
-      name: obj.name,
-      description: obj.query_body,
+      search_configuration_name: obj.search_configuration_name,
+      query_body: obj.query_body,
       timestamp: obj.timestamp,
     };
   };
@@ -91,6 +91,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   );
 };
 
-export const SearchConfigurationWithRoute = withRouter(SearchConfigurationListing);
+export const SearchConfigurationListingWithRoute = withRouter(SearchConfigurationListing);
 
 export default SearchConfigurationListingWithRoute;

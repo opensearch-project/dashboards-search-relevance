@@ -39,6 +39,13 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.listQuerySets
   );
+  router.get(
+    {
+      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
+      validate: false
+    },
+    searchRelevanceRoutesService.listSearchConfigurations
+  );
 }
 
 export class SearchRelevanceRoutesService {
