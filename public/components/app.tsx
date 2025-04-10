@@ -25,7 +25,7 @@ import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { ExperimentPage } from './experiment';
 import QuerySetTester from "./api/search_relevance_testing_page";
-import { SearchConfigurationView } from  "./search_config_view/search_config_view";
+import { SearchConfigurationView } from "./search_config_view/search_config_view";
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -170,15 +170,6 @@ export const SearchRelevanceApp = ({
                     </>
                   );
                 }}
-              />
-              <Route
-                path={['/searchConfiguration/:id']}
-                render={(props) => (
-                  <SearchConfigurationView
-                    {...props}
-                    http={http}
-                  />
-                )}
               />
             </Switch>
           </>
