@@ -32,40 +32,12 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.createQuerySet
   );
-  router.post(
-    {
-      path: `${BASE_QUERYSET_NODE_API_PATH}/{data_source_id}/queryset`,
-      validate: {
-        params: schema.object({
-          data_source_id: schema.string(),
-        }),
-        body: schema.any(),
-      },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
-      },
-    },
-    searchRelevanceRoutesService.createQuerySet
-  );
   router.get(
     {
-      path: `${BASE_QUERYSET_NODE_API_PATH}/{id}`,
-      validate: {
-        params: schema.object({
-          id: schema.string(),
-        }),
-      },
+      path: `${BASE_QUERYSET_NODE_API_PATH}`,
+      validate: false,
     },
     searchRelevanceRoutesService.listQuerySets
-  );
-  router.get(
-    {
-      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
-      validate: false
-    },
-    searchRelevanceRoutesService.listSearchConfigurations
   );
 }
 
@@ -83,7 +55,6 @@ export class SearchRelevanceRoutesService {
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const body = req.body;
     const { data_source_id = '' } = req.params as { data_source_id?: string };
     try {
       const callWithRequest = getClientBasedOnDataSource(
@@ -94,9 +65,18 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {
-        body,
+      // const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {
+      //   body,
+      // });
+      //const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', req.params);
+      //const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {...req.searchParams});
+
+      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
+      const keys = {}
+      req.url.searchParams.forEach((value, key) => {
+        keys[key] = value;
       });
+      const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', keys);
 
       return res.ok({
         body: {
@@ -119,7 +99,6 @@ export class SearchRelevanceRoutesService {
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { id } = req.params;
     const { data_source_id = '' } = req.params as { data_source_id?: string };
     try {
       const callWithRequest = getClientBasedOnDataSource(
@@ -130,9 +109,7 @@ export class SearchRelevanceRoutesService {
         this.client
       );
 
-      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {
-        id,
-      });
+      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {});
       return res.ok({
         body: {
           ok: true,

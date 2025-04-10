@@ -26,6 +26,8 @@ import { Home as QueryCompareHome } from './query_compare/home';
 import { ExperimentPage } from './experiment';
 import QuerySetTester from "./api/search_relevance_testing_page";
 import { SearchConfigurationView } from "./search_config_view/search_config_view";
+import { QuerySetView } from  "./query_set_view/query_set_view";
+import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -171,6 +173,25 @@ export const SearchRelevanceApp = ({
                   );
                 }}
               />
+            <Route
+              path={['/querySet/create']}
+              render={(props) => (
+                <QuerySetCreateWithRouter
+                  {...props}
+                  http={http}
+                  notifications={notifications}
+                />
+              )}
+            />
+            <Route
+              path={['/querySet/:id']}
+              render={(props) => (
+                <QuerySetView
+                  {...props}
+                  http={http}
+                />
+              )}
+            />
             </Switch>
           </>
         </SearchRelevanceContextProvider>

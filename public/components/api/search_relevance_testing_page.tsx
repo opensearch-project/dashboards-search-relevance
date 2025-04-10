@@ -53,7 +53,7 @@ export const QuerySetTester = ({ http }: TestProps) => {
     setError(null);
 
     try {
-      const listResult = await getSearchConfigurations(http);
+      const listResult = await getQuerySets(http);
       setGetResponse(listResult);
     } catch (err) {
       setError(err.message || 'An error occurred');
@@ -92,9 +92,17 @@ export const QuerySetTester = ({ http }: TestProps) => {
         <EuiSpacer size="m" />
       </EuiForm>
       <EuiForm component="form" onSubmit={handleGetSubmit}>
+        <EuiFormRow label="Get Query ID:">
+          <EuiFieldText
+            placeholder="Enter Get Query ID"
+            value={id}
+            onChange={(e) => setId(e.target.value)}
+            fullWidth
+          />
+        </EuiFormRow>
         <EuiSpacer size="m" />
         <EuiButton type="get submit" fill isGetLoading={isGetLoading}>
-          {isCreateLoading ? 'Sending...' : 'Get Search Configurations'}
+          {isCreateLoading ? 'Sending...' : 'Send Get Request'}
         </EuiButton>
         <EuiSpacer size="m" />
       </EuiForm>
@@ -129,7 +137,6 @@ export const QuerySetTester = ({ http }: TestProps) => {
           </EuiCodeBlock>
         </>
       )}
-
     </EuiPanel>
   );
 };

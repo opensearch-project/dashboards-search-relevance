@@ -24,14 +24,17 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
 
   searchRelevance.listQuerySets = ca({
     url: {
-      fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}/\${id}`,
-      req: {
-        id: {
-          type: 'string',
-          required: true,
-        },
-      },
+      fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}`,
     },
+    // url: {
+    //   fmt: `${SEARCH_RELEVANCE_QUERY_SET_API}/\${id}`,
+    //   req: {
+    //     id: {
+    //       type: 'string',
+    //       required: true,
+    //     },
+    //   },
+    // },
     method: 'GET',
   });
 
