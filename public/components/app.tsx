@@ -28,6 +28,7 @@ import QuerySetTester from "./api/search_relevance_testing_page";
 import { SearchConfigurationView } from "./search_config_view/search_config_view";
 import { QuerySetView } from  "./query_set_view/query_set_view";
 import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
+import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -189,6 +190,16 @@ export const SearchRelevanceApp = ({
                 <QuerySetView
                   {...props}
                   http={http}
+                />
+              )}
+            />
+            <Route
+              path={['/searchConfiguration/create']}
+              render={(props) => (
+                <SearchConfigurationCreateWithRouter
+                  {...props}
+                  http={http}
+                  notifications={notifications}
                 />
               )}
             />

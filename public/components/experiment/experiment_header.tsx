@@ -15,7 +15,7 @@ export const ExperimentHeader_ = ({ onAddExperiment, history }: ExperimentHeader
         <EuiButton key="addQuerySet" fill size="s" onClick={() => { history.push('/querySet/create'); }}>
           + Add Query Set
         </EuiButton>,
-        <EuiButton key="addSearchConfig" fill size="s" onClick={() => {}}>
+        <EuiButton key="addSearchConfig" fill size="s" onClick={() => { history.push('/searchConfiguration/create'); }}>
           + Add Search Config
         </EuiButton>,
         <EuiButton key="addExperiment" fill size="s" onClick={onAddExperiment}>
