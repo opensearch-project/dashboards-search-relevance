@@ -24,7 +24,8 @@ export const ExperimentTabs = ({
     {
       id: 'search-configuration-id',
       name: 'Search Configuration',
-      content: <SearchConfigurationListingWithRoute http={http} />,
+      //content: <SearchConfigurationListingWithRoute http={http} />,
+      content: <ExperimentTable items={searchConfigurations} />,
     },
     {
       id: 'query-set-id',
