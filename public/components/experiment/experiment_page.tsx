@@ -11,7 +11,7 @@ import { Header } from '../common/header';
 import { ExperimentHeader } from "./experiment_header";
 import { TemplateCards } from "./template_card/template_cards";
 import { ExperimentTabs } from "./experiment_tabs";
-import { experiments, pairwiseExperiments, querySets, searchConfigurations } from "./mockup_data";
+import { experiments, pairwiseExperiments, querySets } from "./mockup_data";
 
 export const ExperimentPage = ({ chrome, application, http }: ExperimentPageProps) => {
   const [isTemplateCards, setIsTemplateCards] = useState(false);
