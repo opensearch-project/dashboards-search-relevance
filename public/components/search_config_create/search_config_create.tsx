@@ -100,12 +100,15 @@ import {
 
       // API call to create query set
       http.post(BASE_SEARCH_CONFIGURATION_NODE_API_PATH, {
-        query: {
-          name,
-          query_body: queryBody,
-          search_pipeline: searchPipeline,
-          search_template: searchTemplate,
-        }
+        body: JSON.stringify({
+            "search_configuration_name": name,
+            "query_body": queryBody,
+        //query: {
+        //  search_configuration_name: name,
+        //  query_body: queryBody,
+          //search_pipeline: searchPipeline,
+          //search_template: searchTemplate,
+        }),
       })
       .then((response) => {
         console.log('Response:', response);
