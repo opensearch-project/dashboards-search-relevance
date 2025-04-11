@@ -55,8 +55,8 @@ export const postSearchConfiguration = async (name: string, query_body: string, 
       body: JSON.stringify({
         name,
         query_body,
-        search_pipeline,
-        search_template,
+        //search_pipeline,
+        //search_template,
       }),
     });
     return response;
