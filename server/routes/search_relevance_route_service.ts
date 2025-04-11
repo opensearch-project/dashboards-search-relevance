@@ -97,6 +97,7 @@ export class SearchRelevanceRoutesService {
       req.url.searchParams.forEach((value, key) => {
         keys[key] = value;
       });
+      console.log('keys:', keys)
       const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', keys);
 
       return res.ok({
@@ -166,13 +167,13 @@ export class SearchRelevanceRoutesService {
       req.url.searchParams.forEach((value, key) => {
        keys[key] = value;
       });
-      //const SearchConfigurationsResponse = await callWithRequest('searchRelevance.createSearchConfiguration', keys);
+      const body = req.body
 
-      const configData = req.url.searchParams;
-      console.log('Request Body:', configData)
-      //console.log('Request:', req)
-      console.log('keys:', keys)
-      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.createSearchConfiguration', configData);
+      console.log('Request:', req)
+      console.log('Request Body:', req.body)
+      console.log('Keys:', keys)
+
+      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.createSearchConfiguration', {body});
 
       return res.ok({
         body: {
