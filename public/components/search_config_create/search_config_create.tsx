@@ -48,17 +48,10 @@ import {
     // Form state
     const [name, setName] = useState('');
     const [nameError, setNameError] = useState('');
-    const [description, setDescription] = useState('');
-    const [descriptionError, setDescriptionError] = useState('');
-    const [sampling, setSampling] = useState('random');
-    const [querySetSize, setQuerySetSize] = useState<number>(10);
-    const [querySizeError, setQuerySizeError] = useState('');
-
-    const samplingOptions = [
-      { value: 'random', text: 'Random' },
-      { value: 'ppts', text: 'Probability-Proportional-to-Size Sampling' },
-      { value: 'topn', text: 'Top N' },
-    ];
+    const [queryBody, setQueryBody] = useState('');
+    const [queryBodyError, setQueryBodyError] = useState('');
+    const [searchPipeline, setSearchPipeline] = useState('');
+    const [searchTemplate, setSearchTemplate] = useState('');
 
     // Validate form fields
     const validateForm = () => {
@@ -66,28 +59,25 @@ import {
 
       // Validate name
       if (!name.trim()) {
-        setNameError('Name is a required parameter.');
+        setNameError('Search Configuration Name is a required parameter.');
         isValid = false;
       } else {
         setNameError('');
       }
 
-      // Validate description
-      if (!description.trim()) {
-        setDescriptionError('Description is a required parameter.');
+      // TODO: JSON validation for the Query DSL object?
+      if (!queryBody.trim()) {
+        setQueryBodyError('Query Body is required.');
         isValid = false;
       } else {
-        setDescriptionError('');
+        try {
+          JSON.parse(queryBody);
+          setQueryBodyError('');
+        } catch (e) {
+          setQueryBodyError('Query Body must be valid JSON.');
+          isValid = false;
+        }
       }
-
-      // Validate query set size
-      if (querySetSize <= 0) {
-        setQuerySizeError('Query Set Size must be a positive integer.');
-        isValid = false;
-      } else {
-        setQuerySizeError('');
-      }
-
       return isValid;
     };
 
@@ -112,19 +102,20 @@ import {
       http.post(BASE_SEARCH_CONFIGURATION_NODE_API_PATH, {
         query: {
           name,
-          description,
-          sampling: sampling,
-          query_set_size: querySetSize
+          query_body: queryBody,
+          search_pipeline: searchPipeline,
+          search_template: searchTemplate,
         }
       })
       .then((response) => {
         console.log('Response:', response);
-        notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
+        console.log('query_body:', queryBody);
+        notifications.toasts.addSuccess(`Search configuration "${name}" created successfully`);
         history.push('/');
       })
       .catch((err) => {
         notifications.toasts.addError(err, {
-          title: 'Failed to create query set',
+          title: 'Failed to create search configuration',
         });
       });
 
@@ -147,7 +138,7 @@ import {
     //     });
 
 
-    }, [name, description, sampling, querySetSize, history, notifications.toasts]);
+    }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts]);
 
     // Handle cancel action
     const handleCancel = () => {
@@ -164,16 +155,6 @@ import {
       }
     };
 
-    // Validate description field on blur
-    const validateDescription = (e) => {
-      const value = e.target.value;
-      if (!value.trim()) {
-        setDescriptionError('Description is a required parameter.');
-      } else {
-        setDescriptionError('');
-      }
-    };
-
     return (
       <EuiPage paddingSize="none">
         <EuiPageBody>
@@ -185,10 +166,10 @@ import {
 
             {/* Name field */}
             <EuiCompressedFormRow
-              label="Name"
+              label="Search Configuration Name"
               isInvalid={nameError.length > 0}
               error={nameError}
-              helpText="A unique name for this query set"
+              helpText="A unique name for this search configuration"
               fullWidth
             >
               <EuiCompressedFieldText
@@ -202,61 +183,61 @@ import {
               />
             </EuiCompressedFormRow>
 
-            {/* Description field */}
+            {/* Query Body */}
+           <EuiCompressedFormRow
+             label="Query Body"
+             isInvalid={queryBodyError.length > 0}
+             error={queryBodyError}
+             helpText="Define the query body in JSON format"
+             fullWidth
+           >
+             <EuiCompressedTextArea
+               placeholder="Enter query body"
+               value={queryBody}
+               onChange={(e) => setQueryBody(e.target.value)}
+               onBlur={() => {
+                 if (!queryBody.trim()) {
+                   setQueryBodyError('Query Body is required.');
+                 } else {
+                   try {
+                     JSON.parse(queryBody);
+                     setQueryBodyError('');
+                   } catch {
+                     setQueryBodyError('Query Body must be valid JSON.');
+                   }
+                 }
+               }}
+               isInvalid={queryBodyError.length > 0}
+               fullWidth
+               rows={8}
+             />
+           </EuiCompressedFormRow>
+
+            {/* Search Pipeline */}
             <EuiCompressedFormRow
-              label="Description"
-              isInvalid={descriptionError.length > 0}
-              error={descriptionError}
-              helpText="Detailed description of the query set purpose"
+              label="Search Pipeline"
+              helpText="Define the search pipeline to be used"
               fullWidth
             >
-              <EuiCompressedTextArea
-                placeholder="Describe the purpose of this query set"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                onBlur={validateDescription}
-                isInvalid={descriptionError.length > 0}
-                data-test-subj="searchConfigurationDescriptionInput"
+              <EuiCompressedFieldText
+                placeholder="Enter search pipeline"
+                value={searchPipeline}
+                onChange={(e) => setSearchPipeline(e.target.value)}
                 fullWidth
               />
             </EuiCompressedFormRow>
 
-            {/* Sampling method field */}
+            {/* Search Template */}
             <EuiCompressedFormRow
-              label="Sampling Method"
-              helpText="Select the sampling method for this query set"
+              label="Search Template"
+              helpText="Define the search template"
               fullWidth
             >
-              <EuiCompressedSelect
-                options={samplingOptions}
-                value={sampling}
-                onChange={(e) => setSampling(e.target.value)}
-                data-test-subj="searchConfigurationSamplingSelect"
-              />
-            </EuiCompressedFormRow>
-
-            {/* Query set size field */}
-            <EuiCompressedFormRow
-              label="Query Set Size"
-              isInvalid={querySizeError.length > 0}
-              error={querySizeError}
-              helpText="Number of queries in the set (must be positive)"
-              fullWidth
-            >
-              <EuiCompressedFieldNumber
-                value={querySetSize}
-                min={0}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value, 10);
-                  setQuerySetSize(isNaN(value) ? 0 : value);
-                  if (value < 0) {
-                    setQuerySizeError('Query Set Size must be a non-negative integer.');
-                  } else {
-                    setQuerySizeError('');
-                  }
-                }}
-                isInvalid={querySizeError.length > 0}
-                data-test-subj="searchConfigurationSizeInput"
+              <EuiCompressedFieldText
+                placeholder="Enter search template"
+                value={searchTemplate}
+                onChange={(e) => setSearchTemplate(e.target.value)}
+                fullWidth
               />
             </EuiCompressedFormRow>
           </EuiPanel>
@@ -287,7 +268,7 @@ import {
                   fill
                   data-test-subj="createSearchConfigurationButton"
                 >
-                  Create Query Set
+                  Create Search Configuration
                 </EuiButton>
               </EuiFlexItem>
             </EuiFlexGroup>
