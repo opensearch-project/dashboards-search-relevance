@@ -13,6 +13,7 @@ import {
 } from "./types";
 import { SearchConfigForm } from "./search_configuration_form";
 import { Evaluation_results } from "../evaluation/evaluation_results";
+import { BASE_EXPERIMENT_NODE_API_PATH } from '../../../../common';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 export const TemplateConfiguration = ({
@@ -38,7 +39,7 @@ export const TemplateConfiguration = ({
       services: { http },
     } = useOpenSearchDashboards();
 
-  const handleNext = () => {
+  const handleNext = async () => {
     console.log('configFormData:', configFormData);
     console.log('searchConfigs:', searchConfigData.searchConfigs);
 
@@ -47,8 +48,20 @@ export const TemplateConfiguration = ({
         ...configFormData,
         ...searchConfigData,
       };
-      console.log('Save configuration', combinedData);
-      setShowEvaluation(true);
+      try {
+        await http.post(BASE_EXPERIMENT_NODE_API_PATH, {
+          body: JSON.stringify(combinedData),
+        });
+
+        console.log('combinedData:', combinedData);
+        notifications.toasts.addSuccess(`Experiment created successfully`);
+        history.push('/');
+        setShowEvaluation(true);
+      } catch (err) {
+        notifications.toasts.addError(err, {
+          title: 'Failed to create search configuration',
+        });
+      }
     } else {
       console.log('Validation failed: Please fill in all required fields');
     }
