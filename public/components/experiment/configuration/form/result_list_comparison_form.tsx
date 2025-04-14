@@ -6,18 +6,18 @@ import {
   EuiFieldText,
   EuiComboBox,
 } from '@elastic/eui';
-import { CustomizeFormData, QuerySetOption } from "../types";
+import { ResultListComparisonFormData, QuerySetOption } from "../types";
 import { mockupQuerySetOptions } from "../../mockup_data";
 
-interface CustomizeFormProps {
-  formData: CustomizeFormData;
-  onChange: (field: keyof CustomizeFormData, value: any) => void;
+interface ResultListComparisonFormProps {
+  formData: ResultListComparisonFormData;
+  onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
 }
 
-export const CustomizeForm= ({
+export const ResultListComparisonForm= ({
                                formData,
                                onChange
-}: CustomizeFormProps) => {
+}: ResultListComparisonFormProps) => {
   const handleQuerySetsChange = (selectedOptions: QuerySetOption[]) => {
     onChange('querySets', selectedOptions || []);
   };
@@ -37,24 +37,6 @@ export const CustomizeForm= ({
             isClearable={true}
             isInvalid={formData.querySets.length === 0}
             multi={true}
-          />
-        </EuiFormRow>
-      </EuiFlexItem>
-
-      <EuiFlexItem grow={2}>
-        <EuiFormRow label="Calculator">
-          <EuiFieldText
-            value={formData.calculator}
-            onChange={(e) => onChange('calculator', e.target.value)}
-          />
-        </EuiFormRow>
-      </EuiFlexItem>
-
-      <EuiFlexItem grow={2}>
-        <EuiFormRow label="Score Threshold">
-          <EuiFieldText
-            value={formData.scoreThreshold}
-            onChange={(e) => onChange('scoreThreshold', e.target.value)}
           />
         </EuiFormRow>
       </EuiFlexItem>
