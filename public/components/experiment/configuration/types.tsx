@@ -17,7 +17,7 @@ export interface SearchConfigFromData {
   searchConfigs: SearchConfigOption[];
 }
 
-export interface CustomizeFormData extends BaseFormData {
+export interface ResultListComparisonFormData extends BaseFormData {
   calculator: string;
   scoreThreshold: string;
 }
@@ -35,7 +35,7 @@ export interface LLMFormData extends BaseFormData {
 }
 
 export type ConfigurationFormData =
-  | CustomizeFormData
+  | ResultListComparisonFormData
   | UserBehaviorFormData
   | LLMFormData;
 
