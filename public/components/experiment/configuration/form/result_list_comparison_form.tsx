@@ -6,8 +6,8 @@ import {
   EuiComboBox,
 } from '@elastic/eui';
 import { ResultListComparisonFormData, QuerySetOption } from "../types";
-import { getQuerySets } from '../../../../services';
 import { CoreStart } from '../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../../../common';
 
 interface ResultListComparisonFormProps {
   formData: ResultListComparisonFormData;
@@ -26,16 +26,12 @@ export const ResultListComparisonForm = ({
   useEffect(() => {
     const fetchQuerySets = async () => {
       try {
-        const data = await getQuerySets(http);
-        if (data.ok) {
-          // parse JSON data and build label/value object where labels are displayed in dropdown selection box
-          const parsed = JSON.parse(data.resp);
-          const options = parsed.map((qs: any) => ({
-                    label: qs.name,
-                    value: qs.id,
-                  }));
-          setQuerySetOptions(options);
-          }
+        const data = await http.get(ServiceEndpoints.QuerySets);
+        const options = data.hits.hits.map((qs: any) => ({
+          label: qs._source.name,
+          value: qs._source.id,
+        }))
+        setQuerySetOptions(options);
       } catch (error) {
         console.error('Failed to fetch query sets', error);
         setQuerySetOptions([]);
