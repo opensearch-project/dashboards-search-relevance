@@ -8,14 +8,29 @@ export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
 export const SEARCH_RELEVANCE_WORKBENCH = 'Search Relevance Workbench';
 
+export enum ServiceEndpoints {
+  // OpenSearch node APIs
+  GetIndexes = '/api/relevancy/search/indexes',
+  GetPipelines = '/api/relevancy/search/pipelines',
+  GetSearchResults = '/api/relevancy/search',
+  GetStats = '/api/relevancy/stats',
+
+  // Search Relevance node APIs
+  QuerySets = '/api/relevancy/query_sets',
+  SearchConfigurations = '/api/relevancy/search_configurations',
+  Judgments = '/api/relevancy/judgments',
+  Experiments = '/api/relevancy/experiments',
+}
+
 /**
  * BACKEND SEARCH RELEVANCE APIs
  */
-export const SEARCH_RELEVANCE_BASE_API = '/_plugins/search_relevance';
-export const SEARCH_RELEVANCE_QUERY_SET_API = `${SEARCH_RELEVANCE_BASE_API}/query_sets`;
-export const SEARCH_RELEVANCE_EXPERIMENT_API = `${SEARCH_RELEVANCE_BASE_API}/experiments`;
-export const SEARCH_RELEVANCE_JUDGMENT_API = `${SEARCH_RELEVANCE_BASE_API}/judgments`;
-export const SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API = `${SEARCH_RELEVANCE_BASE_API}/search_configurations`;
+export enum BackendEndpoints {
+  QuerySets = '/_plugins/search_relevance/query_sets',
+  SearchConfigurations = '/_plugins/search_relevance/search_configurations',
+  Judgments = '/_plugins/search_relevance/judgments',
+  Experiments = '/_plugins/search_relevance/experiments',
+}
 
 /**
  * OPEN SEARCH CORE APIs
@@ -32,12 +47,6 @@ export const INDEX_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/indexes`;
 export const SEARCH_PIPELINE_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/pipelines`;
 export const SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/search`;
 export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
-
-// Search Relevance node APIs
-export const BASE_QUERYSET_NODE_API_PATH = `${BASE_NODE_API_PATH}/queryset`;
-export const BASE_EXPERIMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/experiment`;
-export const BASE_JUDGMENT_NODE_API_PATH = `${BASE_NODE_API_PATH}/judgments`;
-export const BASE_SEARCH_CONFIGURATION_NODE_API_PATH = `${BASE_NODE_API_PATH}/search_configurations`;
 
 export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',

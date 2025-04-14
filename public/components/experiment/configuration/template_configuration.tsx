@@ -15,7 +15,7 @@ import {
 } from "./types";
 import { SearchConfigForm } from "./search_configuration_form";
 import { Evaluation_results } from "../evaluation/evaluation_results";
-import { BASE_EXPERIMENT_NODE_API_PATH } from '../../../../common';
+import { ServiceEndpoints } from '../../../../common';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 export const TemplateConfiguration = ({
@@ -50,8 +50,14 @@ export const TemplateConfiguration = ({
         ...searchConfigData,
       };
       try {
-        await http.post(BASE_EXPERIMENT_NODE_API_PATH, {
-          body: JSON.stringify(combinedData),
+        console.log("Experiment creation", combinedData)
+        await http.post(ServiceEndpoints.Experiments, {
+          body: JSON.stringify({
+            index: "ecommerce", // TODO make selectable
+            k: 10, // TODO make selectable
+            querySetId: combinedData.querySets[0].value,
+            searchConfigurationList: combinedData.searchConfigs.map((o) => (o.value)),
+          }),
         });
 
         notifications.toasts.addSuccess(`Experiment created successfully`);

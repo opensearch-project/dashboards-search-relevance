@@ -24,8 +24,7 @@ import {
   import { RouteComponentProps, withRouter } from 'react-router-dom';
   import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
   import { NotificationsStart } from '../../../../../core/public';
-  import { BASE_QUERYSET_NODE_API_PATH } from '../../../common';
-  import { postQuerySet } from '../../services';
+  import { ServiceEndpoints } from '../../../common';
 
   
   interface QuerySetCreateProps extends RouteComponentProps {
@@ -97,25 +96,13 @@ import {
         return;
       }
 
-    //   postQuerySet(name, description, sampling, querySetSize, http)
-    //     .then(() => {
-    //       notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
-    //       history.push('/');
-    //     })
-    //     .catch((err) => {
-    //       notifications.toasts.addError(err, {
-    //         title: 'Failed to create query set',
-    //       });
-    //     });
-  
-      // API call to create query set
-      http.post(BASE_QUERYSET_NODE_API_PATH, {
-        query: {
+      http.post(ServiceEndpoints.QuerySets, {
+        body: JSON.stringify({
           name,
           description,
           sampling: sampling,
-          query_set_size: querySetSize
-        }
+          querySetSize: querySetSize
+        })
       })
       .then((response) => {
         console.log('Response:', response);
@@ -127,25 +114,6 @@ import {
           title: 'Failed to create query set',
         });
       });
-
-    //   http.post('/api/query_sets', {
-    //     body: JSON.stringify({
-    //       name,
-    //       description,
-    //       sampling_method: sampling,
-    //       query_set_size: querySetSize,
-    //     }),
-    //   })
-    //     .then(() => {
-    //       notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
-    //       history.push('/query_sets');
-    //     })
-    //     .catch((err) => {
-    //       notifications.toasts.addError(err, {
-    //         title: 'Failed to create query set',
-    //       });
-    //     });
-
 
     }, [name, description, sampling, querySetSize, history, notifications.toasts]);
   

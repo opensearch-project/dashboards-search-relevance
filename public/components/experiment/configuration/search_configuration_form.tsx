@@ -8,6 +8,7 @@ import {
 import { SearchConfigOption, SearchConfigFromData } from "./types";
 import { getSearchConfigurations } from '../../../services';
 import { CoreStart } from '../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../../common';
 
 interface SearchConfigFormProps {
   formData: SearchConfigFromData;
@@ -26,17 +27,12 @@ export const SearchConfigForm = ({
     useEffect(() => {
       const fetchSearchConfigurations = async () => {
         try {
-          const data = await getSearchConfigurations(http);
-          if (data.ok) {
-            // parse JSON data and build label/value object where labels are displayed in dropdown selection box
-
-            const parsed = JSON.parse(data.resp);
-            const options = parsed.map((search_config: any) => ({
-                            label: search_config.search_configuration_name,
-                            value: search_config.id,
-                          }));
-            setSearchConfigOptions(options);
-          }
+          const data = await http.get(ServiceEndpoints.SearchConfigurations);
+          const options = data.hits.hits.map((search_config: any) => ({
+            label: search_config._source.name,
+            value: search_config._source.id,
+          }));
+          setSearchConfigOptions(options);
         } catch (error) {
           console.error('Failed to fetch query sets', error);
           setSearchConfigOptions([]);

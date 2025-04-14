@@ -9,8 +9,8 @@ import {
 import React from 'react';
 import { TableListView, reactRouterNavigate } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { getSearchConfigurations } from '../../services';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { ServiceEndpoints } from '../../../common';
 
 
 interface SearchConfigurationListingProps  extends RouteComponentProps {
@@ -61,27 +61,25 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   // are available
   const mapSearchConfigurationFields = (obj: any) => {
     return {
-      id: obj.id,
-      search_configuration_name: obj.search_configuration_name,
-      query_body: obj.query_body,
-      timestamp: obj.timestamp,
+      id: obj._source.id,
+      search_configuration_name: obj._source.name,
+      query_body: obj._source.queryBody,
+      timestamp: obj._source.timestamp,
     };
   };
 
   // Data fetching function
   const findSearchConfigurations = async (search: any) => {
-    const response = await getSearchConfigurations(http);
-    // TODO: how to report error
-    const list = response ? JSON.parse(response.resp).map(mapSearchConfigurationFields) : [];
-    // Filtering functionality could be implemented here
-    // if (search) {
-    //   list.filter((item) => item.name.includes(search));
-    // }
+    const response = await http.get(ServiceEndpoints.SearchConfigurations);
+    const list = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
+    // TODO: too many reissued requests on search
+    const filteredList = search ? list.filter((item) => item.name.includes(search)) : list;
     return {
-      total: list.length,
-      hits: list,
+      total: filteredList.length,
+      hits: filteredList,
     };
-  };
+  };      
+
 
   return (
     <TableListView
