@@ -64,3 +64,18 @@ export const postSearchConfiguration = async (name: string, query_body: string, 
     return e;
   }
 };
+
+export const postExperiment = async (index: string, query_set_id: string, search_configurations: string[], http: any) => {
+  try {
+    const response = await http.post(`..${BASE_EXPERIMENT_NODE_API_PATH}`, {
+      body: JSON.stringify({
+        index,
+        query_set_id,
+        search_configurations,
+      }),
+    });
+    return response;
+  } catch (e) {
+    return e;
+  }
+};
