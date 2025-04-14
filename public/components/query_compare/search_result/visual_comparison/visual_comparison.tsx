@@ -319,7 +319,7 @@ export const VisualComparison = ({
           {/* Common items card */}
           <div className="flex-1 bg-blue-50 p-6 rounded-lg text-center">
             <div className="text-xl font-bold mb-2">{statistics.inBoth}</div>
-            <div>Common items in top 10</div>
+            <div>Common items</div>
           </div>
           
           {/* Unique to Result 1 card */}
