@@ -1,46 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   EuiFlexGroup,
   EuiFlexItem,
   EuiFormRow,
-  EuiFieldText,
   EuiComboBox,
 } from '@elastic/eui';
 import { ResultListComparisonFormData, QuerySetOption } from "../types";
-import { mockupQuerySetOptions } from "../../mockup_data";
+import { getQuerySets } from '../../../../services';
+import { CoreStart } from '../../../../../src/core/public';
 
 interface ResultListComparisonFormProps {
   formData: ResultListComparisonFormData;
   onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
+  http: CoreStart['http'];
 }
 
-export const ResultListComparisonForm= ({
-                               formData,
-                               onChange
+export const ResultListComparisonForm = ({
+  formData,
+  onChange,
+  http,
 }: ResultListComparisonFormProps) => {
+  const [querySetOptions, setQuerySetOptions] = useState<QuerySetOption[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchQuerySets = async () => {
+      try {
+        const data = await getQuerySets(http);
+        if (data.ok) {
+          // parse JSON data and build label/value object where labels are displayed in dropdown selection box
+          const parsed = JSON.parse(data.resp);
+          const options = parsed.map((qs: any) => ({
+                    label: qs.name,
+                    value: qs.id,
+                  }));
+          setQuerySetOptions(options);
+          }
+      } catch (error) {
+        console.error('Failed to fetch query sets', error);
+        setQuerySetOptions([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuerySets();
+  }, [http]);
+
   const handleQuerySetsChange = (selectedOptions: QuerySetOption[]) => {
     onChange('querySets', selectedOptions || []);
   };
 
   return (
-    <>
     <EuiFlexGroup gutterSize="m" direction="row" style={{ maxWidth: 600 }}>
       <EuiFlexItem grow={4}>
-        <EuiFormRow
-          label="Query Sets"
-        >
+        <EuiFormRow label="Query Sets">
           <EuiComboBox
-            placeholder="Select query sets"
-            options={mockupQuerySetOptions}
+            placeholder={isLoading ? 'Loading...' : 'Select query sets'}
+            options={querySetOptions}
             selectedOptions={formData.querySets}
             onChange={handleQuerySetsChange}
-            isClearable={true}
+            isClearable
             isInvalid={formData.querySets.length === 0}
-            multi={true}
+            isLoading={isLoading}
+            async
+            fullWidth
+            multi
           />
         </EuiFormRow>
       </EuiFlexItem>
     </EuiFlexGroup>
-    </>
   );
 };

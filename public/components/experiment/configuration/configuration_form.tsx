@@ -15,6 +15,7 @@ import {
   UserBehaviorFormData,
   LLMFormData,
 } from './types';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 const getInitialFormData = (templateType: string): ConfigurationFormData => {
   const baseData = {
@@ -46,6 +47,10 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
 };
 
 export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormProps) => {
+  const {
+    services: { http },
+  } = useOpenSearchDashboards();
+
   const [formData, setFormData] = useState<ConfigurationFormData>(
     getInitialFormData(templateType)
   );
@@ -76,6 +81,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
           <ResultListComparisonForm
             formData={formData as ResultListComparisonFormData}
             onChange={handleChange}
+            http={http}
           />
         );
       case 'User Behavior':
