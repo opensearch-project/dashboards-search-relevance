@@ -21,8 +21,8 @@ interface TemplateCardsProps {
 
 const templates = [
   {
-    name: 'Customize',
-    description: 'Use Customize judgments to start with your experiment.',
+    name: 'Result List Comparison',
+    description: 'Compare the search results of multiple search configurations executed on saved query lists.',
     isDisabled: false
   },
   {
