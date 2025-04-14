@@ -11,271 +11,80 @@ import {
   OpenSearchDashboardsResponseFactory,
   RequestHandlerContext,
 } from '../../../../src/core/server';
-import {
-    BASE_QUERYSET_NODE_API_PATH,
-    BASE_SEARCH_CONFIGURATION_NODE_API_PATH,
-    BASE_EXPERIMENT_NODE_API_PATH
-} from '../../common';
-import { getClientBasedOnDataSource } from '../common/helper';
+import { ServiceEndpoints, BackendEndpoints } from '../../common';
 
 export function registerSearchRelevanceRoutes(
   router: IRouter,
-  searchRelevanceRoutesService: SearchRelevanceRoutesService
 ): void {
   router.post(
     {
-      path: BASE_QUERYSET_NODE_API_PATH,
+      path: ServiceEndpoints.QuerySets,
       validate: {
         body: schema.any(),
       },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
-      },
     },
-    searchRelevanceRoutesService.createQuerySet
+    backendAction('POST', BackendEndpoints.QuerySets),
   );
   router.get(
     {
-      path: `${BASE_QUERYSET_NODE_API_PATH}`,
+      path: ServiceEndpoints.QuerySets,
       validate: false,
     },
-    searchRelevanceRoutesService.listQuerySets
+    backendAction('GET', BackendEndpoints.QuerySets)
   );
   router.post(
     {
-      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
+      path: ServiceEndpoints.SearchConfigurations,
       validate: {
         body: schema.any(),
       },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
-      },
     },
-    searchRelevanceRoutesService.createSearchConfiguration
+    backendAction('PUT', BackendEndpoints.SearchConfigurations)
   );
   router.get(
     {
-      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
-      validate: false
+      path: ServiceEndpoints.SearchConfigurations,
+      validate: false,
     },
-    searchRelevanceRoutesService.listSearchConfigurations
+    backendAction('GET', BackendEndpoints.SearchConfigurations)
   );
   router.post(
     {
-      path: `${BASE_EXPERIMENT_NODE_API_PATH}`,
+      path: ServiceEndpoints.Experiments,
       validate: {
         body: schema.any(),
       },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
-      },
     },
-    searchRelevanceRoutesService.postExperiment
+    backendAction('PUT', BackendEndpoints.Experiments)
   );
 }
 
-export class SearchRelevanceRoutesService {
-  private client: any;
-  dataSourceEnabled: boolean;
-
-  constructor(client: any, dataSourceEnabled: boolean) {
-    this.client = client;
-    this.dataSourceEnabled = dataSourceEnabled;
-  }
-
-  createQuerySet = async (
+const backendAction = (method, path) => {
+  return async(
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
+      const dataSourceId = req.query.data_source;
+      const caller = dataSourceId
+        ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
+        : context.core.opensearch.legacy.client.callAsCurrentUser;
     try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      // const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {
-      //   body,
-      // });
-      //const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', req.params);
-      //const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {...req.searchParams});
-
-      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
-      const keys = {}
-      req.url.searchParams.forEach((value, key) => {
-        keys[key] = value;
-      });
-      console.log('keys:', keys)
-      const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', keys);
-
-      return res.ok({
-        body: {
-          ok: true,
-          resp: querysetResponse,
-        },
-      });
+      const querySetResponse = await caller('transport.request', {
+        method: method,
+        path: path,
+        ...((method==="POST" || method==="PUT") ? {body: req.body} : {}),
+      })        
+      return res.ok({body: querySetResponse});
     } catch (err) {
-      return res.ok({
+      return res.customError({
+        statusCode: err.statusCode || 500,
         body: {
-          ok: false,
-          resp: err.message,
-        },
-      });
-    }
-  };
-
-  listQuerySets = async (
-    context: RequestHandlerContext,
-    req: OpenSearchDashboardsRequest,
-    res: OpenSearchDashboardsResponseFactory
-  ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
-    try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      const querysetResponse = await callWithRequest('searchRelevance.listQuerySets', {});
-      return res.ok({
-        body: {
-          ok: true,
-          resp: querysetResponse,
-        },
-      });
-    } catch (err) {
-      return res.ok({
-        body: {
-          resp: err.message,
-        },
-      });
-    }
-  };
-
-  createSearchConfiguration = async (
-    context: RequestHandlerContext,
-    req: OpenSearchDashboardsRequest,
-    res: OpenSearchDashboardsResponseFactory
-  ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
-    try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
-      const keys = {}
-      req.url.searchParams.forEach((value, key) => {
-       keys[key] = value;
-      });
-      const body = req.body
-
-      console.log('Request:', req)
-      console.log('Request Body:', req.body)
-      console.log('Keys:', keys)
-
-      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.createSearchConfiguration', {body});
-
-      return res.ok({
-        body: {
-          ok: true,
-          resp: SearchConfigurationsResponse,
-        },
-      });
-    } catch (err) {
-      return res.ok({
-        body: {
-          ok: false,
-          resp: err.message,
-        },
-      });
-    }
-  };
-
-  listSearchConfigurations = async (
-    context: RequestHandlerContext,
-    req: OpenSearchDashboardsRequest,
-    res: OpenSearchDashboardsResponseFactory
-  ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
-    try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.listSearchConfigurations');
-      return res.ok({
-        body: {
-          ok: true,
-          resp: SearchConfigurationsResponse,
-        },
-      });
-    } catch (err) {
-      return res.ok({
-        body: {
-          resp: err.message,
-        },
-      });
-    }
-  };
-
-  postExperiment  = async (
-    context: RequestHandlerContext,
-    req: OpenSearchDashboardsRequest,
-    res: OpenSearchDashboardsResponseFactory
-  ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
-    try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
-
-      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
-      const keys = {}
-      req.url.searchParams.forEach((value, key) => {
-        keys[key] = value;
-      });
-      const body = req.body
-
-      const ExperimentResponse = await callWithRequest('searchRelevance.postExperiment', {body});
-
-      return res.ok({
-        body: {
-          ok: true,
-          resp: ExperimentResponse,
-        },
-      });
-    } catch (err) {
-      return res.ok({
-        body: {
-          ok: false,
-          resp: err.message,
-        },
+          message: err.message,
+          attributes: {
+            error: err.body?.error || err.message,
+          },
+        }
       });
     }
   };
