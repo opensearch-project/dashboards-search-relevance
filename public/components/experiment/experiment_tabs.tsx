@@ -6,7 +6,7 @@ import { QuerySetListingWithRoute } from '../query_set_listing';
 
 export const ExperimentTabs = ({
                                  experiments,
-                                 pairwiseExperiments,
+                                 resultListComparisonExperiments,
                                  searchConfigurations,
                                  querySets,
                                  http}: ExperimentTabsProps) => {
@@ -17,9 +17,9 @@ export const ExperimentTabs = ({
       content: <ExperimentTable items={experiments} />,
     },
     {
-      id: 'pairwise-experiment-id',
-      name: 'Pairwise Experiment',
-      content: <ExperimentTable items={pairwiseExperiments} />,
+      id: 'result-list-comparison-experiment-id',
+      name: 'Result List Comparison Experiment',
+      content: <ExperimentTable items={resultListComparisonExperiments} />,
     },
     {
       id: 'search-configuration-id',

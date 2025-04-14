@@ -11,7 +11,7 @@ import { Header } from '../common/header';
 import { ExperimentHeader } from "./experiment_header";
 import { TemplateCards } from "./template_card/template_cards";
 import { ExperimentTabs } from "./experiment_tabs";
-import { experiments, pairwiseExperiments, querySets, searchConfigurations } from "./mockup_data";
+import { experiments, resultListComparisonExperiments, querySets, searchConfigurations } from "./mockup_data";
 
 export const ExperimentPage = ({ chrome, application, http }: ExperimentPageProps) => {
   const [isTemplateCards, setIsTemplateCards] = useState(false);
@@ -35,7 +35,7 @@ export const ExperimentPage = ({ chrome, application, http }: ExperimentPageProp
             ) : (
               <ExperimentTabs
                 experiments={experiments}
-                pairwiseExperiments={pairwiseExperiments}
+                resultListComparisonExperiments={resultListComparisonExperiments}
                 searchConfigurations={searchConfigurations}
                 querySets={querySets}
                 http={http}

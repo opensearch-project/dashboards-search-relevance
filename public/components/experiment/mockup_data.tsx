@@ -16,7 +16,7 @@ export const experiments: TableContent[] = [
   },
 ];
 
-export const pairwiseExperiments: TableContent[] = [
+export const resultListComparisonExperiments: TableContent[] = [
   {
     name: 'pairwise_sample',
     type: 'pairwise',

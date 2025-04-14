@@ -20,7 +20,7 @@ export interface ExperimentHeaderProps {
 
 export interface ExperimentTabsProps {
   experiments: TableContent[];
-  pairwiseExperiments: TableContent[];
+  resultListComparisonExperiments: TableContent[];
   searchConfigurations: TableContent[];
   querySets: TableContent[];
   http: CoreStart['http'];
