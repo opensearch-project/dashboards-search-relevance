@@ -13,6 +13,7 @@ import {
 } from "./types";
 import { SearchConfigForm } from "./search_configuration_form";
 import { Evaluation_results } from "../evaluation/evaluation_results";
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 export const TemplateConfiguration = ({
                                         templateType,
@@ -32,6 +33,10 @@ export const TemplateConfiguration = ({
   const handleSearchConfigChange = (data: SearchConfigFromData) => {
     setSearchConfigData(data);
   };
+
+  const {
+      services: { http },
+    } = useOpenSearchDashboards();
 
   const handleNext = () => {
     console.log('configFormData:', configFormData);
@@ -79,6 +84,7 @@ export const TemplateConfiguration = ({
           <SearchConfigForm
             formData={searchConfigData}
             onChange={handleSearchConfigChange}
+            http={http}
           />
         </EuiFlexItem>
 
