@@ -24,8 +24,7 @@ import {
   import { RouteComponentProps, withRouter } from 'react-router-dom';
   import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
   import { NotificationsStart } from '../../../../../core/public';
-  import { BASE_SEARCH_CONFIGURATION_NODE_API_PATH } from '../../../common';
-  import { postSearchConfiguration } from '../../services';
+  import { ServiceEndpoints } from '../../../common';
 
 
   interface SearchConfigurationCreateProps extends RouteComponentProps {
@@ -87,27 +86,10 @@ import {
         return;
       }
 
-    //   postQuerySet(name, description, sampling, querySetSize, http)
-    //     .then(() => {
-    //       notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
-    //       history.push('/');
-    //     })
-    //     .catch((err) => {
-    //       notifications.toasts.addError(err, {
-    //         title: 'Failed to create query set',
-    //       });
-    //     });
-
-      // API call to create query set
-      http.post(BASE_SEARCH_CONFIGURATION_NODE_API_PATH, {
+      http.post(ServiceEndpoints.SearchConfigurations, {
         body: JSON.stringify({
-            "search_configuration_name": name,
-            "query_body": queryBody,
-        //query: {
-        //  search_configuration_name: name,
-        //  query_body: queryBody,
-          //search_pipeline: searchPipeline,
-          //search_template: searchTemplate,
+            name,
+            queryBody,
         }),
       })
       .then((response) => {
@@ -121,26 +103,6 @@ import {
           title: 'Failed to create search configuration',
         });
       });
-
-    //   http.post('/api/query_sets', {
-    //     body: JSON.stringify({
-    //       name,
-    //       description,
-    //       sampling_method: sampling,
-    //       query_set_size: querySetSize,
-    //     }),
-    //   })
-    //     .then(() => {
-    //       notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
-    //       history.push('/query_sets');
-    //     })
-    //     .catch((err) => {
-    //       notifications.toasts.addError(err, {
-    //         title: 'Failed to create query set',
-    //       });
-    //     });
-
-
     }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts]);
 
     // Handle cancel action
