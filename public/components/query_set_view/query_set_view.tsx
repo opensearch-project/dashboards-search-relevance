@@ -5,20 +5,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { getQuerySets } from '../../services';
 import { CoreStart } from '../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../common';
 
-interface QuerySet {
-  id: string;
-  [key: string]: any; // Add more specific properties as needed
-}
 
 interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
 export const QuerySetView: React.FC<QuerySetViewProps> = ({ match, http }) => {
-  const [querySet, setQuerySet] = useState<QuerySet | null>(null);
+  const [querySet, setQuerySet] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,9 +22,9 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ match, http }) => {
     const fetchQuerySet = async () => {
       try {
         setLoading( true);
-        const response = await getQuerySets(http);
-        const list = response ? JSON.parse(response.resp) : [];
-        const filteredList = list.filter((item: QuerySet) => item.id === match.params.id);
+        const response = await http.get(ServiceEndpoints.QuerySets);
+        const list = response ? response.hits.hits.map((hit: any) => ({...hit._source})) : [];
+        const filteredList = list.filter((item) => item.id === match.params.id);
         
         if (filteredList.length > 0) {
           setQuerySet(filteredList[0]);

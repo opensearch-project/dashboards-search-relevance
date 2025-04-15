@@ -203,6 +203,15 @@ export const SearchRelevanceApp = ({
                 />
               )}
             />
+            <Route
+              path={['/searchConfiguration/:id']}
+              render={(props) => (
+                <SearchConfigurationView
+                  {...props}
+                  http={http}
+                />
+              )}
+            />
             </Switch>
           </>
         </SearchRelevanceContextProvider>
