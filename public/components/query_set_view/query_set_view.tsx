@@ -8,7 +8,6 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 
-
 interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
@@ -21,11 +20,11 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ match, http }) => {
   useEffect(() => {
     const fetchQuerySet = async () => {
       try {
-        setLoading( true);
+        setLoading(true);
         const response = await http.get(ServiceEndpoints.QuerySets);
-        const list = response ? response.hits.hits.map((hit: any) => ({...hit._source})) : [];
+        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
         const filteredList = list.filter((item) => item.id === match.params.id);
-        
+
         if (filteredList.length > 0) {
           setQuerySet(filteredList[0]);
         } else {

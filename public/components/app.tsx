@@ -11,23 +11,27 @@ import {
   EuiModalBody,
   EuiModalFooter,
   EuiModalHeader,
+  EuiModalHeaderTitle,
   EuiSwitch,
-  EuiModalHeaderTitle
 } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import React, { useState } from 'react';
-import { HashRouter, Router, Route, Switch, withRouter } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import { CoreStart, MountPoint, Toast } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE } from '../../common';
+import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { ExperimentPage } from './experiment';
-import QuerySetTester from "./api/search_relevance_testing_page";
-import { QuerySetView } from  "./query_set_view/query_set_view";
+import { SearchConfigurationView } from './search_config_view/search_config_view';
+import { QuerySetView } from './query_set_view/query_set_view';
 import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
 import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
+import { QuerySetListingWithRoute } from './query_set_listing';
+import SearchConfigurationListingWithRoute, {
+  SearchConfigurationListing,
+} from './search_config_listing/search_config_listing';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -103,9 +107,7 @@ export const SearchRelevanceApp = ({
           </EuiModalBody>
 
           <EuiModalFooter>
-            <EuiButtonEmpty onClick={() => selectVersion(true)}>
-              Use Old Version
-            </EuiButtonEmpty>
+            <EuiButtonEmpty onClick={() => selectVersion(true)}>Use Old Version</EuiButtonEmpty>
             <EuiButton fill onClick={() => selectVersion(false)}>
               Use New Version
             </EuiButton>
@@ -167,50 +169,45 @@ export const SearchRelevanceApp = ({
                           application={application}
                           chrome={chrome}
                           http={http}
+                          notifications={notifications}
                         />
                       )}
                     </>
                   );
                 }}
               />
-            <Route
-              path={['/querySet/create']}
-              render={(props) => (
-                <QuerySetCreateWithRouter
-                  {...props}
-                  http={http}
-                  notifications={notifications}
-                />
-              )}
-            />
-            <Route
-              path={['/querySet/:id']}
-              render={(props) => (
-                <QuerySetView
-                  {...props}
-                  http={http}
-                />
-              )}
-            />
-            <Route
-              path={['/searchConfiguration/create']}
-              render={(props) => (
-                <SearchConfigurationCreateWithRouter
-                  {...props}
-                  http={http}
-                  notifications={notifications}
-                />
-              )}
-            />
-            <Route
-              path={['/searchConfiguration/:id']}
-              render={(props) => (
-                <SearchConfigurationView
-                  {...props}
-                  http={http}
-                />
-              )}
-            />
+              <Route
+                path={['/querySet/create']}
+                render={(props) => (
+                  <QuerySetCreateWithRouter {...props} http={http} notifications={notifications} />
+                )}
+              />
+              <Route
+                path={['/querySet']}
+                render={(props) => <QuerySetListingWithRoute {...props} http={http} />}
+              />
+              <Route
+                path={['/querySet/:id']}
+                render={(props) => <QuerySetView {...props} http={http} />}
+              />
+              <Route
+                path={['/searchConfiguration/create']}
+                render={(props) => (
+                  <SearchConfigurationCreateWithRouter
+                    {...props}
+                    http={http}
+                    notifications={notifications}
+                  />
+                )}
+              />
+              <Route
+                path={['/searchConfiguration/:id']}
+                render={(props) => <SearchConfigurationView {...props} http={http} />}
+              />
+              <Route
+                path={['/searchConfiguration']}
+                render={(props) => <SearchConfigurationListingWithRoute {...props} http={http} />}
+              />
             </Switch>
           </>
         </SearchRelevanceContextProvider>
