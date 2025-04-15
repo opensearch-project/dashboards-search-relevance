@@ -11,7 +11,11 @@ import {
   OpenSearchDashboardsResponseFactory,
   RequestHandlerContext,
 } from '../../../../src/core/server';
-import { BASE_QUERYSET_NODE_API_PATH, BASE_SEARCH_CONFIGURATION_NODE_API_PATH } from '../../common';
+import {
+    BASE_QUERYSET_NODE_API_PATH,
+    BASE_SEARCH_CONFIGURATION_NODE_API_PATH,
+    BASE_EXPERIMENT_NODE_API_PATH
+} from '../../common';
 import { getClientBasedOnDataSource } from '../common/helper';
 
 export function registerSearchRelevanceRoutes(
@@ -59,6 +63,20 @@ export function registerSearchRelevanceRoutes(
       validate: false
     },
     searchRelevanceRoutesService.listSearchConfigurations
+  );
+  router.post(
+    {
+      path: `${BASE_EXPERIMENT_NODE_API_PATH}`,
+      validate: {
+        body: schema.any(),
+      },
+      options: {
+        body: {
+          accepts: 'application/json',
+        },
+      },
+    },
+    searchRelevanceRoutesService.postExperiment
   );
 }
 
@@ -216,6 +234,46 @@ export class SearchRelevanceRoutesService {
     } catch (err) {
       return res.ok({
         body: {
+          resp: err.message,
+        },
+      });
+    }
+  };
+
+  postExperiment  = async (
+    context: RequestHandlerContext,
+    req: OpenSearchDashboardsRequest,
+    res: OpenSearchDashboardsResponseFactory
+  ): Promise<IOpenSearchDashboardsResponse<any>> => {
+    const { data_source_id = '' } = req.params as { data_source_id?: string };
+    try {
+      const callWithRequest = getClientBasedOnDataSource(
+        context,
+        this.dataSourceEnabled,
+        req,
+        data_source_id,
+        this.client
+      );
+
+      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
+      const keys = {}
+      req.url.searchParams.forEach((value, key) => {
+        keys[key] = value;
+      });
+      const body = req.body
+
+      const ExperimentResponse = await callWithRequest('searchRelevance.postExperiment', {body});
+
+      return res.ok({
+        body: {
+          ok: true,
+          resp: ExperimentResponse,
+        },
+      });
+    } catch (err) {
+      return res.ok({
+        body: {
+          ok: false,
           resp: err.message,
         },
       });

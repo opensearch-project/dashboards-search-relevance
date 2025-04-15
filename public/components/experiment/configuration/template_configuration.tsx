@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
   EuiPanel,
   EuiFlexItem,
@@ -13,6 +15,8 @@ import {
 } from "./types";
 import { SearchConfigForm } from "./search_configuration_form";
 import { Evaluation_results } from "../evaluation/evaluation_results";
+import { BASE_EXPERIMENT_NODE_API_PATH } from '../../../../common';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 export const TemplateConfiguration = ({
                                         templateType,
@@ -24,6 +28,7 @@ export const TemplateConfiguration = ({
     searchConfigs: [],
   });
   const [showEvaluation, setShowEvaluation] = useState(false);
+  const history = useHistory();
 
   const handleConfigSave = (data: ConfigurationFormData) => {
     setConfigFormData(data);
@@ -33,17 +38,30 @@ export const TemplateConfiguration = ({
     setSearchConfigData(data);
   };
 
-  const handleNext = () => {
-    console.log('configFormData:', configFormData);
-    console.log('searchConfigs:', searchConfigData.searchConfigs);
+  const {
+      services: { http, notifications },
+    } = useOpenSearchDashboards();
+
+  const handleNext = async () => {
 
     if (configFormData && searchConfigData.searchConfigs.length > 0) {
       const combinedData = {
         ...configFormData,
         ...searchConfigData,
       };
-      console.log('Save configuration', combinedData);
-      setShowEvaluation(true);
+      try {
+        await http.post(BASE_EXPERIMENT_NODE_API_PATH, {
+          body: JSON.stringify(combinedData),
+        });
+
+        notifications.toasts.addSuccess(`Experiment created successfully`);
+        history.push('/');
+        setShowEvaluation(true);
+      } catch (err) {
+        notifications.toasts.addError(err, {
+          title: 'Failed to create search configuration',
+        });
+      }
     } else {
       console.log('Validation failed: Please fill in all required fields');
     }
@@ -79,6 +97,7 @@ export const TemplateConfiguration = ({
           <SearchConfigForm
             formData={searchConfigData}
             onChange={handleSearchConfigChange}
+            http={http}
           />
         </EuiFlexItem>
 

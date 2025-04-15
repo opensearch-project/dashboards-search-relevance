@@ -5,16 +5,17 @@ import {
   EuiFlexItem,
   EuiFormRow,
 } from '@elastic/eui';
-import { CustomizeForm } from './form/customize_form';
+import { ResultListComparisonForm } from './form/result_list_comparison_form';
 import { UserBehaviorForm } from './form/user_behavior_form';
 import { LLMForm } from './form/llm_form';
 import {
   ConfigurationFormProps,
   ConfigurationFormData,
-  CustomizeFormData,
+  ResultListComparisonFormData,
   UserBehaviorFormData,
   LLMFormData,
 } from './types';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 const getInitialFormData = (templateType: string): ConfigurationFormData => {
   const baseData = {
@@ -22,11 +23,9 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
   };
 
   switch (templateType) {
-    case 'Customize':
+    case 'Result List Comparison':
       return {
         ...baseData,
-        calculator: '',
-        scoreThreshold: '',
       };
     case 'User Behavior':
       return {
@@ -43,11 +42,15 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
         scoreThreshold: '',
       };
     default:
-      return baseData as unknown as CustomizeFormData | UserBehaviorFormData | LLMFormData;
+      return baseData as unknown as ResultListComparisonFormData | UserBehaviorFormData | LLMFormData;
   }
 };
 
 export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormProps) => {
+  const {
+    services: { http },
+  } = useOpenSearchDashboards();
+
   const [formData, setFormData] = useState<ConfigurationFormData>(
     getInitialFormData(templateType)
   );
@@ -73,11 +76,12 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
 
   const renderForm = () => {
     switch (templateType) {
-      case 'Customize':
+      case 'Result List Comparison':
         return (
-          <CustomizeForm
-            formData={formData as CustomizeFormData}
+          <ResultListComparisonForm
+            formData={formData as ResultListComparisonFormData}
             onChange={handleChange}
+            http={http}
           />
         );
       case 'User Behavior':
@@ -89,10 +93,20 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
         );
       case 'LLM':
         return (
+          <>
           <LLMForm
             formData={formData as LLMFormData}
             onChange={handleChange}
           />
+
+          <EuiFlexGroup justifyContent="flexEnd">
+                  <EuiFlexItem grow={false}>
+                    <EuiFormRow hasEmptyLabelSpace>
+                      <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
+                    </EuiFormRow>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                </>
         );
       default:
         return null;
@@ -102,13 +116,6 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
   return (
     <>
       {renderForm()}
-      <EuiFlexGroup justifyContent="flexEnd">
-        <EuiFlexItem grow={false}>
-          <EuiFormRow hasEmptyLabelSpace>
-            <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
-          </EuiFormRow>
-        </EuiFlexItem>
-      </EuiFlexGroup>
     </>
   );
 };
