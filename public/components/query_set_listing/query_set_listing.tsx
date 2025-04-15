@@ -3,26 +3,67 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import React, { useState } from 'react';
 import {
+  EuiFlexGroup,
+  EuiFlexItem,
   EuiButtonEmpty,
+  EuiPanel,
+  EuiText,
+  EuiCallOut,
+  EuiPageTemplate,
+  EuiPageHeader,
+  EuiButtonIcon,
 } from '@elastic/eui';
-import React from 'react';
-import { TableListView, reactRouterNavigate } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import {
+  reactRouterNavigate,
+  TableListView,
+} from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
+import { DeleteModal } from '../common/DeleteModal';
 
-
-interface QuerySetListingProps  extends RouteComponentProps {
+interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
 export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [querySetToDelete, setQuerySetToDelete] = useState<any>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Handle delete function
+  const handleDelete = async () => {
+    setIsLoading(true);
+    try {
+      const response = await http.delete(`${ServiceEndpoints.QuerySets}/${querySetToDelete.id}`);
+      console.log('Delete successful:', response);
+
+      // Close modal and clear state
+      setShowDeleteModal(false);
+      setQuerySetToDelete(null);
+      setError(null);
+
+      // Force table refresh
+      setRefreshKey((prev) => prev + 1);
+    } catch (err) {
+      setError('Failed to delete query set');
+      setShowDeleteModal(false);
+      setQuerySetToDelete(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Column definitions
   const tableColumns = [
     {
       field: 'name',
-      name: "Name",
+      name: 'Name',
       dataType: 'string',
       sortable: true,
       render: (
@@ -32,10 +73,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         }
       ) => (
         <>
-          <EuiButtonEmpty
-            size="xs"
-            {...reactRouterNavigate(history, `querySet/${querySet.id}`)}
-          >
+          <EuiButtonEmpty size="xs" {...reactRouterNavigate(history, `querySet/${querySet.id}`)}>
             {name}
           </EuiButtonEmpty>
         </>
@@ -43,27 +81,46 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
     },
     {
       field: 'sampling',
-      name: "Sampling Method",
+      name: 'Sampling Method',
       dataType: 'string',
       sortable: true,
     },
     {
       field: 'description',
-      name: "Description",
+      name: 'Description',
       dataType: 'string',
       sortable: true,
     },
     {
       field: 'numQueries',
-      name: "Query Set Size",
+      name: 'Query Set Size',
       dataType: 'number',
       sortable: true,
     },
     {
       field: 'timestamp',
-      name: "Timestamp",
+      name: 'Timestamp',
       dataType: 'string',
       sortable: true,
+      render: (timestamp: string) => (
+        <EuiText size="s">{new Date(timestamp).toLocaleString()}</EuiText>
+      ),
+    },
+    {
+      field: 'id',
+      name: 'Actions',
+      width: '10%',
+      render: (id: string, item: any) => (
+        <EuiButtonIcon
+          aria-label="Delete"
+          iconType="trash"
+          color="danger"
+          onClick={() => {
+            setQuerySetToDelete(item);
+            setShowDeleteModal(true);
+          }}
+        />
+      ),
     },
   ];
 
@@ -80,25 +137,106 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
 
   // Data fetching function
   const findQuerySets = async (search: any) => {
-    const response = await http.get(ServiceEndpoints.QuerySets);
-    const list = response ? response.hits.hits.map(mapQuerySetFields) : [];
-    // TODO: too many reissued requests on search
-    const filteredList = search ? list.filter((item) => item.name.includes(search)) : list;
-    return {
-      total: filteredList.length,
-      hits: filteredList,
-    };
-  };      
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await http.get(ServiceEndpoints.QuerySets);
+      const list = response ? response.hits.hits.map(mapQuerySetFields) : [];
+      // TODO: too many reissued requests on search
+      const filteredList = search
+        ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+        : list;
+      return {
+        total: filteredList.length,
+        hits: filteredList,
+      };
+    } catch (err) {
+      setError('Failed to load query sets');
+      return {
+        total: 0,
+        hits: [],
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <TableListView
-      headingId="querySetListingHeading"
-      entityName="Query Set"
-      entityNamePlural="Query Sets"
-      tableListTitle="Query Sets"
-      tableColumns={tableColumns}
-      findItems={findQuerySets}
-    />
+    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+      <EuiPageHeader
+        pageTitle="Query Sets"
+        description="Manage and view your query sets"
+        rightSideItems={[
+          <EuiButtonEmpty
+            iconType="arrowLeft"
+            size="s"
+            onClick={() => history.push('/')}
+            data-test-subj="backToHomeButton"
+          >
+            Back to Home
+          </EuiButtonEmpty>,
+        ]}
+      />
+
+      <EuiPanel hasBorder paddingSize="l">
+        <EuiFlexGroup direction="column" gutterSize="m">
+          <EuiFlexItem>
+            <EuiText size="s" color="subdued">
+              <p>
+                View and manage your existing query sets. Click on a query set name to view details.
+              </p>
+            </EuiText>
+          </EuiFlexItem>
+
+          <EuiFlexItem>
+            {error ? (
+              <EuiCallOut title="Error" color="danger">
+                <p>{error}</p>
+              </EuiCallOut>
+            ) : (
+              <TableListView
+                key={refreshKey}
+                headingId="querySetListingHeading"
+                entityName="Query Set"
+                entityNamePlural="Query Sets"
+                tableColumns={tableColumns}
+                findItems={findQuerySets}
+                loading={isLoading}
+                pagination={{
+                  initialPageSize: 10,
+                  pageSizeOptions: [5, 10, 20, 50],
+                }}
+                search={{
+                  box: {
+                    incremental: true,
+                    placeholder: 'Search query sets...',
+                    schema: true,
+                  },
+                }}
+                sorting={{
+                  sort: {
+                    field: 'timestamp',
+                    direction: 'desc',
+                  },
+                }}
+              />
+            )}
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiPanel>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && querySetToDelete && (
+        <DeleteModal
+          onClose={() => {
+            setShowDeleteModal(false);
+            setQuerySetToDelete(null);
+          }}
+          onConfirm={handleDelete}
+          itemName={querySetToDelete.name}
+        />
+      )}
+    </EuiPageTemplate>
   );
 };
 

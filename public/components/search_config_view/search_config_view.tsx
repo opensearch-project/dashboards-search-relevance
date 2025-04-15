@@ -8,12 +8,14 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 
-
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
-export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ match, http }) => {
+export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({
+  match,
+  http,
+}) => {
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,9 +23,9 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
   useEffect(() => {
     const fetchSearchConfiguration = async () => {
       try {
-        setLoading( true);
+        setLoading(true);
         const response = await http.get(ServiceEndpoints.SearchConfigurations);
-        const list = response ? response.hits.hits.map((hit: any) => ({...hit._source})) : [];
+        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
         const filteredList = list.filter((item: any) => item.id === match.params.id);
 
         if (filteredList.length > 0) {
@@ -33,6 +35,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
         }
       } catch (err) {
         setError('Error loading search configuration data');
+        // eslint-disable-next-line no-console
         console.error(err);
       } finally {
         setLoading(false);
