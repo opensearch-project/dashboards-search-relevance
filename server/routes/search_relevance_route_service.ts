@@ -261,9 +261,6 @@ export class SearchRelevanceRoutesService {
         keys[key] = value;
       });
       const body = req.body
-      console.log('Request:', req)
-      console.log('Request Body:', req.body)
-      console.log('Keys:', keys)
 
       const ExperimentResponse = await callWithRequest('searchRelevance.postExperiment', {body});
 

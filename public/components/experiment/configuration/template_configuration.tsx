@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
 import {
   EuiPanel,
   EuiFlexItem,
@@ -26,6 +28,7 @@ export const TemplateConfiguration = ({
     searchConfigs: [],
   });
   const [showEvaluation, setShowEvaluation] = useState(false);
+  const history = useHistory();
 
   const handleConfigSave = (data: ConfigurationFormData) => {
     setConfigFormData(data);
@@ -36,12 +39,10 @@ export const TemplateConfiguration = ({
   };
 
   const {
-      services: { http },
+      services: { http, notifications },
     } = useOpenSearchDashboards();
 
   const handleNext = async () => {
-    console.log('configFormData:', configFormData);
-    console.log('searchConfigs:', searchConfigData.searchConfigs);
 
     if (configFormData && searchConfigData.searchConfigs.length > 0) {
       const combinedData = {
@@ -53,7 +54,6 @@ export const TemplateConfiguration = ({
           body: JSON.stringify(combinedData),
         });
 
-        console.log('combinedData:', combinedData);
         notifications.toasts.addSuccess(`Experiment created successfully`);
         history.push('/');
         setShowEvaluation(true);

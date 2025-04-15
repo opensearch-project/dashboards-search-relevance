@@ -31,12 +31,10 @@ export const SearchConfigForm = ({
             // parse JSON data and build label/value object where labels are displayed in dropdown selection box
 
             const parsed = JSON.parse(data.resp);
-            console.log('Data', data)
             const options = parsed.map((search_config: any) => ({
                             label: search_config.search_configuration_name,
                             value: search_config.id,
                           }));
-            console.log('Options', options)
             setSearchConfigOptions(options);
           }
         } catch (error) {
