@@ -39,6 +39,20 @@ export function registerSearchRelevanceRoutes(
     },
     searchRelevanceRoutesService.listQuerySets
   );
+  router.post(
+    {
+      path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
+      validate: {
+        body: schema.any(),
+      },
+      options: {
+        body: {
+          accepts: 'application/json',
+        },
+      },
+    },
+    searchRelevanceRoutesService.createSearchConfiguration
+  );
   router.get(
     {
       path: `${BASE_SEARCH_CONFIGURATION_NODE_API_PATH}`,
@@ -83,6 +97,7 @@ export class SearchRelevanceRoutesService {
       req.url.searchParams.forEach((value, key) => {
         keys[key] = value;
       });
+      console.log('keys:', keys)
       const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', keys);
 
       return res.ok({
@@ -126,6 +141,50 @@ export class SearchRelevanceRoutesService {
     } catch (err) {
       return res.ok({
         body: {
+          resp: err.message,
+        },
+      });
+    }
+  };
+
+  createSearchConfiguration = async (
+    context: RequestHandlerContext,
+    req: OpenSearchDashboardsRequest,
+    res: OpenSearchDashboardsResponseFactory
+  ): Promise<IOpenSearchDashboardsResponse<any>> => {
+    const { data_source_id = '' } = req.params as { data_source_id?: string };
+    try {
+      const callWithRequest = getClientBasedOnDataSource(
+        context,
+        this.dataSourceEnabled,
+        req,
+        data_source_id,
+        this.client
+      );
+
+      // likely manual parsing won't be needed when we are consistent with GET/POST parameters
+      const keys = {}
+      req.url.searchParams.forEach((value, key) => {
+       keys[key] = value;
+      });
+      const body = req.body
+
+      console.log('Request:', req)
+      console.log('Request Body:', req.body)
+      console.log('Keys:', keys)
+
+      const SearchConfigurationsResponse = await callWithRequest('searchRelevance.createSearchConfiguration', {body});
+
+      return res.ok({
+        body: {
+          ok: true,
+          resp: SearchConfigurationsResponse,
+        },
+      });
+    } catch (err) {
+      return res.ok({
+        body: {
+          ok: false,
           resp: err.message,
         },
       });

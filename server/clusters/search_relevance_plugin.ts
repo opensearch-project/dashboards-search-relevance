@@ -38,6 +38,13 @@ export default function searchRelevancePlugin(Client: any, config: any, componen
     method: 'GET',
   });
 
+  searchRelevance.createSearchConfiguration = ca({
+      url: {
+        fmt: `${SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API}`,
+      },
+      method: 'POST',
+    });
+
   searchRelevance.listSearchConfigurations = ca({
     url: {
       fmt: `${SEARCH_RELEVANCE_SEARCH_CONFIGURATION_API}`,
