@@ -6,16 +6,16 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { EuiTabs, EuiTab, EuiSpacer, EuiPanel } from '@elastic/eui';
-import { ExperimentTabsProps } from './types';
-import { ExperimentTable } from './experiment_table';
+import { ResourceManagementTabsProps } from './types';
 import { SearchConfigurationListingWithRoute } from '../search_config_listing';
 import { QuerySetListingWithRoute } from '../query_set_listing';
 import { QuerySetCreateWithRouter } from '../query_set_create/query_set_create';
 import { QuerySetView } from '../query_set_view/query_set_view';
 import { SearchConfigurationCreateWithRouter } from '../search_config_create/search_config_create';
 import { SearchConfigurationView } from '../search_config_view/search_config_view';
-import { TemplateCards } from './template_card/template_cards';
-import { ExperimentView } from './experiment_view';
+import { TemplateCards } from '../experiment_create/template_card/template_cards';
+import { ExperimentView } from '../experiment_view/experiment_view';
+import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
 
 const TAB_STYLES = {
   mainTabs: {
@@ -45,7 +45,7 @@ const TAB_STYLES = {
   },
 };
 
-export const ExperimentTabs = ({
+export const ResourceManagementTabs = ({
   experiments,
   resultListComparisonExperiments,
   history,
@@ -54,10 +54,10 @@ export const ExperimentTabs = ({
   entity,
   entityAction,
   entityId,
-}: ExperimentTabsProps) => {
+}: ResourceManagementTabsProps) => {
   const selectedMainTabId = entity ? entity : 'experiment';
   // HACK: we map view to list, because we show the view pane under the list tab
-  const selectedSubTabs = entityAction && entityAction!='view' ? entityAction : 'list';
+  const selectedSubTabs = entityAction && entityAction != 'view' ? entityAction : 'list';
 
   const mainTabs = [
     { id: 'experiment', name: 'Experiment' },
@@ -71,7 +71,7 @@ export const ExperimentTabs = ({
         <EuiTab
           key={tab.id}
           isSelected={selectedSubTabs === tab.id}
-          onClick={() => history.push("/" + selectedMainTabId + "/" + tab.id)}
+          onClick={() => history.push('/' + selectedMainTabId + '/' + tab.id)}
           style={{
             ...TAB_STYLES.subTab,
             ...(selectedSubTabs === tab.id ? TAB_STYLES.subTabSelected : {}),
@@ -95,14 +95,12 @@ export const ExperimentTabs = ({
             <EuiSpacer size="m" />
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
-                <ExperimentTable items={[...experiments, ...resultListComparisonExperiments]} />
-              ) : (<></>)}
-              {entityAction === 'view' ? (
-                <ExperimentView http={http} id={entityId} />
-              ) : (<></>)}
-              {selectedSubTabs === 'create' ? (
-                <TemplateCards onClose={() => {}} />
-              ) : (<></>)}
+                <ExperimentListingWithRoute http={http} />
+              ) : (
+                <></>
+              )}
+              {entityAction === 'view' ? <ExperimentView http={http} id={entityId} /> : <></>}
+              {selectedSubTabs === 'create' ? <TemplateCards onClose={() => {}} /> : <></>}
             </EuiPanel>
           </>
         );
@@ -118,13 +116,15 @@ export const ExperimentTabs = ({
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
                 <QuerySetListingWithRoute http={http} />
-              ) : (<></>)}
-              {entityAction === 'view' ? (
-                <QuerySetView http={http} id={entityId} />
-              ) : (<></>)}
+              ) : (
+                <></>
+              )}
+              {entityAction === 'view' ? <QuerySetView http={http} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? (
                 <QuerySetCreateWithRouter http={http} notifications={notifications} />
-              ) : (<></>)}
+              ) : (
+                <></>
+              )}
             </EuiPanel>
           </>
         );
@@ -140,13 +140,19 @@ export const ExperimentTabs = ({
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
                 <SearchConfigurationListingWithRoute http={http} />
-              ) : (<></>)}
+              ) : (
+                <></>
+              )}
               {entityAction === 'view' ? (
                 <SearchConfigurationView http={http} id={entityId} />
-              ) : (<></>)}
+              ) : (
+                <></>
+              )}
               {selectedSubTabs === 'create' ? (
                 <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
-              ) : (<></>)}
+              ) : (
+                <></>
+              )}
             </EuiPanel>
           </>
         );
@@ -164,7 +170,7 @@ export const ExperimentTabs = ({
             <EuiTab
               key={tab.id}
               isSelected={selectedMainTabId === tab.id}
-              onClick={() => history.push("/" + tab.id)}
+              onClick={() => history.push('/' + tab.id)}
               style={{
                 ...TAB_STYLES.mainTab,
                 ...(selectedMainTabId === tab.id ? TAB_STYLES.mainTabSelected : {}),
@@ -181,6 +187,6 @@ export const ExperimentTabs = ({
   );
 };
 
-export const ExperimentTabsWithRoute = withRouter(ExperimentTabs);
+export const ResourceManagementTabsWithRoute = withRouter(ResourceManagementTabs);
 
-export default ExperimentTabsWithRoute;
+export default ResourceManagementTabsWithRoute;

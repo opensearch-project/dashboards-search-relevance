@@ -5,55 +5,55 @@
 
 import React, { useState } from 'react';
 import {
-  EuiFlexGroup,
   EuiFlexItem,
   EuiButtonEmpty,
-  EuiPanel,
   EuiText,
   EuiCallOut,
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
 } from '@elastic/eui';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 
-interface QuerySetListingProps extends RouteComponentProps {
+interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
-export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, history }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [querySetToDelete, setQuerySetToDelete] = useState<any>(null);
+  const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   // Handle delete function
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      const response = await http.delete(`${ServiceEndpoints.QuerySets}/${querySetToDelete.id}`);
+      const response = await http.delete(
+        `${ServiceEndpoints.Experiments}/${experimentToDelete.id}`
+      );
       console.log('Delete successful:', response);
 
       // Close modal and clear state
       setShowDeleteModal(false);
-      setQuerySetToDelete(null);
+      setExperimentToDelete(null);
       setError(null);
 
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
-      setError('Failed to delete query set');
+      setError('Failed to delete experiment');
       setShowDeleteModal(false);
-      setQuerySetToDelete(null);
+      setExperimentToDelete(null);
     } finally {
       setIsLoading(false);
     }
@@ -62,43 +62,42 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
   // Column definitions
   const tableColumns = [
     {
-      field: 'name',
-      name: 'Name',
+      field: 'id',
+      name: 'ID',
       dataType: 'string',
       sortable: true,
       render: (
-        name: string,
-        querySet: {
+        id: string,
+        experiment: {
           id: string;
         }
       ) => (
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `querySet/view/${querySet.id}`)}
+            {...reactRouterNavigate(history, `experiment/view/${experiment.id}`)}
           >
-            {name}
+            {id}
           </EuiButtonEmpty>
         </>
       ),
     },
     {
-      field: 'sampling',
-      name: 'Sampling Method',
+      field: 'searchConfigurationList',
+      name: 'Evaluation Type',
       dataType: 'string',
       sortable: true,
+      render: (searchConfigurationList: string[]) => {
+        const evaluationType =
+          searchConfigurationList.length === 2 ? 'Result List Comparison' : 'Quality Metrics';
+        return <EuiText size="s">{evaluationType}</EuiText>;
+      },
     },
     {
-      field: 'description',
-      name: 'Description',
-      dataType: 'string',
-      sortable: true,
-    },
-    {
-      field: 'numQueries',
-      name: 'Query Set Size',
-      dataType: 'number',
-      sortable: true,
+      field: 'queryTexts',
+      name: 'Queries Run',
+      width: '20%',
+      render: (item: any) => <EuiText size="s">{item?.results?.queryTexts?.size() || '0'}</EuiText>,
     },
     {
       field: 'timestamp',
@@ -119,7 +118,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
           iconType="trash"
           color="danger"
           onClick={() => {
-            setQuerySetToDelete(item);
+            setExperimentToDelete(item);
             setShowDeleteModal(true);
           }}
         />
@@ -127,24 +126,26 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
     },
   ];
 
-  const mapQuerySetFields = (obj: any) => {
+  const mapExperimentFields = (obj: any) => {
     return {
       id: obj._source.id,
-      name: obj._source.name,
-      sampling: obj._source.sampling,
-      description: obj._source.description,
+      index: obj._source.index,
       timestamp: obj._source.timestamp,
-      numQueries: Object.keys(obj._source.querySetQueries).length,
+      querySetId: obj._source.querySetId,
+      searchConfigurationList: obj._source.searchConfigurationList,
+      k: obj._source.k,
+      results: obj._source.results,
+      queryTexts: obj._source.results.queryTexts,
     };
   };
 
   // Data fetching function
-  const findQuerySets = async (search: any) => {
+  const findExperiments = async (search: any) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await http.get(ServiceEndpoints.QuerySets);
-      const list = response ? response.hits.hits.map(mapQuerySetFields) : [];
+      const response = await http.get(ServiceEndpoints.Experiments);
+      const list = response ? response.hits.hits.map(mapExperimentFields) : [];
       // TODO: too many reissued requests on search
       const filteredList = search
         ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
@@ -154,7 +155,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
-      setError('Failed to load query sets');
+      setError('Failed to load experiments');
       return {
         total: 0,
         hits: [],
@@ -167,8 +168,8 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
-        pageTitle="Query Sets"
-        description="View and manage your existing query sets. Click on a query set name to view details."
+        pageTitle="Experiments"
+        description="View and manage your existing experiments. Click on a experiment id to view details."
         rightSideItems={[
           <EuiButtonEmpty
             iconType="arrowLeft"
@@ -189,11 +190,11 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         ) : (
           <TableListView
             key={refreshKey}
-            headingId="querySetListingHeading"
-            entityName="Query Set"
-            entityNamePlural="Query Sets"
+            headingId="experimentListingHeading"
+            entityName="Experiment"
+            entityNamePlural="Experiments"
             tableColumns={tableColumns}
-            findItems={findQuerySets}
+            findItems={findExperiments}
             loading={isLoading}
             pagination={{
               initialPageSize: 10,
@@ -202,7 +203,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
             search={{
               box: {
                 incremental: true,
-                placeholder: 'Search query sets...',
+                placeholder: 'Search experiments...',
                 schema: true,
               },
             }}
@@ -217,20 +218,20 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       </EuiFlexItem>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && querySetToDelete && (
+      {showDeleteModal && experimentToDelete && (
         <DeleteModal
           onClose={() => {
             setShowDeleteModal(false);
-            setQuerySetToDelete(null);
+            setExperimentToDelete(null);
           }}
           onConfirm={handleDelete}
-          itemName={querySetToDelete.name}
+          itemName={experimentToDelete.name}
         />
       )}
     </EuiPageTemplate>
   );
 };
 
-export const QuerySetListingWithRoute = withRouter(QuerySetListing);
+export const ExperimentListingWithRoute = withRouter(ExperimentListing);
 
-export default QuerySetListingWithRoute;
+export default ExperimentListingWithRoute;

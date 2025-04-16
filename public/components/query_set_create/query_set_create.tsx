@@ -164,7 +164,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   };
 
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
         description="Configure a new query set with sampling method and size"
@@ -190,128 +190,120 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         ]}
       />
 
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>Fill in the details below to create a new query set.</p>
-            </EuiText>
-          </EuiFlexItem>
-
-          {/* Form Content */}
-          <EuiFlexItem>
-            <EuiForm
-              component="form"
-              isInvalid={Boolean(
-                nameError || descriptionError || querySizeError || manualQueriesError
-              )}
+      {/* Form Content */}
+      <EuiPanel hasBorder={true}>
+        <EuiFlexItem>
+          <EuiForm
+            component="form"
+            isInvalid={Boolean(
+              nameError || descriptionError || querySizeError || manualQueriesError
+            )}
+          >
+            <EuiFormRow fullWidth>
+              <EuiButton
+                onClick={() => setIsManualInput(!isManualInput)}
+                size="s"
+                iconType={isManualInput ? 'aggregate' : 'inputOutput'}
+              >
+                Switch to {isManualInput ? 'UBI Sampling' : 'Manual'} Input
+              </EuiButton>
+            </EuiFormRow>
+            {/* Name field */}
+            <EuiCompressedFormRow
+              label="Name"
+              isInvalid={nameError.length > 0}
+              error={nameError}
+              helpText="A unique name for this query set"
+              fullWidth
             >
-              <EuiFormRow fullWidth>
-                <EuiButton
-                  onClick={() => setIsManualInput(!isManualInput)}
-                  size="s"
-                  iconType={isManualInput ? 'aggregate' : 'inputOutput'}
-                >
-                  Switch to {isManualInput ? 'UBI Sampling' : 'Manual'} Input
-                </EuiButton>
-              </EuiFormRow>
-              {/* Name field */}
-              <EuiCompressedFormRow
-                label="Name"
-                isInvalid={nameError.length > 0}
-                error={nameError}
-                helpText="A unique name for this query set"
-                fullWidth
-              >
-                <EuiCompressedTextArea
-                  placeholder="Enter query set name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={validateName}
-                  isInvalid={descriptionError.length > 0}
-                  data-test-subj="querySetDescriptionInput"
-                  fullWidth
-                />
-              </EuiCompressedFormRow>
-              {/* Description field */}
-              <EuiCompressedFormRow
-                label="Description"
+              <EuiCompressedTextArea
+                placeholder="Enter query set name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={validateName}
                 isInvalid={descriptionError.length > 0}
-                error={descriptionError}
-                helpText="Detailed description of the query set purpose"
+                data-test-subj="querySetDescriptionInput"
+                fullWidth
+              />
+            </EuiCompressedFormRow>
+            {/* Description field */}
+            <EuiCompressedFormRow
+              label="Description"
+              isInvalid={descriptionError.length > 0}
+              error={descriptionError}
+              helpText="Detailed description of the query set purpose"
+              fullWidth
+            >
+              <EuiCompressedTextArea
+                placeholder="Describe the purpose of this query set"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onBlur={validateDescription}
+                isInvalid={descriptionError.length > 0}
+                data-test-subj="querySetDescriptionInput"
+                fullWidth
+              />
+            </EuiCompressedFormRow>
+            {isManualInput ? (
+              <EuiFormRow
+                label="Manual Queries"
+                error={manualQueriesError}
+                isInvalid={Boolean(manualQueriesError)}
+                helpText="Enter queries separaarated by commas (e.g., 'apple, banana, orange')"
                 fullWidth
               >
-                <EuiCompressedTextArea
-                  placeholder="Describe the purpose of this query set"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  onBlur={validateDescription}
-                  isInvalid={descriptionError.length > 0}
-                  data-test-subj="querySetDescriptionInput"
-                  fullWidth
-                />
-              </EuiCompressedFormRow>
-              {isManualInput ? (
-                <EuiFormRow
-                  label="Manual Queries"
-                  error={manualQueriesError}
+                <EuiTextArea
+                  placeholder="Enter queries separated by commas"
+                  value={manualQueries}
+                  onChange={(e) => setManualQueries(e.target.value)}
                   isInvalid={Boolean(manualQueriesError)}
-                  helpText="Enter queries separaarated by commas (e.g., 'apple, banana, orange')"
+                  fullWidth
+                  rows={6}
+                  data-test-subj="manualQueriesInput"
+                />
+              </EuiFormRow>
+            ) : (
+              <>
+                {/* Sampling method field */}
+                <EuiFormRow
+                  label="Sampling Method"
+                  helpText="Select the sampling method for this query set"
                   fullWidth
                 >
-                  <EuiTextArea
-                    placeholder="Enter queries separated by commas"
-                    value={manualQueries}
-                    onChange={(e) => setManualQueries(e.target.value)}
-                    isInvalid={Boolean(manualQueriesError)}
+                  <EuiSelect
+                    options={samplingOptions}
+                    value={sampling}
+                    onChange={(e) => setSampling(e.target.value)}
+                    data-test-subj="querySetSamplingSelect"
                     fullWidth
-                    rows={6}
-                    data-test-subj="manualQueriesInput"
                   />
                 </EuiFormRow>
-              ) : (
-                <>
-                  {/* Sampling method field */}
-                  <EuiFormRow
-                    label="Sampling Method"
-                    helpText="Select the sampling method for this query set"
-                    fullWidth
-                  >
-                    <EuiSelect
-                      options={samplingOptions}
-                      value={sampling}
-                      onChange={(e) => setSampling(e.target.value)}
-                      data-test-subj="querySetSamplingSelect"
-                      fullWidth
-                    />
-                  </EuiFormRow>
 
-                  {/* Query set size field */}
-                  <EuiFormRow
-                    label="Query Set Size"
-                    error={querySizeError}
+                {/* Query set size field */}
+                <EuiFormRow
+                  label="Query Set Size"
+                  error={querySizeError}
+                  isInvalid={Boolean(querySizeError)}
+                  helpText="Number of queries in the set (must be positive)"
+                  fullWidth
+                >
+                  <EuiFieldNumber
+                    value={querySetSize}
+                    min={1}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      setQuerySetSize(isNaN(value) ? 0 : value);
+                      setQuerySizeError(value < 1 ? 'Query Set Size must be positive.' : '');
+                    }}
                     isInvalid={Boolean(querySizeError)}
-                    helpText="Number of queries in the set (must be positive)"
                     fullWidth
-                  >
-                    <EuiFieldNumber
-                      value={querySetSize}
-                      min={1}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value, 10);
-                        setQuerySetSize(isNaN(value) ? 0 : value);
-                        setQuerySizeError(value < 1 ? 'Query Set Size must be positive.' : '');
-                      }}
-                      isInvalid={Boolean(querySizeError)}
-                      fullWidth
-                      data-test-subj="querySetSizeInput"
-                    />
-                  </EuiFormRow>
-                </>
-              )}
-            </EuiForm>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+                    data-test-subj="querySetSizeInput"
+                  />
+                </EuiFormRow>
+              </>
+            )}
+          </EuiForm>
+        </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>
   );

@@ -110,7 +110,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   };
 
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Create Search Configuration"
         description="Configure a new search configuration with query body and options"
@@ -135,105 +135,96 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           </EuiButton>,
         ]}
       />
-
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>Fill in the details below to create a new search configuration.</p>
-            </EuiText>
-          </EuiFlexItem>
-
-          <EuiFlexItem>
-            <EuiForm component="form" isInvalid={Boolean(nameError || queryBodyError)}>
-              <EuiFormRow
-                label="Search Configuration Name"
-                error={nameError}
+      <EuiPanel hasBorder={true}>
+        <EuiFlexItem>
+          <EuiForm component="form" isInvalid={Boolean(nameError || queryBodyError)}>
+            <EuiFormRow
+              label="Search Configuration Name"
+              error={nameError}
+              isInvalid={Boolean(nameError)}
+              helpText="A unique name for this search configuration"
+              fullWidth
+            >
+              <EuiFieldText
+                placeholder="Enter search configuration name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={validateName}
                 isInvalid={Boolean(nameError)}
-                helpText="A unique name for this search configuration"
                 fullWidth
-              >
-                <EuiFieldText
-                  placeholder="Enter search configuration name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={validateName}
-                  isInvalid={Boolean(nameError)}
-                  fullWidth
-                  data-test-subj="searchConfigurationNameInput"
-                />
-              </EuiFormRow>
+                data-test-subj="searchConfigurationNameInput"
+              />
+            </EuiFormRow>
 
-              <EuiFormRow
-                label="Query Body"
-                error={queryBodyError}
-                isInvalid={Boolean(queryBodyError)}
-                helpText="Define the query body in JSON format"
-                fullWidth
-              >
-                <EuiCodeEditor
-                  mode="json"
-                  theme="github"
-                  width="100%"
-                  value={queryBody}
-                  onChange={(value) => {
+            <EuiFormRow
+              label="Query Body"
+              error={queryBodyError}
+              isInvalid={Boolean(queryBodyError)}
+              helpText="Define the query body in JSON format"
+              fullWidth
+            >
+              <EuiCodeEditor
+                mode="json"
+                theme="github"
+                width="100%"
+                value={queryBody}
+                onChange={(value) => {
+                  try {
+                    const parsed = JSON.parse(value);
+                    const compactJson = JSON.stringify(parsed);
+                    setQueryBody(compactJson);
+                    setQueryBodyError('');
+                  } catch {
+                    // If it's not valid JSON, just set the value as-is
+                    setQueryBody(value);
+                  }
+                }}
+                setOptions={{
+                  showLineNumbers: true,
+                  tabSize: 2,
+                }}
+                onBlur={() => {
+                  if (!queryBody.trim()) {
+                    setQueryBodyError('Query Body is required.');
+                  } else {
                     try {
-                      const parsed = JSON.parse(value);
+                      const parsed = JSON.parse(queryBody);
                       const compactJson = JSON.stringify(parsed);
-                      setQueryBody(compactJson);
+                      setQueryBody(compactJson); // Update the value to the compact version
                       setQueryBodyError('');
                     } catch {
-                      // If it's not valid JSON, just set the value as-is
-                      setQueryBody(value);
+                      setQueryBodyError('Query Body must be valid JSON.');
                     }
-                  }}
-                  setOptions={{
-                    showLineNumbers: true,
-                    tabSize: 2,
-                  }}
-                  onBlur={() => {
-                    if (!queryBody.trim()) {
-                      setQueryBodyError('Query Body is required.');
-                    } else {
-                      try {
-                        const parsed = JSON.parse(queryBody);
-                        const compactJson = JSON.stringify(parsed);
-                        setQueryBody(compactJson); // Update the value to the compact version
-                        setQueryBodyError('');
-                      } catch {
-                        setQueryBodyError('Query Body must be valid JSON.');
-                      }
-                    }
-                  }}
-                  isInvalid={Boolean(queryBodyError)}
-                  aria-label="Code Editor"
-                />
-              </EuiFormRow>
+                  }
+                }}
+                isInvalid={Boolean(queryBodyError)}
+                aria-label="Code Editor"
+              />
+            </EuiFormRow>
 
-              <EuiFormRow
-                label="Search Pipeline"
-                helpText="Define the search pipeline to be used"
+            <EuiFormRow
+              label="Search Pipeline"
+              helpText="Define the search pipeline to be used"
+              fullWidth
+            >
+              <EuiFieldText
+                placeholder="Enter search pipeline"
+                value={searchPipeline}
+                onChange={(e) => setSearchPipeline(e.target.value)}
                 fullWidth
-              >
-                <EuiFieldText
-                  placeholder="Enter search pipeline"
-                  value={searchPipeline}
-                  onChange={(e) => setSearchPipeline(e.target.value)}
-                  fullWidth
-                />
-              </EuiFormRow>
+              />
+            </EuiFormRow>
 
-              <EuiFormRow label="Search Template" helpText="Define the search template" fullWidth>
-                <EuiFieldText
-                  placeholder="Enter search template"
-                  value={searchTemplate}
-                  onChange={(e) => setSearchTemplate(e.target.value)}
-                  fullWidth
-                />
-              </EuiFormRow>
-            </EuiForm>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+            <EuiFormRow label="Search Template" helpText="Define the search template" fullWidth>
+              <EuiFieldText
+                placeholder="Enter search template"
+                value={searchTemplate}
+                onChange={(e) => setSearchTemplate(e.target.value)}
+                fullWidth
+              />
+            </EuiFormRow>
+          </EuiForm>
+        </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>
   );
