@@ -23,15 +23,7 @@ import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/
 import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME } from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
-import { ExperimentPage } from './experiment';
-import { SearchConfigurationView } from './search_config_view/search_config_view';
-import { QuerySetView } from './query_set_view/query_set_view';
-import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
-import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
-import { QuerySetListingWithRoute } from './query_set_listing';
-import SearchConfigurationListingWithRoute, {
-  SearchConfigurationListing,
-} from './search_config_listing/search_config_listing';
+import { ResourceManagementPage } from './resource_management_home/resource_management_page';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -170,7 +162,7 @@ export const SearchRelevanceApp = ({
                           setActionMenu={setActionMenu}
                         />
                       ) : (
-                        <ExperimentPage
+                        <ResourceManagementPage
                           application={application}
                           chrome={chrome}
                           http={http}
