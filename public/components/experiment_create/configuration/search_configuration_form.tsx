@@ -1,18 +1,36 @@
 import React, { useEffect, useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { SearchConfigOption, SearchConfigFromData } from './types';
+import { SearchConfigOption, SearchConfigFromData, IndexOption } from './types';
 import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../../common';
+import { INDEX_NODE_API_PATH, ServiceEndpoints } from '../../../../common';
+import { DocumentsIndex } from '../../../types';
 
 interface SearchConfigFormProps {
   formData: SearchConfigFromData;
-  onChange: (data: SearchConfigFromData) => void;
+  onChange: (data: Partial<SearchConfigFromData>) => void;
   http: CoreStart['http'];
 }
 
 export const SearchConfigForm = ({ formData, onChange, http }: SearchConfigFormProps) => {
   const [searchConfigOptions, setSearchConfigOptions] = useState<SearchConfigOption[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [indexOptions, setIndexOptions] = useState<IndexOption[]>([]);
+  const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState<boolean>(true);
+
+  // need to initialize with defaulted form data with empty lists.
+  const [defaultFormData, setDefaultFormData] = useState<SearchConfigFromData>({
+    searchConfigs: [],
+    indexes: [],
+    ...formData,
+  });
+
+  useEffect(() => {
+    setDefaultFormData({
+      searchConfigs: [],
+      indexes: [],
+      ...formData,
+    });
+  }, [formData]);
 
   useEffect(() => {
     const fetchSearchConfigurations = async () => {
@@ -24,35 +42,78 @@ export const SearchConfigForm = ({ formData, onChange, http }: SearchConfigFormP
         }));
         setSearchConfigOptions(options);
       } catch (error) {
-        console.error('Failed to fetch query sets', error);
+        console.error('Failed to fetch search configurations', error);
         setSearchConfigOptions([]);
       } finally {
-        setIsLoading(false);
+        setIsLoadingConfigs(false);
       }
     };
+
+    const fetchIndexes = async () => {
+      try {
+        const res = await http.get(`${INDEX_NODE_API_PATH}`);
+        const options = res.map((index: DocumentsIndex) => ({
+          label: index.index,
+          value: index.uuid,
+        }));
+        setIndexOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch indexes', error);
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+
     fetchSearchConfigurations();
+    fetchIndexes();
   }, [http]);
 
   const handleSearchConfigsChange = (selected: SearchConfigOption[]) => {
-    onChange({
+    const newData = {
+      ...defaultFormData,
       searchConfigs: selected || [],
-    });
+    };
+    onChange(newData);
+  };
+
+  const handleIndexesChange = (selected: IndexOption[]) => {
+    const newData = {
+      ...defaultFormData,
+      indexes: selected || [],
+    };
+    onChange(newData);
   };
 
   return (
-    <EuiFlexGroup gutterSize="m" direction="row" style={{ maxWidth: 600 }}>
-      <EuiFlexItem grow={4}>
+    <EuiFlexGroup gutterSize="m" direction="column" style={{ maxWidth: 600 }}>
+      <EuiFlexItem>
         <EuiFormRow
           label="Search Configurations"
           helpText="Select two or more search configurations"
         >
           <EuiComboBox
-            placeholholder="Select search configuration"
+            placeholder="Select search configuration"
             options={searchConfigOptions}
-            selectedOptions={formData.searchConfigs}
+            selectedOptions={defaultFormData.searchConfigs || []}
             onChange={handleSearchConfigsChange}
             isClearable={true}
-            isInvalid={formData.searchConfigs.length === 0}
+            isInvalid={(defaultFormData.searchConfigs || []).length === 0}
+            isLoading={isLoadingConfigs}
+            multi={true}
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+      <EuiFlexItem>
+        <EuiFormRow label="Index" helpText="Select one index">
+          <EuiComboBox
+            placeholder="Select index"
+            options={indexOptions}
+            selectedOptions={defaultFormData.indexes || []}
+            onChange={handleIndexesChange}
+            isClearable={true}
+            isInvalid={(defaultFormData.indexes || []).length === 0}
+            isLoading={isLoadingIndexes}
             multi={true}
           />
         </EuiFormRow>

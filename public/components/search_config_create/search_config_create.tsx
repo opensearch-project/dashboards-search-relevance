@@ -8,7 +8,6 @@ import {
   EuiButtonEmpty,
   EuiCodeEditor,
   EuiFieldText,
-  EuiFlexGroup,
   EuiFlexItem,
   EuiForm,
   EuiFormRow,
@@ -52,7 +51,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       setNameError('');
     }
 
-    // TODO: JSON validation for the Query DSL object?
     if (!queryBody.trim()) {
       setQueryBodyError('Query Body is required.');
       isValid = false;

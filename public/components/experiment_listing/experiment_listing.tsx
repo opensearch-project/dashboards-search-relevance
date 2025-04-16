@@ -94,10 +94,10 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       },
     },
     {
-      field: 'queryTexts',
+      field: 'results',
       name: 'Queries Run',
       width: '20%',
-      render: (item: any) => <EuiText size="s">{item?.results?.queryTexts?.size() || '0'}</EuiText>,
+      render: (results: any) => <EuiText size="s">{results?.queryTexts?.length || '0'}</EuiText>,
     },
     {
       field: 'timestamp',
@@ -135,7 +135,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       searchConfigurationList: obj._source.searchConfigurationList,
       k: obj._source.k,
       results: obj._source.results,
-      queryTexts: obj._source.results.queryTexts,
     };
   };
 
