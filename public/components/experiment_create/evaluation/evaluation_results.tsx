@@ -251,7 +251,6 @@ export const EvaluationResults = ({
               </EuiText>
               <EuiSpacer size="s" />
               <EuiText size="s">
-                <p>Index: {experimentResults.index}</p>
                 <p>Query Set ID: {experimentResults.querySetId}</p>
                 <p>K: {experimentResults.k}</p>
                 <p>Configurations: {experimentResults.searchConfigurationList.join(', ')}</p>

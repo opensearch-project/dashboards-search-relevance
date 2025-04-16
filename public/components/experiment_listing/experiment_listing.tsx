@@ -129,7 +129,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const mapExperimentFields = (obj: any) => {
     return {
       id: obj._source.id,
-      index: obj._source.index,
       timestamp: obj._source.timestamp,
       querySetId: obj._source.querySetId,
       searchConfigurationList: obj._source.searchConfigurationList,

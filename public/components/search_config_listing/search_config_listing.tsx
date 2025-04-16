@@ -64,6 +64,12 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       ),
     },
     {
+      filed: 'index',
+      name: 'Index',
+      dataType: 'string',
+      sortable: true,
+    },
+    {
       field: 'query_body',
       name: 'Query Body',
       dataType: 'string',
@@ -141,6 +147,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
     return {
       id: obj._source.id,
       search_configuration_name: obj._source.name,
+      index: obj._source.index,
       query_body: obj._source.queryBody,
       timestamp: obj._source.timestamp,
     };

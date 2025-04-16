@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 
-import {
-  EuiPanel,
-  EuiFlexItem,
-  EuiFlexGroup,
-  EuiTitle,
-  EuiSpacer,
-  EuiLoadingSpinner,
-} from '@elastic/eui';
+import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } from '@elastic/eui';
 import { ConfigurationForm } from './configuration_form';
 import { ConfigurationActions } from './configuration_action';
 import { TemplateConfigurationProps, ConfigurationFormData, SearchConfigFromData } from './types';
@@ -31,7 +23,6 @@ export const TemplateConfiguration = ({
    */
   const [searchConfigData, setSearchConfigData] = useState<SearchConfigFromData>({
     searchConfigs: [],
-    indexes: [],
   });
 
   const [experimentId, setExperimentId] = useState<string | null>(null);
@@ -59,10 +50,8 @@ export const TemplateConfiguration = ({
       try {
         setIsCreating(true);
         console.log('Experiment creation', combinedData);
-        console.log('index: ', combinedData.indexes[0].label);
         const response = await http.post(ServiceEndpoints.Experiments, {
           body: JSON.stringify({
-            index: combinedData.indexes[0].label,
             k: combinedData.k,
             querySetId: combinedData.querySets[0].value,
             searchConfigurationList: combinedData.searchConfigs.map((o) => o.value),
