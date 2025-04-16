@@ -17,7 +17,7 @@ import React from 'react';
 export const DeleteModal = ({ onClose, onConfirm, itemName }) => (
   <EuiModal onClose={onClose}>
     <EuiModalHeader>
-      <EuiModalHeaderTitle>Delete Query Set</EuiModalHeaderTitle>
+      <EuiModalHeaderTitle>Delete Item</EuiModalHeaderTitle>
     </EuiModalHeader>
 
     <EuiModalBody>

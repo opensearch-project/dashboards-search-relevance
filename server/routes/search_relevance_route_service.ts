@@ -50,7 +50,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.QuerySets)
   );
-  router.post(
+  router.put(
     {
       path: ServiceEndpoints.SearchConfigurations,
       validate: {
@@ -86,6 +86,95 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('PUT', BackendEndpoints.Experiments)
   );
+  router.get(
+    {
+      path: ServiceEndpoints.Experiments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.SearchConfigurations}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.SearchConfigurations)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.QuerySets}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.QuerySets)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Experiments)
+  );
+  router.put(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: {
+        body: schema.any(),
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Judgments)
+  );
 }
 
 const backendAction = (method, path) => {
@@ -105,8 +194,15 @@ const backendAction = (method, path) => {
         const { id } = req.params;
         const deletePath = `${path}/${id}`;
         response = await caller('transport.request', {
-          method: 'DELETE',
+          method: method,
           path: deletePath,
+        });
+      } else if (method === 'GET' && req.params.id) {
+        // Handle GET request for individual experiment
+        const getPath = `${path}/${req.params.id}`;
+        response = await caller('transport.request', {
+          method: method,
+          path: getPath,
         });
       } else {
         // Handle PUT, POST, GET as before

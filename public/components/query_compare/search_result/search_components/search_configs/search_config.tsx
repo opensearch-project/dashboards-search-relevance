@@ -211,7 +211,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiCompressedFormRow fullWidth label="Pipeline-optional">
+          <EuiCompressedFormRow
+            label={
+              <p>
+                Pipeline <i> - optional </i>
+              </p>
+            }
+            fullWidth
+          >
             <EuiCompressedComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}
@@ -238,7 +245,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           <p>
             Enter a query in{' '}
             <a href="https://opensearch.org/docs/latest/query-dsl/index/">OpenSearch Query DSL</a>.
-            Use %SearchText% to refer to the text in the search bar
+            Use %SearchText% to refer to the text in the search bar.
           </p>
         }
       >

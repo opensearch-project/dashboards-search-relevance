@@ -6,21 +6,19 @@
 import {
   EuiButton,
   EuiButtonEmpty,
-  EuiCodeEditor,
-  EuiFieldText,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiForm,
-  EuiFormRow,
   EuiPageHeader,
   EuiPageTemplate,
   EuiPanel,
-  EuiText,
+  EuiFlexGroup,
+  EuiFlexItem,
 } from '@elastic/eui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { NotificationsStart } from '../../../../../core/public';
 import { ServiceEndpoints } from '../../../common';
+import { DocumentsIndex } from '../../types';
+import { ValidationPanel } from './validation_panel';
+import { SearchConfigurationForm } from './search_configuration_form';
 
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -35,10 +33,40 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   // Form state
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
-  const [queryBody, setQueryBody] = useState('');
-  const [queryBodyError, setQueryBodyError] = useState('');
-  const [searchPipeline, setSearchPipeline] = useState('');
+  const [query, setQuery] = useState('');
+  const [queryError, setQueryError] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
+
+  const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [selectedIndex, setSelectedIndex] = useState<Array<{ label: string; value: string }>>([]);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState(true);
+
+  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
+  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
+  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
+
+  useEffect(() => {
+    const fetchIndexes = async () => {
+      try {
+        const res = await http.get(ServiceEndpoints.GetIndexes);
+        const options = res.map((index: DocumentsIndex) => ({
+          label: index.index,
+          value: index.uuid,
+        }));
+        setIndexOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch indexes', error);
+        notifications.toasts.addError(error, {
+          title: 'Failed to fetch indexes',
+        });
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+
+    fetchIndexes();
+  }, [http, notifications.toasts]);
 
   // Validate form fields
   const validateForm = () => {
@@ -52,16 +80,15 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       setNameError('');
     }
 
-    // TODO: JSON validation for the Query DSL object?
-    if (!queryBody.trim()) {
-      setQueryBodyError('Query Body is required.');
+    if (!query.trim()) {
+      setQueryError('Query is required.');
       isValid = false;
     } else {
       try {
-        JSON.parse(queryBody);
-        setQueryBodyError('');
+        JSON.parse(query);
+        setQueryError('');
       } catch (e) {
-        setQueryBodyError('Query Body must be valid JSON.');
+        setQueryError('Query Body must be valid JSON.');
         isValid = false;
       }
     }
@@ -74,16 +101,22 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       return;
     }
 
+    console.log("selectedIndex", selectedIndex);
+    if (selectedIndex.length === 0) {
+      notifications.toasts.addWarning({title: 'Invalid input', text: 'No index. Please select an index'});
+      return;
+    }
+
     http
-      .post(ServiceEndpoints.SearchConfigurations, {
+      .put(ServiceEndpoints.SearchConfigurations, {
         body: JSON.stringify({
           name,
-          queryBody,
+          index: selectedIndex[0].label,
+          query,
+          searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : '',
         }),
       })
       .then((response) => {
-        console.log('Response:', response);
-        console.log('query_body:', queryBody);
         notifications.toasts.addSuccess(`Search configuration "${name}" created successfully`);
         history.push('/searchConfiguration');
       })
@@ -92,7 +125,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           title: 'Failed to create search configuration',
         });
       });
-  }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts]);
+  }, [name, query, searchTemplate, history, notifications.toasts, selectedIndex, selectedPipeline]);
 
   // Handle cancel action
   const handleCancel = () => {
@@ -109,11 +142,30 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     }
   };
 
+  const fetchPipelines = async () => {
+    setIsLoadingPipelines(true);
+    try {
+      const response = await http.get(ServiceEndpoints.GetPipelines);
+      const options = Object.keys(response).map(pipelineId => ({
+        label: pipelineId,
+      }));
+      setPipelineOptions(options);
+    } catch (error) {
+      notifications.toasts.addDanger('Failed to fetch search pipelines');
+    } finally {
+      setIsLoadingPipelines(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPipelines();
+  }, []);
+
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
-        pageTitle="Create Search Configuration"
-        description="Configure a new search configuration with query body and options"
+        pageTitle="Search Configuration"
+        description="Configure a new search configuration that represents all the aspects of an algorithm."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -135,106 +187,41 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           </EuiButton>,
         ]}
       />
-
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>Fill in the details below to create a new search configuration.</p>
-            </EuiText>
-          </EuiFlexItem>
-
-          <EuiFlexItem>
-            <EuiForm component="form" isInvalid={Boolean(nameError || queryBodyError)}>
-              <EuiFormRow
-                label="Search Configuration Name"
-                error={nameError}
-                isInvalid={Boolean(nameError)}
-                helpText="A unique name for this search configuration"
-                fullWidth
-              >
-                <EuiFieldText
-                  placeholder="Enter search configuration name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={validateName}
-                  isInvalid={Boolean(nameError)}
-                  fullWidth
-                  data-test-subj="searchConfigurationNameInput"
-                />
-              </EuiFormRow>
-
-              <EuiFormRow
-                label="Query Body"
-                error={queryBodyError}
-                isInvalid={Boolean(queryBodyError)}
-                helpText="Define the query body in JSON format"
-                fullWidth
-              >
-                <EuiCodeEditor
-                  mode="json"
-                  theme="github"
-                  width="100%"
-                  value={queryBody}
-                  onChange={(value) => {
-                    try {
-                      const parsed = JSON.parse(value);
-                      const compactJson = JSON.stringify(parsed);
-                      setQueryBody(compactJson);
-                      setQueryBodyError('');
-                    } catch {
-                      // If it's not valid JSON, just set the value as-is
-                      setQueryBody(value);
-                    }
-                  }}
-                  setOptions={{
-                    showLineNumbers: true,
-                    tabSize: 2,
-                  }}
-                  onBlur={() => {
-                    if (!queryBody.trim()) {
-                      setQueryBodyError('Query Body is required.');
-                    } else {
-                      try {
-                        const parsed = JSON.parse(queryBody);
-                        const compactJson = JSON.stringify(parsed);
-                        setQueryBody(compactJson); // Update the value to the compact version
-                        setQueryBodyError('');
-                      } catch {
-                        setQueryBodyError('Query Body must be valid JSON.');
-                      }
-                    }
-                  }}
-                  isInvalid={Boolean(queryBodyError)}
-                  aria-label="Code Editor"
-                />
-              </EuiFormRow>
-
-              <EuiFormRow
-                label="Search Pipeline"
-                helpText="Define the search pipeline to be used"
-                fullWidth
-              >
-                <EuiFieldText
-                  placeholder="Enter search pipeline"
-                  value={searchPipeline}
-                  onChange={(e) => setSearchPipeline(e.target.value)}
-                  fullWidth
-                />
-              </EuiFormRow>
-
-              <EuiFormRow label="Search Template" helpText="Define the search template" fullWidth>
-                <EuiFieldText
-                  placeholder="Enter search template"
-                  value={searchTemplate}
-                  onChange={(e) => setSearchTemplate(e.target.value)}
-                  fullWidth
-                />
-              </EuiFormRow>
-            </EuiForm>
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiPanel>
+      <EuiFlexGroup>
+        <EuiFlexItem grow={7}>
+          <EuiPanel hasBorder={true}>
+            <SearchConfigurationForm
+              name={name}
+              setName={setName}
+              nameError={nameError}
+              validateName={validateName}
+              query={query}
+              setQuery={setQuery}
+              queryError={queryError}
+              setQueryError={setQueryError}
+              searchTemplate={searchTemplate}
+              setSearchTemplate={setSearchTemplate}
+              indexOptions={indexOptions}
+              selectedIndex={selectedIndex}
+              setSelectedIndex={setSelectedIndex}
+              isLoadingIndexes={isLoadingIndexes}
+              pipelineOptions={pipelineOptions}
+              selectedPipeline={selectedPipeline}
+              setSelectedPipeline={setSelectedPipeline}
+              isLoadingPipelines={isLoadingPipelines}
+            />
+          </EuiPanel>
+        </EuiFlexItem>
+        <EuiFlexItem grow={5} style={{ maxWidth: '41.67%', maxHeight: '80vh', overflow: 'auto' }}>
+          <ValidationPanel
+            selectedIndex={selectedIndex}
+            selectedPipeline={selectedPipeline}
+            query={query}
+            http={http}
+            notifications={notifications}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
     </EuiPageTemplate>
   );
 };

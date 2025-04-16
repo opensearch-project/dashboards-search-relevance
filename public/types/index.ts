@@ -80,3 +80,214 @@ export interface datasourceElements {
   dataConnectionId: string,
   pipeline: {}
 }
+
+export type ExperimentBase = {
+  status: "RUNNING" | "COMPLETED" | "FAILED";
+  id: string;
+  timestamp: string;
+  querySetId: string;
+  k: number;
+  size: number;
+};
+
+export type Experiment =
+  | PairwiseComparisonExperiment
+  | EvaluationExperiment
+
+export type PairwiseComparisonExperiment =
+  (ExperimentBase & {
+    type: "PAIRWISE_COMPARISON";
+    searchConfigurationList: string[];
+  })
+
+export type EvaluationExperiment =
+  (ExperimentBase & {
+    type: "POINTWISE_EVALUATION";
+    searchConfigurationId: string;
+    judgmentId: string;
+  })
+
+export const printType = (type: string) => {
+  switch (type) {
+    case "PAIRWISE_COMPARISON":
+      return "Comparison";
+    case "POINTWISE_EVALUATION":
+      return "Evaluation";
+    default:
+      return "Unknown";
+  }
+}
+
+export type Metrics = {
+  [key: string]: number;
+}
+
+export type MetricsCollection = Metrics[];
+
+// Evaluation (multiple metric results for a single query)
+export type QueryEvaluation = {
+  queryText: string;
+  metrics: Metrics;
+}
+
+export type QuerySnapshot = {
+  queryText: string;
+  documentIds: string[];
+}
+
+export type ParseResult<T> =
+  | { success: true; data: T }
+  | { success: false; errors: string[] };
+
+export const parseError = (error: string): ParseResult<any> => {
+  return { success: false, errors: [error] };
+}
+
+export function combineResults(
+  ...results: ParseResult<any>[]
+): ParseResult<any[]> {
+  const errors: string[] = [];
+  const values: any[] = [];
+
+  for (const result of results) {
+    if (result.success) {
+      values.push(result.data);
+    } else {
+      errors.push(...result.errors);
+    }
+  }
+
+  return errors.length > 0
+    ? { success: false, errors }
+    : { success: true, data: values };
+}
+
+export const parseMetrics = (textualMetrics: { [key: string]: number; }): Metrics => {
+  return Object.fromEntries(
+    Object.entries(textualMetrics).map(([key, value]) => [key, parseFloat(value)])
+  ) as Metrics;
+}
+
+// Currently this function consumes the response of a pairwise comparison experiment
+// In the future this will be applied to an endpoint dedicated to evaluations
+export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluation>> => {
+  if (source.status === "COMPLETED" && !source.results) {
+    return parseError("Missing results for completed experiment");
+  }
+
+  let hasPairwiseComparison = true;
+  const res = Object.entries(source.results).map(([queryText, value]) => {
+    const metrics = value as { pairwiseComparison?: { [key: string]: number[] } };
+    if (!metrics?.pairwiseComparison) {
+      hasPairwiseComparison = false;
+    }
+    return {
+      queryText: queryText,
+      metrics: parseMetrics(metrics.pairwiseComparison),
+    }
+  })
+
+  if (!hasPairwiseComparison) {
+    return parseError("Missing pairwise comparison metrics");
+  }
+
+  return { success: true, data: res };
+}
+
+export const toQueryEvaluation = (source: any): ParseResult<Array<QueryEvaluation>> => {
+  if (!source.searchText) {
+    return parseError("Missing search text");
+  }
+  if (!source.metrics) {
+    return parseError("Missing metrics");
+  }
+
+  return {
+    success: true,
+    data: {
+      queryText: source.searchText,
+      metrics: parseMetrics(source.metrics),
+    }
+  }
+}
+
+export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Array<QuerySnapshot>> => {
+  if (source.status === "COMPLETED" && !source.results) {
+    return parseError("Missing results for completed experiment");
+  }
+
+  let data: QuerySnapshot[] = [];
+  Object.entries(source.results).forEach(([queryText, value]) => {
+    if (value[queryName]) {
+      data.push({
+        queryText: queryText,
+        documentIds: value[queryName],
+      })
+    }
+  })
+  return { success: true, data };
+}
+
+export const toExperiment = (source: any): ParseResult<Experiment> => {
+  // Validate required base fields exist
+  if (!source.id || !source.timestamp || !source.querySetId ||
+      source.size === undefined) {
+    return parseError("Missing one of required fields: id, timestamp, querySetId, size");
+  }
+
+  if (source.status === "COMPLETED" && !source.results) {
+    return parseError("Missing results for completed experiment");
+  }
+
+  if (!source.searchConfigurationList) {
+    return parseError("Missing required field: searchConfigurationList");
+  }
+
+  const size = source.results ? Object.keys(source.results).length : 0;
+
+  // Handle different experiment types
+  switch (source.type) {
+    case "PAIRWISE_COMPARISON":
+      if (source.searchConfigurationList.length < 2) {
+        return parseError("Missing 2 search configurations for pairwise comparison");
+      }
+      return {
+      success: true,
+      data: {
+        type: "PAIRWISE_COMPARISON",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationList: source.searchConfigurationList,
+        size,
+      },
+    };
+
+  case "POINTWISE_EVALUATION":
+    if (source.searchConfigurationList.length < 1) {
+      return parseError("Missing search configuration for UBI evaluation (searchConfigurationList).");
+    }
+    if (!source.judgmentList || source.judgmentList.length < 1) {
+      return parseError("Missing judgment for UBI evaluation (judgmentList).");
+    }
+    return {
+      success: true,
+      data: {
+        type: "POINTWISE_EVALUATION",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationId: source.searchConfigurationList[0],
+        judgmentId: source.judgmentList[0],
+        size,
+      },
+    };
+
+    default:
+      return parseError(`Unknown experiment type: ${source.type}`);
+  }
+};
