@@ -16,7 +16,6 @@ export interface BaseFormData {
 
 export interface SearchConfigFromData {
   searchConfigs: SearchConfigOption[];
-  indexes: IndexOption[];
 }
 
 export interface IndexOption {

@@ -50,7 +50,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.QuerySets)
   );
-  router.post(
+  router.put(
     {
       path: ServiceEndpoints.SearchConfigurations,
       validate: {

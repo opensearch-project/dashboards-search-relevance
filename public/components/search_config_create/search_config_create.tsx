@@ -14,12 +14,13 @@ import {
   EuiPageHeader,
   EuiPageTemplate,
   EuiPanel,
-  EuiText,
+  EuiComboBox,
 } from '@elastic/eui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { NotificationsStart } from '../../../../../core/public';
-import { ServiceEndpoints } from '../../../common';
+import { INDEX_NODE_API_PATH, ServiceEndpoints } from '../../../common';
+import { DocumentsIndex } from '../../types';
 
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -38,6 +39,33 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   const [queryBodyError, setQueryBodyError] = useState('');
   const [searchPipeline, setSearchPipeline] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
+
+  const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [selectedIndex, setSelectedIndex] = useState<Array<{ label: string; value: string }>>([]);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState(true);
+
+  useEffect(() => {
+    const fetchIndexes = async () => {
+      try {
+        const res = await http.get(INDEX_NODE_API_PATH);
+        const options = res.map((index: DocumentsIndex) => ({
+          label: index.index,
+          value: index.uuid,
+        }));
+        setIndexOptions(options);
+      } catch (error) {
+        console.error('Failed to fetch indexes', error);
+        notifications.toasts.addError(error, {
+          title: 'Failed to fetch indexes',
+        });
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+
+    fetchIndexes();
+  }, [http, notifications.toasts]);
 
   // Validate form fields
   const validateForm = () => {
@@ -72,15 +100,22 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       return;
     }
 
+    if (selectedIndex.length === 0) {
+      notifications.toasts.addError('Please select an index');
+      return;
+    }
+
     http
-      .post(ServiceEndpoints.SearchConfigurations, {
+      .put(ServiceEndpoints.SearchConfigurations, {
         body: JSON.stringify({
-          name,
-          queryBody,
+          name: name,
+          index: selectedIndex[0].label,
+          queryBody: queryBody,
         }),
       })
       .then((response) => {
         console.log('Response:', response);
+        console.log('index', indexOptions);
         console.log('query_body:', queryBody);
         notifications.toasts.addSuccess(`Search configuration "${name}" created successfully`);
         history.push('/searchConfiguration');
@@ -151,6 +186,23 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
                 isInvalid={Boolean(nameError)}
                 fullWidth
                 data-test-subj="searchConfigurationNameInput"
+              />
+            </EuiFormRow>
+
+            <EuiFormRow
+              label="Index"
+              helpText="Select an index for this search configuration"
+              fullWidth
+            >
+              <EuiComboBox
+                placeholder="Select an index"
+                options={indexOptions}
+                selectedOptions={selectedIndex}
+                onChange={(selected) => setSelectedIndex(selected)}
+                isClearable={true}
+                isLoading={isLoadingIndexes}
+                singleSelection={{ asPlainText: true }}
+                fullWidth
               />
             </EuiFormRow>
 
