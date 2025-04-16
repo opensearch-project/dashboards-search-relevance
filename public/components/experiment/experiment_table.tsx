@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  EuiInMemoryTable,
-  EuiBasicTableColumn,
-  EuiLink,
-} from '@elastic/eui';
+import { EuiBasicTableColumn, EuiInMemoryTable, EuiLink } from '@elastic/eui';
 import { ExperimentTableProps, TableContent } from './types';
 
 const columns: Array<EuiBasicTableColumn<TableContent>> = [
