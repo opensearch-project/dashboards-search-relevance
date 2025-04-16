@@ -86,6 +86,13 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('PUT', BackendEndpoints.Experiments)
   );
+  router.get(
+    {
+      path: ServiceEndpoints.Experiments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
 }
 
 const backendAction = (method, path) => {

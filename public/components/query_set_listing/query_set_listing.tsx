@@ -73,7 +73,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         }
       ) => (
         <>
-          <EuiButtonEmpty size="xs" {...reactRouterNavigate(history, `querySet/${querySet.id}`)}>
+          <EuiButtonEmpty size="xs" {...reactRouterNavigate(history, `querySet/view/${querySet.id}`)}>
             {name}
           </EuiButtonEmpty>
         </>

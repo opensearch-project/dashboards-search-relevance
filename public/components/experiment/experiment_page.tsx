@@ -10,7 +10,7 @@ import {
 import { GetStartedAccordion } from './get_started_accordion';
 import { Header } from '../common/header';
 import { TemplateCards } from './template_card/template_cards';
-import { ExperimentTabs } from './experiment_tabs';
+import { ExperimentTabsWithRoute } from './experiment_tabs';
 import { experiments, resultListComparisonExperiments } from './mockup_data';
 
 export const ExperimentPage = ({
@@ -18,6 +18,9 @@ export const ExperimentPage = ({
   chrome,
   http,
   notifications,
+  entity,
+  entityAction,
+  entityId,
 }: {
   application: CoreStart['application'];
   chrome: CoreStart['chrome'];
@@ -52,11 +55,14 @@ export const ExperimentPage = ({
               {isTemplateCards ? (
                 <TemplateCards onClose={hideTemplate} />
               ) : (
-                <ExperimentTabs
+                <ExperimentTabsWithRoute
                   experiments={experiments}
                   resultListComparisonExperiments={resultListComparisonExperiments}
                   http={http}
                   notifications={notifications}
+                  entity={entity}
+                  entityAction={entityAction}
+                  entityId={entityId}
                 />
               )}
             </EuiFlexItem>
