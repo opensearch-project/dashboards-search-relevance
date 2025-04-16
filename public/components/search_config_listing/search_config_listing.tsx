@@ -56,7 +56,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `searchConfiguration/view/${searchConfiguration.id}`)}
+            {...reactRouterNavigate(history, `/searchConfiguration/view/${searchConfiguration.id}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -64,7 +64,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       ),
     },
     {
-      filed: 'index',
+      field: 'index',
       name: 'Index',
       dataType: 'string',
       sortable: true,
