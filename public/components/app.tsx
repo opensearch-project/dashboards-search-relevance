@@ -141,9 +141,14 @@ export const SearchRelevanceApp = ({
             />
             <Switch>
               <Route
-                path={['/']}
+                path={[
+                  '/',
+                  '/:entity(querySet|searchConfiguration|experiment)/:entityAction(list|create|view)?/:entityId?',
+                ]}
                 exact
                 render={(props) => {
+                  const { entity, entityAction, entityId } = props.match.params;
+
                   return (
                     <>
                       {versionModal}
@@ -170,43 +175,14 @@ export const SearchRelevanceApp = ({
                           chrome={chrome}
                           http={http}
                           notifications={notifications}
+                          entity={entity}
+                          entityAction={entityAction}
+                          entityId={entityId}
                         />
                       )}
                     </>
                   );
                 }}
-              />
-              <Route
-                path={['/querySet/create']}
-                render={(props) => (
-                  <QuerySetCreateWithRouter {...props} http={http} notifications={notifications} />
-                )}
-              />
-              <Route
-                path={['/querySet']}
-                render={(props) => <QuerySetListingWithRoute {...props} http={http} />}
-              />
-              <Route
-                path={['/querySet/:id']}
-                render={(props) => <QuerySetView {...props} http={http} />}
-              />
-              <Route
-                path={['/searchConfiguration/create']}
-                render={(props) => (
-                  <SearchConfigurationCreateWithRouter
-                    {...props}
-                    http={http}
-                    notifications={notifications}
-                  />
-                )}
-              />
-              <Route
-                path={['/searchConfiguration/:id']}
-                render={(props) => <SearchConfigurationView {...props} http={http} />}
-              />
-              <Route
-                path={['/searchConfiguration']}
-                render={(props) => <SearchConfigurationListingWithRoute {...props} http={http} />}
               />
             </Switch>
           </>

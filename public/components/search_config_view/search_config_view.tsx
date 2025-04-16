@@ -13,8 +13,8 @@ interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string 
 }
 
 export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({
-  match,
   http,
+  id,
 }) => {
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -26,7 +26,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
         setLoading(true);
         const response = await http.get(ServiceEndpoints.SearchConfigurations);
         const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item: any) => item.id === match.params.id);
+        const filteredList = list.filter((item: any) => item.id === id);
 
         if (filteredList.length > 0) {
           setSearchConfiguration(filteredList[0]);
@@ -43,7 +43,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
     };
 
     fetchSearchConfiguration();
-  }, [http, match.params.id]);
+  }, [http, id]);
 
   if (loading) {
     return <div>Loading search configuration data...</div>;
