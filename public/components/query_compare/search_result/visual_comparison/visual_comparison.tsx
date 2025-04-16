@@ -11,6 +11,17 @@ interface OpenSearchComparisonProps {
   queryError2: any;
 }
 
+export const convertFromSearchResult = (searchResult) => {
+  if (!searchResult.hits?.hits) return undefined;
+
+  return searchResult.hits.hits.map((x, index) => ({
+    _id: x._id,
+    _score: x._score, 
+    rank: index + 1,
+    ...x._source
+  }));
+}
+
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
@@ -56,7 +67,7 @@ export const VisualComparison = ({
 
   // Set initial state similar to first component
   useEffect(() => {
-    if (Array.isArray(queryResult1.hits?.hits) && Array.isArray(queryResult2.hits?.hits)) {
+    if (Array.isArray(queryResult1) && Array.isArray(queryResult2)) {
       setInitialState(false);
     } else if (initialState !== true) {
       setInitialState(true);
@@ -65,29 +76,14 @@ export const VisualComparison = ({
 
   // Process results when they change
   useEffect(() => {
-    if (!queryResult1.hits?.hits || !queryResult2.hits?.hits) return;
+    if (!queryResult1 || !queryResult2) return;
 
-    // Process results
-    const processed1 = queryResult1.hits.hits.map((x, index) => ({
-      _id: x._id,
-      _score: x._score, 
-      rank: index + 1,
-      ...x._source // Spread all source fields
-    }));
-
-    const processed2 = queryResult2.hits.hits.map((x, index) => ({
-      _id: x._id,
-      _score: x._score,
-      rank: index + 1,
-      ...x._source // Spread all source fields
-    }));
-
-    setResult1(processed1);
-    setResult2(processed2);
+    setResult1(queryResult1);
+    setResult2(queryResult2);
 
     // Determine available fields for display by checking what's in the data
-    if (processed1.length > 0 || processed2.length > 0) {
-      const sampleItem = processed1[0] || processed2[0];
+    if (queryResult1.length > 0 || queryResult2.length > 0) {
+      const sampleItem = queryResult1[0] || queryResult2[0];
       if (sampleItem) {
         const fields = Object.keys(sampleItem)
           .filter(key => !key.startsWith('_')) // Exclude hidden fields
@@ -139,7 +135,7 @@ export const VisualComparison = ({
         }
       }
     }
-  }, [queryResult1.hits?.hits, queryResult2.hits?.hits]);
+  }, [queryResult1, queryResult2]);
 
   // Create combined dataset when results change
   useEffect(() => {
