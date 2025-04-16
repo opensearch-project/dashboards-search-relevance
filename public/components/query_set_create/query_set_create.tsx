@@ -18,16 +18,21 @@ import {
   EuiForm,
   EuiTextArea,
   EuiText,
+  EuiFilePicker,
   EuiPageHeader,
 } from '@elastic/eui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { NotificationsStart } from '../../../../../core/public';
+import { CoreStart, NotificationsStart } from '../../../../../core/public';
 import { ServiceEndpoints } from '../../../common';
 
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+}
+
+interface FilePickerRef {
+  removeFiles: () => void;
 }
 
 export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notifications, history }) => {
@@ -45,9 +50,68 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const [manualQueries, setManualQueries] = useState('');
   const [manualQueriesError, setManualQueriesError] = useState('');
 
+  // file picker
+  const [files, setFiles] = useState<File[]>([]);
+  const filePickerRef = useRef<FilePickerRef>(null);
+  const generateId = (prefix: string) => `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  const filePickerId = generateId('filePicker');
+  const [parsedQueries, setParsedQueries] = useState<string[]>([]);
+
+  const handleFileContent = async (files: FileList) => {
+    if (files && files.length > 0) {
+      try {
+        const file = files[0];
+        const text = await file.text();
+        const lines = text.trim().split('\n');
+        const queryList: Array<{ queryText: string; referenceAnswer: string }> = [];
+
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line.trim());
+            if (parsed.queryText) {
+              queryList.push({
+                queryText: String(parsed.queryText).trim(),
+                referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : ''
+              });
+            }
+          } catch (e) {
+            console.error('Error parsing line:', line, e);
+          }
+        }
+
+        if (queryList.length === 0) {
+          setManualQueriesError('No valid queries found in file');
+          setFiles([]);
+          setManualQueries('');
+          setParsedQueries([]);
+          return;
+        }
+
+        // Store the raw query objects instead of converting to string
+        setManualQueries(JSON.stringify(queryList));
+        setParsedQueries(queryList.map(q => JSON.stringify(q)));
+        setFiles([file]);
+        setManualQueriesError('');
+
+        console.log('Parsed query list:', queryList);
+
+      } catch (error) {
+        console.error('Error processing file:', error);
+        setManualQueriesError('Error reading file content');
+        setFiles([]);
+        setManualQueries('');
+        setParsedQueries([]);
+      }
+    } else {
+      setFiles([]);
+      setManualQueries('');
+      setParsedQueries([]);
+    }
+  };
+
   const samplingOptions = [
     { value: 'random', text: 'Random' },
-    { value: 'ppts', text: 'Probability-Proportional-to-Size Sampling' },
+    { value: 'pptss', text: 'Probability-Proportional-to-Size Sampling' },
     { value: 'topn', text: 'Top N' },
   ];
 
@@ -105,7 +169,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
           name,
           description,
           sampling: 'manual',
-          querySetQueries: manualQueries,
+          querySetQueries: JSON.parse(manualQueries),
         }
       : {
           name,
@@ -116,6 +180,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
     http[method](endpoint, {
       body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
       .then((response) => {
         console.log('Response:', response);
@@ -164,10 +231,10 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   };
 
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
-        description="Configure a new query set with sampling method and size"
+        description="Configure a new query set."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -190,128 +257,153 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         ]}
       />
 
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>Fill in the details below to create a new query set.</p>
-            </EuiText>
-          </EuiFlexItem>
-
-          {/* Form Content */}
-          <EuiFlexItem>
-            <EuiForm
-              component="form"
-              isInvalid={Boolean(
-                nameError || descriptionError || querySizeError || manualQueriesError
-              )}
+      {/* Form Content */}
+      <EuiPanel hasBorder={true}>
+        <EuiFlexItem>
+          <EuiForm
+            component="form"
+            isInvalid={Boolean(
+              nameError || descriptionError || querySizeError || manualQueriesError
+            )}
+          >
+            <EuiFormRow fullWidth>
+              <EuiButton
+                onClick={() => setIsManualInput(!isManualInput)}
+                size="s"
+                iconType={isManualInput ? 'aggregate' : 'inputOutput'}
+              >
+                Switch to {isManualInput ? 'sampling queries from UBI data' : 'manually adding queries'}
+              </EuiButton>
+            </EuiFormRow>
+            {/* Name field */}
+            <EuiCompressedFormRow
+              label="Name"
+              isInvalid={nameError.length > 0}
+              error={nameError}
+              helpText="A unique name for this query set."
+              fullWidth
             >
-              <EuiFormRow fullWidth>
-                <EuiButton
-                  onClick={() => setIsManualInput(!isManualInput)}
-                  size="s"
-                  iconType={isManualInput ? 'aggregate' : 'inputOutput'}
-                >
-                  Switch to {isManualInput ? 'UBI Sampling' : 'Manual'} Input
-                </EuiButton>
-              </EuiFormRow>
-              {/* Name field */}
-              <EuiCompressedFormRow
-                label="Name"
-                isInvalid={nameError.length > 0}
-                error={nameError}
-                helpText="A unique name for this query set"
-                fullWidth
-              >
-                <EuiCompressedTextArea
-                  placeholder="Enter query set name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={validateName}
-                  isInvalid={descriptionError.length > 0}
-                  data-test-subj="querySetDescriptionInput"
-                  fullWidth
-                />
-              </EuiCompressedFormRow>
-              {/* Description field */}
-              <EuiCompressedFormRow
-                label="Description"
+              <EuiCompressedTextArea
+                placeholder="Enter query set name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={validateName}
                 isInvalid={descriptionError.length > 0}
-                error={descriptionError}
-                helpText="Detailed description of the query set purpose"
+                data-test-subj="querySetDescriptionInput"
+                fullWidth
+              />
+            </EuiCompressedFormRow>
+            {/* Description field */}
+            <EuiCompressedFormRow
+              label="Description"
+              isInvalid={descriptionError.length > 0}
+              error={descriptionError}
+              helpText="Detailed description of the query set purpose."
+              fullWidth
+            >
+              <EuiCompressedTextArea
+                placeholder="Describe the purpose of this query set"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                onBlur={validateDescription}
+                isInvalid={descriptionError.length > 0}
+                data-test-subj="querySetDescriptionInput"
+                fullWidth
+              />
+            </EuiCompressedFormRow>
+            {isManualInput ? (
+              <EuiFormRow
+                label="Manual Queries"
+                error={manualQueriesError}
+                isInvalid={Boolean(manualQueriesError)}
+                helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
                 fullWidth
               >
-                <EuiCompressedTextArea
-                  placeholder="Describe the purpose of this query set"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  onBlur={validateDescription}
-                  isInvalid={descriptionError.length > 0}
-                  data-test-subj="querySetDescriptionInput"
-                  fullWidth
-                />
-              </EuiCompressedFormRow>
-              {isManualInput ? (
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <EuiFilePicker
+                      ref={filePickerRef}
+                      id={filePickerId}
+                      initialPromptText="Select or drag and drop a query file"
+                      onChange={(files) => handleFileContent(files)}
+                      display="large"
+                      aria-label="Upload query file"
+                      accept=".txt"
+                      data-test-subj="manualQueriesFilePicker"
+                      compressed
+                      helpText="Upload a text file containing JSON objects (one per line) with queryText and referenceAnswer fields"
+                    />
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+              </EuiFormRow>
+            ) : (
+              <>
+                {/* Sampling method field */}
                 <EuiFormRow
-                  label="Manual Queries"
-                  error={manualQueriesError}
-                  isInvalid={Boolean(manualQueriesError)}
-                  helpText="Enter queries separaarated by commas (e.g., 'apple, banana, orange')"
+                  label="Sampling Method"
+                  helpText="Select the sampling method for this query set."
                   fullWidth
                 >
-                  <EuiTextArea
-                    placeholder="Enter queries separated by commas"
-                    value={manualQueries}
-                    onChange={(e) => setManualQueries(e.target.value)}
-                    isInvalid={Boolean(manualQueriesError)}
+                  <EuiSelect
+                    options={samplingOptions}
+                    value={sampling}
+                    onChange={(e) => setSampling(e.target.value)}
+                    data-test-subj="querySetSamplingSelect"
                     fullWidth
-                    rows={6}
-                    data-test-subj="manualQueriesInput"
                   />
                 </EuiFormRow>
-              ) : (
-                <>
-                  {/* Sampling method field */}
-                  <EuiFormRow
-                    label="Sampling Method"
-                    helpText="Select the sampling method for this query set"
-                    fullWidth
-                  >
-                    <EuiSelect
-                      options={samplingOptions}
-                      value={sampling}
-                      onChange={(e) => setSampling(e.target.value)}
-                      data-test-subj="querySetSamplingSelect"
-                      fullWidth
-                    />
-                  </EuiFormRow>
 
-                  {/* Query set size field */}
-                  <EuiFormRow
-                    label="Query Set Size"
-                    error={querySizeError}
+                {/* Query set size field */}
+                <EuiFormRow
+                  label="Query Set Size"
+                  error={querySizeError}
+                  isInvalid={Boolean(querySizeError)}
+                  helpText="Number of queries in the set (must be positive)."
+                  fullWidth
+                >
+                  <EuiFieldNumber
+                    value={querySetSize}
+                    min={1}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value, 10);
+                      setQuerySetSize(isNaN(value) ? 0 : value);
+                      setQuerySizeError(value < 1 ? 'Query Set Size must be positive.' : '');
+                    }}
                     isInvalid={Boolean(querySizeError)}
-                    helpText="Number of queries in the set (must be positive)"
                     fullWidth
-                  >
-                    <EuiFieldNumber
-                      value={querySetSize}
-                      min={1}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value, 10);
-                        setQuerySetSize(isNaN(value) ? 0 : value);
-                        setQuerySizeError(value < 1 ? 'Query Set Size must be positive.' : '');
-                      }}
-                      isInvalid={Boolean(querySizeError)}
-                      fullWidth
-                      data-test-subj="querySetSizeInput"
-                    />
-                  </EuiFormRow>
-                </>
-              )}
-            </EuiForm>
-          </EuiFlexItem>
-        </EuiFlexGroup>
+                    data-test-subj="querySetSizeInput"
+                  />
+                </EuiFormRow>
+              </>
+            )}
+          </EuiForm>
+          {isManualInput && parsedQueries.length > 0 && (
+            <EuiFormRow
+              fullWidth
+              label="Parsed Queries Preview"
+            >
+              <EuiPanel paddingSize="s">
+                <EuiText size="s">
+                  <h4>Preview ({parsedQueries.length} queries)</h4>
+                  <ul>
+                    {parsedQueries.slice(0, 5).map((query, idx) => {
+                      const parsed = JSON.parse(query);
+                      return (
+                        <li key={idx}>
+                          <strong>Query:</strong> {parsed.queryText}<br />
+                          <strong>Reference:</strong> {parsed.referenceAnswer}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {parsedQueries.length > 5 && (
+                    <p>... and {parsedQueries.length - 5} more queries</p>
+                  )}
+                </EuiText>
+              </EuiPanel>
+            </EuiFormRow>
+          )}
+        </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>
   );

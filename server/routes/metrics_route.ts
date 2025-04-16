@@ -4,12 +4,12 @@
  */
 
 import { IRouter } from '../../../../src/core/server';
-import { STATS_NODE_API_PATH } from '../../common';
+import { ServiceEndpoints } from '../../common';
 
 export function registerMetricsRoute(router: IRouter) {
   router.get(
     {
-      path: STATS_NODE_API_PATH,
+      path: ServiceEndpoints.GetStats,
       validate: false,
     },
     async (context, _, response) => {

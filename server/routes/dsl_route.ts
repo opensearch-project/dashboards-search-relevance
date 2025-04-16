@@ -8,10 +8,8 @@ import { schema } from '@osd/config-schema';
 
 import { ILegacyScopedClusterClient, IRouter } from '../../../../src/core/server';
 import {
-  INDEX_NODE_API_PATH,
+  ServiceEndpoints,
   SEARCH_API,
-  SEARCH_NODE_API_PATH,
-  SEARCH_PIPELINE_NODE_API_PATH,
 } from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
@@ -22,13 +20,18 @@ interface SearchResultsResponse {
   errorMessage2?: any;
 }
 
+interface SearchResultResponse {
+  result: any;
+  errorMsg: any;
+}
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const performance = require('perf_hooks').performance;
 
 export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   router.post(
     {
-      path: SEARCH_NODE_API_PATH,
+      path: ServiceEndpoints.GetSearchResults,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
@@ -56,27 +59,33 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         try {
           let resp;
           const invalidCharactersPattern = /[\s,:\"*+\/\\|?#><]/;
-          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
+          if (
+            index !== index.toLowerCase() ||
+            index.startsWith('_') ||
+            index.startsWith('-') ||
+            invalidCharactersPattern.test(index)
+          ) {
             resBody.errorMessage1 = {
               statusCode: 400,
               body: 'Invalid Index or missing',
             };
           }
-          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
+          if (
+            pipeline !== '*' &&
+            pipeline !== '_none' &&
+            pipeline !== '' &&
+            !/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline)
+          ) {
             resBody.errorMessage1 = {
               statusCode: 400,
               body: 'Invalid Pipepline',
             };
           }
-          if(dataSourceEnabled && dataSourceId1){
+          if (dataSourceEnabled && dataSourceId1) {
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
             resp = await client.callAPI('search', params);
-          }
-          else{
-              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-                'search',
-                params
-              );
+          } else {
+            resp = await context.core.opensearch.legacy.client.callAsCurrentUser('search', params);
           }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
@@ -130,21 +139,22 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
           if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
             throw new Error("Index invalid or missing.");
           }
-          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
+          if (
+            pipeline !== '*' &&
+            pipeline !== '_none' &&
+            pipeline !== '' &&
+            !/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline)
+          ) {
             resBody.errorMessage1 = {
               statusCode: 400,
               body: 'Invalid Pipepline',
             };
           }
-          if(dataSourceEnabled && dataSourceId2){
+          if (dataSourceEnabled && dataSourceId2) {
             const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
             resp = await client.callAPI('search', params);
-          }
-          else{
-              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-                'search',
-                params
-              );
+          } else {
+            resp = await context.core.opensearch.legacy.client.callAsCurrentUser('search', params);
           }
           const end = performance.now();
           context.searchRelevance.metricsService.addMetric(
@@ -183,10 +193,10 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   // Get Indices
   router.get(
     {
-      path: `${INDEX_NODE_API_PATH}/{dataSourceId?}`,
+      path: `${ServiceEndpoints.GetIndexes}/{dataSourceId?}`,
       validate: {
         params: schema.object({
-          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
         }),
       },
     },
@@ -196,9 +206,9 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       };
       const start = performance.now();
       try {
-        const dataSourceId  = request.params.dataSourceId;
+        const dataSourceId = request.params.dataSourceId;
         let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
-        if(dataSourceEnabled && dataSourceId){
+        if (dataSourceEnabled && dataSourceId) {
           callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
         } else {
           callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
@@ -252,10 +262,10 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   // Get Pipelines
   router.get(
     {
-      path: `${SEARCH_PIPELINE_NODE_API_PATH}/{dataSourceId?}`,
+      path: `${ServiceEndpoints.GetPipelines}/{dataSourceId?}`,
       validate: {
         params: schema.object({
-          dataSourceId: schema.maybe(schema.string({ defaultValue: '' }))
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
         }),
       },
     },
@@ -267,15 +277,14 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       let resBody: any = {};
       let resp;
       try {
-        const dataSourceId  = request.params.dataSourceId;
-        if(dataSourceEnabled && dataSourceId){
-          resp = (await context.dataSource.opensearch.getClient(dataSourceId)).transport
+        const dataSourceId = request.params.dataSourceId;
+        if (dataSourceEnabled && dataSourceId) {
+          resp = (await context.dataSource.opensearch.getClient(dataSourceId)).transport;
           resp = await resp.request({
             method: 'GET',
             path: `${SEARCH_API}/pipeline`,
-          })
-        }
-        else{
+          });
+        } else {
           resp = await context.core.opensearch.client.asCurrentUser.transport.request({
             method: 'GET',
             path: `${SEARCH_API}/pipeline`,
@@ -304,6 +313,99 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         return response.customError({
           statusCode: 404,
           body: error,
+        });
+      }
+    }
+  );
+
+  router.post(
+    {
+      path: ServiceEndpoints.GetSingleSearchResults,
+      validate: { body: schema.any() },
+    },
+    async (context, request, response) => {
+      const { query, dataSourceId } = request.body;
+      const resBody: SearchResultResponse = {};
+
+      const { index, size, search_pipeline, ...rest } = query;
+
+      const params: RequestParams.Search = {
+        index,
+        size,
+        body: rest,
+      };
+
+      if (typeof search_pipeline === 'string' && search_pipeline.trim() !== '') {
+        params.search_pipeline = search_pipeline;
+      }
+
+      try {
+        // Execute search
+        let resp;
+        if (dataSourceEnabled && dataSourceId) {
+          const client = context.dataSource.opensearch.legacy.getClient(dataSourceId);
+          resp = await client.callAPI('search', params);
+        } else {
+          resp = await context.core.opensearch.legacy.client.callAsCurrentUser('search', params);
+        }
+
+        resBody.result = resp;
+      } catch (error) {
+        if (error.statusCode !== 404) console.error(error);
+
+        const errorMessage = `Error: ${error.body?.error?.type} - ${error.body?.error?.reason}`;
+        resBody.errorMsg = {
+          statusCode: error.statusCode || 500,
+          body: errorMessage,
+        };
+      }
+
+      return response.ok({
+        body: resBody,
+      });
+    }
+  );
+
+  router.get(
+    {
+      path: ServiceEndpoints.GetClusterSettings,
+      validate: {},
+    },
+    async (context, request, response) => {
+      const params = {
+        include_defaults: true,
+      };
+      const start = performance.now();
+      try {
+        let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+        if (dataSourceEnabled && request.params.dataSourceId) {
+          callApi = context.dataSource.opensearch.legacy.getClient(request.params.dataSourceId).callAPI;
+        } else {
+          callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        }
+        const resp = await callApi('cluster.getSettings', params);
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_CLUSTER_SETTINGS,
+          200,
+          end - start
+        );
+        return response.ok({
+          body: resp,
+        });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_CLUSTER_SETTINGS,
+          error.statusCode,
+          end - start
+        );
+        if (error.statusCode !== 404) console.error(error);
+        return response.custom({
+          statusCode: error.statusCode || 400,
+          body: error.message,
         });
       }
     }

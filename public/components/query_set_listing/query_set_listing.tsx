@@ -14,6 +14,7 @@ import {
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
+  EuiButton,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
@@ -23,12 +24,15 @@ import {
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
+import { useConfig } from '../../contexts/date_format_context';
+import moment from 'moment';
 
 interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
 export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+  const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -73,7 +77,10 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         }
       ) => (
         <>
-          <EuiButtonEmpty size="xs" {...reactRouterNavigate(history, `querySet/${querySet.id}`)}>
+          <EuiButtonEmpty
+            size="xs"
+            {...reactRouterNavigate(history, `/querySet/view/${querySet.id}`)}
+          >
             {name}
           </EuiButtonEmpty>
         </>
@@ -103,7 +110,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       dataType: 'string',
       sortable: true,
       render: (timestamp: string) => (
-        <EuiText size="s">{new Date(timestamp).toLocaleString()}</EuiText>
+        <EuiText size="s">{moment(timestamp).format(dateFormat)}</EuiText>
       ),
     },
     {
@@ -162,68 +169,58 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
   };
 
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Sets"
-        description="Manage and view your query sets"
+        description="View and manage your existing query sets. Click on a query set name to view details."
         rightSideItems={[
-          <EuiButtonEmpty
-            iconType="arrowLeft"
+          <EuiButton
+            onClick={() => history.push('/querySet/create')}
+            fill
             size="s"
-            onClick={() => history.push('/')}
-            data-test-subj="backToHomeButton"
+            iconType="plus"
+            data-test-subj="createQuerySetButton"
+            color="primary"
           >
-            Back to Home
-          </EuiButtonEmpty>,
+            Create Query Set
+          </EuiButton>,
         ]}
       />
 
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>
-                View and manage your existing query sets. Click on a query set name to view details.
-              </p>
-            </EuiText>
-          </EuiFlexItem>
-
-          <EuiFlexItem>
-            {error ? (
-              <EuiCallOut title="Error" color="danger">
-                <p>{error}</p>
-              </EuiCallOut>
-            ) : (
-              <TableListView
-                key={refreshKey}
-                headingId="querySetListingHeading"
-                entityName="Query Set"
-                entityNamePlural="Query Sets"
-                tableColumns={tableColumns}
-                findItems={findQuerySets}
-                loading={isLoading}
-                pagination={{
-                  initialPageSize: 10,
-                  pageSizeOptions: [5, 10, 20, 50],
-                }}
-                search={{
-                  box: {
-                    incremental: true,
-                    placeholder: 'Search query sets...',
-                    schema: true,
-                  },
-                }}
-                sorting={{
-                  sort: {
-                    field: 'timestamp',
-                    direction: 'desc',
-                  },
-                }}
-              />
-            )}
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiPanel>
+      <EuiFlexItem>
+        {error ? (
+          <EuiCallOut title="Error" color="danger">
+            <p>{error}</p>
+          </EuiCallOut>
+        ) : (
+          <TableListView
+            key={refreshKey}
+            headingId="querySetListingHeading"
+            entityName="Query Set"
+            entityNamePlural="Query Sets"
+            tableColumns={tableColumns}
+            findItems={findQuerySets}
+            loading={isLoading}
+            pagination={{
+              initialPageSize: 10,
+              pageSizeOptions: [5, 10, 20, 50],
+            }}
+            search={{
+              box: {
+                incremental: true,
+                placeholder: 'Search query sets...',
+                schema: true,
+              },
+            }}
+            sorting={{
+              sort: {
+                field: 'timestamp',
+                direction: 'desc',
+              },
+            }}
+          />
+        )}
+      </EuiFlexItem>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && querySetToDelete && (
