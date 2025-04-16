@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  EuiButton,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiFormRow,
-} from '@elastic/eui';
+import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiFormRow } from '@elastic/eui';
 import { ResultListComparisonForm } from './form/result_list_comparison_form';
 import { UserBehaviorForm } from './form/user_behavior_form';
 import { LLMForm } from './form/llm_form';
@@ -20,6 +15,7 @@ import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearc
 const getInitialFormData = (templateType: string): ConfigurationFormData => {
   const baseData = {
     querySets: [],
+    k: 10,
   };
 
   switch (templateType) {
@@ -42,7 +38,10 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
         scoreThreshold: '',
       };
     default:
-      return baseData as unknown as ResultListComparisonFormData | UserBehaviorFormData | LLMFormData;
+      return (baseData as unknown) as
+        | ResultListComparisonFormData
+        | UserBehaviorFormData
+        | LLMFormData;
   }
 };
 
@@ -51,9 +50,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
     services: { http },
   } = useOpenSearchDashboards();
 
-  const [formData, setFormData] = useState<ConfigurationFormData>(
-    getInitialFormData(templateType)
-  );
+  const [formData, setFormData] = useState<ConfigurationFormData>(getInitialFormData(templateType));
 
   useEffect(() => {
     setFormData(getInitialFormData(templateType));
@@ -86,36 +83,26 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
         );
       case 'User Behavior':
         return (
-          <UserBehaviorForm
-            formData={formData as UserBehaviorFormData}
-            onChange={handleChange}
-          />
+          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} />
         );
       case 'LLM':
         return (
           <>
-          <LLMForm
-            formData={formData as LLMFormData}
-            onChange={handleChange}
-          />
+            <LLMForm formData={formData as LLMFormData} onChange={handleChange} />
 
-          <EuiFlexGroup justifyContent="flexEnd">
-                  <EuiFlexItem grow={false}>
-                    <EuiFormRow hasEmptyLabelSpace>
-                      <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
-                    </EuiFormRow>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-                </>
+            <EuiFlexGroup justifyContent="flexEnd">
+              <EuiFlexItem grow={false}>
+                <EuiFormRow hasEmptyLabelSpace>
+                  <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+          </>
         );
       default:
         return null;
     }
   };
 
-  return (
-    <>
-      {renderForm()}
-    </>
-  );
+  return <>{renderForm()}</>;
 };

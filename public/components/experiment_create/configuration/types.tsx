@@ -5,22 +5,26 @@ export interface TemplateConfigurationProps {
 }
 
 export interface ConfigurationFormProps {
-  templateType: string
+  templateType: string;
   onSave: (formData: ConfigurationFormData) => void;
 }
 
 export interface BaseFormData {
   querySets: QuerySetOption[];
+  k: number;
 }
 
 export interface SearchConfigFromData {
   searchConfigs: SearchConfigOption[];
+  indexes: IndexOption[];
 }
 
-export interface ResultListComparisonFormData extends BaseFormData {
-  calculator: string;
-  scoreThreshold: string;
+export interface IndexOption {
+  label: string;
+  value: string;
 }
+
+export interface ResultListComparisonFormData extends BaseFormData {}
 
 export interface UserBehaviorFormData extends BaseFormData {
   startDate: string;
@@ -38,10 +42,6 @@ export type ConfigurationFormData =
   | ResultListComparisonFormData
   | UserBehaviorFormData
   | LLMFormData;
-
-export interface ConfigurationHeaderProps {
-  templateType: string;
-}
 
 export interface ConfigurationActionsProps {
   onBack: () => void;

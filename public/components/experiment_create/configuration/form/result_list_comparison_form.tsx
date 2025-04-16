@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import {
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiFormRow,
-  EuiComboBox,
-} from '@elastic/eui';
-import { ResultListComparisonFormData, QuerySetOption } from "../types";
+import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiComboBox, EuiFieldNumber } from '@elastic/eui';
+import { ResultListComparisonFormData, QuerySetOption } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
@@ -22,6 +17,7 @@ export const ResultListComparisonForm = ({
 }: ResultListComparisonFormProps) => {
   const [querySetOptions, setQuerySetOptions] = useState<QuerySetOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [k, setK] = useState<number>(10);
 
   useEffect(() => {
     const fetchQuerySets = async () => {
@@ -30,7 +26,7 @@ export const ResultListComparisonForm = ({
         const options = data.hits.hits.map((qs: any) => ({
           label: qs._source.name,
           value: qs._source.id,
-        }))
+        }));
         setQuerySetOptions(options);
       } catch (error) {
         console.error('Failed to fetch query sets', error);
@@ -45,6 +41,12 @@ export const ResultListComparisonForm = ({
 
   const handleQuerySetsChange = (selectedOptions: QuerySetOption[]) => {
     onChange('querySets', selectedOptions || []);
+  };
+
+  const handleKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value, 10);
+    setK(value);
+    onChange('k', value);
   };
 
   return (
@@ -62,6 +64,17 @@ export const ResultListComparisonForm = ({
             async
             fullWidth
             multi
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+      <EuiFlexItem grow={1}>
+        <EuiFormRow label="K Value">
+          <EuiFieldNumber
+            placeholder="Enter k value"
+            value={k}
+            onChange={handleKChange}
+            min={1}
+            fullWidth
           />
         </EuiFormRow>
       </EuiFlexItem>
