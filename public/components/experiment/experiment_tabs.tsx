@@ -101,7 +101,7 @@ export const ExperimentTabs = ({
                 <ExperimentView http={http} id={entityId} />
               ) : (<></>)}
               {selectedSubTabs === 'create' ? (
-                <ExperimentTable items={[...experiments, ...resultListComparisonExperiments]} />
+                <TemplateCards onClose={() => {}} />
               ) : (<></>)}
             </EuiPanel>
           </>
