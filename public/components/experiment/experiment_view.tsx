@@ -8,41 +8,41 @@ import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 
-interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
+interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
-export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
-  const [querySet, setQuerySet] = useState<any | null>(null);
+export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
+  const [experiment, setExperiment] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchQuerySet = async () => {
+    const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const response = await http.get(ServiceEndpoints.QuerySets);
+        const response = await http.get(ServiceEndpoints.Experiments);
         const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
         const filteredList = list.filter((item) => item.id === id);
 
         if (filteredList.length > 0) {
-          setQuerySet(filteredList[0]);
+          setExperiment(filteredList[0]);
         } else {
-          setError('No matching query set found');
+          setError('No matching experiment found');
         }
       } catch (err) {
-        setError('Error loading query set data');
+        setError('Error loading experiment data');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchQuerySet();
+    fetchExperiment();
   }, [http, id]);
 
   if (loading) {
-    return <div>Loading query set data...</div>;
+    return <div>Loading experiment data...</div>;
   }
 
   if (error) {
@@ -51,10 +51,10 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
 
   return (
     <>
-      <h1>Query Set Visualization</h1>
-      <pre>{JSON.stringify(querySet, null, 2)}</pre>
+      <h1>Experiment Visualization</h1>
+      <pre>{JSON.stringify(experiment, null, 2)}</pre>
     </>
   );
 };
 
-export default QuerySetView;
+export default ExperimentView;

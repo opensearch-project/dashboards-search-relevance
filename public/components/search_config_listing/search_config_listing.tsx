@@ -64,7 +64,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `searchConfiguration/${searchConfiguration.id}`)}
+            {...reactRouterNavigate(history, `searchConfiguration/view/${searchConfiguration.id}`)}
           >
             {name}
           </EuiButtonEmpty>
