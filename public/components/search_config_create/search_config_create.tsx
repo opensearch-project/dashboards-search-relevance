@@ -164,7 +164,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
             data-test-subj="createSearchConfigurationButton"
             color="primary"
           >
-            Create Search Configuration
+            Search Configuration
           </EuiButton>,
         ]}
       />
@@ -220,12 +220,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
                 value={queryBody}
                 onChange={(value) => {
                   try {
-                    const parsed = JSON.parse(value);
-                    const compactJson = JSON.stringify(parsed);
-                    setQueryBody(compactJson);
+                    JSON.parse(value);
+                    setQueryBody(value);
                     setQueryBodyError('');
                   } catch {
-                    // If it's not valid JSON, just set the value as-is
                     setQueryBody(value);
                   }
                 }}
@@ -238,9 +236,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
                     setQueryBodyError('Query Body is required.');
                   } else {
                     try {
-                      const parsed = JSON.parse(queryBody);
-                      const compactJson = JSON.stringify(parsed);
-                      setQueryBody(compactJson); // Update the value to the compact version
+                      JSON.parse(queryBody);
                       setQueryBodyError('');
                     } catch {
                       setQueryBodyError('Query Body must be valid JSON.');
