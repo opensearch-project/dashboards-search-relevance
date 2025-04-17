@@ -75,7 +75,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `experiment/view/${experiment.id}`)}
+            {...reactRouterNavigate(history, `/experiment/view/${experiment.id}`)}
           >
             {id}
           </EuiButtonEmpty>

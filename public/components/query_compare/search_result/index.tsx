@@ -20,7 +20,7 @@ import {
 } from '../../../types/index';
 import { Header } from '../../common/header';
 import { ResultComponents } from './result_components/result_components';
-import { VisualComparison } from './visual_comparison/visual_comparison';
+import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
 import { SEARCH_NODE_API_PATH } from '../../../../common';
@@ -288,8 +288,8 @@ const versionToggle = (
             />
         ) : (
             <VisualComparison
-              queryResult1={queryResult1}
-              queryResult2={queryResult2}
+              queryResult1={convertFromSearchResult(queryResult1)}
+              queryResult2={convertFromSearchResult(queryResult2)}
               queryError1={queryError1}
               queryError2={queryError2}
             />
