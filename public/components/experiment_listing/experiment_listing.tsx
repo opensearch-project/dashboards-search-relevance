@@ -223,7 +223,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
             setExperimentToDelete(null);
           }}
           onConfirm={handleDelete}
-          itemName={experimentToDelete.name}
+          itemName={experimentToDelete.id}
         />
       )}
     </EuiPageTemplate>
