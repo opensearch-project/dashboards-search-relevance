@@ -26,8 +26,12 @@ import {
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
-import VisualComparison from '../query_compare/search_result/visual_comparison/visual_comparison';
+import { ServiceEndpoints, SEARCH_NODE_API_PATH } from '../../../common';
+import { VisualComparison, convertFromSearchResult } from '../query_compare/search_result/visual_comparison/visual_comparison';
+import {
+  SearchResults,
+} from '../../types/index';
+
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -35,9 +39,13 @@ interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
 
 export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
+  const [searchConfigurations, setSearchConfigurations] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedQuery, setSelectedQuery] = useState<number | null>(null);
+  const [queryResult1, setQueryResult1] = useState<SearchResults | null>(null);
+  const [queryResult2, setQueryResult2] = useState<SearchResults | null>(null);
+  
 
   // Detailed experiment details
   const [queries, setQueries] = useState<any[]>([]);
@@ -45,6 +53,13 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
   const [metrics, setMetrics] = useState<any>({});
   const [metricMeans, setMetricMeans] = useState<any>({});
   const [tableColumns, setTableColumns] = useState<any[]>([]);
+
+  const loadSearchConfigurations = async (searchConfigurationIds: string[]) => {
+    const response = await http.get(ServiceEndpoints.SearchConfigurations);
+    const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
+    const filteredList = list.filter((item) => searchConfigurationIds.includes(item.id));
+    return filteredList;
+  };
 
   useEffect(() => {
     const fetchExperiment = async () => {
@@ -55,7 +70,10 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
         const filteredList = list.filter((item) => item.id === id);
 
         if (filteredList.length > 0) {
-          setExperiment(filteredList[0]);
+          const _experiment = filteredList[0];
+          const _searchConfigurations = await loadSearchConfigurations(_experiment.searchConfigurationList);
+          setExperiment(_experiment);
+          setSearchConfigurations(_searchConfigurations);
         } else {
           setError('No matching experiment found');
         }
@@ -154,19 +172,43 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
     }
   }, [experiment])
 
+  useEffect(() => {
+    if (selectedQuery != null) {
+      const index = "someIndex"
+      const query1 = {
+        index: searchConfigurations[0].index,
+        query: {
+          terms: {
+            _id: queryEntries[selectedQuery].queryResults["0"]
+          }
+        }
+      }
+      const query2 = {
+        index: searchConfigurations[1].index,
+        query: {
+          terms: {
+            _id: queryEntries[selectedQuery].queryResults["1"]
+          }
+        }
+      }
+
+      http.post(SEARCH_NODE_API_PATH, {
+          body: JSON.stringify({ query1, query2 }),
+      })
+      .then((res) => {
+        setQueryResult1(res.result1)
+        setQueryResult2(res.result2)
+      })
+      .catch((error: Error) => {
+          console.error(error);
+      });
+
+    }
+  }, [selectedQuery])
+
   const findQueries = async (search: any) => {
     const filteredQueryEntries = search ? queryEntries.filter(q => q.queryText.includes(search)) : queryEntries
     return {hits: filteredQueryEntries, total: filteredQueryEntries.length}
-  }
-
-  const processResults = (idArray) => {
-    return idArray.map((id, i) => (
-      {
-        _id: id,
-        _score: 0,
-        rank: i + 1,
-      }
-    ))
   }
 
   return (
@@ -207,10 +249,10 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
         </EuiFlexGroup>
       </EuiPanel>
 
-      {selectedQuery!=null ? (
+      {(selectedQuery!=null && queryResult1 && queryResult2) ? (
         <VisualComparison
-          queryResult1={processResults(queryEntries[selectedQuery].queryResults["0"])}
-          queryResult2={processResults(queryEntries[selectedQuery].queryResults["1"])}
+          queryResult1={convertFromSearchResult(queryResult1)}
+          queryResult2={convertFromSearchResult(queryResult2)}
         />
       ) : (<></>)}
 
