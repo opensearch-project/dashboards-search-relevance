@@ -4,20 +4,12 @@
  */
 
 import {
-  EuiButton,
   EuiButtonEmpty,
   EuiButtonIcon,
   EuiCallOut,
-  EuiFlexGroup,
   EuiFlexItem,
-  EuiModal,
-  EuiModalBody,
-  EuiModalFooter,
-  EuiModalHeader,
-  EuiModalHeaderTitle,
   EuiPageHeader,
   EuiPageTemplate,
-  EuiPanel,
   EuiText,
 } from '@elastic/eui';
 import React, { useState } from 'react';
@@ -70,6 +62,12 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
           </EuiButtonEmpty>
         </>
       ),
+    },
+    {
+      filed: 'index',
+      name: 'Index',
+      dataType: 'string',
+      sortable: true,
     },
     {
       field: 'query_body',
@@ -149,6 +147,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
     return {
       id: obj._source.id,
       search_configuration_name: obj._source.name,
+      index: obj._source.index,
       query_body: obj._source.queryBody,
       timestamp: obj._source.timestamp,
     };
@@ -183,10 +182,11 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   };
 
   return (
-    <EuiPageTemplate paddingSize="l" restrictWidth="90%">
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Search Configurations"
-        description="Manage and view your search configurations"
+        description="View and manage your existing search configurations. Click on a configuration name
+                to view details."
         rightSideItems={[
           <EuiButtonEmpty
             iconType="arrowLeft"
@@ -199,53 +199,40 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         ]}
       />
 
-      <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
-          <EuiFlexItem>
-            <EuiText size="s" color="subdued">
-              <p>
-                View and manage your existing search configurations. Click on a configuration name
-                to view details.
-              </p>
-            </EuiText>
-          </EuiFlexItem>
-
-          <EuiFlexItem>
-            {error ? (
-              <EuiCallOut title="Error" color="danger">
-                <p>{error}</p>
-              </EuiCallOut>
-            ) : (
-              <TableListView
-                key={refreshKey} // force refresh
-                headingId="searchConfigurationListingHeading"
-                entityName="Search Configuration"
-                entityNamePlural="Search Configurations"
-                tableColumns={tableColumns}
-                findItems={findSearchConfigurations}
-                loading={isLoading}
-                pagination={{
-                  initialPageSize: 10,
-                  pageSizeOptions: [5, 10, 20, 50],
-                }}
-                search={{
-                  box: {
-                    incremental: true,
-                    placeholder: 'Search configurations...',
-                    schema: true,
-                  },
-                }}
-                sorting={{
-                  sort: {
-                    field: 'timestamp',
-                    direction: 'desc',
-                  },
-                }}
-              />
-            )}
-          </EuiFlexItem>
-        </EuiFlexGroup>
-      </EuiPanel>
+      <EuiFlexItem>
+        {error ? (
+          <EuiCallOut title="Error" color="danger">
+            <p>{error}</p>
+          </EuiCallOut>
+        ) : (
+          <TableListView
+            key={refreshKey} // force refresh
+            headingId="searchConfigurationListingHeading"
+            entityName="Search Configuration"
+            entityNamePlural="Search Configurations"
+            tableColumns={tableColumns}
+            findItems={findSearchConfigurations}
+            loading={isLoading}
+            pagination={{
+              initialPageSize: 10,
+              pageSizeOptions: [5, 10, 20, 50],
+            }}
+            search={{
+              box: {
+                incremental: true,
+                placeholder: 'Search configurations...',
+                schema: true,
+              },
+            }}
+            sorting={{
+              sort: {
+                field: 'timestamp',
+                direction: 'desc',
+              },
+            }}
+          />
+        )}
+      </EuiFlexItem>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && configToDelete && (

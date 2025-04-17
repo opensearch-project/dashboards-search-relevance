@@ -50,7 +50,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.QuerySets)
   );
-  router.post(
+  router.put(
     {
       path: ServiceEndpoints.SearchConfigurations,
       validate: {
@@ -93,6 +93,28 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('GET', BackendEndpoints.Experiments)
   );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Experiments)
+  );
 }
 
 const backendAction = (method, path) => {
@@ -112,8 +134,15 @@ const backendAction = (method, path) => {
         const { id } = req.params;
         const deletePath = `${path}/${id}`;
         response = await caller('transport.request', {
-          method: 'DELETE',
+          method: method,
           path: deletePath,
+        });
+      } else if (method === 'GET' && req.params.id) {
+        // Handle GET request for individual experiment
+        const getPath = `${path}/${req.params.id}`;
+        response = await caller('transport.request', {
+          method: method,
+          path: getPath,
         });
       } else {
         // Handle PUT, POST, GET as before
