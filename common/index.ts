@@ -46,6 +46,8 @@ export const BASE_NODE_API_PATH = '/api/relevancy';
 export const INDEX_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/indexes`;
 export const SEARCH_PIPELINE_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/pipelines`;
 export const SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/search`;
+export const SINGLE_SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/single_search`;
+
 export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
 
 export const DEFAULT_HEADERS = {
