@@ -80,6 +80,15 @@ doc-table {
   }
 }
 
+/* Alternate row colors */
+.osdDocTable__row:nth-child(even) {
+  background-color: #F5F7FA;
+}
+
+.osdDocTable__row:nth-child(odd) {
+  background-color: #FFFFFF;
+}
+
 .osdDocTable__row--highlight {
   td,
   .osdDocTableRowFilterButton {
