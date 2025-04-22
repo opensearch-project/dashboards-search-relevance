@@ -21,6 +21,8 @@ import { CoreStart } from '../../../../../src/core/public';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
+import { useConfig } from '../../contexts/date_format_context';
+import moment from 'moment';
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -30,6 +32,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   http,
   history,
 }) => {
+  const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -94,7 +97,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       dataType: 'string',
       sortable: true,
       render: (timestamp: string) => (
-        <EuiText size="s">{new Date(timestamp).toLocaleString()}</EuiText>
+        <EuiText size="s">{moment(timestamp).format(dateFormat)}</EuiText>
       ),
     },
     {
