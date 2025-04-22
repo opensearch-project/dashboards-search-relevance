@@ -10,29 +10,31 @@ import { DataSourceManagementPluginSetup } from '../../../src/plugins/data_sourc
 import { SearchRelevanceApp } from './components/app';
 import { AppPluginStartDependencies } from './types';
 import { OpenSearchDashboardsContextProvider } from '../../../src/plugins/opensearch_dashboards_react/public';
+import { ConfigProvider } from './contexts/date_format_context';
 
 export const renderApp = (
   coreStart: CoreStart,
   { navigation, dataSource }: AppPluginStartDependencies,
-  { element, setHeaderActionMenu, history }: AppMountParameters,
+  { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
-  const { notifications, http, chrome, savedObjects, application } = coreStart;
+  const { notifications, http, chrome, savedObjects, application, uiSettings } = coreStart;
 
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={coreStart}>
-      <SearchRelevanceApp
-        notifications={notifications}
-        http={http}
-        navigation={navigation}
-        chrome={chrome}
-        savedObjects={savedObjects}
-        dataSourceEnabled={!!dataSource}
-        setActionMenu={setHeaderActionMenu}
-        dataSourceManagement={dataSourceManagement}
-        application={application}
-        history={history}
-      />
+      <ConfigProvider uiSettings={uiSettings}>
+        <SearchRelevanceApp
+          notifications={notifications}
+          http={http}
+          navigation={navigation}
+          chrome={chrome}
+          savedObjects={savedObjects}
+          dataSourceEnabled={!!dataSource}
+          setActionMenu={setHeaderActionMenu}
+          dataSourceManagement={dataSourceManagement}
+          application={application}
+        />
+      </ConfigProvider>
     </OpenSearchDashboardsContextProvider>,
     element
   );

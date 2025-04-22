@@ -23,12 +23,15 @@ import {
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
+import { useConfig } from '../../contexts/date_format_context';
+import moment from 'moment';
 
 interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
 export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+  const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,7 +109,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       dataType: 'string',
       sortable: true,
       render: (timestamp: string) => (
-        <EuiText size="s">{new Date(timestamp).toLocaleString()}</EuiText>
+        <EuiText size="s">{moment(timestamp).format(dateFormat)}</EuiText>
       ),
     },
     {
