@@ -35,7 +35,6 @@ interface SearchRelevanceAppDeps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
-  history: CoreStart['history'];
 }
 
 export const SearchRelevanceApp = ({
@@ -48,7 +47,6 @@ export const SearchRelevanceApp = ({
   setActionMenu,
   dataSourceManagement,
   application,
-  history,
 }: SearchRelevanceAppDeps) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
