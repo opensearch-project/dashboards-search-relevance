@@ -21,12 +21,15 @@ import { CoreStart } from '../../../../../src/core/public';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
+import { useConfig } from '../../contexts/date_format_context';
+import moment from 'moment';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
 }
 
 export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, history }) => {
+  const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,7 +108,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       dataType: 'string',
       sortable: true,
       render: (timestamp: string) => (
-        <EuiText size="s">{new Date(timestamp).toLocaleString()}</EuiText>
+        <EuiText size="s">{moment(timestamp).format(dateFormat)}</EuiText>
       ),
     },
     {
