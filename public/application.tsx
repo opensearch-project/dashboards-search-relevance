@@ -15,7 +15,7 @@ import { ConfigProvider } from './contexts/date_format_context';
 export const renderApp = (
   coreStart: CoreStart,
   { navigation, dataSource }: AppPluginStartDependencies,
-  { element, setHeaderActionMenu, history }: AppMountParameters,
+  { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
   const { notifications, http, chrome, savedObjects, application, uiSettings } = coreStart;
@@ -33,7 +33,6 @@ export const renderApp = (
           setActionMenu={setHeaderActionMenu}
           dataSourceManagement={dataSourceManagement}
           application={application}
-          history={history}
         />
       </ConfigProvider>
     </OpenSearchDashboardsContextProvider>,
