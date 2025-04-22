@@ -24,7 +24,7 @@ export const Header = ({ children }: HeaderProps) => {
       </EuiTitle>
       <EuiText>
         <p>
-          Evaluate on your search quality with different queries.{' '}
+          Evaluate your search quality with different queries.{' '}
           <EuiLink
             href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
             target="_blank"
