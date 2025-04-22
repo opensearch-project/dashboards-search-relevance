@@ -47,7 +47,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
   const samplingOptions = [
     { value: 'random', text: 'Random' },
-    { value: 'ppts', text: 'Probability-Proportional-to-Size Sampling' },
+    { value: 'pptss', text: 'Probability-Proportional-to-Size Sampling' },
     { value: 'topn', text: 'Top N' },
   ];
 
