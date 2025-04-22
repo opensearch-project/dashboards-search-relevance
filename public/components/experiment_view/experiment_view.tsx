@@ -159,6 +159,15 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
             name: cheatColNames[metricName],
             dataType: 'number',
             sortable: true,
+            render: (value) => {
+              if (value !== undefined && value !== null) {
+                return new Intl.NumberFormat(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(value);
+              }
+              return '-';
+            }
           })
         }
       })
