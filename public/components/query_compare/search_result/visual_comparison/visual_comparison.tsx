@@ -308,26 +308,26 @@ export const VisualComparison = ({
         </select>
       </div>
       
-      {/* Summary section with card style */}
+      {/* Summary section with Venn diagram style using CSS classes */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-4">Summary</h3>
-        <div className="flex justify-between gap-4">
-          {/* Common items card */}
-          <div className="flex-1 bg-blue-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.inBoth}</div>
-            <div>Common items</div>
+        <div className="venn-container">
+          {/* Result 1 rectangle (left) */}
+          <div className="venn-left">
+            <div className="venn-value">{statistics.onlyInResult1}</div>
+            <div className="venn-label">Unique</div>
           </div>
           
-          {/* Unique to Result 1 card */}
-          <div className="flex-1 bg-yellow-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.onlyInResult1}</div>
-            <div>Unique to Result 1</div>
+          {/* Intersection (middle) */}
+          <div className="venn-middle">
+            <div className="venn-value">{statistics.inBoth}</div>
+            <div className="venn-label">Common</div>
           </div>
           
-          {/* Unique to Result 2 card */}
-          <div className="flex-1 bg-purple-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.onlyInResult2}</div>
-            <div>Unique to Result 2</div>
+          {/* Result 2 rectangle (right) */}
+          <div className="venn-right">
+            <div className="venn-value">{statistics.onlyInResult2}</div>
+            <div className="venn-label">Unique</div>
           </div>
         </div>
       </div>
