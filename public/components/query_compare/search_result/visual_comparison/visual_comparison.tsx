@@ -9,6 +9,9 @@ interface OpenSearchComparisonProps {
   queryResult2: any;
   queryError1: any;
   queryError2: any;
+  queryText: string;
+  resultText1: string;
+  resultText2: string;
 }
 
 export const convertFromSearchResult = (searchResult) => {
@@ -27,6 +30,9 @@ export const VisualComparison = ({
   queryResult2,
   queryError1,
   queryError2,
+  queryText,
+  resultText1,
+  resultText2,
 }: OpenSearchComparisonProps) => {
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
@@ -289,7 +295,9 @@ export const VisualComparison = ({
 
   return (
     <div className="p-4">
-      {/* Field selector dropdown */}
+      <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
+
+        {/* Field selector dropdown */}
       <div className="mb-4">
         <label htmlFor="field-selector" className="block text-sm font-medium text-gray-700 mb-1">
           Display Field:
@@ -308,40 +316,38 @@ export const VisualComparison = ({
         </select>
       </div>
       
-      {/* Summary section with card style */}
+      {/* Summary section with Venn diagram style using CSS classes */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-4">Summary</h3>
-        <div className="flex justify-between gap-4">
-          {/* Common items card */}
-          <div className="flex-1 bg-blue-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.inBoth}</div>
-            <div>Common items</div>
+        <div className="venn-container">
+          {/* Result 1 rectangle (left) */}
+          <div className="venn-left">
+            <div className="venn-value">{statistics.onlyInResult1}</div>
+            <div className="venn-label">Unique</div>
           </div>
           
-          {/* Unique to Result 1 card */}
-          <div className="flex-1 bg-yellow-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.onlyInResult1}</div>
-            <div>Unique to Result 1</div>
+          {/* Intersection (middle) */}
+          <div className="venn-middle">
+            <div className="venn-value">{statistics.inBoth}</div>
+            <div className="venn-label">Common</div>
           </div>
           
-          {/* Unique to Result 2 card */}
-          <div className="flex-1 bg-purple-50 p-6 rounded-lg text-center">
-            <div className="text-xl font-bold mb-2">{statistics.onlyInResult2}</div>
-            <div>Unique to Result 2</div>
+          {/* Result 2 rectangle (right) */}
+          <div className="venn-right">
+            <div className="venn-value">{statistics.onlyInResult2}</div>
+            <div className="venn-label">Unique</div>
           </div>
         </div>
       </div>
 
       {/* Rank-based overlap visualization */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Visual Comparison</h3>
         <div className="flex justify-between mb-4">
           <div className="text-center w-1/4">
-            <h4 className="font-semibold">Result 1</h4>
+            <h4 className="font-semibold">{resultText1}</h4>
             <div className="text-sm text-gray-600">({result1.length} results)</div>
           </div>
           <div className="text-center w-1/4">
-            <h4 className="font-semibold">Result 2</h4>
+            <h4 className="font-semibold">{resultText2}</h4>
             <div className="text-sm text-gray-600">({result2.length} results)</div>
           </div>
         </div>
@@ -354,14 +360,14 @@ export const VisualComparison = ({
                 key={`r1-${index}`}
                 id={`r1-item-${item._id}`}
                 ref={el => result1ItemsRef.current[item._id] = el}
-                className="flex items-center mb-2 hover:bg-gray-100 p-1 rounded"
+                className="flex-row-reverse items-center mb-2 hover:bg-gray-100 p-1 rounded"
                 onMouseEnter={() => handleItemMouseEnter(item)}
                 onMouseLeave={handleItemMouseLeave}
               >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold mr-2`}>
+                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2 flex-shrink-0`}>
                   {item.rank}
                 </div>
-                <div className="w-8 h-8 mr-2 flex-shrink-0">
+                <div className="w-8 h-8 ml-2 flex-shrink-0">
                   {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
                     <img
                       width="32"
@@ -375,7 +381,7 @@ export const VisualComparison = ({
                     />
                   )}
                 </div>
-                <div className="font-mono text-sm truncate flex-grow">
+                <div className="font-mono text-sm truncate flex-grow text-right">
                   {item[displayField] || item._id}
                 </div>
               </div>
@@ -458,7 +464,7 @@ export const VisualComparison = ({
                 onMouseEnter={() => handleItemMouseEnter(item)}
                 onMouseLeave={handleItemMouseLeave}
               >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2`}>
+                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2 flex-shrink-0`}>
                   {item.rank}
                 </div>
                 <div className="w-8 h-8 mr-2 flex-shrink-0">
@@ -516,6 +522,27 @@ export const VisualComparison = ({
           onMouseEnter={() => handleItemMouseEnter(hoveredItem)}
           onMouseLeave={handleItemMouseLeave}
         >
+
+          {imageFieldName && hoveredItem[imageFieldName] && hoveredItem[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+            <>
+              <div className="flex items-center mb-2">
+                <div className="w-16 h-16 flex-shrink-0 mr-3">
+                  <img
+                    width="16"
+                    height="16"
+                    src={hoveredItem[imageFieldName]}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                </div>
+                { /* hoveredItem.title && (<h3 className="text-lg font-bold">{hoveredItem.title}</h3>)} */}
+              </div>
+              <div className="border-t border-b py-2 mb-2"></div>
+            </>
+          ) : (
+            <></>
+          )}
+
+
           <div className="grid grid-cols-2 gap-2">
             <div className="mb-1 text-sm">
               <span className="font-semibold">ID:</span> <span className="font-mono">{hoveredItem._id}</span>

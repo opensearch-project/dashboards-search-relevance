@@ -44,6 +44,10 @@
   margin-right: 0.5rem;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
 .mr-3 {
   margin-right: 0.75rem;
 }
@@ -71,6 +75,10 @@
 }
 
 /* Typography */
+.text-right {
+  text-align: right;
+}
+
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
@@ -121,6 +129,11 @@
 /* Flexbox layouts */
 .flex {
   display: flex;
+}
+
+.flex-row-reverse {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .flex-1 {
@@ -518,5 +531,93 @@ svg line {
     width: 100%;
     height: 100%;
     overflow: auto;
+  }
+}
+
+/* Venn diagram styles for OpenSearch comparison */
+.venn-container {
+  position: relative;
+  height: 80px;
+  margin: 2rem auto;
+  max-width: 48rem; /* max-w-3xl */
+}
+
+.venn-left {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-87%); // -100 + 27 = -73
+  background-color: rgba(254, 249, 195, 0.9); /* bg-yellow-100 with opacity */
+  width: 22rem; // 14rem; /* w-56 */
+  height: 6rem; /* h-32 */
+  border-radius: 1rem; /* rounded-lg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
+  z-index: 10;
+}
+
+.venn-middle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(219, 234, 254, 0.7); /* bg-blue-100 with opacity */
+  width: 6rem; /* w-24 */
+  height: 6rem; /* h-32 */
+  border-radius: 1rem; /* rounded-lg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
+  z-index: 12;
+}
+
+.venn-right {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-13%);
+  background-color: rgba(233, 213, 255, 0.9); /* bg-purple-100 with opacity */
+  width: 22rem; //14rem; /* w-56 */
+  height: 6rem; /* h-32 */
+  border-radius: 1rem; /* rounded-lg */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* shadow-md */
+  z-index: 11;
+}
+
+.venn-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.venn-label {
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .venn-container {
+    height: 10rem;
+  }
+
+  .venn-left, .venn-right, .venn-middle {
+    width: 10rem;
+    height: 5rem;
+  }
+
+  .venn-left {
+    transform: translateX(-60%);
+  }
+
+  .venn-right {
+    transform: translateX(-40%);
   }
 }
