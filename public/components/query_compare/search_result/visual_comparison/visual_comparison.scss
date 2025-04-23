@@ -44,6 +44,10 @@
   margin-right: 0.5rem;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
 .mr-3 {
   margin-right: 0.75rem;
 }
@@ -71,6 +75,10 @@
 }
 
 /* Typography */
+.text-right {
+  text-align: right;
+}
+
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
@@ -121,6 +129,11 @@
 /* Flexbox layouts */
 .flex {
   display: flex;
+}
+
+.flex-row-reverse {
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .flex-1 {

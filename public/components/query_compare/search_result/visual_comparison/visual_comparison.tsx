@@ -354,14 +354,14 @@ export const VisualComparison = ({
                 key={`r1-${index}`}
                 id={`r1-item-${item._id}`}
                 ref={el => result1ItemsRef.current[item._id] = el}
-                className="flex items-center mb-2 hover:bg-gray-100 p-1 rounded"
+                className="flex-row-reverse items-center mb-2 hover:bg-gray-100 p-1 rounded"
                 onMouseEnter={() => handleItemMouseEnter(item)}
                 onMouseLeave={handleItemMouseLeave}
               >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold mr-2`}>
+                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2`}>
                   {item.rank}
                 </div>
-                <div className="w-8 h-8 mr-2 flex-shrink-0">
+                <div className="w-8 h-8 ml-2 flex-shrink-0">
                   {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
                     <img
                       width="32"
@@ -375,7 +375,7 @@ export const VisualComparison = ({
                     />
                   )}
                 </div>
-                <div className="font-mono text-sm truncate flex-grow">
+                <div className="font-mono text-sm truncate flex-grow text-right">
                   {item[displayField] || item._id}
                 </div>
               </div>
