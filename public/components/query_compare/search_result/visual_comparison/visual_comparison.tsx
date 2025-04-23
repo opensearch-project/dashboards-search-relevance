@@ -516,6 +516,27 @@ export const VisualComparison = ({
           onMouseEnter={() => handleItemMouseEnter(hoveredItem)}
           onMouseLeave={handleItemMouseLeave}
         >
+
+          {imageFieldName && hoveredItem[imageFieldName] && hoveredItem[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+            <>
+              <div className="flex items-center mb-2">
+                <div className="w-16 h-16 flex-shrink-0 mr-3">
+                  <img
+                    width="16"
+                    height="16"
+                    src={hoveredItem[imageFieldName]}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                </div>
+                { /* hoveredItem.title && (<h3 className="text-lg font-bold">{hoveredItem.title}</h3>)} */}
+              </div>
+              <div className="border-t border-b py-2 mb-2"></div>
+            </>
+          ) : (
+            <></>
+          )}
+
+
           <div className="grid grid-cols-2 gap-2">
             <div className="mb-1 text-sm">
               <span className="font-semibold">ID:</span> <span className="font-mono">{hoveredItem._id}</span>
