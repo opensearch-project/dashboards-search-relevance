@@ -358,7 +358,7 @@ export const VisualComparison = ({
                 onMouseEnter={() => handleItemMouseEnter(item)}
                 onMouseLeave={handleItemMouseLeave}
               >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2`}>
+                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2 flex-shrink-0`}>
                   {item.rank}
                 </div>
                 <div className="w-8 h-8 ml-2 flex-shrink-0">
@@ -458,7 +458,7 @@ export const VisualComparison = ({
                 onMouseEnter={() => handleItemMouseEnter(item)}
                 onMouseLeave={handleItemMouseLeave}
               >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2`}>
+                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2 flex-shrink-0`}>
                   {item.rank}
                 </div>
                 <div className="w-8 h-8 mr-2 flex-shrink-0">
