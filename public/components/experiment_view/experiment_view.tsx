@@ -262,6 +262,9 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
         <VisualComparison
           queryResult1={convertFromSearchResult(queryResult1)}
           queryResult2={convertFromSearchResult(queryResult2)}
+          queryText={queryEntries[selectedQuery].queryText}
+          resultText1="Result 1"
+          resultText2="Result 2"
         />
       ) : (<></>)}
 

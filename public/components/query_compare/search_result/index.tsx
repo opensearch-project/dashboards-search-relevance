@@ -292,6 +292,9 @@ const versionToggle = (
               queryResult2={convertFromSearchResult(queryResult2)}
               queryError1={queryError1}
               queryError2={queryError2}
+              queryText={searchBarValue}
+              resultText1="Result 1"
+              resultText2="Result 2"
             />
         )}
       </EuiPageContentBody>

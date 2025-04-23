@@ -9,6 +9,9 @@ interface OpenSearchComparisonProps {
   queryResult2: any;
   queryError1: any;
   queryError2: any;
+  queryText: string;
+  resultText1: string;
+  resultText2: string;
 }
 
 export const convertFromSearchResult = (searchResult) => {
@@ -27,6 +30,9 @@ export const VisualComparison = ({
   queryResult2,
   queryError1,
   queryError2,
+  queryText,
+  resultText1,
+  resultText2,
 }: OpenSearchComparisonProps) => {
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
@@ -289,7 +295,9 @@ export const VisualComparison = ({
 
   return (
     <div className="p-4">
-      {/* Field selector dropdown */}
+      <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
+
+        {/* Field selector dropdown */}
       <div className="mb-4">
         <label htmlFor="field-selector" className="block text-sm font-medium text-gray-700 mb-1">
           Display Field:
@@ -310,7 +318,6 @@ export const VisualComparison = ({
       
       {/* Summary section with Venn diagram style using CSS classes */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-4">Summary</h3>
         <div className="venn-container">
           {/* Result 1 rectangle (left) */}
           <div className="venn-left">
@@ -334,14 +341,13 @@ export const VisualComparison = ({
 
       {/* Rank-based overlap visualization */}
       <div className="mb-6">
-        <h3 className="text-lg font-semibold mb-2">Visual Comparison</h3>
         <div className="flex justify-between mb-4">
           <div className="text-center w-1/4">
-            <h4 className="font-semibold">Result 1</h4>
+            <h4 className="font-semibold">{resultText1}</h4>
             <div className="text-sm text-gray-600">({result1.length} results)</div>
           </div>
           <div className="text-center w-1/4">
-            <h4 className="font-semibold">Result 2</h4>
+            <h4 className="font-semibold">{resultText2}</h4>
             <div className="text-sm text-gray-600">({result2.length} results)</div>
           </div>
         </div>
