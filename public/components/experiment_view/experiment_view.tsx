@@ -224,7 +224,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
       />
 
       <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
+        <EuiFlexGroup direction="row" gutterSize="m">
 
           <EuiFlexItem>
             {error ? (
@@ -255,7 +255,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
 
 
       {(selectedQuery!=null && queryResult1 && queryResult2) && (
-        <EuiFlexItem  style={{ maxWidth: '100%' }}>
+        <EuiFlexItem  style={{ maxWidth: '50%' }}>
           <VisualComparison
             queryResult1={convertFromSearchResult(queryResult1)}
             queryResult2={convertFromSearchResult(queryResult2)}

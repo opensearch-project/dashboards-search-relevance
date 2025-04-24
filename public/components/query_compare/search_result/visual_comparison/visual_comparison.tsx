@@ -46,6 +46,8 @@ export const VisualComparison = ({
   // State for hover item details
   const [hoveredItem, setHoveredItem] = useState(null);
   const hoverTimeoutRef = useRef(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+
 
   // Refs for elements
   const result1ItemsRef = useRef({});
@@ -260,13 +262,66 @@ export const VisualComparison = ({
   };
 
   // Function to handle hover for item details
-  const handleItemMouseEnter = (item) => {
+  const handleItemMouseEnter = (item, event) => {
     // Clear any existing timeout to prevent flickering
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
+
+    // Set the hovered item
     setHoveredItem(item);
+
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    // Get mouse position
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+
+    // Determine which side has more space
+    const spaceOnRight = viewportWidth - mouseX;
+    const spaceOnLeft = mouseX;
+
+    // Calculate tooltip width (approximately 30% of viewport)
+    const tooltipWidth = viewportWidth * 0.3;
+
+    // Calculate position with 1/6th viewport width spacing
+    const spacing = viewportWidth / 6;
+    let left;
+
+    // Place tooltip on the side with more space
+    if (spaceOnRight > spaceOnLeft) {
+      // Position on right side with spacing
+      left = mouseX + spacing;
+      // Ensure tooltip stays within viewport
+      if (left + tooltipWidth > viewportWidth - 20) {
+        left = viewportWidth - tooltipWidth - 20;
+      }
+    } else {
+      // Position on left side with spacing
+      left = mouseX - spacing - tooltipWidth;
+      // Ensure tooltip stays within viewport
+      if (left < 20) {
+        left = 20;
+      }
+    }
+
+    // Calculate vertical position relative to mouse pointer
+    // Center it vertically with the mouse position if possible
+    let top = mouseY - 200; // Assume tooltip is about 400px tall
+
+    // Ensure tooltip stays within viewport vertically
+    if (top < 20) {
+      top = 20;
+    } else if (top + 400 > viewportHeight - 20) {
+      top = viewportHeight - 400 - 20;
+    }
+
+    // Update tooltip position
+    setTooltipPosition({ left, top });
   };
+
   
   const handleItemMouseLeave = () => {
     // Add a small delay before hiding the tooltip to prevent flickering
@@ -365,7 +420,7 @@ export const VisualComparison = ({
                 id={`r1-item-${item._id}`}
                 ref={el => result1ItemsRef.current[item._id] = el}
                 className="flex-row-reverse items-center mb-2 hover:bg-gray-100 p-1 rounded"
-                onMouseEnter={() => handleItemMouseEnter(item)}
+                onMouseEnter={(event) => handleItemMouseEnter(item, event)}
                 onMouseLeave={handleItemMouseLeave}
               >
                 <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2 flex-shrink-0`}>
@@ -461,7 +516,7 @@ export const VisualComparison = ({
                 id={`r2-item-${item._id}`}
                 ref={el => result2ItemsRef.current[item._id] = el}
                 className="flex items-center mb-2 hover:bg-gray-100 p-1 rounded"
-                onMouseEnter={() => handleItemMouseEnter(item)}
+                onMouseEnter={(event) => handleItemMouseEnter(item, event)}
                 onMouseLeave={handleItemMouseLeave}
               >
                 <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2 flex-shrink-0`}>
@@ -510,16 +565,21 @@ export const VisualComparison = ({
       
       {/* Item Details Tooltip on Hover */}
       {hoveredItem && (
-        <div 
+        <div
           className="fixed bg-white shadow-lg rounded-lg p-4 max-w-md z-20 border"
           style={{
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
+            left: `${tooltipPosition.left}px`,
+            top: `${tooltipPosition.top}px`,
             maxHeight: '400px',
             overflow: 'auto'
           }}
-          onMouseEnter={() => handleItemMouseEnter(hoveredItem)}
+          onMouseEnter={(e) => {
+            // Need to prevent the tooltip from disappearing when mouse enters it
+            if (hoverTimeoutRef.current) {
+              clearTimeout(hoverTimeoutRef.current);
+            }
+            setHoveredItem(hoveredItem);
+          }}
           onMouseLeave={handleItemMouseLeave}
         >
 
