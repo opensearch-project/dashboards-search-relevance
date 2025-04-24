@@ -54,24 +54,24 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
   const [metricMeans, setMetricMeans] = useState<any>({});
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
+  const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
+
   const loadSearchConfigurations = async (searchConfigurationIds: string[]) => {
-    const response = await http.get(ServiceEndpoints.SearchConfigurations);
-    const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-    const filteredList = list.filter((item) => searchConfigurationIds.includes(item.id));
-    return filteredList;
+    const promises = searchConfigurationIds.map(async (id) => {
+      return await http.get(ServiceEndpoints.SearchConfigurations + "/" + id).then(sanitizeResponse);
+    });
+    return Promise.all(promises);
   };
 
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const response = await http.get(ServiceEndpoints.Experiments);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item) => item.id === id);
+        const _experiment = await http.get(ServiceEndpoints.Experiments + "/" + id).then(sanitizeResponse);
+        const _searchConfigurations = _experiment ? await loadSearchConfigurations(_experiment.searchConfigurationList) : [];
+        // const _querySet = _experiment || await http.get(ServiceEndpoints.QuerySets + "/" + id).then(sanitizeResponse);
 
-        if (filteredList.length > 0) {
-          const _experiment = filteredList[0];
-          const _searchConfigurations = await loadSearchConfigurations(_experiment.searchConfigurationList);
+        if (_experiment && _searchConfigurations.length >= 2 && _searchConfigurations.every(Boolean)) {
           setExperiment(_experiment);
           setSearchConfigurations(_searchConfigurations);
         } else {
@@ -124,8 +124,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
       })
 
       const cheatColNames = {
-        rbo90: "RBO",
-        jaccard: "Jaccard",
+        rbo90: "RBO@" + experiment.k,
+        jaccard: "Jaccard@" + experiment.k,
       }
 
       let columns = [
@@ -172,8 +172,6 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
         }
       })
 
-      console.log(_queryEntries)
-      
       setQueryEntries(_queryEntries)
       setMetrics(_metrics);
       setMetricMeans(_metricMeans);
@@ -263,8 +261,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
           queryResult1={convertFromSearchResult(queryResult1)}
           queryResult2={convertFromSearchResult(queryResult2)}
           queryText={queryEntries[selectedQuery].queryText}
-          resultText1="Result 1"
-          resultText2="Result 2"
+          resultText1={`${searchConfigurations[0].name} result`}
+          resultText2={`${searchConfigurations[1].name} result`}
         />
       ) : (<></>)}
 

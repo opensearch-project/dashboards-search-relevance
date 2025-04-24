@@ -501,10 +501,10 @@ export const VisualComparison = ({
           <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in Result 1
+          <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in Result 2
+          <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
         </div>
       </div>
       
