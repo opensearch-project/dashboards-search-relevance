@@ -204,6 +204,10 @@
 }
 
 /* Width and height utilities */
+.w-1\/3 {
+  width: 33.333333%;
+}
+
 .w-1\/4 {
   width: 25%;
 }
@@ -469,6 +473,10 @@
   overflow: auto;
 }
 
+.overflow-hidden {
+  overflow: hidden;
+}
+
 /* Compatibility fix for EUI integration */
 .euiPanel--paddingMedium {
   padding: 16px !important;
@@ -555,9 +563,9 @@ svg line {
 .venn-left {
   position: absolute;
   left: 50%;
-  transform: translateX(-87%); // -100 + 27 = -73
+  transform: translateX(-84%);
   background-color: rgba(254, 249, 195, 0.9); /* bg-yellow-100 with opacity */
-  width: 22rem; // 14rem; /* w-56 */
+  width: 50%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
   display: flex;
@@ -573,7 +581,7 @@ svg line {
   left: 50%;
   transform: translateX(-50%);
   background-color: rgba(219, 234, 254, 0.7); /* bg-blue-100 with opacity */
-  width: 6rem; /* w-24 */
+  width: 17%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
   display: flex;
@@ -588,9 +596,9 @@ svg line {
 .venn-right {
   position: absolute;
   left: 50%;
-  transform: translateX(-13%);
-  background-color: rgba(233, 213, 255, 0.9); /* bg-purple-100 with opacity */
-  width: 22rem; //14rem; /* w-56 */
+  transform: translateX(-16%);
+  background-color: rgba(233, 213, 255, 0.3); /* bg-purple-100 with opacity */
+  width: 50%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
   display: flex;

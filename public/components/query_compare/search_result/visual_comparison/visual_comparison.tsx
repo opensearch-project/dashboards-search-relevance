@@ -346,11 +346,11 @@ export const VisualComparison = ({
       {/* Rank-based overlap visualization */}
       <div className="mb-6">
         <div className="flex justify-between mb-4">
-          <div className="text-center w-1/4">
+          <div className="text-center w-1/3">
             <h4 className="font-semibold">{resultText1}</h4>
             <div className="text-sm text-gray-600">({result1.length} results)</div>
           </div>
-          <div className="text-center w-1/4">
+          <div className="text-center w-1/3">
             <h4 className="font-semibold">{resultText2}</h4>
             <div className="text-sm text-gray-600">({result2.length} results)</div>
           </div>
@@ -358,7 +358,7 @@ export const VisualComparison = ({
         
         <div className="flex">
           {/* Result 1 ranks - with refs to capture positions */}
-          <div className="w-1/4 relative" id="result1-items">
+          <div className="w-1/3 relative" id="result1-items">
             {result1.map((item, index) => (
               <div 
                 key={`r1-${index}`}
@@ -385,7 +385,7 @@ export const VisualComparison = ({
                     />
                   )}
                 </div>
-                <div className="font-mono text-sm truncate flex-grow text-right">
+                <div className="font-mono text-sm truncate overflow-hidden">
                   {item[displayField] || item._id}
                 </div>
               </div>
@@ -393,7 +393,7 @@ export const VisualComparison = ({
           </div>
           
           {/* Connection lines */}
-          <div className="w-2/4 relative">
+          <div className="w-1/3 relative">
             { /* TODO: Fixed size leads to lines being cut off, for now adding overflow to avoid that */ }
             <svg width="100%" height="420" style={{ overflow: 'visible' }} className="absolute top-0 left-0" id="connection-lines">
               {/* Only draw lines after component has mounted to ensure refs are available */}
@@ -454,7 +454,7 @@ export const VisualComparison = ({
           </div>
           
           {/* Result 2 ranks */}
-          <div className="w-1/4 relative" id="result2-items">
+          <div className="w-1/3 relative" id="result2-items">
             {result2.map((item, index) => (
               <div 
                 key={`r2-${index}`}
@@ -481,7 +481,7 @@ export const VisualComparison = ({
                     />
                   )}
                 </div>
-                <div className="font-mono text-sm truncate">
+                <div className="font-mono text-sm truncate overflow-hidden">
                   {item[displayField] || item._id}
                 </div>
               </div>
