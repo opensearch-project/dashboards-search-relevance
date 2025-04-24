@@ -254,8 +254,8 @@ export const VisualComparison = ({
       if (!matchingItem) return "bg-purple-300"; // Only in Result 2
       
       if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank > matchingItem.rank) return "bg-green-300"; // Improved from Result 1
-      return "bg-red-300"; // Dropped from Result 1
+      if (item.rank > matchingItem.rank) return "bg-red-300"; // Improved from Result 1
+      return "bg-green-300"; // Dropped from Result 1
     }
   };
 
@@ -297,22 +297,26 @@ export const VisualComparison = ({
     <div className="p-4">
       <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
 
-        {/* Field selector dropdown */}
-      <div className="mb-4">
-        <label htmlFor="field-selector" className="block text-sm font-medium text-gray-700 mb-1">
+      {/* Field selector dropdown */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="field-selector" className="text-sm font-medium text-gray-700">
           Display Field:
         </label>
         <select
           id="field-selector"
-          className="block w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
           value={displayField}
           onChange={(e) => setDisplayField(e.target.value)}
         >
-          {displayFields.map((field) => (
-            <option key={field.value} value={field.value}>
-              {field.label}
-            </option>
-          ))}
+          {displayFields && displayFields.length > 0 ? (
+            displayFields.map((field) => (
+              <option key={field.value} value={field.value}>
+                {field.label}
+              </option>
+            ))
+          ) : (
+            <option value="">No fields available</option>
+          )}
         </select>
       </div>
       
@@ -408,9 +412,6 @@ export const VisualComparison = ({
                   lineColor = "#86EFAC"; // Green for improved
                 }
                 
-                // Dashed line for changed positions
-                const lineStyle = r1Item.rank === r2Match.rank ? "" : "2,2";
-                
                 // Get elements by ref to ensure we have their positions
                 const r1El = result1ItemsRef.current[r1Item._id];
                 const r2El = result2ItemsRef.current[r1Item._id];
@@ -438,8 +439,7 @@ export const VisualComparison = ({
                       x2="100%" 
                       y2={y2} 
                       stroke={lineColor} 
-                      strokeWidth="2"
-                      strokeDasharray={lineStyle}
+                      strokeWidth="4"
                     />
                   );
                 } catch (error) {
@@ -501,10 +501,10 @@ export const VisualComparison = ({
           <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in Result 1
+          <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
         </div>
         <div className="flex items-center">
-          <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in Result 2
+          <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
         </div>
       </div>
       
