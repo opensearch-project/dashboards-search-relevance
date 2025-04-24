@@ -254,8 +254,8 @@ export const VisualComparison = ({
       if (!matchingItem) return "bg-purple-300"; // Only in Result 2
       
       if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank > matchingItem.rank) return "bg-green-300"; // Improved from Result 1
-      return "bg-red-300"; // Dropped from Result 1
+      if (item.rank > matchingItem.rank) return "bg-red-300"; // Improved from Result 1
+      return "bg-green-300"; // Dropped from Result 1
     }
   };
 
@@ -408,9 +408,6 @@ export const VisualComparison = ({
                   lineColor = "#86EFAC"; // Green for improved
                 }
                 
-                // Dashed line for changed positions
-                const lineStyle = r1Item.rank === r2Match.rank ? "" : "2,2";
-                
                 // Get elements by ref to ensure we have their positions
                 const r1El = result1ItemsRef.current[r1Item._id];
                 const r2El = result2ItemsRef.current[r1Item._id];
@@ -438,8 +435,7 @@ export const VisualComparison = ({
                       x2="100%" 
                       y2={y2} 
                       stroke={lineColor} 
-                      strokeWidth="2"
-                      strokeDasharray={lineStyle}
+                      strokeWidth="4"
                     />
                   );
                 } catch (error) {
