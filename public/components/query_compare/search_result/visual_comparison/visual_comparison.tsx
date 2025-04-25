@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { EuiPanel, EuiEmptyPrompt } from '@elastic/eui';
+import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent } from '@elastic/eui';
 
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
@@ -299,130 +299,133 @@ export const VisualComparison = ({
   }
 
   return (
-    <div className="p-4">
-      <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
+    <EuiPage>
+      <EuiPageBody>
+        <EuiPageContent>
+          <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
 
-      {/* Field selector dropdown */}
-      <div className="mb-4 flex items-center gap-4">
-        <label htmlFor="field-selector" className="text-sm font-medium text-gray-700">
-          Display Field:
-        </label>
-        <select
-          id="field-selector"
-          className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-          value={displayField}
-          onChange={(e) => setDisplayField(e.target.value)}
-        >
-          {displayFields && displayFields.length > 0 ? (
-            displayFields.map((field) => (
-              <option key={field.value} value={field.value}>
-                {field.label}
-              </option>
-            ))
-          ) : (
-            <option value="">No fields available</option>
-          )}
-        </select>
-      </div>
-      
-      {/* Summary section with Venn diagram style using CSS classes */}
-      <div className="mb-6">
-        {vennDiagram}
-      </div>
+          {/* Field selector dropdown */}
+          <div className="mb-4 flex items-center gap-4">
+            <label htmlFor="field-selector" className="text-sm font-medium text-gray-700">
+              Display Field:
+            </label>
+            <select
+              id="field-selector"
+              className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              value={displayField}
+              onChange={(e) => setDisplayField(e.target.value)}
+            >
+              {displayFields && displayFields.length > 0 ? (
+                displayFields.map((field) => (
+                  <option key={field.value} value={field.value}>
+                    {field.label}
+                  </option>
+                ))
+              ) : (
+                <option value="">No fields available</option>
+              )}
+            </select>
+          </div>
 
-      {/* Rank-based overlap visualization */}
-      <div className="mb-6">
-        <div className="flex justify-between mb-4">
-          <div className="text-center w-1/3">
-            <h4 className="font-semibold">{resultText1}</h4>
-            <div className="text-sm text-gray-600">({result1.length} results)</div>
+          {/* Summary section with Venn diagram style using CSS classes */}
+          <div className="mb-6">
+            {vennDiagram}
           </div>
-          <div className="text-center w-1/3">
-            <h4 className="font-semibold">{resultText2}</h4>
-            <div className="text-sm text-gray-600">({result2.length} results)</div>
-          </div>
-        </div>
-        
-        <div className="flex">
-          {/* Result 1 ranks - with refs to capture positions */}
-          <div className="w-1/3 relative">
-            <ResultItems
-              items={result1}
-              resultNum={1}
-              imageFieldName={imageFieldName}
-              displayField={displayField}
-              getStatusColor={getStatusColor}
-              handleItemMouseEnter={handleItemMouseEnter}
-              handleItemMouseLeave={handleItemMouseLeave}
-              result1ItemsRef={result1ItemsRef}
-              result2ItemsRef={result2ItemsRef}
-            />
-          </div>
-          
-          {/* Connection lines */}
-          <div className="w-1/3 relative">
-            <ConnectionLines 
-              mounted={mounted}
-              result1={result1}
-              result2={result2}
-              result1ItemsRef={result1ItemsRef}
-              result2ItemsRef={result2ItemsRef}
-            />
-            <div className="w-full h-full flex items-center justify-center">
-              {/* Center area for any additional stats */}
+
+          {/* Rank-based overlap visualization */}
+          <div className="mb-6">
+            <div className="flex justify-between mb-4">
+              <div className="text-center w-1/3">
+                <h4 className="font-semibold">{resultText1}</h4>
+                <div className="text-sm text-gray-600">({result1.length} results)</div>
+              </div>
+              <div className="text-center w-1/3">
+                <h4 className="font-semibold">{resultText2}</h4>
+                <div className="text-sm text-gray-600">({result2.length} results)</div>
+              </div>
+            </div>
+
+            <div className="flex">
+              {/* Result 1 ranks - with refs to capture positions */}
+              <div className="w-1/3 relative">
+                <ResultItems
+                  items={result1}
+                  resultNum={1}
+                  imageFieldName={imageFieldName}
+                  displayField={displayField}
+                  getStatusColor={getStatusColor}
+                  handleItemMouseEnter={handleItemMouseEnter}
+                  handleItemMouseLeave={handleItemMouseLeave}
+                  result1ItemsRef={result1ItemsRef}
+                  result2ItemsRef={result2ItemsRef}
+                />
+              </div>
+
+              {/* Connection lines */}
+              <div className="w-1/3 relative">
+                <ConnectionLines 
+                  mounted={mounted}
+                  result1={result1}
+                  result2={result2}
+                  result1ItemsRef={result1ItemsRef}
+                  result2ItemsRef={result2ItemsRef}
+                />
+                <div className="w-full h-full flex items-center justify-center">
+                  {/* Center area for any additional stats */}
+                </div>
+              </div>
+
+              {/* Result 2 ranks */}
+              <div className="w-1/3 relative">
+                <ResultItems
+                  items={result2}
+                  resultNum={2}
+                  imageFieldName={imageFieldName}
+                  displayField={displayField}
+                  getStatusColor={getStatusColor}
+                  handleItemMouseEnter={handleItemMouseEnter}
+                  handleItemMouseLeave={handleItemMouseLeave}
+                  result1ItemsRef={result1ItemsRef}
+                  result2ItemsRef={result2ItemsRef}
+                />
+              </div>
             </div>
           </div>
-          
-          {/* Result 2 ranks */}
-          <div className="w-1/3 relative">
-            <ResultItems
-              items={result2}
-              resultNum={2}
-              imageFieldName={imageFieldName}
-              displayField={displayField}
-              getStatusColor={getStatusColor}
-              handleItemMouseEnter={handleItemMouseEnter}
-              handleItemMouseLeave={handleItemMouseLeave}
-              result1ItemsRef={result1ItemsRef}
-              result2ItemsRef={result2ItemsRef}
-            />
-          </div>
-        </div>
-      </div>
-      
-      <div className="mt-4 flex gap-4 text-sm">
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-blue-300 mr-1"></div> Same position
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-green-300 mr-1"></div> Improved position
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
-        </div>
-        <div className="flex items-center">
-          <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
-        </div>
-      </div>
-      
-      {/* Item Details Tooltip on Hover */}
-      <ItemDetailHoverPane
-        item={hoveredItem}
-        mousePosition={mousePosition}
-        onMouseEnter={() => {
-          // Prevent the tooltip from disappearing when mouse enters it
-          if (hoverTimeoutRef.current) {
-            clearTimeout(hoverTimeoutRef.current);
-          }
-        }}
-        onMouseLeave={handleItemMouseLeave}
-        imageFieldName={imageFieldName}
-      />
 
-    </div>
+          <div className="mt-4 flex gap-4 text-sm">
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-blue-300 mr-1"></div> Same position
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-green-300 mr-1"></div> Improved position
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
+            </div>
+          </div>
+
+          {/* Item Details Tooltip on Hover */}
+          <ItemDetailHoverPane
+            item={hoveredItem}
+            mousePosition={mousePosition}
+            onMouseEnter={() => {
+              // Prevent the tooltip from disappearing when mouse enters it
+              if (hoverTimeoutRef.current) {
+                clearTimeout(hoverTimeoutRef.current);
+              }
+            }}
+            onMouseLeave={handleItemMouseLeave}
+            imageFieldName={imageFieldName}
+          />
+        </EuiPageContent>
+      </EuiPageBody>
+    </EuiPage>
   );
 };
 
