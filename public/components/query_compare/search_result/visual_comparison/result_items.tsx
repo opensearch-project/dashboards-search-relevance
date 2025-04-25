@@ -29,7 +29,11 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
         <div 
           key={`r${resultNum}-${index}`}
           id={`r${resultNum}-item-${item._id}`}
-          ref={el => (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el}
+          ref={el => {
+            if (el) {
+              (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el;
+            }
+          }}
           className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded`}
           onMouseEnter={(event) => handleItemMouseEnter(item, event)}
           onMouseLeave={handleItemMouseLeave}
