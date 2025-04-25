@@ -73,6 +73,28 @@ export const VisualComparison = ({
     worsened: 0
   });
 
+  const vennDiagram = (
+    <div className="venn-container">
+      {/* Result 1 rectangle (left) */}
+      <div className="venn-left">
+        <div className="venn-value">{statistics.onlyInResult1}</div>
+        <div className="venn-label">Unique</div>
+      </div>
+      
+      {/* Intersection (middle) */}
+      <div className="venn-middle">
+        <div className="venn-value">{statistics.inBoth}</div>
+        <div className="venn-label">Common</div>
+      </div>
+      
+      {/* Result 2 rectangle (right) */}
+      <div className="venn-right">
+        <div className="venn-value">{statistics.onlyInResult2}</div>
+        <div className="venn-label">Unique</div>
+      </div>
+    </div>
+  );
+
   // Set initial state similar to first component
   useEffect(() => {
     if (Array.isArray(queryResult1) && Array.isArray(queryResult2)) {
@@ -303,25 +325,7 @@ export const VisualComparison = ({
       
       {/* Summary section with Venn diagram style using CSS classes */}
       <div className="mb-6">
-        <div className="venn-container">
-          {/* Result 1 rectangle (left) */}
-          <div className="venn-left">
-            <div className="venn-value">{statistics.onlyInResult1}</div>
-            <div className="venn-label">Unique</div>
-          </div>
-          
-          {/* Intersection (middle) */}
-          <div className="venn-middle">
-            <div className="venn-value">{statistics.inBoth}</div>
-            <div className="venn-label">Common</div>
-          </div>
-          
-          {/* Result 2 rectangle (right) */}
-          <div className="venn-right">
-            <div className="venn-value">{statistics.onlyInResult2}</div>
-            <div className="venn-label">Unique</div>
-          </div>
-        </div>
+        {vennDiagram}
       </div>
 
       {/* Rank-based overlap visualization */}
