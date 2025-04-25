@@ -149,61 +149,37 @@ export const VisualComparison = ({
   useEffect(() => {
     if (!result1.length && !result2.length) return;
 
-    // Create combined dataset with position changes
-    const combined = result1.map(item1 => {
-      // Find matching item in result2
-      const matchingItem = result2.find(item2 => item2._id === item1._id);
-      
-      if (matchingItem) {
-        // Item exists in both results
-        return {
-          ...item1,
-          rank1: item1.rank,
-          rank2: matchingItem.rank,
-          score1: item1._score,
-          score2: matchingItem._score,
-          change: item1.rank - matchingItem.rank,
-          status: "present in both",
-        };
-      } else {
-        // Item exists only in result1
-        return {
-          ...item1,
-          rank1: item1.rank,
-          rank2: null,
-          score1: item1._score,
-          score2: null,
-          change: null,
-          status: "only in result 1",
-        };
-      }
-    });
+    // Create combined dataset
+    const combined = [...result1];
 
     // Add items that are only in result2
     result2.forEach(item2 => {
       const exists = combined.some(item => item._id === item2._id);
       if (!exists) {
-        combined.push({
-          ...item2,
-          rank1: null,
-          rank2: item2.rank,
-          score1: null,
-          score2: item2._score,
-          change: null,
-          status: "only in result 2",
-        });
+        combined.push(item2);
       }
     });
 
     setCombinedData(combined);
 
     // Calculate summary statistics
-    const inBoth = combined.filter(item => item.status === "present in both").length;
-    const onlyInResult1 = combined.filter(item => item.status === "only in result 1").length;
-    const onlyInResult2 = combined.filter(item => item.status === "only in result 2").length;
-    const unchanged = combined.filter(item => item.change === 0).length;
-    const improved = combined.filter(item => item.change > 0).length;
-    const worsened = combined.filter(item => item.change < 0).length;
+    const inBoth = result1.filter(item1 => 
+      result2.some(item2 => item2._id === item1._id)
+    ).length;
+    const onlyInResult1 = result1.length - inBoth;
+    const onlyInResult2 = result2.length - inBoth;
+    const unchanged = result1.filter(item1 => {
+      const item2 = result2.find(item2 => item2._id === item1._id);
+      return item2 && item1.rank === item2.rank;
+    }).length;
+    const improved = result1.filter(item1 => {
+      const item2 = result2.find(item2 => item2._id === item1._id);
+      return item2 && item1.rank > item2.rank;
+    }).length;
+    const worsened = result1.filter(item1 => {
+      const item2 = result2.find(item2 => item2._id === item1._id);
+      return item2 && item1.rank < item2.rank;
+    }).length;
 
     setStatistics({
       inBoth,
