@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import { EuiPanel, EuiFlexItem, EuiCard, EuiIcon, EuiFlexGroup } from '@elastic/eui';
 
 import { Header } from '../../common/header';
-import { TemplateConfiguration } from '../configuration/template_configuration';
+import { TemplateConfigurationWithRouter } from '../configuration/template_configuration';
 
 interface TemplateCardsProps {
   onClose: () => void;
@@ -40,7 +40,7 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
 
   if (selectedTemplate) {
     return (
-      <TemplateConfiguration
+      <TemplateConfigurationWithRouter
         templateType={selectedTemplate}
         onBack={() => setSelectedTemplate(null)}
         onClose={onClose}
