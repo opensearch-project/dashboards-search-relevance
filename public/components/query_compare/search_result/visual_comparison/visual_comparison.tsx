@@ -623,32 +623,7 @@ export const VisualComparison = ({
                 )}
               </div>
             ))}
-            
-          {/* Rank comparison if available in both results */}
-          {hoveredItem.status === "present in both" && (
-            <div className="mt-2 pt-2 border-t">
-              <div className="text-sm font-semibold">Rank Comparison:</div>
-              <div className="flex justify-between mt-1">
-                <div>
-                  <span className="text-xs">Result 1: </span>
-                  <span className="font-semibold">{hoveredItem.rank1}</span>
-                </div>
-                <div>
-                  <span className="text-xs">Result 2: </span>
-                  <span className="font-semibold">{hoveredItem.rank2}</span>
-                </div>
-                <div>
-                  <span className="text-xs">Change: </span>
-                  <span className={`font-semibold ${
-                    hoveredItem.change > 0 ? 'text-green-600' : 
-                    hoveredItem.change < 0 ? 'text-red-600' : ''
-                  }`}>
-                    {hoveredItem.change > 0 ? `+${hoveredItem.change}` : hoveredItem.change}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+
         </div>
       )}
     </div>
