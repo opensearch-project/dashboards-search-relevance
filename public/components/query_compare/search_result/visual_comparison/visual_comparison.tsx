@@ -4,6 +4,7 @@ import { EuiPanel, EuiEmptyPrompt } from '@elastic/eui';
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
 import { ConnectionLines } from './connection_lines';
+import { ResultItems } from './result_items';
 
 // Interface should match the first component
 interface OpenSearchComparisonProps {
@@ -93,42 +94,6 @@ export const VisualComparison = ({
         <div className="venn-value">{statistics.onlyInResult2}</div>
         <div className="venn-label">Unique</div>
       </div>
-    </div>
-  );
-
-  const resultItems = (items, resultNum) => (
-    <div className="w-1/3 relative" id={`result${resultNum}-items`}>
-      {items.map((item, index) => (
-        <div 
-          key={`r${resultNum}-${index}`}
-          id={`r${resultNum}-item-${item._id}`}
-          ref={el => (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el}
-          className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded`}
-          onMouseEnter={(event) => handleItemMouseEnter(item, event)}
-          onMouseLeave={handleItemMouseLeave}
-        >
-          <div className={`w-8 h-8 rounded-full ${getStatusColor(item, resultNum)} flex items-center justify-center font-bold ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
-            {item.rank}
-          </div>
-          <div className={`w-8 h-8 ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
-            {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
-              <img
-                width="32"
-                height="32"
-                src={item[imageFieldName]}
-                className="w-8 h-8 object-cover rounded"
-              />
-            ) : (
-              <div
-                className="w-8 h-8 object-cover rounded"
-              />
-            )}
-          </div>
-          <div className="font-mono text-sm truncate overflow-hidden">
-            {item[displayField] || item._id}
-          </div>
-        </div>
-      ))}
     </div>
   );
 
@@ -380,7 +345,19 @@ export const VisualComparison = ({
         
         <div className="flex">
           {/* Result 1 ranks - with refs to capture positions */}
-          {resultItems(result1, 1)}
+          <div className="w-1/3 relative">
+            <ResultItems
+              items={result1}
+              resultNum={1}
+              imageFieldName={imageFieldName}
+              displayField={displayField}
+              getStatusColor={getStatusColor}
+              handleItemMouseEnter={handleItemMouseEnter}
+              handleItemMouseLeave={handleItemMouseLeave}
+              result1ItemsRef={result1ItemsRef}
+              result2ItemsRef={result2ItemsRef}
+            />
+          </div>
           
           {/* Connection lines */}
           <div className="w-1/3 relative">
@@ -397,7 +374,19 @@ export const VisualComparison = ({
           </div>
           
           {/* Result 2 ranks */}
-          {resultItems(result2, 2)}
+          <div className="w-1/3 relative">
+            <ResultItems
+              items={result2}
+              resultNum={2}
+              imageFieldName={imageFieldName}
+              displayField={displayField}
+              getStatusColor={getStatusColor}
+              handleItemMouseEnter={handleItemMouseEnter}
+              handleItemMouseLeave={handleItemMouseLeave}
+              result1ItemsRef={result1ItemsRef}
+              result2ItemsRef={result2ItemsRef}
+            />
+          </div>
         </div>
       </div>
       
