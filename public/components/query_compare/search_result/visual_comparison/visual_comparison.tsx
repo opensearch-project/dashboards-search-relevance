@@ -3,6 +3,7 @@ import { EuiPanel, EuiEmptyPrompt } from '@elastic/eui';
 
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
+import { ConnectionLines } from './connection_lines';
 
 // Interface should match the first component
 interface OpenSearchComparisonProps {
@@ -383,60 +384,13 @@ export const VisualComparison = ({
           
           {/* Connection lines */}
           <div className="w-1/3 relative">
-            { /* TODO: Fixed size leads to lines being cut off, for now adding overflow to avoid that */ }
-            <svg width="100%" height="420" style={{ overflow: 'visible' }} className="absolute top-0 left-0" id="connection-lines">
-              {/* Only draw lines after component has mounted to ensure refs are available */}
-              {mounted && result1.map((r1Item) => {
-                // Find if this item exists in result2
-                const r2Match = result2.find(r2 => r2._id === r1Item._id);
-                if (!r2Match) return null; // Skip if no match
-                
-                // Line color based on rank comparison
-                let lineColor;
-                if (r1Item.rank === r2Match.rank) {
-                  lineColor = "#93C5FD"; // Blue for unchanged
-                } else if (r1Item.rank < r2Match.rank) {
-                  lineColor = "#FCA5A5"; // Red for dropped
-                } else {
-                  lineColor = "#86EFAC"; // Green for improved
-                }
-                
-                // Get elements by ref to ensure we have their positions
-                const r1El = result1ItemsRef.current[r1Item._id];
-                const r2El = result2ItemsRef.current[r1Item._id];
-                
-                // Only draw line if both elements exist
-                if (!r1El || !r2El) return null;
-                
-                try {
-                  // Calculate positions for connecting line
-                  const r1Rect = r1El.getBoundingClientRect();
-                  const r2Rect = r2El.getBoundingClientRect();
-                  const svgRect = document.getElementById('connection-lines')?.getBoundingClientRect();
-                  
-                  if (!svgRect) return null;
-                  
-                  // Calculate relative positions within the SVG
-                  const y1 = r1Rect.top - svgRect.top + r1Rect.height / 2;
-                  const y2 = r2Rect.top - svgRect.top + r2Rect.height / 2;
-                  
-                  return (
-                    <line 
-                      key={`line-${r1Item._id}`}
-                      x1="0%" 
-                      y1={y1} 
-                      x2="100%" 
-                      y2={y2} 
-                      stroke={lineColor} 
-                      strokeWidth="4"
-                    />
-                  );
-                } catch (error) {
-                  // Fail silently if there's an error calculating positions
-                  return null;
-                }
-              })}
-            </svg>
+            <ConnectionLines 
+              mounted={mounted}
+              result1={result1}
+              result2={result2}
+              result1ItemsRef={result1ItemsRef}
+              result2ItemsRef={result2ItemsRef}
+            />
             <div className="w-full h-full flex items-center justify-center">
               {/* Center area for any additional stats */}
             </div>
