@@ -140,15 +140,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
                     index: number;
                 },
             ) => (
-                <>
-                    <EuiButtonEmpty
+                <EuiButtonEmpty
                     size="xs"
                     onClick={() => setSelectedQuery(queryEntry.index)}
-                    >
+                    title={name}
+                >
                     {name}
-                    </EuiButtonEmpty>
-                </>
-            ),
+                </EuiButtonEmpty>
+              ),
             
         },
       ]
@@ -225,7 +224,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
       />
 
       <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="column" gutterSize="m">
+        <EuiFlexGroup direction="row" gutterSize="m">
 
           <EuiFlexItem>
             {error ? (
@@ -253,18 +252,24 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
               />
             )}
           </EuiFlexItem>
+
+
+      {(selectedQuery!=null && queryResult1 && queryResult2) && (
+        <EuiFlexItem  style={{ maxWidth: '50%' }}>
+          <VisualComparison
+            queryResult1={convertFromSearchResult(queryResult1)}
+            queryResult2={convertFromSearchResult(queryResult2)}
+            queryText={queryEntries[selectedQuery].queryText}
+            resultText1={`${searchConfigurations[0].name} result`}
+            resultText2={`${searchConfigurations[1].name} result`}
+          />
+        </EuiFlexItem>
+      )}
+
+
         </EuiFlexGroup>
       </EuiPanel>
 
-      {(selectedQuery!=null && queryResult1 && queryResult2) ? (
-        <VisualComparison
-          queryResult1={convertFromSearchResult(queryResult1)}
-          queryResult2={convertFromSearchResult(queryResult2)}
-          queryText={queryEntries[selectedQuery].queryText}
-          resultText1={`${searchConfigurations[0].name} result`}
-          resultText2={`${searchConfigurations[1].name} result`}
-        />
-      ) : (<></>)}
 
     </EuiPageTemplate>
   );
