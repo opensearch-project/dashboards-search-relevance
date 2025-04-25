@@ -274,7 +274,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
             </EuiFlexItem>
           </EuiPanel>
         </EuiFlexItem>
-        <EuiFlexItem grow={5}>
+        <EuiFlexItem grow={5} style={{ maxWidth: '41.67%', maxHeight: '80vh', overflow: 'auto' }}>
           <ValidationPanel
             selectedIndex={selectedIndex}
             queryBody={queryBody}

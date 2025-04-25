@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 
 import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } from '@elastic/eui';
+import { withRouter } from 'react-router-dom';
 import { ConfigurationForm } from './configuration_form';
 import { ConfigurationActions } from './configuration_action';
 import { TemplateConfigurationProps, ConfigurationFormData, SearchConfigFromData } from './types';
 import { SearchConfigForm } from './search_configuration_form';
-import { EvaluationResults } from '../evaluation/evaluation_results';
 import { ServiceEndpoints } from '../../../../common';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
@@ -13,6 +13,7 @@ export const TemplateConfiguration = ({
   templateType,
   onBack,
   onClose,
+  history,
 }: TemplateConfigurationProps) => {
   /**
    * Config Form will collect querySetId along with other experiment_type related fields to generate judgments.
@@ -49,7 +50,6 @@ export const TemplateConfiguration = ({
       };
       try {
         setIsCreating(true);
-        console.log('Experiment creation', combinedData);
         const response = await http.post(ServiceEndpoints.Experiments, {
           body: JSON.stringify({
             k: combinedData.k,
@@ -60,8 +60,8 @@ export const TemplateConfiguration = ({
 
         if (response.experiment_id) {
           setExperimentId(response.experiment_id);
-          notifications.toasts.addSuccess(`Experiment created successfully`);
-          setShowEvaluation(true);
+          notifications.toasts.addSuccess(`Experiment ${response.experiment_id} created successfully`);
+          history.push(`/experiment/`);
         } else {
           throw new Error('No experiment ID received');
         }
@@ -105,23 +105,15 @@ export const TemplateConfiguration = ({
     </EuiFlexGroup>
   );
 
-  const renderEvaluation = () => (
-    <EvaluationResults
-      templateType={templateType}
-      experimentId={experimentId}
-      onBack={handleBackToConfig}
-    />
-  );
-
   return (
     <>
       {isCreating ? (
         <EuiLoadingSpinner size="xl" />
-      ) : showEvaluation ? (
-        renderEvaluation()
       ) : (
         renderConfiguration()
       )}
     </>
   );
 };
+
+export const TemplateConfigurationWithRouter = withRouter(TemplateConfiguration);
