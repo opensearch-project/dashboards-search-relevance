@@ -1,4 +1,6 @@
-export interface TemplateConfigurationProps {
+import { RouteComponentProps } from 'react-router-dom';
+
+export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;
   onBack: () => void;
   onClose: () => void;
