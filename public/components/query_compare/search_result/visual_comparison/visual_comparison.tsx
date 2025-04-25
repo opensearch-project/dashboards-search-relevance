@@ -95,6 +95,42 @@ export const VisualComparison = ({
     </div>
   );
 
+  const resultItems = (items, resultNum) => (
+    <div className="w-1/3 relative" id={`result${resultNum}-items`}>
+      {items.map((item, index) => (
+        <div 
+          key={`r${resultNum}-${index}`}
+          id={`r${resultNum}-item-${item._id}`}
+          ref={el => (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el}
+          className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded`}
+          onMouseEnter={(event) => handleItemMouseEnter(item, event)}
+          onMouseLeave={handleItemMouseLeave}
+        >
+          <div className={`w-8 h-8 rounded-full ${getStatusColor(item, resultNum)} flex items-center justify-center font-bold ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
+            {item.rank}
+          </div>
+          <div className={`w-8 h-8 ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
+            {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+              <img
+                width="32"
+                height="32"
+                src={item[imageFieldName]}
+                className="w-8 h-8 object-cover rounded"
+              />
+            ) : (
+              <div
+                className="w-8 h-8 object-cover rounded"
+              />
+            )}
+          </div>
+          <div className="font-mono text-sm truncate overflow-hidden">
+            {item[displayField] || item._id}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
   // Set initial state similar to first component
   useEffect(() => {
     if (Array.isArray(queryResult1) && Array.isArray(queryResult2)) {
@@ -343,39 +379,7 @@ export const VisualComparison = ({
         
         <div className="flex">
           {/* Result 1 ranks - with refs to capture positions */}
-          <div className="w-1/3 relative" id="result1-items">
-            {result1.map((item, index) => (
-              <div 
-                key={`r1-${index}`}
-                id={`r1-item-${item._id}`}
-                ref={el => result1ItemsRef.current[item._id] = el}
-                className="flex-row-reverse items-center mb-2 hover:bg-gray-100 p-1 rounded"
-                onMouseEnter={(event) => handleItemMouseEnter(item, event)}
-                onMouseLeave={handleItemMouseLeave}
-              >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 1)} flex items-center justify-center font-bold ml-2 flex-shrink-0`}>
-                  {item.rank}
-                </div>
-                <div className="w-8 h-8 ml-2 flex-shrink-0">
-                  {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
-                    <img
-                      width="32"
-                      height="32"
-                      src={item[imageFieldName]}
-                      className="w-8 h-8 object-cover rounded"
-                    />
-                  ) : (
-                    <div
-                      className="w-8 h-8 object-cover rounded"
-                    />
-                  )}
-                </div>
-                <div className="font-mono text-sm truncate overflow-hidden">
-                  {item[displayField] || item._id}
-                </div>
-              </div>
-            ))}
-          </div>
+          {resultItems(result1, 1)}
           
           {/* Connection lines */}
           <div className="w-1/3 relative">
@@ -439,39 +443,7 @@ export const VisualComparison = ({
           </div>
           
           {/* Result 2 ranks */}
-          <div className="w-1/3 relative" id="result2-items">
-            {result2.map((item, index) => (
-              <div 
-                key={`r2-${index}`}
-                id={`r2-item-${item._id}`}
-                ref={el => result2ItemsRef.current[item._id] = el}
-                className="flex items-center mb-2 hover:bg-gray-100 p-1 rounded"
-                onMouseEnter={(event) => handleItemMouseEnter(item, event)}
-                onMouseLeave={handleItemMouseLeave}
-              >
-                <div className={`w-8 h-8 rounded-full ${getStatusColor(item, 2)} flex items-center justify-center font-bold mr-2 flex-shrink-0`}>
-                  {item.rank}
-                </div>
-                <div className="w-8 h-8 mr-2 flex-shrink-0">
-                  {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
-                    <img
-                    width="32"
-                    height="32"
-                    src={item[imageFieldName]}
-                      className="w-8 h-8 object-cover rounded"
-                    />
-                  ) : (
-                    <div
-                      className="w-8 h-8 object-cover rounded"
-                    />
-                  )}
-                </div>
-                <div className="font-mono text-sm truncate overflow-hidden">
-                  {item[displayField] || item._id}
-                </div>
-              </div>
-            ))}
-          </div>
+          {resultItems(result2, 2)}
         </div>
       </div>
       
