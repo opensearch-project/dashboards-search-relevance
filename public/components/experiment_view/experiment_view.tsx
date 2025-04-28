@@ -19,6 +19,7 @@ import {
     EuiPageTemplate,
     EuiPanel,
     EuiText,
+    EuiResizableContainer,
   } from '@elastic/eui';
 import {
     TableListView,
@@ -31,7 +32,6 @@ import { VisualComparison, convertFromSearchResult } from '../query_compare/sear
 import {
   SearchResults,
 } from '../../types/index';
-
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -224,50 +224,53 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
       />
 
       <EuiPanel hasBorder paddingSize="l">
-        <EuiFlexGroup direction="row" gutterSize="m">
+        <EuiResizableContainer>
+          {(EuiResizablePanel, EuiResizableButton) => {
+            return (
+            <>
+              <EuiResizablePanel initialSize={50} minSize="15%">
+                {error ? (
+                  <EuiCallOut title="Error" color="danger">
+                    <p>{error}</p>
+                  </EuiCallOut>
+                ) : (
+                  <TableListView
+                    entityName="Query"
+                    entityNamePlural="Queries"
+                    tableColumns={tableColumns}
+                    findItems={findQueries}
+                    loading={loading}
+                    pagination={{
+                      initialPageSize: 10,
+                      pageSizeOptions: [5, 10, 20, 50],
+                    }}
+                    search={{
+                      box: {
+                        incremental: true,
+                        placeholder: 'Query...',
+                        schema: true,
+                      },
+                    }}
+                  />
+                )}
+              </EuiResizablePanel>
 
-          <EuiFlexItem>
-            {error ? (
-              <EuiCallOut title="Error" color="danger">
-                <p>{error}</p>
-              </EuiCallOut>
-            ) : (
-              <TableListView
-                entityName="Query"
-                entityNamePlural="Queries"
-                tableColumns={tableColumns}
-                findItems={findQueries}
-                loading={loading}
-                pagination={{
-                  initialPageSize: 10,
-                  pageSizeOptions: [5, 10, 20, 50],
-                }}
-                search={{
-                  box: {
-                    incremental: true,
-                    placeholder: 'Query...',
-                    schema: true,
-                  },
-                }}
-              />
-            )}
-          </EuiFlexItem>
+              <EuiResizableButton />
 
-
-      {(selectedQuery!=null && queryResult1 && queryResult2) && (
-        <EuiFlexItem  style={{ maxWidth: '50%' }}>
-          <VisualComparison
-            queryResult1={convertFromSearchResult(queryResult1)}
-            queryResult2={convertFromSearchResult(queryResult2)}
-            queryText={queryEntries[selectedQuery].queryText}
-            resultText1={`${searchConfigurations[0].name} result`}
-            resultText2={`${searchConfigurations[1].name} result`}
-          />
-        </EuiFlexItem>
-      )}
-
-
-        </EuiFlexGroup>
+              <EuiResizablePanel initialSize={50} minSize="30%">
+                {selectedQuery != null && queryResult1 && queryResult2 && (
+                  <VisualComparison
+                    queryResult1={convertFromSearchResult(queryResult1)}
+                    queryResult2={convertFromSearchResult(queryResult2)}
+                    queryText={queryEntries[selectedQuery].queryText}
+                    resultText1={`${searchConfigurations[0].name} result`}
+                    resultText2={`${searchConfigurations[1].name} result`}
+                  />
+                )}
+              </EuiResizablePanel>
+            </>
+          )}}
+        </EuiResizableContainer>
       </EuiPanel>
 
 

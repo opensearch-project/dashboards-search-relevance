@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent } from '@elastic/eui';
+import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent, EuiSuperSelect, EuiFormRow } from '@elastic/eui';
 
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
@@ -305,26 +305,24 @@ export const VisualComparison = ({
           <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
 
           {/* Field selector dropdown */}
-          <div className="mb-4 flex items-center gap-4">
-            <label htmlFor="field-selector" className="text-sm font-medium text-gray-700">
-              Display Field:
-            </label>
-            <select
-              id="field-selector"
-              className="w-full max-w-xs px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              value={displayField}
-              onChange={(e) => setDisplayField(e.target.value)}
-            >
-              {displayFields && displayFields.length > 0 ? (
-                displayFields.map((field) => (
-                  <option key={field.value} value={field.value}>
-                    {field.label}
-                  </option>
-                ))
-              ) : (
-                <option value="">No fields available</option>
-              )}
-            </select>
+          <div className="mb-4">
+            <EuiFormRow label="Display Field:" id="fieldSelectorForm">
+              <EuiSuperSelect
+                id="field-selector"
+                options={displayFields && displayFields.length > 0 
+                  ? displayFields.map((field) => ({
+                      value: field.value,
+                      inputDisplay: field.label,
+                      dropdownDisplay: field.label,
+                    }))
+                  : [{ value: '', inputDisplay: 'No fields available', dropdownDisplay: 'No fields available' }]
+                }
+                valueOfSelected={displayField}
+                onChange={(value) => setDisplayField(value)}
+                fullWidth
+                hasDividers
+              />
+            </EuiFormRow>
           </div>
 
           {/* Summary section with Venn diagram style using CSS classes */}
