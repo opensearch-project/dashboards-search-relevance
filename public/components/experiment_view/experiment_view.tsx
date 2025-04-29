@@ -178,6 +178,11 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
     }
   }, [experiment])
 
+  function resolve_attributes(ids, hits) {
+    const res = ids.map(id => hits.find(hit => hit._id === id) || {_id: id})
+    return res.map((x, index) => ({...x, rank: index + 1}))
+  }
+
   useEffect(() => {
     if (selectedQuery != null) {
       const index = "someIndex"
@@ -202,8 +207,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
           body: JSON.stringify({ query1, query2 }),
       })
       .then((res) => {
-        setQueryResult1(res.result1)
-        setQueryResult2(res.result2)
+        setQueryResult1(resolve_attributes(queryEntries[selectedQuery].queryResults["0"], convertFromSearchResult(res.result1)))
+        setQueryResult2(resolve_attributes(queryEntries[selectedQuery].queryResults["1"], convertFromSearchResult(res.result2)))
       })
       .catch((error: Error) => {
           console.error(error);
@@ -260,8 +265,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
               <EuiResizablePanel initialSize={50} minSize="30%">
                 {selectedQuery != null && queryResult1 && queryResult2 && (
                   <VisualComparison
-                    queryResult1={convertFromSearchResult(queryResult1)}
-                    queryResult2={convertFromSearchResult(queryResult2)}
+                    queryResult1={queryResult1}
+                    queryResult2={queryResult2}
                     queryText={queryEntries[selectedQuery].queryText}
                     resultText1={`${searchConfigurations[0].name} result`}
                     resultText2={`${searchConfigurations[1].name} result`}
