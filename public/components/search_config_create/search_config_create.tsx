@@ -125,7 +125,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           title: 'Failed to create search configuration',
         });
       });
-  }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts]);
+  }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts, selectedIndex]);
 
   // Handle cancel action
   const handleCancel = () => {
