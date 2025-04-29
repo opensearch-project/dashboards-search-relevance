@@ -102,8 +102,9 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       return;
     }
 
+    console.log("selectedIndex", selectedIndex);
     if (selectedIndex.length === 0) {
-      notifications.toasts.addError('Please select an index');
+      notifications.toasts.addWarning({title: 'Invalid input', text: 'No index. Please select an index'});
       return;
     }
 
