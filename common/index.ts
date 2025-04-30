@@ -13,6 +13,7 @@ export enum ServiceEndpoints {
   GetIndexes = '/api/relevancy/search/indexes',
   GetPipelines = '/api/relevancy/search/pipelines',
   GetSearchResults = '/api/relevancy/search',
+  GetSingleSearchResults = '/api/relevancy/single_search',
   GetStats = '/api/relevancy/stats',
 
   // Search Relevance node APIs
@@ -22,9 +23,6 @@ export enum ServiceEndpoints {
   Experiments = '/api/relevancy/experiments',
 }
 
-/**
- * BACKEND SEARCH RELEVANCE APIs
- */
 export enum BackendEndpoints {
   QuerySets = '/_plugins/search_relevance/query_sets',
   SearchConfigurations = '/_plugins/search_relevance/search_configurations',
@@ -32,30 +30,7 @@ export enum BackendEndpoints {
   Experiments = '/_plugins/search_relevance/experiments',
 }
 
-/**
- * OPEN SEARCH CORE APIs
- */
 export const SEARCH_API = '/_search';
-
-/**
- * Node APIs
- */
-export const BASE_NODE_API_PATH = '/api/relevancy';
-
-// OpenSearch node APIs
-export const INDEX_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/indexes`;
-export const SEARCH_PIPELINE_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/pipelines`;
-export const SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/search`;
-export const SINGLE_SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/single_search`;
-
-export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
-
-export const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-  'User-Agent': 'OpenSearch-Dashboards',
-  'osd-xsrf': true,
-};
 
 // Query1 for the left search and Query2 for the right search page
 export const QUERY_NUMBER_ONE = '1';

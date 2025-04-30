@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { EuiFieldText, EuiSpacer, EuiPanel, EuiButton, EuiFlexItem } from '@elastic/eui';
 import { NotificationsStart } from '../../../../../core/public';
-import { SINGLE_SEARCH_NODE_API_PATH } from '../../../common';
+import { ServiceEndpoints } from '../../../common';
 import { ResultsPanel } from './results_panel';
 
 interface ValidationPanelProps {
@@ -50,7 +50,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
         },
       };
 
-      const response = await http.post(SINGLE_SEARCH_NODE_API_PATH, {
+      const response = await http.post(ServiceEndpoints.GetSingleSearchResults, {
         body: JSON.stringify(requestBody),
       });
 

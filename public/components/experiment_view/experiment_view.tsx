@@ -27,7 +27,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints, SEARCH_NODE_API_PATH } from '../../../common';
+import { ServiceEndpoints } from '../../../common';
 import { VisualComparison, convertFromSearchResult } from '../query_compare/search_result/visual_comparison/visual_comparison';
 import {
   SearchResults,
@@ -203,7 +203,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id }) => {
         }
       }
 
-      http.post(SEARCH_NODE_API_PATH, {
+      http.post(ServiceEndpoints.GetSearchResults, {
           body: JSON.stringify({ query1, query2 }),
       })
       .then((res) => {
