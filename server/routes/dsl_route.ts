@@ -26,151 +26,95 @@ export function registerDslRoute(router: IRouter,  openSearchServiceSetup: OpenS
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
-      const { query1, dataSourceId1, query2, dataSourceId2 } = request.body;
-      const actionName =
-        query1 && query2 ? METRIC_ACTION.COMPARISON_SEARCH : METRIC_ACTION.SINGLE_SEARCH;
-      const resBody: SearchResultsResponse = {};
+      const { query, dataSourceId = '' } = request.body;
+      const { index, pipeline = '', size = 10, ...rest } = query;
 
-      if (query1) {
-        const { index, pipeline, size, ...rest } = query1;
-        const params: RequestParams.Search =
-          pipeline !== ''
-            ? {
-                index,
-                size,
-                body: rest,
-                search_pipeline: pipeline,
-              }
-            : {
-                index,
-                size,
-                body: rest,
-              };
-        const start = performance.now();
-        try {
-          let resp;
-          const invalidCharactersPattern = /[\s,:\"*+\/\\|?#><]/;
-          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
-            resBody.errorMessage1 = {
+      const invalidCharactersPattern = /[\s,\"*+\/\\|?#><]/;
+      if (!index || index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
+        return response.ok({
+          body: {
+            errorMessage: {
               statusCode: 400,
               body: 'Invalid Index or missing',
-            };
+            }
           }
-          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
-            resBody.errorMessage1 = {
-              statusCode: 400,
-              body: 'Invalid Pipepline',
-            };
-          }
-          if(dataSourceEnabled && dataSourceId1){
-            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId1);
-            resp = await client.callAPI('search', params);
-          }
-          else{
-              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-                'search',
-                params
-              );
-          }
-          const end = performance.now();
-          context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.SEARCH_RELEVANCE,
-            actionName,
-            200,
-            end - start
-          );
-          resBody.result1 = resp;
-        } catch (error) {
-          const end = performance.now();
-          context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.SEARCH_RELEVANCE,
-            actionName,
-            error.statusCode,
-            end - start
-          );
-
-          if (error.statusCode !== 404) console.error(error);
-
-          // Template: Error: {{Error.type}} – {{Error.reason}}
-          const errorMessage = `Error: ${error.body?.error?.type} - ${error.body?.error?.reason}`;
-
-          resBody.errorMessage1 = {
-            statusCode: error.statusCode || 500,
-            body: errorMessage,
-          };
-        }
+        });
       }
 
-      if (query2) {
-        const { index, pipeline, size, ...rest } = query2;
-        const params: RequestParams.Search =
-          pipeline !== ''
-            ? {
-                index,
-                size,
-                body: rest,
-                search_pipeline: pipeline,
-              }
-            : {
-                index,
-                size,
-                body: rest,
-              };
-
-        const start = performance.now();
-        try {
-          let resp;
-          const invalidCharactersPattern = /[\s,\"*+\/\\|?#><]/;
-          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
-            throw new Error("Index invalid or missing.");
-          }
-          if (pipeline !== '*' && pipeline !== '_none'  && pipeline !== '' && !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))){
-            resBody.errorMessage1 = {
+      if (pipeline && pipeline !== '*' && pipeline !== '_none' && pipeline !== '' && 
+          !(/^[a-zA-Z0-9_\-*]+(,[a-zA-Z0-9_\-*]+)*$/.test(pipeline))) {
+        return response.ok({
+          body: {
+            errorMessage: {
               statusCode: 400,
-              body: 'Invalid Pipepline',
-            };
+              body: 'Invalid Pipeline',
+            }
           }
-          if(dataSourceEnabled && dataSourceId2){
-            const client = context.dataSource.opensearch.legacy.getClient(dataSourceId2);
-            resp = await client.callAPI('search', params);
-          }
-          else{
-              resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
-                'search',
-                params
-              );
-          }
-          const end = performance.now();
-          context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.SEARCH_RELEVANCE,
-            actionName,
-            200,
-            end - start
-          );
-          resBody.result2 = resp;
-        } catch (error) {
-          const end = performance.now();
-          if (error.statusCode !== 404) console.error(error);
-          context.searchRelevance.metricsService.addMetric(
-            METRIC_NAME.SEARCH_RELEVANCE,
-            actionName,
-            error.statusCode,
-            end - start
-          );
-
-          // Template: Error: {{Error.type}} – {{Error.reason}}
-          const errorMessage = `Error: ${error.body?.error?.type} - ${error.body?.error?.reason}`;
-
-          resBody.errorMessage2 = {
-            statusCode: error.statusCode || 500,
-            body: errorMessage,
-          };
-        }
+        });
       }
 
-      return response.ok({
-        body: resBody,
-      });
+      // Build search parameters
+      const params: RequestParams.Search = pipeline !== ''
+        ? {
+            index,
+            size,
+            body: rest,
+            search_pipeline: pipeline,
+          }
+        : {
+            index,
+            size,
+            body: rest,
+          };
+
+      // Execute search
+      const start = performance.now();
+      try {
+        // Select appropriate client based on data source
+        let resp;
+        if (dataSourceEnabled && dataSourceId) {
+          const client = context.dataSource.opensearch.legacy.getClient(dataSourceId);
+          resp = await client.callAPI('search', params);
+        } else {
+          resp = await context.core.opensearch.legacy.client.callAsCurrentUser('search', params);
+        }
+
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.SINGLE_SEARCH,
+          200,
+          end - start
+        );
+
+        return response.ok({
+          body: {
+            result: resp
+          }
+        });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.SINGLE_SEARCH,
+          error.statusCode || 500,
+          end - start
+        );
+
+        if (error.statusCode !== 404) console.error(error);
+
+        // Format error message consistently
+        const errorMessage = `Error: ${error.body?.error?.type || 'Unknown'} - ${error.body?.error?.reason || 'Unknown reason'}`;
+
+        return response.ok({
+          body: {
+            errorMessage: {
+              statusCode: error.statusCode || 400,
+              body: errorMessage,
+            }
+          }
+        });
+      }
     }
   );
 

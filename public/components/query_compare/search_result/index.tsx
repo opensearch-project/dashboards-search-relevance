@@ -159,19 +159,19 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
         // First Query
         if (Object.keys(requestBody1).length !== 0) {
             http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
+                body: JSON.stringify({ query: requestBody1, dataSourceId: datasource1? datasource1: '' }),
             })
             .then((res) => {
-                if (res.result1) {
-                    setQueryResult1(res.result1);
-                    updateComparedResult1(res.result1);
+                if (res.result) {
+                    setQueryResult1(res.result);
+                    updateComparedResult1(res.result);
                 }
 
-                if (res.errorMessage1) {
+                if (res.errorMessage) {
                     setQueryError1((error: QueryError) => ({
                         ...error,
-                        queryString: res.errorMessage1,
-                        errorResponse: res.errorMessage1,
+                        queryString: res.errorMessage,
+                        errorResponse: res.errorMessage,
                     }));
                 }
             })
@@ -183,19 +183,19 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
         // Second Query
         if (Object.keys(requestBody2).length !== 0) {
             http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
+                body: JSON.stringify({ query: requestBody2, dataSourceId: datasource2? datasource2: '' }),
             })
             .then((res) => {
-                if (res.result2) {
-                    setQueryResult2(res.result2);
-                    updateComparedResult2(res.result2);
+                if (res.result) {
+                    setQueryResult2(res.result);
+                    updateComparedResult2(res.result);
                 }
 
-                if (res.errorMessage2) {
+                if (res.errorMessage) {
                     setQueryError2((error: QueryError) => ({
                         ...error,
-                        queryString: res.errorMessage2,
-                        errorResponse: res.errorMessage2,
+                        queryString: res.errorMessage,
+                        errorResponse: res.errorMessage,
                     }));
                 }
             })
