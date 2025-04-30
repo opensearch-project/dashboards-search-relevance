@@ -90,7 +90,7 @@ export const ResourceManagementTabs = ({
           <>
             {renderSubTabs('experiment', [
               { id: 'list', label: 'Manage Experiments' },
-              { id: 'create', label: 'Create a Experiment' },
+              { id: 'create', label: 'Create an Experiment' },
             ])}
             <EuiSpacer size="m" />
             <EuiPanel>

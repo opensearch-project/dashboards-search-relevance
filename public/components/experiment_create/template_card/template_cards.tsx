@@ -21,13 +21,13 @@ const templates = [
     isDisabled: false,
   },
   {
-    name: 'User Behavior',
-    description: 'Use User Behavior judgments to start with your experiment.',
+    name: 'Search Relevance',
+    description: 'Calculate search quality metrics to evaluate search configurations.',
     isDisabled: false,
   },
   {
-    name: 'LLM',
-    description: 'Use LLM as judge to start with your experiment.',
+    name: 'Hybrid Search Optimizer',
+    description: 'Find the best hybrid search configuration.',
     isDisabled: false,
   },
 ];
