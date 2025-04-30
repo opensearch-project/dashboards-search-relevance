@@ -8,11 +8,8 @@ import { schema } from '@osd/config-schema';
 
 import { ILegacyScopedClusterClient, IRouter } from '../../../../src/core/server';
 import {
-  INDEX_NODE_API_PATH,
+  ServiceEndpoints,
   SEARCH_API,
-  SEARCH_NODE_API_PATH,
-  SEARCH_PIPELINE_NODE_API_PATH,
-  SINGLE_SEARCH_NODE_API_PATH,
 } from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
@@ -34,7 +31,7 @@ const performance = require('perf_hooks').performance;
 export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   router.post(
     {
-      path: SEARCH_NODE_API_PATH,
+      path: ServiceEndpoints.GetSearchResults,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {
@@ -201,7 +198,7 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   // Get Indices
   router.get(
     {
-      path: `${INDEX_NODE_API_PATH}/{dataSourceId?}`,
+      path: `${ServiceEndpoints.GetIndexes}/{dataSourceId?}`,
       validate: {
         params: schema.object({
           dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
@@ -252,7 +249,7 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   // Get Pipelines
   router.get(
     {
-      path: `${SEARCH_PIPELINE_NODE_API_PATH}/{dataSourceId?}`,
+      path: `${ServiceEndpoints.GetPipelines}/{dataSourceId?}`,
       validate: {
         params: schema.object({
           dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
@@ -310,7 +307,7 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
 
   router.post(
     {
-      path: SINGLE_SEARCH_NODE_API_PATH,
+      path: ServiceEndpoints.GetSingleSearchResults,
       validate: { body: schema.any() },
     },
     async (context, request, response) => {

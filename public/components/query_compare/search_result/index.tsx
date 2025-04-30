@@ -23,7 +23,7 @@ import { ResultComponents } from './result_components/result_components';
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { SEARCH_NODE_API_PATH } from '../../../../common';
+import { ServiceEndpoints } from '../../../../common';
 
 const DEFAULT_QUERY = '{}';
 
@@ -159,7 +159,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
         // First Query
         if (Object.keys(requestBody1).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
             })
             .then((res) => {
@@ -183,7 +183,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
         // Second Query
         if (Object.keys(requestBody2).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
             })
             .then((res) => {
