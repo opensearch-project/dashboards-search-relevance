@@ -20,7 +20,7 @@ import {
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { NotificationsStart } from '../../../../../core/public';
-import { INDEX_NODE_API_PATH, ServiceEndpoints } from '../../../common';
+import { ServiceEndpoints } from '../../../common';
 import { DocumentsIndex } from '../../types';
 import { ValidationPanel } from './validation_panel';
 
@@ -49,7 +49,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   useEffect(() => {
     const fetchIndexes = async () => {
       try {
-        const res = await http.get(INDEX_NODE_API_PATH);
+        const res = await http.get(ServiceEndpoints.GetIndexes);
         const options = res.map((index: DocumentsIndex) => ({
           label: index.index,
           value: index.uuid,
