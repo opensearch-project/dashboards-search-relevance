@@ -7,6 +7,13 @@ import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
+import { SearchConfigurationViewPane } from '../search_config_create/search_configuration_view_pane';
+import {
+  EuiPageTemplate,
+  EuiPageHeader,
+  EuiPanel,
+  EuiSpacer,
+} from '@elastic/eui';
 
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -54,10 +61,22 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
   }
 
   return (
-    <>
-      <h1>Search Configuration Visualization</h1>
-      <pre>{JSON.stringify(searchConfiguration, null, 2)}</pre>
-    </>
+    <EuiPageTemplate paddingSize="l" restrictWidth="100%">
+      <EuiPageHeader
+        pageTitle="Search Configuration Details"
+        description="View the details of your search configuration"
+      />
+      <EuiSpacer size="l" />
+      <EuiPanel hasBorder={true}>
+        <SearchConfigurationViewPane
+          name={searchConfiguration.name}
+          queryBody={searchConfiguration.queryBody}
+          index={searchConfiguration.index}
+          pipeline={searchConfiguration.pipeline}
+          template={searchConfiguration.template}
+        />
+      </EuiPanel>
+    </EuiPageTemplate>
   );
 };
 
