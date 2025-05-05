@@ -4,21 +4,11 @@
  */
 
 import {
-    EuiButton,
     EuiButtonEmpty,
-    EuiButtonIcon,
     EuiCallOut,
-    EuiFlexGroup,
-    EuiFlexItem,
-    EuiModal,
-    EuiModalBody,
-    EuiModalFooter,
-    EuiModalHeader,
-    EuiModalHeaderTitle,
     EuiPageHeader,
     EuiPageTemplate,
     EuiPanel,
-    EuiText,
     EuiResizableContainer,
     EuiDescriptionList,
     EuiDescriptionListTitle,
@@ -54,10 +44,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
   
 
   // Detailed experiment details
-  const [queries, setQueries] = useState<any[]>([]);
   const [queryEntries, setQueryEntries] = useState<any[]>([]);
-  const [metrics, setMetrics] = useState<any>({});
-  const [metricMeans, setMetricMeans] = useState<any>({});
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
   const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
@@ -109,7 +96,6 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
 
   useEffect(() => {
     if (experiment) {
-      setQueries(experiment.results.queryTexts)
       const metricNames = extractMetricNames(experiment)
       let _metrics = {}
       let _metricMeans = {}
@@ -179,8 +165,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
       })
 
       setQueryEntries(_queryEntries)
-      setMetrics(_metrics);
-      setMetricMeans(_metricMeans);
+      // setMetrics(_metrics);
+      // setMetricMeans(_metricMeans);
       setTableColumns(columns)
       setLoading(false);
     }
@@ -193,7 +179,6 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
 
   useEffect(() => {
     if (selectedQuery != null) {
-      const index = "someIndex"
       const query1 = {
         index: searchConfigurations[0].index,
         query: {
