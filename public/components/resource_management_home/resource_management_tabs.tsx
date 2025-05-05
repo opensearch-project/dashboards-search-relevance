@@ -14,7 +14,7 @@ import { QuerySetView } from '../query_set_view/query_set_view';
 import { SearchConfigurationCreateWithRouter } from '../search_config_create/search_config_create';
 import { SearchConfigurationView } from '../search_config_view/search_config_view';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
-import { ExperimentView } from '../experiment_view/experiment_view';
+import ExperimentViewWithRouter from '../experiment_view/experiment_view';
 import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
 
 const TAB_STYLES = {
@@ -99,7 +99,7 @@ export const ResourceManagementTabs = ({
               ) : (
                 <></>
               )}
-              {entityAction === 'view' ? <ExperimentView http={http} id={entityId} /> : <></>}
+              {entityAction === 'view' ? <ExperimentViewWithRouter http={http} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? <TemplateCards onClose={() => {}} /> : <></>}
             </EuiPanel>
           </>
