@@ -60,10 +60,10 @@ export const ResultListComparisonForm = ({
             onChange={handleQuerySetsChange}
             isClearable
             isInvalid={formData.querySets.length === 0}
+            singleSelection={{ asPlainText: true }}
             isLoading={isLoading}
             async
             fullWidth
-            multi
           />
         </EuiFormRow>
       </EuiFlexItem>
