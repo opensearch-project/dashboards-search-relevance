@@ -55,7 +55,7 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
             <EuiFlexItem key={index}>
               <EuiCard
                 icon={<EuiIcon size="xxl" type={`logo${template.name}`} />}
-                title={`${template.name} Template`}
+                title={`${template.name} Experiment`}
                 isDisabled={template.isDisabled}
                 description={template.description}
                 onClick={() => handleCardClick(template.name)}
