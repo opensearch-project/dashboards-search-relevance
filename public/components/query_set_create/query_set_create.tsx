@@ -167,7 +167,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
-        description="Configure a new query set with sampling method and size"
+        description="Configure a new query set."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
