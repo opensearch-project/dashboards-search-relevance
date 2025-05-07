@@ -142,7 +142,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Search Configuration"
-        description="Configure a new search configuration with query body and options."
+        description="Configure a new search configuration that represents all the aspects of an algorithm."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
