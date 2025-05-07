@@ -205,7 +205,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 size="s"
                 iconType={isManualInput ? 'aggregate' : 'inputOutput'}
               >
-                Switch to {isManualInput ? 'UBI Sampling' : 'Manual'} Input
+                Switch to {isManualInput ? 'sampling queries from UBI data' : 'manually adding queries'}
               </EuiButton>
             </EuiFormRow>
             {/* Name field */}
@@ -213,7 +213,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
               label="Name"
               isInvalid={nameError.length > 0}
               error={nameError}
-              helpText="A unique name for this query set"
+              helpText="A unique name for this query set."
               fullWidth
             >
               <EuiCompressedTextArea
