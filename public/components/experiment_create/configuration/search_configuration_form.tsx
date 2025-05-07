@@ -53,7 +53,11 @@ export const SearchConfigForm = ({ formData, onChange, http }: SearchConfigFormP
             placeholder="Select search configuration"
             options={searchConfigOptions}
             selectedOptions={formData.searchConfigs || []}
-            onChange={handleSearchConfigsChange}
+            onChange={(selected) => {
+              if (selected.length <= 2) {
+                handleSearchConfigsChange(selected);
+              }
+            }}
             isClearable={true}
             isInvalid={(formData.searchConfigs || []).length === 0}
             isLoading={isLoadingConfigs}
