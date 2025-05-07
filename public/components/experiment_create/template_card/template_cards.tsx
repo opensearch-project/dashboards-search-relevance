@@ -15,9 +15,9 @@ interface TemplateCardsProps {
 
 const templates = [
   {
-    name: 'Result List Comparison',
+    name: 'Compare Result Lists',
     description:
-      'Compare the search results of multiple search configurations executed on saved query lists.',
+      'Compare the search results of two search configurations executed with a query set.',
     isDisabled: false,
   },
   {
