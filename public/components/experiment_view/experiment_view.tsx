@@ -19,7 +19,7 @@ import {
     TableListView,
     reactRouterNavigate,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';  
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
@@ -210,10 +210,12 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
     }
   }, [selectedQuery])
 
-  const findQueries = async (search: any) => {
-    const filteredQueryEntries = search ? queryEntries.filter(q => q.queryText.includes(search)) : queryEntries
-    return {hits: filteredQueryEntries, total: filteredQueryEntries.length}
-  }
+  const findQueries = useCallback(async (search: any) => {
+    const filteredQueryEntries = search ?
+      queryEntries.filter(q => q.queryText.includes(search)) :
+      queryEntries;
+    return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
+  }, [queryEntries]);
 
   const experimentDetails = (
     <EuiPanel hasBorder={true}>
@@ -257,6 +259,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
                 </EuiCallOut>
               ) : (
                 <TableListView
+                  key={`table-${queryEntries.length}`}
                   entityName="Query"
                   entityNamePlural="Queries"
                   tableColumns={tableColumns}
