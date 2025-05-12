@@ -26,6 +26,10 @@ import { ServiceEndpoints } from '../../../common';
 import { VisualComparison, convertFromSearchResult } from '../query_compare/search_result/visual_comparison/visual_comparison';
 import {
   SearchResults,
+  QueryEvaluation,
+  QuerySnapshot,
+  toQueryEvaluations,
+  toQuerySnapshots,
 } from '../../types/index';
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
@@ -41,10 +45,10 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
   const [selectedQuery, setSelectedQuery] = useState<number | null>(null);
   const [queryResult1, setQueryResult1] = useState<SearchResults | null>(null);
   const [queryResult2, setQueryResult2] = useState<SearchResults | null>(null);
-  
 
-  // Detailed experiment details
-  const [queryEntries, setQueryEntries] = useState<any[]>([]);
+  const [queryEvaluations, setQueryEvaluations] = useState<QueryEvaluation[]>([]);
+  const [querySnapshots, setQuerySnapshots] = useState<QuerySnapshot[]>([]);
+
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
   const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
@@ -60,7 +64,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const _experiment = await http.get(ServiceEndpoints.Experiments + "/" + id).then(sanitizeResponse);
+        const _rawExperiment = await http.get(ServiceEndpoints.Experiments + "/" + id)
+        const _experiment = sanitizeResponse(_rawExperiment)
         const _searchConfigurations = _experiment ? await loadSearchConfigurations(_experiment.searchConfigurationList) : [];
         const _querySet = _experiment ? await http.get(ServiceEndpoints.QuerySets + "/" + _experiment.querySetId).then(sanitizeResponse) : null;
 
@@ -68,6 +73,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
           setExperiment(_experiment);
           setSearchConfigurations(_searchConfigurations);
           setQuerySet(_querySet);
+          setQueryEvaluations(toQueryEvaluations(_rawExperiment))
+          setQuerySnapshots([toQuerySnapshots(_rawExperiment, "0"), toQuerySnapshots(_rawExperiment, "1")])
         } else {
           setError('No matching experiment found');
         }
@@ -82,39 +89,16 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
     fetchExperiment();
   }, [http, id]);
 
-  function extractMetricNames(obj: any): string[] {
-    const metrics = obj.results?.metrics;
-    if (metrics) {
-      const key0 = Object.keys(metrics)[0]
-      const queryMetrics = metrics[key0]
-      if (queryMetrics.pairwiseComparison) {
-        return Object.keys(queryMetrics.pairwiseComparison)
-      }
+  function extractMetricNames(queryEvaluations: any): string[] {
+    if (queryEvaluations.length > 0) {
+      return Object.keys(queryEvaluations[0].metrics)
     }
     return [];
   }
 
   useEffect(() => {
     if (experiment) {
-      const metricNames = extractMetricNames(experiment)
-      let _metrics = {}
-      let _metricMeans = {}
-      let _queryEntries = experiment.results.queryTexts.map(t => ({queryText: t, queryResults: {}, metrics: {}}))
-      metricNames.forEach(metricName => {
-        const vals = experiment.results.queryTexts.map(q => experiment.results.metrics[q].pairwiseComparison[metricName])
-        vals.forEach((val, i) => {
-          _queryEntries[i].metrics[metricName] = val
-        })
-        _metricMeans[metricName] = vals.reduce((a, b) => a + b, 0) / vals.length
-      })
-      // Store query results
-      experiment.results.queryTexts.forEach((queryText, i) => {
-        ["0", "1"].forEach(queryName => {
-          const queryResults = experiment.results.metrics[queryText][queryName]
-          _queryEntries[i].queryResults[queryName] = queryResults
-          _queryEntries[i]["index"] = i
-        })
-      })
+      const metricNames = extractMetricNames(queryEvaluations)
 
       const cheatColNames = {
         rbo90: "RBO@" + experiment.k,
@@ -129,13 +113,13 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
             sortable: true,
             render: (
                 name: string,
-                queryEntry: {
-                    index: number;
-                },
             ) => (
                 <EuiButtonEmpty
                     size="xs"
-                    onClick={() => setSelectedQuery(queryEntry.index)}
+                    onClick={() => {
+                      const index = queryEvaluations.findIndex(q => q.queryText === name)
+                      setSelectedQuery(index)
+                    }}
                     title={name}
                 >
                     {name}
@@ -144,7 +128,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
             
         },
       ]
-      Object.keys(_metricMeans).forEach(metricName => {
+      metricNames.forEach(metricName => {
         if (cheatColNames[metricName]) {
           columns.push({
             field: 'metrics.' + metricName,
@@ -164,13 +148,10 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
         }
       })
 
-      setQueryEntries(_queryEntries)
-      // setMetrics(_metrics);
-      // setMetricMeans(_metricMeans);
       setTableColumns(columns)
       setLoading(false);
     }
-  }, [experiment])
+  }, [experiment, queryEvaluations])
 
   function resolve_attributes(ids, hits) {
     const res = ids.map(id => hits.find(hit => hit._id === id) || {_id: id})
@@ -179,11 +160,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
 
   useEffect(() => {
     if (selectedQuery != null) {
+      const queryText = queryEvaluations[selectedQuery].queryText;
+      const snapshot1 = querySnapshots[0].find(s => s.queryText === queryText).documentIds
+      const snapshot2 = querySnapshots[1].find(s => s.queryText === queryText).documentIds
       const query1 = {
         index: searchConfigurations[0].index,
         query: {
           terms: {
-            _id: queryEntries[selectedQuery].queryResults["0"]
+            _id: snapshot1
           }
         }
       }
@@ -191,7 +175,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
         index: searchConfigurations[1].index,
         query: {
           terms: {
-            _id: queryEntries[selectedQuery].queryResults["1"]
+            _id: snapshot2
           }
         }
       }
@@ -200,8 +184,8 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
           body: JSON.stringify({ query1, query2 }),
       })
       .then((res) => {
-        setQueryResult1(resolve_attributes(queryEntries[selectedQuery].queryResults["0"], convertFromSearchResult(res.result1)))
-        setQueryResult2(resolve_attributes(queryEntries[selectedQuery].queryResults["1"], convertFromSearchResult(res.result2)))
+        setQueryResult1(resolve_attributes(snapshot1, convertFromSearchResult(res.result1)))
+        setQueryResult2(resolve_attributes(snapshot2, convertFromSearchResult(res.result2)))
       })
       .catch((error: Error) => {
           console.error(error);
@@ -212,10 +196,10 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
 
   const findQueries = useCallback(async (search: any) => {
     const filteredQueryEntries = search ?
-      queryEntries.filter(q => q.queryText.includes(search)) :
-      queryEntries;
+      queryEvaluations.filter(q => q.queryText.includes(search)) :
+      queryEvaluations;
     return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
-  }, [queryEntries]);
+  }, [queryEvaluations]);
 
   const experimentDetails = (
     <EuiPanel hasBorder={true}>
@@ -259,7 +243,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
                 </EuiCallOut>
               ) : (
                 <TableListView
-                  key={`table-${queryEntries.length}`}
+                  key={`table-${queryEvaluations.length}`}
                   entityName="Query"
                   entityNamePlural="Queries"
                   tableColumns={tableColumns}
@@ -287,7 +271,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
                 <VisualComparison
                   queryResult1={queryResult1}
                   queryResult2={queryResult2}
-                  queryText={queryEntries[selectedQuery].queryText}
+                  queryText={queryEvaluations[selectedQuery].queryText}
                   resultText1={`${searchConfigurations[0].name} result`}
                   resultText2={`${searchConfigurations[1].name} result`}
                 />
