@@ -80,3 +80,115 @@ export interface datasourceElements {
   dataConnectionId: string,
   pipeline: {}
 }
+
+export type ExperimentBase = {
+  status: "RUNNING" | "COMPLETED" | "FAILED";
+  id: string;
+  timestamp: string;
+  querySetId: string;
+  k: number;
+};
+
+export type Experiment =
+  | (ExperimentBase & {
+      type: "PAIRWISE_COMPARISON";
+      searchConfigurationList: string[];
+    })
+  | (ExperimentBase & {
+      type: "LLM_EVALUATION";
+    })
+
+// Evaluation (multiple metric results for a single query)
+export type QueryEvaluation = {
+  queryText: string;
+  metrics: {
+    [key: string]: number[];
+  };
+}
+
+export type QuerySnapshot = {
+  queryText: string;
+  documentIds: string[];
+}
+
+// Currently this function consumes the response of a pairwise comparison experiment
+// In the future this will be applied to an endpoint dedicated to evaluations
+export const toQueryEvaluations = (response: any): Array<QueryEvaluation> | null => {
+  if (!response?.hits?.hits?.[0]?._source) {
+    return null;
+  }
+
+  const source = response.hits.hits[0]._source;
+  const metrics = source.results.metrics;
+
+  return Object.entries(metrics).map(([queryText, value]) => ({
+    queryText: queryText,
+    metrics: value.pairwiseComparison,
+  }))
+}
+
+export const toQuerySnapshots = (response: any, queryName: string): Array<QuerySnapshot> | null => {
+  if (!response?.hits?.hits?.[0]?._source) {
+    return null;
+  }
+
+  const source = response.hits.hits[0]._source;
+  const metrics = source.results.metrics;
+  return Object.entries(metrics).map(([queryText, value]) => ({
+    queryText: queryText,
+    documentIds: value[queryName],
+  }))
+}
+
+export const toExperiment = (response: any): Experiment | null => {
+  // Guard against invalid response structure
+  if (!response?.hits?.hits?.[0]?._source) {
+    return null;
+  }
+
+  const source = response.hits.hits[0]._source;
+
+  // Validate required base fields exist
+  if (!source.id || !source.timestamp || !source.querySetId ||
+      source.k === undefined) {
+    return null;
+  }
+
+  // Handle different experiment types
+  switch (source.type) {
+    case "PAIRWISE_COMPARISON":
+      if (!source.searchConfigurationList) {
+        return null;
+      }
+      return {
+        type: "PAIRWISE_COMPARISON",
+        status: "COMPLETED",
+        id: source.id,
+        k: source.k,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationList: source.searchConfigurationList,
+      };
+
+    case "LLM_EVALUATION":
+      return {
+        type: "LLM_EVALUATION",
+        status: "COMPLETED",
+        id: source.id,
+        k: source.k,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+      };
+
+    default: // default case while there is no type
+      return {
+        type: "PAIRWISE_COMPARISON",
+        status: "COMPLETED",
+        id: source.id,
+        k: source.k,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationList: source.searchConfigurationList,
+      };
+  }
+};
