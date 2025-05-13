@@ -23,6 +23,7 @@ import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import moment from 'moment';
+import { toExperiment } from '../../types/index';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -86,21 +87,21 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       ),
     },
     {
-      field: 'searchConfigurationList',
+      field: 'type',
       name: 'Evaluation Type',
       dataType: 'string',
       sortable: true,
-      render: (searchConfigurationList: string[]) => {
+      render: (type: string) => {
         const evaluationType =
-          searchConfigurationList.length === 2 ? 'Result List Comparison' : 'Quality Metrics';
+          type === 'PAIRWISE_COMPARISON' ? 'Result List Comparison' : 'Quality Metrics';
         return <EuiText size="s">{evaluationType}</EuiText>;
       },
     },
     {
-      field: 'results',
+      field: 'size',
       name: 'Queries Run',
       width: '20%',
-      render: (results: any) => <EuiText size="s">{results?.queryTexts?.length || '0'}</EuiText>,
+      render: (size: number) => <EuiText size="s">{size}</EuiText>,
     },
     {
       field: 'timestamp',
@@ -129,33 +130,23 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     },
   ];
 
-  const mapExperimentFields = (obj: any) => {
-    return {
-      id: obj._source.id,
-      timestamp: obj._source.timestamp,
-      querySetId: obj._source.querySetId,
-      searchConfigurationList: obj._source.searchConfigurationList,
-      k: obj._source.k,
-      results: obj._source.results,
-    };
-  };
-
   // Data fetching function
   const findExperiments = async (search: any) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.Experiments);
-      const list = response ? response.hits.hits.map(mapExperimentFields) : [];
+      const list = response ? response.hits.hits.map(hit => toExperiment(hit._source)).filter(Boolean) : [];
       // TODO: too many reissued requests on search
       const filteredList = search
-        ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+        ? list.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
         : list;
       return {
         total: filteredList.length,
         hits: filteredList,
       };
     } catch (err) {
+      console.log(err);
       setError('Failed to load experiments');
       return {
         total: 0,
