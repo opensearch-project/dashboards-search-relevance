@@ -15,9 +15,9 @@ interface TemplateCardsProps {
 
 const templates = [
   {
-    name: 'Result List Comparison',
+    name: 'Compare Result Lists',
     description:
-      'Compare the search results of multiple search configurations executed on saved query lists.',
+      'Compare the search results of two search configurations executed with a query set.',
     isDisabled: false,
   },
   {
@@ -55,7 +55,7 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
             <EuiFlexItem key={index}>
               <EuiCard
                 icon={<EuiIcon size="xxl" type={`logo${template.name}`} />}
-                title={`${template.name} Template`}
+                title={`${template.name} Experiment`}
                 isDisabled={template.isDisabled}
                 description={template.description}
                 onClick={() => handleCardClick(template.name)}

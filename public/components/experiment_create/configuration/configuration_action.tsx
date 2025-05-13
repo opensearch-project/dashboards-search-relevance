@@ -15,11 +15,11 @@ export const ConfigurationActions = ({
   <EuiFlexGroup justifyContent="flexEnd">
     <EuiFlexItem grow={false}>
       <EuiButtonEmpty onClick={onBack}>
-        Back to Templates
+        Back to Experiments
       </EuiButtonEmpty>
     </EuiFlexItem>
     <EuiFlexItem grow={false}>
-      <EuiButton fill onClick={onClose}>
+      <EuiButton fill onClick={onBack}>
         Cancel
       </EuiButton>
     </EuiFlexItem>

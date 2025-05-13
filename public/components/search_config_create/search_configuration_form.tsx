@@ -51,7 +51,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       label="Search Configuration Name"
       error={nameError}
       isInvalid={Boolean(nameError)}
-      helpText="A unique name for this search configuration"
+      helpText="A unique name for this search configuration."
       fullWidth
     >
       <EuiFieldText
@@ -68,7 +68,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
 
     <EuiFormRow
       label="Index"
-      helpText="Select an index for this search configuration"
+      helpText="Select an index for this search configuration."
       fullWidth
     >
       <EuiComboBox
@@ -88,7 +88,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       label="Query Body"
       error={queryBodyError}
       isInvalid={Boolean(queryBodyError)}
-      helpText="Define the query body in JSON format"
+      helpText="Define the query body in JSON format.  Use %SearchText% to represent the specific query text."
       fullWidth
     >
       <EuiCodeEditor
@@ -132,7 +132,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
 
     <EuiFormRow
       label="Search Pipeline"
-      helpText="Define the search pipeline to be used"
+      helpText="Define the search pipeline to be used."
       fullWidth
     >
       <EuiFieldText
@@ -144,7 +144,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow label="Search Template" helpText="Define the search template" fullWidth>
+    <EuiFormRow label="Search Template" helpText="Define the search template." fullWidth>
       <EuiFieldText
         placeholder="Enter search template"
         value={searchTemplate}
