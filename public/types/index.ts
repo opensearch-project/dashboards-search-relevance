@@ -87,6 +87,7 @@ export type ExperimentBase = {
   timestamp: string;
   querySetId: string;
   k: number;
+  size: number;
 };
 
 export type Experiment =
@@ -113,12 +114,11 @@ export type QuerySnapshot = {
 
 // Currently this function consumes the response of a pairwise comparison experiment
 // In the future this will be applied to an endpoint dedicated to evaluations
-export const toQueryEvaluations = (response: any): Array<QueryEvaluation> | null => {
-  if (!response?.hits?.hits?.[0]?._source) {
+export const toQueryEvaluations = (source: any): Array<QueryEvaluation> | null => {
+  if (!source?.results?.metrics) {
     return null;
   }
 
-  const source = response.hits.hits[0]._source;
   const metrics = source.results.metrics;
 
   return Object.entries(metrics).map(([queryText, value]) => ({
@@ -127,12 +127,11 @@ export const toQueryEvaluations = (response: any): Array<QueryEvaluation> | null
   }))
 }
 
-export const toQuerySnapshots = (response: any, queryName: string): Array<QuerySnapshot> | null => {
-  if (!response?.hits?.hits?.[0]?._source) {
+export const toQuerySnapshots = (source: any, queryName: string): Array<QuerySnapshot> | null => {
+  if (!source?.results?.metrics) {
     return null;
   }
 
-  const source = response.hits.hits[0]._source;
   const metrics = source.results.metrics;
   return Object.entries(metrics).map(([queryText, value]) => ({
     queryText: queryText,
@@ -140,19 +139,14 @@ export const toQuerySnapshots = (response: any, queryName: string): Array<QueryS
   }))
 }
 
-export const toExperiment = (response: any): Experiment | null => {
-  // Guard against invalid response structure
-  if (!response?.hits?.hits?.[0]?._source) {
-    return null;
-  }
-
-  const source = response.hits.hits[0]._source;
-
+export const toExperiment = (source: any): Experiment | null => {
   // Validate required base fields exist
   if (!source.id || !source.timestamp || !source.querySetId ||
       source.k === undefined) {
     return null;
   }
+
+  const size = source.results?.queryTexts?.length ?? 0;
 
   // Handle different experiment types
   switch (source.type) {
@@ -168,6 +162,7 @@ export const toExperiment = (response: any): Experiment | null => {
         querySetId: source.querySetId,
         timestamp: source.timestamp,
         searchConfigurationList: source.searchConfigurationList,
+        size,
       };
 
     case "LLM_EVALUATION":
@@ -178,6 +173,7 @@ export const toExperiment = (response: any): Experiment | null => {
         k: source.k,
         querySetId: source.querySetId,
         timestamp: source.timestamp,
+        size,
       };
 
     default: // default case while there is no type
@@ -189,6 +185,7 @@ export const toExperiment = (response: any): Experiment | null => {
         querySetId: source.querySetId,
         timestamp: source.timestamp,
         searchConfigurationList: source.searchConfigurationList,
+        size,
       };
   }
 };

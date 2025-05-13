@@ -27,9 +27,15 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
-        const _experiment = await http.get(ServiceEndpoints.Experiments + "/" + id).then(toExperiment)
-        if (_experiment) {
-          setExperiment(_experiment);
+        const response = await http.get(ServiceEndpoints.Experiments + "/" + id);
+        const source = response?.hits?.hits?.[0]?._source;
+        if (source) {
+          const _experiment = toExperiment(source);
+          if (_experiment) {
+            setExperiment(_experiment);
+          } else {
+            setError('Invalid experiment data format');
+          }
         } else {
           setError('No matching experiment found');
         }
@@ -37,7 +43,6 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
         setExperiment(null);
         setError('Error loading experiment data');
         console.error(err);
-      } finally {
       }
     };
 
