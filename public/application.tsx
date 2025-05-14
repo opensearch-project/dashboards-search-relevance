@@ -22,7 +22,13 @@ export const renderApp = (
 
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={coreStart}>
-      <ConfigProvider uiSettings={uiSettings}>
+      <ConfigProvider
+        uiSettings={uiSettings}
+        dataSourceEnabled={!!dataSource}
+        dataSourceManagement={dataSourceManagement}
+        setHeaderActionMenu={setHeaderActionMenu}
+        navigation={navigation}
+      >
         <SearchRelevanceApp
           notifications={notifications}
           http={http}

@@ -207,16 +207,6 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     }
 };
 
-const [useOldVersion, setUseOldVersion] = useState(true);
-const versionToggle = (
-  <EuiSwitch
-    label="Use New Version"
-    checked={!useOldVersion}
-    onChange={() => setUseOldVersion(!useOldVersion)}
-    style={{ marginBottom: '16px' }}
-  />
-);
-
   return (
     <>
       {getNavGroupEnabled ? (
@@ -251,14 +241,20 @@ const versionToggle = (
           </EuiPanel>
         </>
       ) : (
-        <Header>
+        <EuiPanel
+          hasBorder={false}
+          hasShadow={false}
+          color="transparent"
+          grow={false}
+          borderRadius="none"
+        >
           <SearchInputBar
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
             getNavGroupEnabled={getNavGroupEnabled}
           />
-        </Header>
+        </EuiPanel>
       )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
@@ -278,25 +274,15 @@ const versionToggle = (
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        { versionToggle }
-        { useOldVersion ? (
-            <ResultComponents
-              queryResult1={queryResult1}
-              queryResult2={queryResult2}
-              queryError1={queryError1}
-              queryError2={queryError2}
-            />
-        ) : (
-            <VisualComparison
-              queryResult1={convertFromSearchResult(queryResult1)}
-              queryResult2={convertFromSearchResult(queryResult2)}
-              queryError1={queryError1}
-              queryError2={queryError2}
-              queryText={searchBarValue}
-              resultText1="Result 1"
-              resultText2="Result 2"
-            />
-        )}
+        <VisualComparison
+          queryResult1={convertFromSearchResult(queryResult1)}
+          queryResult2={convertFromSearchResult(queryResult2)}
+          queryError1={queryError1}
+          queryError2={queryError2}
+          queryText={searchBarValue}
+          resultText1="Result 1"
+          resultText2="Result 2"
+        />
       </EuiPageContentBody>
     </>
   );
