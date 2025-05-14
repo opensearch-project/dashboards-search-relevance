@@ -21,7 +21,7 @@ const templates = [
     isDisabled: false,
   },
   {
-    name: 'Search Relevance',
+    name: 'Search Evaluation',
     description: 'Calculate search quality metrics to evaluate search configurations.',
     isDisabled: false,
   },
