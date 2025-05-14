@@ -16,6 +16,7 @@ import { SearchConfigurationView } from '../search_config_view/search_config_vie
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import ExperimentViewWithRouter from '../experiment_view/experiment_view';
 import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 
 const TAB_STYLES = {
   mainTabs: {
@@ -49,12 +50,12 @@ export const ResourceManagementTabs = ({
   experiments,
   resultListComparisonExperiments,
   history,
-  http,
-  notifications,
   entity,
   entityAction,
   entityId,
 }: ResourceManagementTabsProps) => {
+  const { http, notifications } = useOpenSearchDashboards().services;
+
   const selectedMainTabId = entity ? entity : 'experiment';
   // HACK: we map view to list, because we show the view pane under the list tab
   const selectedSubTabs = entityAction && entityAction != 'view' ? entityAction : 'list';
