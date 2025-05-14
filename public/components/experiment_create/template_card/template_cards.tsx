@@ -27,17 +27,17 @@ const templates = [
   {
     name: 'Query Set Comparison',
     description:
-      'Perform a comparison across an entire set of queries. Determine differences for your complete use case.',
+      'Perform a comparison across an entire set of queries. Determine differences across your complete use case.',
     isDisabled: false,
   },
   {
-    name: 'Query Evaluation',
-    description: 'Evaluate a search configuration with user behavior judgments.',
+    name: 'Search Evaluation',
+    description: 'Calculate search quality metrics to evaluate specific search configuration.',
     isDisabled: false,
   },
   {
-    name: 'LLM Query Evaluation',
-    description: 'Evaluate a search configuration using LLM as a judge.',
+    name: 'Hybrid Search Optimizer',
+    description: 'Find the best balance between neural and lexical hybrid search configuration.',
     isDisabled: false,
   },
 ];
