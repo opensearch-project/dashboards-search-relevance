@@ -12,5 +12,8 @@ export interface ResourceManagementTabsProps {
   resultListComparisonExperiments: TableContent[];
   searchConfigurations: TableContent[];
   querySets: TableContent[];
-  http: CoreStart['http'];
+  history: any;
+  entity?: string;
+  entityAction?: string;
+  entityId?: string;
 }

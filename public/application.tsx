@@ -29,17 +29,7 @@ export const renderApp = (
         setHeaderActionMenu={setHeaderActionMenu}
         navigation={navigation}
       >
-        <SearchRelevanceApp
-          notifications={notifications}
-          http={http}
-          navigation={navigation}
-          chrome={chrome}
-          savedObjects={savedObjects}
-          dataSourceEnabled={!!dataSource}
-          setActionMenu={setHeaderActionMenu}
-          dataSourceManagement={dataSourceManagement}
-          application={application}
-        />
+        <SearchRelevanceApp/>
       </ConfigProvider>
     </OpenSearchDashboardsContextProvider>,
     element
