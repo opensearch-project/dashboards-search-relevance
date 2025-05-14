@@ -19,11 +19,11 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
   };
 
   switch (templateType) {
-    case 'Result List Comparison':
+    case 'Query Set Comparison':
       return {
         ...baseData,
       };
-    case 'User Behavior':
+    case 'Query Evaluation':
       return {
         ...baseData,
         startDate: '',
@@ -31,7 +31,7 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
         collectSignal: '',
         scoreThreshold: '',
       };
-    case 'LLM':
+    case 'LLM Query Evaluation':
       return {
         ...baseData,
         modelId: '',
@@ -73,7 +73,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
 
   const renderForm = () => {
     switch (templateType) {
-      case 'Result List Comparison':
+      case 'Query Set Comparison':
         return (
           <ResultListComparisonForm
             formData={formData as ResultListComparisonFormData}
@@ -81,11 +81,11 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
             http={http}
           />
         );
-      case 'User Behavior':
+      case 'Query Evaluation':
         return (
           <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} />
         );
-      case 'LLM':
+      case 'LLM Query Evaluation':
         return (
           <>
             <LLMForm formData={formData as LLMFormData} onChange={handleChange} />

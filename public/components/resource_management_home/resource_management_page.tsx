@@ -7,18 +7,13 @@ import { ResourceManagementTabsWithRoute } from './resource_management_tabs';
 import { experiments, resultListComparisonExperiments } from './mockup_data';
 
 export const ResourceManagementPage = ({
-  application,
-  chrome,
-  http,
-  notifications,
   entity,
   entityAction,
   entityId,
 }: {
-  application: CoreStart['application'];
-  chrome: CoreStart['chrome'];
-  http: CoreStart['http'];
-  notifications: CoreStart['notifications'];
+  entity: string;
+  entityAction: string;
+  entityId: string;
 }) => {
   const [isTemplateCards, setIsTemplateCards] = useState(false);
   const showTemplate = () => setIsTemplateCards(true);
@@ -50,8 +45,6 @@ export const ResourceManagementPage = ({
               <ResourceManagementTabsWithRoute
                 experiments={experiments}
                 resultListComparisonExperiments={resultListComparisonExperiments}
-                http={http}
-                notifications={notifications}
                 entity={entity}
                 entityAction={entityAction}
                 entityId={entityId}

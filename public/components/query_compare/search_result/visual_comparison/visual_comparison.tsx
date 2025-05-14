@@ -10,8 +10,6 @@ import { ResultItems } from './result_items';
 interface OpenSearchComparisonProps {
   queryResult1: any;
   queryResult2: any;
-  queryError1: any;
-  queryError2: any;
   queryText: string;
   resultText1: string;
   resultText2: string;
@@ -31,8 +29,6 @@ export const convertFromSearchResult = (searchResult) => {
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
-  queryError1,
-  queryError2,
   queryText,
   resultText1,
   resultText2,
@@ -292,7 +288,7 @@ export const VisualComparison = ({
         <EuiEmptyPrompt
           iconType="search"
           title={<h2>No results</h2>}
-          body={<p>Add at least one query to display search results.</p>}
+          body={<p>You need two queries to display search results.</p>}
         />
       </EuiPanel>
     );
