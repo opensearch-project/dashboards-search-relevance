@@ -17,6 +17,9 @@ import { TemplateCards } from '../experiment_create/template_card/template_cards
 import ExperimentViewWithRouter from '../experiment_view/experiment_view';
 import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { JudgmentCreateWithRouter } from '../judgment_create';
+import { JudgmentListingWithRoute } from '../judgment_listing';
+import { JudgmentView } from '../judgment_view';
 
 const TAB_STYLES = {
   mainTabs: {
@@ -64,6 +67,7 @@ export const ResourceManagementTabs = ({
     { id: 'experiment', name: 'Experiment' },
     { id: 'querySet', name: 'Query Set' },
     { id: 'searchConfiguration', name: 'Search Configuration' },
+    { id: 'judgment', name: 'Judgment' },
   ];
 
   const renderSubTabs = (tabKey: string, tabs: Array<{ id: string; label: string }>) => (
@@ -91,7 +95,7 @@ export const ResourceManagementTabs = ({
           <>
             {renderSubTabs('experiment', [
               { id: 'list', label: 'Manage Experiments' },
-              { id: 'create', label: 'Create an Experiment' },
+              { id: 'create', label: 'Create a Experiment' },
             ])}
             <EuiSpacer size="m" />
             <EuiPanel>
@@ -151,6 +155,30 @@ export const ResourceManagementTabs = ({
               )}
               {selectedSubTabs === 'create' ? (
                 <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
+              ) : (
+                <></>
+              )}
+            </EuiPanel>
+          </>
+        );
+
+      case 'judgment':
+        return (
+          <>
+            {renderSubTabs('judgment', [
+              { id: 'list', label: 'Manage Judgments' },
+              { id: 'create', label: 'Create a Judgment' },
+            ])}
+            <EuiSpacer size="m" />
+            <EuiPanel>
+              {selectedSubTabs === 'list' && entityAction != 'view' ? (
+                <JudgmentListingWithRoute http={http} />
+              ) : (
+                <></>
+              )}
+              {entityAction === 'view' ? <JudgmentView http={http} id={entityId}/> : <></>}
+              {selectedSubTabs === 'create' ? (
+                <JudgmentCreateWithRouter http={http} notifications={notifications} history={history}/>
               ) : (
                 <></>
               )}

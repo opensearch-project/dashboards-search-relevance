@@ -137,6 +137,44 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Experiments)
   );
+  router.put(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: {
+        body: schema.any(),
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Judgments)
+  );
 }
 
 const backendAction = (method, path) => {
