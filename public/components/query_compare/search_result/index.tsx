@@ -18,8 +18,6 @@ import {
   SelectIndexError,
   initialQueryErrorState,
 } from '../../../types/index';
-import { Header } from '../../common/header';
-import { ResultComponents } from './result_components/result_components';
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
