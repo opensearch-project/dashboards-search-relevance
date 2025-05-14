@@ -167,7 +167,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
-        description="Configure a new query set with sampling method and size"
+        description="Configure a new query set."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -205,7 +205,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 size="s"
                 iconType={isManualInput ? 'aggregate' : 'inputOutput'}
               >
-                Switch to {isManualInput ? 'UBI Sampling' : 'Manual'} Input
+                Switch to {isManualInput ? 'sampling queries from UBI data' : 'manually adding queries'}
               </EuiButton>
             </EuiFormRow>
             {/* Name field */}
@@ -213,7 +213,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
               label="Name"
               isInvalid={nameError.length > 0}
               error={nameError}
-              helpText="A unique name for this query set"
+              helpText="A unique name for this query set."
               fullWidth
             >
               <EuiCompressedTextArea
@@ -231,7 +231,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
               label="Description"
               isInvalid={descriptionError.length > 0}
               error={descriptionError}
-              helpText="Detailed description of the query set purpose"
+              helpText="Detailed description of the query set purpose."
               fullWidth
             >
               <EuiCompressedTextArea
@@ -249,7 +249,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 label="Manual Queries"
                 error={manualQueriesError}
                 isInvalid={Boolean(manualQueriesError)}
-                helpText="Enter queries separaarated by commas (e.g., 'apple, banana, orange')"
+                helpText="Enter queries separated by commas (e.g., 'apple, banana, orange')."
                 fullWidth
               >
                 <EuiTextArea
@@ -267,7 +267,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 {/* Sampling method field */}
                 <EuiFormRow
                   label="Sampling Method"
-                  helpText="Select the sampling method for this query set"
+                  helpText="Select the sampling method for this query set."
                   fullWidth
                 >
                   <EuiSelect
@@ -284,7 +284,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                   label="Query Set Size"
                   error={querySizeError}
                   isInvalid={Boolean(querySizeError)}
-                  helpText="Number of queries in the set (must be positive)"
+                  helpText="Number of queries in the set (must be positive)."
                   fullWidth
                 >
                   <EuiFieldNumber

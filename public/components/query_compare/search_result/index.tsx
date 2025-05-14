@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel, EuiSwitch} from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel, EuiHorizontalRule, EuiSplitPanel} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -18,12 +18,10 @@ import {
   SelectIndexError,
   initialQueryErrorState,
 } from '../../../types/index';
-import { Header } from '../../common/header';
-import { ResultComponents } from './result_components/result_components';
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { SEARCH_NODE_API_PATH } from '../../../../common';
+import { ServiceEndpoints } from '../../../../common';
 
 const DEFAULT_QUERY = '{}';
 
@@ -159,7 +157,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
         // First Query
         if (Object.keys(requestBody1).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
             })
             .then((res) => {
@@ -174,7 +172,9 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
                         queryString: res.errorMessage1,
                         errorResponse: res.errorMessage1,
                     }));
-                }
+                    setQueryResult1({} as any);
+                    updateComparedResult1({} as any);
+                  }
             })
             .catch((error: Error) => {
                 console.error(error);
@@ -183,7 +183,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
         // Second Query
         if (Object.keys(requestBody2).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
             })
             .then((res) => {
@@ -198,6 +198,8 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
                         queryString: res.errorMessage2,
                         errorResponse: res.errorMessage2,
                     }));
+                    setQueryResult2({} as any);
+                    updateComparedResult2({} as any);
                 }
             })
             .catch((error: Error) => {
@@ -207,14 +209,15 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     }
 };
 
-const [useOldVersion, setUseOldVersion] = useState(true);
-const versionToggle = (
-  <EuiSwitch
-    label="Use New Version"
-    checked={!useOldVersion}
-    onChange={() => setUseOldVersion(!useOldVersion)}
-    style={{ marginBottom: '16px' }}
-  />
+const ErrorMessage = ({ queryError }: { queryError: QueryError }) => (
+  <>
+    <EuiText color="danger">
+      {queryError.errorResponse.statusCode >= 500 ? 'Internal' : 'Query'} Error
+    </EuiText>
+    <EuiText color="danger">{queryError.errorResponse.body}</EuiText>
+    <EuiText color="danger">Status Code: {queryError.errorResponse.statusCode}</EuiText>
+    <EuiHorizontalRule margin="s" />
+  </>
 );
 
   return (
@@ -251,14 +254,20 @@ const versionToggle = (
           </EuiPanel>
         </>
       ) : (
-        <Header>
+        <EuiPanel
+          hasBorder={false}
+          hasShadow={false}
+          color="transparent"
+          grow={false}
+          borderRadius="none"
+        >
           <SearchInputBar
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
             getNavGroupEnabled={getNavGroupEnabled}
           />
-        </Header>
+        </EuiPanel>
       )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
@@ -278,25 +287,24 @@ const versionToggle = (
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        { versionToggle }
-        { useOldVersion ? (
-            <ResultComponents
-              queryResult1={queryResult1}
-              queryResult2={queryResult2}
-              queryError1={queryError1}
-              queryError2={queryError2}
-            />
-        ) : (
-            <VisualComparison
-              queryResult1={convertFromSearchResult(queryResult1)}
-              queryResult2={convertFromSearchResult(queryResult2)}
-              queryError1={queryError1}
-              queryError2={queryError2}
-              queryText={searchBarValue}
-              resultText1="Result 1"
-              resultText2="Result 2"
-            />
-        )}
+
+        <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) && (<ErrorMessage queryError={queryError1}/>)}
+          </EuiSplitPanel.Inner>
+
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) && (<ErrorMessage queryError={queryError2}/>)}
+          </EuiSplitPanel.Inner>
+        </EuiSplitPanel.Outer>
+
+        <VisualComparison
+          queryResult1={convertFromSearchResult(queryResult1)}
+          queryResult2={convertFromSearchResult(queryResult2)}
+          queryText={searchBarValue}
+          resultText1="Result 1"
+          resultText2="Result 2"
+        />
       </EuiPageContentBody>
     </>
   );

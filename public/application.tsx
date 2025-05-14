@@ -22,18 +22,14 @@ export const renderApp = (
 
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={coreStart}>
-      <ConfigProvider uiSettings={uiSettings}>
-        <SearchRelevanceApp
-          notifications={notifications}
-          http={http}
-          navigation={navigation}
-          chrome={chrome}
-          savedObjects={savedObjects}
-          dataSourceEnabled={!!dataSource}
-          setActionMenu={setHeaderActionMenu}
-          dataSourceManagement={dataSourceManagement}
-          application={application}
-        />
+      <ConfigProvider
+        uiSettings={uiSettings}
+        dataSourceEnabled={!!dataSource}
+        dataSourceManagement={dataSourceManagement}
+        setHeaderActionMenu={setHeaderActionMenu}
+        navigation={navigation}
+      >
+        <SearchRelevanceApp/>
       </ConfigProvider>
     </OpenSearchDashboardsContextProvider>,
     element
