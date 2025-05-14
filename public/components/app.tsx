@@ -19,7 +19,7 @@ export const SearchRelevanceApp = () => {
               <Route
                 path={[
                   '/',
-                  '/:entity(querySet|searchConfiguration|experiment)/:entityAction(list|create|view)?/:entityId?',
+                  '/:entity(querySet|searchConfiguration|experiment|judgment)/:entityAction(list|create|view)?/:entityId?',
                 ]}
                 exact
                 render={(props) => {
