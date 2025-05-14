@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel, EuiSwitch} from '@elastic/eui';
+import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel, EuiHorizontalRule, EuiSplitPanel} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -172,7 +172,9 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
                         queryString: res.errorMessage1,
                         errorResponse: res.errorMessage1,
                     }));
-                }
+                    setQueryResult1({} as any);
+                    updateComparedResult1({} as any);
+                  }
             })
             .catch((error: Error) => {
                 console.error(error);
@@ -196,6 +198,8 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
                         queryString: res.errorMessage2,
                         errorResponse: res.errorMessage2,
                     }));
+                    setQueryResult2({} as any);
+                    updateComparedResult2({} as any);
                 }
             })
             .catch((error: Error) => {
@@ -204,6 +208,17 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
         }
     }
 };
+
+const ErrorMessage = ({ queryError }: { queryError: QueryError }) => (
+  <>
+    <EuiText color="danger">
+      {queryError.errorResponse.statusCode >= 500 ? 'Internal' : 'Query'} Error
+    </EuiText>
+    <EuiText color="danger">{queryError.errorResponse.body}</EuiText>
+    <EuiText color="danger">Status Code: {queryError.errorResponse.statusCode}</EuiText>
+    <EuiHorizontalRule margin="s" />
+  </>
+);
 
   return (
     <>
@@ -272,11 +287,20 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
+
+        <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) && (<ErrorMessage queryError={queryError1}/>)}
+          </EuiSplitPanel.Inner>
+
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) && (<ErrorMessage queryError={queryError2}/>)}
+          </EuiSplitPanel.Inner>
+        </EuiSplitPanel.Outer>
+
         <VisualComparison
           queryResult1={convertFromSearchResult(queryResult1)}
           queryResult2={convertFromSearchResult(queryResult2)}
-          queryError1={queryError1}
-          queryError2={queryError2}
           queryText={searchBarValue}
           resultText1="Result 1"
           resultText2="Result 2"
