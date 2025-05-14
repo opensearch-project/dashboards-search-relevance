@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 import {
   EuiForm,
@@ -25,6 +30,10 @@ interface SearchConfigurationFormProps {
   setSelectedIndex: (selected: Array<{ label: string; value: string }>) => void;
   isLoadingIndexes: boolean;
   disabled?: boolean;
+  pipelineOptions: Array<{ label: string }>;
+  selectedPipeline: Array<{ label: string }>;
+  setSelectedPipeline: (selected: Array<{ label: string }>) => void;
+  isLoadingPipelines: boolean;
 }
 
 export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = ({
@@ -36,7 +45,6 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
   setQueryBody,
   queryBodyError,
   setQueryBodyError,
-  searchPipeline,
   setSearchPipeline,
   searchTemplate,
   setSearchTemplate,
@@ -44,6 +52,10 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
   selectedIndex,
   setSelectedIndex,
   isLoadingIndexes,
+  pipelineOptions,
+  selectedPipeline,
+  setSelectedPipeline,
+  isLoadingPipelines,
   disabled = false,
 }) => (
   <EuiForm component="form" isInvalid={Boolean(nameError || queryBodyError)}>
@@ -130,17 +142,20 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow
-      label="Search Pipeline"
-      helpText="Define the search pipeline to be used."
-      fullWidth
-    >
-      <EuiFieldText
-        placeholder="Enter search pipeline"
-        value={searchPipeline}
-        onChange={(e) => setSearchPipeline(e.target.value)}
+    <EuiFormRow label="Search Pipeline" helpText="Define the search pipeline to be used." fullWidth>
+      <EuiComboBox
+        placeholder="Select a search pipeline"
+        options={pipelineOptions}
+        selectedOptions={selectedPipeline}
+        onChange={(selected) => {
+          setSelectedPipeline(selected);
+          setSearchPipeline(selected[0]?.label || '');
+        }}
+        singleSelection={{ asPlainText: true }}
+        isLoading={isLoadingPipelines}
         fullWidth
-        disabled={disabled}
+        isDisabled={disabled}
+        isClearable={!disabled}
       />
     </EuiFormRow>
 
@@ -154,4 +169,4 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
   </EuiForm>
-); 
+);

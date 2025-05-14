@@ -138,6 +138,36 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     }
   };
 
+  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
+  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
+  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
+
+  const fetchPipelines = async () => {
+    setIsLoadingPipelines(true);
+    try {
+      const response = await http.get(ServiceEndpoints.GetPipelines);
+      const options = Object.keys(response).map(pipelineId => ({
+        label: pipelineId,
+      }));
+      setPipelineOptions(options);
+
+      // If there's an existing searchPipeline value, set it as selected
+      if (searchPipeline) {
+        setSelectedPipeline([{
+           label: searchPipeline,
+        }]);
+      }
+    } catch (error) {
+      notifications.toasts.addDanger('Failed to fetch search pipelines');
+    } finally {
+      setIsLoadingPipelines(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPipelines();
+  }, []);
+
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
@@ -176,7 +206,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setQueryBody={setQueryBody}
               queryBodyError={queryBodyError}
               setQueryBodyError={setQueryBodyError}
-              searchPipeline={searchPipeline}
               setSearchPipeline={setSearchPipeline}
               searchTemplate={searchTemplate}
               setSearchTemplate={setSearchTemplate}
@@ -184,6 +213,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               selectedIndex={selectedIndex}
               setSelectedIndex={setSelectedIndex}
               isLoadingIndexes={isLoadingIndexes}
+              pipelineOptions={pipelineOptions}
+              selectedPipeline={selectedPipeline}
+              setSelectedPipeline={setSelectedPipeline}
+              isLoadingPipelines={isLoadingPipelines}
             />
           </EuiPanel>
         </EuiFlexItem>
