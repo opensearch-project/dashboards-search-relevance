@@ -52,9 +52,10 @@ export const TemplateConfiguration = ({
         setIsCreating(true);
         const response = await http.post(ServiceEndpoints.Experiments, {
           body: JSON.stringify({
-            k: combinedData.k,
+            size: combinedData.k,
             querySetId: combinedData.querySets[0].value,
             searchConfigurationList: combinedData.searchConfigs.map((o) => o.value),
+            type: "PAIRWISE_COMPARISON",
           }),
         });
 

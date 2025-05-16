@@ -30,11 +30,12 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
         const response = await http.get(ServiceEndpoints.Experiments + "/" + id);
         const source = response?.hits?.hits?.[0]?._source;
         if (source) {
-          const _experiment = toExperiment(source);
-          if (_experiment) {
-            setExperiment(_experiment);
+          const parsedExperiment = toExperiment(source);
+          if (parsedExperiment.success) {
+            setExperiment(parsedExperiment.data);
           } else {
-            setError('Invalid experiment data format');
+            console.error(parsedExperiment.errors);
+            setError("Invalid experiment data format");
           }
         } else {
           setError('No matching experiment found');
