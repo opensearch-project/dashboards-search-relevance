@@ -18,16 +18,21 @@ import {
   EuiForm,
   EuiTextArea,
   EuiText,
+  EuiFilePicker,
   EuiPageHeader,
 } from '@elastic/eui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { NotificationsStart } from '../../../../../core/public';
+import { CoreStart, NotificationsStart } from '../../../../../core/public';
 import { ServiceEndpoints } from '../../../common';
 
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+}
+
+interface FilePickerRef {
+  removeFiles: () => void;
 }
 
 export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notifications, history }) => {
@@ -44,6 +49,65 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const [isManualInput, setIsManualInput] = useState(false);
   const [manualQueries, setManualQueries] = useState('');
   const [manualQueriesError, setManualQueriesError] = useState('');
+
+  // file picker
+  const [files, setFiles] = useState<File[]>([]);
+  const filePickerRef = useRef<FilePickerRef>(null);
+  const generateId = (prefix: string) => `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  const filePickerId = generateId('filePicker');
+  const [parsedQueries, setParsedQueries] = useState<string[]>([]);
+
+  const handleFileContent = async (files: FileList) => {
+    if (files && files.length > 0) {
+      try {
+        const file = files[0];
+        const text = await file.text();
+        const lines = text.trim().split('\n');
+        const queryList: Array<{ queryText: string; referenceAnswer: string }> = [];
+
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line.trim());
+            if (parsed.queryText) {
+              queryList.push({
+                queryText: String(parsed.queryText).trim(),
+                referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : ''
+              });
+            }
+          } catch (e) {
+            console.error('Error parsing line:', line, e);
+          }
+        }
+
+        if (queryList.length === 0) {
+          setManualQueriesError('No valid queries found in file');
+          setFiles([]);
+          setManualQueries('');
+          setParsedQueries([]);
+          return;
+        }
+
+        // Store the raw query objects instead of converting to string
+        setManualQueries(JSON.stringify(queryList));
+        setParsedQueries(queryList.map(q => JSON.stringify(q)));
+        setFiles([file]);
+        setManualQueriesError('');
+
+        console.log('Parsed query list:', queryList);
+
+      } catch (error) {
+        console.error('Error processing file:', error);
+        setManualQueriesError('Error reading file content');
+        setFiles([]);
+        setManualQueries('');
+        setParsedQueries([]);
+      }
+    } else {
+      setFiles([]);
+      setManualQueries('');
+      setParsedQueries([]);
+    }
+  };
 
   const samplingOptions = [
     { value: 'random', text: 'Random' },
@@ -105,7 +169,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
           name,
           description,
           sampling: 'manual',
-          querySetQueries: manualQueries,
+          querySetQueries: JSON.parse(manualQueries),
         }
       : {
           name,
@@ -116,6 +180,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
     http[method](endpoint, {
       body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
     })
       .then((response) => {
         console.log('Response:', response);
@@ -249,18 +316,25 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 label="Manual Queries"
                 error={manualQueriesError}
                 isInvalid={Boolean(manualQueriesError)}
-                helpText="Enter queries separated by commas (e.g., 'apple, banana, orange')."
+                helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
                 fullWidth
               >
-                <EuiTextArea
-                  placeholder="Enter queries separated by commas"
-                  value={manualQueries}
-                  onChange={(e) => setManualQueries(e.target.value)}
-                  isInvalid={Boolean(manualQueriesError)}
-                  fullWidth
-                  rows={6}
-                  data-test-subj="manualQueriesInput"
-                />
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <EuiFilePicker
+                      ref={filePickerRef}
+                      id={filePickerId}
+                      initialPromptText="Select or drag and drop a query file"
+                      onChange={(files) => handleFileContent(files)}
+                      display="large"
+                      aria-label="Upload query file"
+                      accept=".txt"
+                      data-test-subj="manualQueriesFilePicker"
+                      compressed
+                      helpText="Upload a text file containing JSON objects (one per line) with queryText and referenceAnswer fields"
+                    />
+                  </EuiFlexItem>
+                </EuiFlexGroup>
               </EuiFormRow>
             ) : (
               <>
@@ -303,6 +377,32 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
               </>
             )}
           </EuiForm>
+          {isManualInput && parsedQueries.length > 0 && (
+            <EuiFormRow
+              fullWidth
+              label="Parsed Queries Preview"
+            >
+              <EuiPanel paddingSize="s">
+                <EuiText size="s">
+                  <h4>Preview ({parsedQueries.length} queries)</h4>
+                  <ul>
+                    {parsedQueries.slice(0, 5).map((query, idx) => {
+                      const parsed = JSON.parse(query);
+                      return (
+                        <li key={idx}>
+                          <strong>Query:</strong> {parsed.queryText}<br />
+                          <strong>Reference:</strong> {parsed.referenceAnswer}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {parsedQueries.length > 5 && (
+                    <p>... and {parsedQueries.length - 5} more queries</p>
+                  )}
+                </EuiText>
+              </EuiPanel>
+            </EuiFormRow>
+          )}
         </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>
