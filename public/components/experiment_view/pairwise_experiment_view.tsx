@@ -29,6 +29,7 @@ import {
   QuerySnapshot,
   toQueryEvaluations,
   toQuerySnapshots,
+  combineResults,
 } from '../../types/index';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
@@ -72,8 +73,20 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({ 
           setExperiment(_experiment);
           setSearchConfigurations(_searchConfigurations);
           setQuerySet(_querySet);
-          setQueryEvaluations(toQueryEvaluations(_experiment))
-          setQuerySnapshots([toQuerySnapshots(_experiment, "0"), toQuerySnapshots(_experiment, "1")])
+          const parseResults = combineResults(
+            toQueryEvaluations(_experiment),
+            toQuerySnapshots(_experiment, _searchConfigurations[0].id),
+            toQuerySnapshots(_experiment, _searchConfigurations[1].id),
+          );
+          if (parseResults.success) {
+            setQueryEvaluations(parseResults.data[0]);
+            setQuerySnapshots([parseResults.data[1], parseResults.data[2]]);
+          } else {
+            setError('Error parsing experiment');
+            console.error('Error parsing query evaluations and snapshots:', parseResults.errors);
+            setQueryEvaluations([]);
+            setQuerySnapshots([]);
+          }
         } else {
           setError('No matching experiment found');
         }

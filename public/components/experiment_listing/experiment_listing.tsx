@@ -23,7 +23,7 @@ import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import moment from 'moment';
-import { toExperiment } from '../../types/index';
+import { combineResults, toExperiment } from '../../types/index';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -98,6 +98,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       },
     },
     {
+      field: 'status',
+      name: 'Status',
+      dataType: 'string',
+      sortable: true,
+    },
+    {
       field: 'size',
       name: 'Queries Run',
       width: '20%',
@@ -136,7 +142,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.Experiments);
-      const list = response ? response.hits.hits.map(hit => toExperiment(hit._source)).filter(Boolean) : [];
+      const parseResults = combineResults(...(response ? response.hits.hits.map(hit => toExperiment(hit._source)) : []));
+
+      if (!parseResults.success) {
+        console.error(parseResults.errors);
+        setError('Failed to parse experiment document');
+        return {
+          total: 0,
+          hits: [],
+        };
+      }
+
+      const list = parseResults.data;
       // TODO: too many reissued requests on search
       const filteredList = search
         ? list.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
