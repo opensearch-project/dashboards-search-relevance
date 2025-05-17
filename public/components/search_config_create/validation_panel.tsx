@@ -11,14 +11,14 @@ import { ResultsPanel } from './results_panel';
 
 interface ValidationPanelProps {
   selectedIndex: Array<{ label: string }>;
-  queryBody: string;
+  query: string;
   http: CoreStart['http'];
   notifications: NotificationsStart;
 }
 
 export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   selectedIndex,
-  queryBody,
+  query,
   http,
   notifications,
 }) => {
@@ -32,21 +32,22 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       return;
     }
 
-    if (!queryBody.trim()) {
+    if (!query.trim()) {
       notifications.toasts.addWarning({title: 'Validation Warning', text: 'Query body is required'});
       return;
     }
 
     try {
       setIsValidating(true);
-      const replacedQueryBody = queryBody.replace(/%SearchText%/g, testSearchText || '');
-      const parsedQuery = JSON.parse(replacedQueryBody);
+      const replacedQuery = query.replace(/%SearchText%/g, testSearchText || '');
+      const parsedQuery = JSON.parse(replacedQuery);
+      const queryBody = parsedQuery.query ? parsedQuery : { query: parsedQuery };
 
       const requestBody = {
         query: {
           index: selectedIndex[0].label,
           size: 5, // hard-coded to return 5 items
-          query: parsedQuery,
+          ...queryBody,
         },
       };
 

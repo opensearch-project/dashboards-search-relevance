@@ -59,7 +59,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
         </EuiFormRow>
 
         <EuiFormRow
-          label="Query Body"
+          label="Query"
           fullWidth
         >
           <EuiCodeBlock
@@ -69,7 +69,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
             isCopyable={true}
             whiteSpace="pre"
           >
-            {formatJson(searchConfiguration.queryBody)}
+            {formatJson(searchConfiguration.query)}
           </EuiCodeBlock>
         </EuiFormRow>
 

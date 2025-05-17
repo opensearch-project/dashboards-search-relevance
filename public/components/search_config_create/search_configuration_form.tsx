@@ -17,10 +17,10 @@ interface SearchConfigurationFormProps {
   setName: (name: string) => void;
   nameError: string;
   validateName: (e: React.FocusEvent<HTMLInputElement>) => void;
-  queryBody: string;
-  setQueryBody: (queryBody: string) => void;
-  queryBodyError: string;
-  setQueryBodyError: (error: string) => void;
+  query: string;
+  setQuery: (queryBody: string) => void;
+  queryError: string;
+  setQueryError: (error: string) => void;
   searchPipeline: string;
   setSearchPipeline: (pipeline: string) => void;
   searchTemplate: string;
@@ -41,10 +41,10 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
   setName,
   nameError,
   validateName,
-  queryBody,
-  setQueryBody,
-  queryBodyError,
-  setQueryBodyError,
+  query,
+  setQuery,
+  queryError,
+  setQueryError,
   setSearchPipeline,
   searchTemplate,
   setSearchTemplate,
@@ -58,7 +58,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
   isLoadingPipelines,
   disabled = false,
 }) => (
-  <EuiForm component="form" isInvalid={Boolean(nameError || queryBodyError)}>
+  <EuiForm component="form" isInvalid={Boolean(nameError || queryError)}>
     <EuiFormRow
       label="Search Configuration Name"
       error={nameError}
@@ -97,10 +97,10 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
     </EuiFormRow>
 
     <EuiFormRow
-      label="Query Body"
-      error={queryBodyError}
-      isInvalid={Boolean(queryBodyError)}
-      helpText="Define the query body in JSON format.  Use %SearchText% to represent the specific query text."
+      label="Query"
+      error={queryError}
+      isInvalid={Boolean(queryError)}
+      helpText="Define the query in JSON format.  Use %SearchText% to represent the specific query text."
       fullWidth
     >
       <EuiCodeEditor
@@ -108,15 +108,15 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
         mode="json"
         theme="github"
         width="100%"
-        value={queryBody}
+        value={query}
         onChange={(value) => {
           if (disabled) return;
           try {
             JSON.parse(value);
-            setQueryBody(value);
-            setQueryBodyError('');
+            setQuery(value);
+            setQueryError('');
           } catch {
-            setQueryBody(value);
+            setQuery(value);
           }
         }}
         setOptions={{
@@ -126,18 +126,18 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
         }}
         onBlur={() => {
           if (disabled) return;
-          if (!queryBody.trim()) {
-            setQueryBodyError('Query Body is required.');
+          if (!query.trim()) {
+            setQueryError('Query is required.');
           } else {
             try {
-              JSON.parse(queryBody);
-              setQueryBodyError('');
+              JSON.parse(query);
+              setQueryError('');
             } catch {
-              setQueryBodyError('Query Body must be valid JSON.');
+              setQueryError('Query must be valid JSON.');
             }
           }
         }}
-        isInvalid={Boolean(queryBodyError)}
+        isInvalid={Boolean(queryError)}
         aria-label="Code Editor"
       />
     </EuiFormRow>
