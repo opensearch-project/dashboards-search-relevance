@@ -33,8 +33,8 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   // Form state
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
-  const [queryBody, setQueryBody] = useState('');
-  const [queryBodyError, setQueryBodyError] = useState('');
+  const [query, setQuery] = useState('');
+  const [queryError, setQueryError] = useState('');
   const [searchPipeline, setSearchPipeline] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
 
@@ -77,15 +77,15 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       setNameError('');
     }
 
-    if (!queryBody.trim()) {
-      setQueryBodyError('Query Body is required.');
+    if (!query.trim()) {
+      setQueryError('Query is required.');
       isValid = false;
     } else {
       try {
-        JSON.parse(queryBody);
-        setQueryBodyError('');
+        JSON.parse(query);
+        setQueryError('');
       } catch (e) {
-        setQueryBodyError('Query Body must be valid JSON.');
+        setQueryError('Query Body must be valid JSON.');
         isValid = false;
       }
     }
@@ -109,7 +109,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         body: JSON.stringify({
           name,
           index: selectedIndex[0].label,
-          queryBody,
+          query,
         }),
       })
       .then((response) => {
@@ -121,7 +121,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           title: 'Failed to create search configuration',
         });
       });
-  }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts, selectedIndex]);
+  }, [name, query, searchPipeline, searchTemplate, history, notifications.toasts, selectedIndex]);
 
   // Handle cancel action
   const handleCancel = () => {
@@ -202,10 +202,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setName={setName}
               nameError={nameError}
               validateName={validateName}
-              queryBody={queryBody}
-              setQueryBody={setQueryBody}
-              queryBodyError={queryBodyError}
-              setQueryBodyError={setQueryBodyError}
+              query={query}
+              setQuery={setQuery}
+              queryError={queryError}
+              setQueryError={setQueryError}
               setSearchPipeline={setSearchPipeline}
               searchTemplate={searchTemplate}
               setSearchTemplate={setSearchTemplate}
@@ -223,7 +223,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         <EuiFlexItem grow={5} style={{ maxWidth: '41.67%', maxHeight: '80vh', overflow: 'auto' }}>
           <ValidationPanel
             selectedIndex={selectedIndex}
-            queryBody={queryBody}
+            query={query}
             http={http}
             notifications={notifications}
           />

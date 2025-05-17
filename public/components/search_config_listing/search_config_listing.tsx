@@ -74,11 +74,11 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       sortable: true,
     },
     {
-      field: 'query_body',
-      name: 'Query Body',
+      field: 'query',
+      name: 'Query',
       dataType: 'string',
       sortable: false,
-      render: (queryBody: string) => (
+      render: (query: string) => (
         <EuiText
           size="s"
           style={{
@@ -88,7 +88,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
             textOverflow: 'ellipsis',
           }}
         >
-          {queryBody}
+          {query}
         </EuiText>
       ),
     },
@@ -152,7 +152,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       id: obj._source.id,
       search_configuration_name: obj._source.name,
       index: obj._source.index,
-      query_body: obj._source.queryBody,
+      query: obj._source.query,
       timestamp: obj._source.timestamp,
     };
   };
