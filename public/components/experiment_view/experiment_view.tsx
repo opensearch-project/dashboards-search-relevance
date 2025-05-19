@@ -15,6 +15,7 @@ import {
   toExperiment,
 } from '../../types/index';
 import { PairwiseExperimentViewWithRouter } from './pairwise_experiment_view';
+import { EvaluationExperimentViewWithRouter } from './evaluation_experiment_view';
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -34,7 +35,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
           if (parsedExperiment.success) {
             setExperiment(parsedExperiment.data);
           } else {
-            console.error(parsedExperiment.errors);
+            console.log("parsedExperiment.errors", parsedExperiment.errors);
             setError("Invalid experiment data format");
           }
         } else {
@@ -57,6 +58,13 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
       />
       {experiment && experiment.type === "PAIRWISE_COMPARISON" &&
         <PairwiseExperimentViewWithRouter
+          http={http}
+          inputExperiment={experiment}
+          history={history}
+        />
+      }
+      {experiment && experiment.type === "UBI_EVALUATION" &&
+        <EvaluationExperimentViewWithRouter
           http={http}
           inputExperiment={experiment}
           history={history}

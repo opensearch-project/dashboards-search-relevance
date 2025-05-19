@@ -88,13 +88,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     },
     {
       field: 'type',
-      name: 'Evaluation Type',
+      name: 'Experiment Type',
       dataType: 'string',
       sortable: true,
       render: (type: string) => {
-        const evaluationType =
-          type === 'PAIRWISE_COMPARISON' ? 'Result List Comparison' : 'Quality Metrics';
-        return <EuiText size="s">{evaluationType}</EuiText>;
+        switch (type) {
+          case 'PAIRWISE_COMPARISON':
+            return <EuiText size="s">Comparison</EuiText>;
+          case 'UBI_EVALUATION':
+            return <EuiText size="s">Evaluation</EuiText>;
+          default:
+            return <EuiText size="s">Unknown</EuiText>;
+        }
       },
     },
     {
