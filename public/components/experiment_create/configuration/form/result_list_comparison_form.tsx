@@ -63,6 +63,7 @@ export const ResultListComparisonForm = ({
           selectedOptions={selectedSearchConfigs}
           onChange={handleSearchConfigChange}
           http={http}
+          maxNumberOfOptions={2}
         />
       </EuiFlexItem>
     </EuiFlexGroup>
