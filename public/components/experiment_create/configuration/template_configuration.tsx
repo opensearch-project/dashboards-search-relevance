@@ -36,7 +36,6 @@ export const TemplateConfiguration = ({
     if (configFormData) {
       try {
         setIsCreating(true);
-        console.log("configFormData", configFormData);
         const response = await http.post(ServiceEndpoints.Experiments, {
           body: JSON.stringify(configFormData),
         });
