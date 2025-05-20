@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { JudgmentOption } from '../types';
+import { IndexOption } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
@@ -15,7 +15,7 @@ export const JudgmentsComboBox = ({
   onChange,
   http,
 }: JudgmentsComboBoxProps) => {
-  const [judgmentOptions, setJudgmentOptions] = useState<JudgmentOption[]>([]);
+  const [judgmentOptions, setJudgmentOptions] = useState<IndexOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {

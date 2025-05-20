@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldNumber } from '@elastic/eui';
-import { QuerySetOption, ResultListComparisonFormData, SearchConfigFromData } from '../types';
+import { IndexOption, ResultListComparisonFormData } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
@@ -14,10 +14,8 @@ export const ResultListComparisonForm = ({
   onChange,
   http,
 }: ResultListComparisonFormProps) => {
-  const [querySetOptions, setQuerySetOptions] = useState<QuerySetOption[]>([]);
-  const [searchConfigData, setSearchConfigData] = useState<SearchConfigFromData>({
-    searchConfigs: [],
-  });
+  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
+  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<IndexOption[]>([]);
   const [k, setK] = useState<number>(10);
 
   const handleQuerySetsChange = (selectedOptions: any[]) => {
@@ -31,9 +29,9 @@ export const ResultListComparisonForm = ({
     onChange('size', value);
   };
 
-  const handleSearchConfigChange = (data: SearchConfigFromData) => {
-    setSearchConfigData(data);
-    onChange('searchConfigurationList', data.searchConfigs.map((o) => o.value));
+  const handleSearchConfigChange = (selectedOptions: IndexOption[]) => {
+    setSelectedSearchConfigs(selectedOptions);
+    onChange('searchConfigurationList', selectedOptions.map((o) => o.value));
   };
 
   return (
@@ -62,7 +60,7 @@ export const ResultListComparisonForm = ({
       </EuiFlexItem>
       <EuiFlexItem>
         <SearchConfigForm
-          formData={searchConfigData}
+          selectedOptions={selectedSearchConfigs}
           onChange={handleSearchConfigChange}
           http={http}
         />

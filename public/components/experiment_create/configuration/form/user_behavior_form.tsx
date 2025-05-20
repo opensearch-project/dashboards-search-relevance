@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldNumber } from '@elastic/eui';
-import { ResultListComparisonFormData, SearchConfigFromData, JudgmentOption, QuerySetOption } from '../types';
+import { ResultListComparisonFormData, IndexOption } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
@@ -17,19 +17,17 @@ export const UserBehaviorForm = ({
   onChange,
   http,
 }: UserBehaviorFormProps) => {
-  const [searchConfigData, setSearchConfigData] = useState<SearchConfigFromData>({
-    searchConfigs: [],
-  });
-  const [querySetOptions, setQuerySetOptions] = useState<QuerySetOption[]>([]);
+  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<IndexOption[]>([]);
+  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
   const [k, setK] = useState<number>(10);
-  const [judgmentOptions, setJudgmentOptions] = useState<JudgmentOption[]>([]);
+  const [judgmentOptions, setJudgmentOptions] = useState<IndexOption[]>([]);
 
   const handleQuerySetsChange = (selectedOptions: any[]) => {
     setQuerySetOptions(selectedOptions || []);
     onChange('querySetId', selectedOptions?.[0]?.value);
   };
 
-  const handleJudgmentsChange = (selectedOptions: JudgmentOption[]) => {
+  const handleJudgmentsChange = (selectedOptions: IndexOption[]) => {
     setJudgmentOptions(selectedOptions || []);
     onChange('judgmentList', selectedOptions.map((o) => o.value));
   };
@@ -40,9 +38,9 @@ export const UserBehaviorForm = ({
     onChange('size', value);
   };
 
-  const handleSearchConfigChange = (data: SearchConfigFromData) => {
-    setSearchConfigData(data);
-    onChange('searchConfigurationList', data.searchConfigs.map((o) => o.value));
+  const handleSearchConfigChange = (selectedOptions: IndexOption[]) => {
+    setSelectedSearchConfigs(selectedOptions);
+    onChange('searchConfigurationList', selectedOptions.map((o) => o.value));
   };
 
   return (
@@ -71,7 +69,7 @@ export const UserBehaviorForm = ({
       </EuiFlexItem>
       <EuiFlexItem>
         <SearchConfigForm
-          formData={searchConfigData}
+          selectedOptions={selectedSearchConfigs}
           onChange={handleSearchConfigChange}
           http={http}
         />
