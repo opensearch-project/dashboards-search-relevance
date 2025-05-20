@@ -38,7 +38,7 @@ export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfO
   return (
     <EuiFormRow
       label="Search Configurations"
-      helpText={`Select ${maxNumberOfOptions} search configurations ${maxNumberOfOptions > 1 ? 'to compare against each other' : ''}.`}
+      helpText={`Select ${maxNumberOfOptions} search configuration${maxNumberOfOptions > 1 ? 's' : ''}${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
     >
       <EuiComboBox
         placeholder="Select search configuration"

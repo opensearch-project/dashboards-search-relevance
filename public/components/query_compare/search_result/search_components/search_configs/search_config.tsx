@@ -238,7 +238,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           <p>
             Enter a query in{' '}
             <a href="https://opensearch.org/docs/latest/query-dsl/index/">OpenSearch Query DSL</a>.
-            Use %SearchText% to refer to the text in the search bar
+            Use %SearchText% to refer to the text in the search bar.
           </p>
         }
       >

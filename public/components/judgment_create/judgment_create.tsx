@@ -230,7 +230,18 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
               />
             </EuiCompressedFormRow>
 
-            <EuiCompressedFormRow label="Type" fullWidth>
+            <EuiCompressedFormRow 
+              label="Type" 
+              helpText={
+                <p>
+                  There are many types of judgments available. Learn more in{' '}
+                  <a href="https://opensearch.org/docs/latest/search-plugins/search-relevance/index/">
+                    Types of Judgments
+                  </a>.
+                </p>
+              }
+              fullWidth
+            >
               <EuiSelect
                 options={[
                   { value: JudgmentType.LLM, text: 'LLM Judgment' },
@@ -266,7 +277,11 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                   />
                 </EuiCompressedFormRow>
 
-                <EuiCompressedFormRow label="Size" fullWidth>
+                <EuiCompressedFormRow 
+                  label="K Value"
+                  helpText="The depth in the result set to include in judging process."
+                  fullWidth
+                >
                   <EuiFieldNumber
                     value={size}
                     onChange={(e) => setSize(parseInt(e.target.value, 10))}
@@ -275,7 +290,11 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                   />
                 </EuiCompressedFormRow>
 
-                <EuiCompressedFormRow label="Model ID" fullWidth>
+                <EuiCompressedFormRow
+                  label="Model ID"
+                  helpText="The LLM model to power the judging process."
+                  fullWidth
+                >
                   <EuiFieldText
                     value={modelId}
                     onChange={(e) => setModelId(e.target.value)}
