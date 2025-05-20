@@ -72,6 +72,7 @@ export const UserBehaviorForm = ({
           selectedOptions={selectedSearchConfigs}
           onChange={handleSearchConfigChange}
           http={http}
+          maxNumberOfOptions={1}
         />
       </EuiFlexItem>
       <EuiFlexItem>

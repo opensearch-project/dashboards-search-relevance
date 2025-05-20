@@ -8,9 +8,10 @@ interface SearchConfigFormProps {
   selectedOptions: IndexOption[];
   onChange: (selectedOptions: IndexOption[]) => void;
   http: CoreStart['http'];
+  maxNumberOfOptions: number;
 }
 
-export const SearchConfigForm = ({ selectedOptions, onChange, http }: SearchConfigFormProps) => {
+export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfOptions }: SearchConfigFormProps) => {
   const [searchConfigOptions, setSearchConfigOptions] = useState<IndexOption[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
 
@@ -37,16 +38,17 @@ export const SearchConfigForm = ({ selectedOptions, onChange, http }: SearchConf
   return (
     <EuiFormRow
       label="Search Configurations"
-      helpText="Select two or more search configurations"
+      helpText={`Select ${maxNumberOfOptions || 2} search configurations`}
     >
       <EuiComboBox
         placeholder="Select search configuration"
         options={searchConfigOptions}
         selectedOptions={selectedOptions}
         onChange={(selected) => {
-          if (selected.length <= 2) {
-            onChange(selected);
+          if (selected.length > (maxNumberOfOptions || 2)) {
+            return;
           }
+          onChange(selected);
         }}
         isClearable={true}
         isInvalid={selectedOptions.length === 0}
