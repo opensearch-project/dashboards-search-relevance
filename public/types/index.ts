@@ -107,6 +107,17 @@ export type EvaluationExperiment =
     judgmentId: string;
   })
 
+export const printType = (type: string) => {
+  switch (type) {
+    case "PAIRWISE_COMPARISON":
+      return "Comparison";
+    case "UBI_EVALUATION":
+      return "Evaluation";
+    default:
+      return "Unknown";
+  }
+}
+
 // Evaluation (multiple metric results for a single query)
 export type QueryEvaluation = {
   queryText: string;

@@ -23,7 +23,7 @@ import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import moment from 'moment';
-import { combineResults, toExperiment } from '../../types/index';
+import { combineResults, printType, toExperiment } from '../../types/index';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -92,14 +92,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       dataType: 'string',
       sortable: true,
       render: (type: string) => {
-        switch (type) {
-          case 'PAIRWISE_COMPARISON':
-            return <EuiText size="s">Comparison</EuiText>;
-          case 'UBI_EVALUATION':
-            return <EuiText size="s">Evaluation</EuiText>;
-          default:
-            return <EuiText size="s">Unknown</EuiText>;
-        }
+        return <EuiText size="s">{printType(type)}</EuiText>;
       },
     },
     {
