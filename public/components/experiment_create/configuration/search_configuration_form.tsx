@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { SearchConfigOption, SearchConfigFromData } from './types';
+import { EuiFormRow, EuiComboBox } from '@elastic/eui';
+import { IndexOption } from './types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../common';
 
 interface SearchConfigFormProps {
-  formData: SearchConfigFromData;
-  onChange: (data: Partial<SearchConfigFromData>) => void;
+  selectedOptions: IndexOption[];
+  onChange: (selectedOptions: IndexOption[]) => void;
   http: CoreStart['http'];
+  maxNumberOfOptions: number;
 }
 
-export const SearchConfigForm = ({ formData, onChange, http }: SearchConfigFormProps) => {
-  const [searchConfigOptions, setSearchConfigOptions] = useState<SearchConfigOption[]>([]);
+export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfOptions }: SearchConfigFormProps) => {
+  const [searchConfigOptions, setSearchConfigOptions] = useState<IndexOption[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
 
   useEffect(() => {
@@ -34,37 +35,27 @@ export const SearchConfigForm = ({ formData, onChange, http }: SearchConfigFormP
     fetchSearchConfigurations();
   }, [http]);
 
-  const handleSearchConfigsChange = (selected: SearchConfigOption[]) => {
-    const newData = {
-      ...formData,
-      searchConfigs: selected || [],
-    };
-    onChange(newData);
-  };
-
   return (
-    <EuiFlexGroup gutterSize="m" direction="column" style={{ maxWidth: 600 }}>
-      <EuiFlexItem>
-        <EuiFormRow
-          label="Search Configurations"
-          helpText="Select two or more search configurations"
-        >
-          <EuiComboBox
-            placeholder="Select search configuration"
-            options={searchConfigOptions}
-            selectedOptions={formData.searchConfigs || []}
-            onChange={(selected) => {
-              if (selected.length <= 2) {
-                handleSearchConfigsChange(selected);
-              }
-            }}
-            isClearable={true}
-            isInvalid={(formData.searchConfigs || []).length === 0}
-            isLoading={isLoadingConfigs}
-            multi={true}
-          />
-        </EuiFormRow>
-      </EuiFlexItem>
-    </EuiFlexGroup>
+    <EuiFormRow
+      label="Search Configurations"
+      helpText={`Select ${maxNumberOfOptions || 2} search configurations`}
+    >
+      <EuiComboBox
+        placeholder="Select search configuration"
+        options={searchConfigOptions}
+        selectedOptions={selectedOptions}
+        onChange={(selected) => {
+          if (selected.length > (maxNumberOfOptions || 2)) {
+            return;
+          }
+          onChange(selected);
+        }}
+        isClearable={true}
+        isInvalid={selectedOptions.length === 0}
+        isLoading={isLoadingConfigs}
+        multi={true}
+        fullWidth
+      />
+    </EuiFormRow>
   );
 };

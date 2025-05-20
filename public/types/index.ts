@@ -91,13 +91,32 @@ export type ExperimentBase = {
 };
 
 export type Experiment =
-  | (ExperimentBase & {
-      type: "PAIRWISE_COMPARISON";
-      searchConfigurationList: string[];
-    })
-  | (ExperimentBase & {
-      type: "LLM_EVALUATION";
-    })
+  | PairwiseComparisonExperiment
+  | EvaluationExperiment
+
+export type PairwiseComparisonExperiment =
+  (ExperimentBase & {
+    type: "PAIRWISE_COMPARISON";
+    searchConfigurationList: string[];
+  })
+
+export type EvaluationExperiment =
+  (ExperimentBase & {
+    type: "UBI_EVALUATION";
+    searchConfigurationId: string;
+    judgmentId: string;
+  })
+
+export const printType = (type: string) => {
+  switch (type) {
+    case "PAIRWISE_COMPARISON":
+      return "Comparison";
+    case "UBI_EVALUATION":
+      return "Evaluation";
+    default:
+      return "Unknown";
+  }
+}
 
 // Evaluation (multiple metric results for a single query)
 export type QueryEvaluation = {
@@ -165,6 +184,23 @@ export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluati
   return { success: true, data: res };
 }
 
+export const toQueryEvaluation = (source: any): ParseResult<Array<QueryEvaluation>> => {
+  if (!source.searchText) {
+    return parseError("Missing search text");
+  }
+  if (!source.metrics) {
+    return parseError("Missing metrics");
+  }
+
+  return {
+    success: true,
+    data: {
+      queryText: source.searchText,
+      metrics: source.metrics,
+    }
+  }
+}
+
 export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Array<QuerySnapshot>> => {
   if (source.status === "COMPLETED" && !source.results) {
     return parseError("Missing results for completed experiment");
@@ -193,41 +229,53 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
     return parseError("Missing results for completed experiment");
   }
 
+  if (!source.searchConfigurationList) {
+    return parseError("Missing required field: searchConfigurationList");
+  }
+
   const size = source.results ? Object.keys(source.results).length : 0;
 
   // Handle different experiment types
   switch (source.type) {
     case "PAIRWISE_COMPARISON":
-      if (!source.searchConfigurationList) {
-        return parseError("Missing required field: searchConfigurationList");
+      if (source.searchConfigurationList.length < 2) {
+        return parseError("Missing 2 search configurations for pairwise comparison");
       }
       return {
-        success: true,
-        data: {
-          type: "PAIRWISE_COMPARISON",
-          status: source.status,
-          id: source.id,
-          k: source.size,
-          querySetId: source.querySetId,
-          timestamp: source.timestamp,
-          searchConfigurationList: source.searchConfigurationList,
-          size,
-        },
-      };
+      success: true,
+      data: {
+        type: "PAIRWISE_COMPARISON",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationList: source.searchConfigurationList,
+        size,
+      },
+    };
 
-    case "LLM_EVALUATION":
-      return {
-        success: true,
-        data: {
-          type: "LLM_EVALUATION",
-          status: source.status,
-          id: source.id,
-          k: source.size,
-          querySetId: source.querySetId,
-          timestamp: source.timestamp,
-          size,
-        },
-      };
+  case "UBI_EVALUATION":
+    if (source.searchConfigurationList.length < 1) {
+      return parseError("Missing search configuration for UBI evaluation (searchConfigurationList).");
+    }
+    if (!source.judgmentList || source.judgmentList.length < 1) {
+      return parseError("Missing judgment for UBI evaluation (judgmentList).");
+    }
+    return {
+      success: true,
+      data: {
+        type: "UBI_EVALUATION",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationId: source.searchConfigurationList[0],
+        judgmentId: source.judgmentList[0],
+        size,
+      },
+    };
 
     default:
       return parseError(`Unknown experiment type: ${source.type}`);

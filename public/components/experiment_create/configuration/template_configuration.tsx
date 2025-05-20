@@ -19,12 +19,6 @@ export const TemplateConfiguration = ({
    * Config Form will collect querySetId along with other experiment_type related fields to generate judgments.
    */
   const [configFormData, setConfigFormData] = useState<ConfigurationFormData | null>(null);
-  /**
-   * Search Config Form will collect pairs of searchConfigurationId + index
-   */
-  const [searchConfigData, setSearchConfigData] = useState<SearchConfigFromData>({
-    searchConfigs: [],
-  });
 
   const [experimentId, setExperimentId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -34,29 +28,16 @@ export const TemplateConfiguration = ({
     setConfigFormData(data);
   };
 
-  const handleSearchConfigChange = (data: SearchConfigFromData) => {
-    setSearchConfigData(data);
-  };
-
   const {
     services: { http, notifications },
   } = useOpenSearchDashboards();
 
   const handleNext = async () => {
-    if (configFormData && searchConfigData.searchConfigs.length > 0) {
-      const combinedData = {
-        ...configFormData,
-        ...searchConfigData,
-      };
+    if (configFormData) {
       try {
         setIsCreating(true);
         const response = await http.post(ServiceEndpoints.Experiments, {
-          body: JSON.stringify({
-            size: combinedData.k,
-            querySetId: combinedData.querySets[0].value,
-            searchConfigurationList: combinedData.searchConfigs.map((o) => o.value),
-            type: "PAIRWISE_COMPARISON",
-          }),
+          body: JSON.stringify(configFormData),
         });
 
         if (response.experiment_id) {
@@ -90,14 +71,6 @@ export const TemplateConfiguration = ({
         </EuiTitle>
         <EuiSpacer size="m" />
         <ConfigurationForm templateType={templateType} onSave={handleConfigSave} />
-      </EuiFlexItem>
-
-      <EuiFlexItem>
-        <SearchConfigForm
-          formData={searchConfigData}
-          onChange={handleSearchConfigChange}
-          http={http}
-        />
       </EuiFlexItem>
 
       <EuiFlexItem>

@@ -12,12 +12,10 @@ export interface ConfigurationFormProps {
 }
 
 export interface BaseFormData {
-  querySets: QuerySetOption[];
-  k: number;
-}
-
-export interface SearchConfigFromData {
-  searchConfigs: SearchConfigOption[];
+  type: string;
+  querySetId: string;
+  size: number;
+  searchConfigurationList: string[];
 }
 
 export interface IndexOption {
@@ -28,10 +26,7 @@ export interface IndexOption {
 export interface ResultListComparisonFormData extends BaseFormData {}
 
 export interface UserBehaviorFormData extends BaseFormData {
-  startDate: string;
-  endDate: string;
-  collectSignal: string;
-  scoreThreshold: string;
+  judgmentList: string[];
 }
 
 export interface LLMFormData extends BaseFormData {
@@ -48,14 +43,4 @@ export interface ConfigurationActionsProps {
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
-}
-
-export interface QuerySetOption {
-  label: string;
-  value: string;
-}
-
-export interface SearchConfigOption {
-  label: string;
-  value: string;
 }
