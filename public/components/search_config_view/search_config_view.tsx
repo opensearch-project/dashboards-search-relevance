@@ -73,12 +73,12 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
           </EuiCodeBlock>
         </EuiFormRow>
 
-        {(searchConfiguration.pipeline || searchConfiguration.template) && (
+        {(searchConfiguration.searchPipeline || searchConfiguration.template) && (
           <EuiDescriptionList type="column" compressed>
-            {searchConfiguration.pipeline && (
+            {searchConfiguration.searchPipeline && (
               <>
                 <EuiDescriptionListTitle>Search Pipeline</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>{searchConfiguration.pipeline}</EuiDescriptionListDescription>
+                <EuiDescriptionListDescription>{searchConfiguration.searchPipeline}</EuiDescriptionListDescription>
               </>
             )}
             {searchConfiguration.template && (

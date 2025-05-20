@@ -35,12 +35,15 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   const [nameError, setNameError] = useState('');
   const [query, setQuery] = useState('');
   const [queryError, setQueryError] = useState('');
-  const [searchPipeline, setSearchPipeline] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
 
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [selectedIndex, setSelectedIndex] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(true);
+
+  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
+  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
+  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
 
   useEffect(() => {
     const fetchIndexes = async () => {
@@ -110,6 +113,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           name,
           index: selectedIndex[0].label,
           query,
+          searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : '',
         }),
       })
       .then((response) => {
@@ -121,7 +125,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           title: 'Failed to create search configuration',
         });
       });
-  }, [name, query, searchPipeline, searchTemplate, history, notifications.toasts, selectedIndex]);
+  }, [name, query, searchTemplate, history, notifications.toasts, selectedIndex, selectedPipeline]);
 
   // Handle cancel action
   const handleCancel = () => {
@@ -138,10 +142,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     }
   };
 
-  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
-  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
-  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
-
   const fetchPipelines = async () => {
     setIsLoadingPipelines(true);
     try {
@@ -150,13 +150,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         label: pipelineId,
       }));
       setPipelineOptions(options);
-
-      // If there's an existing searchPipeline value, set it as selected
-      if (searchPipeline) {
-        setSelectedPipeline([{
-           label: searchPipeline,
-        }]);
-      }
     } catch (error) {
       notifications.toasts.addDanger('Failed to fetch search pipelines');
     } finally {
@@ -206,7 +199,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setQuery={setQuery}
               queryError={queryError}
               setQueryError={setQueryError}
-              setSearchPipeline={setSearchPipeline}
               searchTemplate={searchTemplate}
               setSearchTemplate={setSearchTemplate}
               indexOptions={indexOptions}
@@ -223,6 +215,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         <EuiFlexItem grow={5} style={{ maxWidth: '41.67%', maxHeight: '80vh', overflow: 'auto' }}>
           <ValidationPanel
             selectedIndex={selectedIndex}
+            selectedPipeline={selectedPipeline}
             query={query}
             http={http}
             notifications={notifications}

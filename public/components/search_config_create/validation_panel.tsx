@@ -11,6 +11,7 @@ import { ResultsPanel } from './results_panel';
 
 interface ValidationPanelProps {
   selectedIndex: Array<{ label: string }>;
+  selectedPipeline: Array<{ label: string }>;
   query: string;
   http: CoreStart['http'];
   notifications: NotificationsStart;
@@ -18,6 +19,7 @@ interface ValidationPanelProps {
 
 export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   selectedIndex,
+  selectedPipeline,
   query,
   http,
   notifications,
@@ -50,6 +52,11 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           ...queryBody,
         },
       };
+
+      // Add the pipeline to the request if it's selected
+      if (selectedPipeline.length > 0) {
+        requestBody.query.search_pipeline = selectedPipeline[0].label;
+      }
 
       const response = await http.post(ServiceEndpoints.GetSingleSearchResults, {
         body: JSON.stringify(requestBody),
