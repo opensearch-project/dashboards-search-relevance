@@ -1,5 +1,4 @@
 import { RouteComponentProps } from 'react-router-dom';
-import { JudgmentOption } from './form/types';
 
 export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;
@@ -17,15 +16,6 @@ export interface BaseFormData {
   querySetId: string;
   size: number;
   searchConfigurationList: string[];
-}
-
-export interface SearchConfigFromData {
-  searchConfigs: SearchConfigOption[];
-}
-
-export interface JudgmentOption {
-  label: string;
-  value: string;
 }
 
 export interface IndexOption {
@@ -53,14 +43,4 @@ export interface ConfigurationActionsProps {
   onBack: () => void;
   onClose: () => void;
   onNext: () => void;
-}
-
-export interface QuerySetOption {
-  label: string;
-  value: string;
-}
-
-export interface SearchConfigOption {
-  label: string;
-  value: string;
 }

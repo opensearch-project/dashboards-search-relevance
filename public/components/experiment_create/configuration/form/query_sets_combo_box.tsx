@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { QuerySetOption } from '../types';
+import { IndexOption } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
 interface QuerySetsComboBoxProps {
-  selectedOptions: QuerySetOption[];
-  onChange: (selectedOptions: QuerySetOption[]) => void;
+  selectedOptions: IndexOption[];
+  onChange: (selectedOptions: IndexOption[]) => void;
   http: CoreStart['http'];
 }
 
@@ -15,7 +15,7 @@ export const QuerySetsComboBox = ({
   onChange,
   http,
 }: QuerySetsComboBoxProps) => {
-  const [querySetOptions, setQuerySetOptions] = useState<QuerySetOption[]>([]);
+  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
