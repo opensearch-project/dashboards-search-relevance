@@ -314,10 +314,11 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       const { query, dataSourceId } = request.body;
       const resBody: SearchResultResponse = {};
 
-      const { index, size, ...rest } = query;
+      const { index, size, search_pipeline, ...rest } = query;
       const params: RequestParams.Search = {
         index,
         size,
+        search_pipeline,
         body: rest,
       };
 

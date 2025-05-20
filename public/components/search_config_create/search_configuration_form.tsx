@@ -21,8 +21,6 @@ interface SearchConfigurationFormProps {
   setQuery: (queryBody: string) => void;
   queryError: string;
   setQueryError: (error: string) => void;
-  searchPipeline: string;
-  setSearchPipeline: (pipeline: string) => void;
   searchTemplate: string;
   setSearchTemplate: (template: string) => void;
   indexOptions: Array<{ label: string; value: string }>;
@@ -45,7 +43,6 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
   setQuery,
   queryError,
   setQueryError,
-  setSearchPipeline,
   searchTemplate,
   setSearchTemplate,
   indexOptions,
@@ -157,7 +154,6 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
         selectedOptions={selectedPipeline}
         onChange={(selected) => {
           setSelectedPipeline(selected);
-          setSearchPipeline(selected[0]?.label || '');
         }}
         singleSelection={{ asPlainText: true }}
         isLoading={isLoadingPipelines}
