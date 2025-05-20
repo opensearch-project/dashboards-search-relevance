@@ -14,28 +14,22 @@ import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearc
 
 const getInitialFormData = (templateType: string): ConfigurationFormData => {
   const baseData = {
-    querySets: [],
-    k: 10,
+    querySetId: '',
+    size: 10,
+    searchConfigurationList: [],
   };
 
   switch (templateType) {
     case 'Query Set Comparison':
       return {
         ...baseData,
+        type: "PAIRWISE_COMPARISON",
       };
-    case 'Query Evaluation':
+    case 'Search Evaluation':
       return {
         ...baseData,
-        startDate: '',
-        endDate: '',
-        collectSignal: '',
-        scoreThreshold: '',
-      };
-    case 'LLM Query Evaluation':
-      return {
-        ...baseData,
-        modelId: '',
-        scoreThreshold: '',
+        judgmentList: [],
+        type: "UBI_EVALUATION",
       };
     default:
       return (baseData as unknown) as
@@ -81,9 +75,9 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
             http={http}
           />
         );
-      case 'Query Evaluation':
+      case 'Search Evaluation':
         return (
-          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} />
+          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
         );
       case 'LLM Query Evaluation':
         return (
