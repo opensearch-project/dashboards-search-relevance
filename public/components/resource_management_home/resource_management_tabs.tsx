@@ -67,7 +67,7 @@ export const ResourceManagementTabs = ({
     { id: 'experiment', name: 'Experiment' },
     { id: 'querySet', name: 'Query Set' },
     { id: 'searchConfiguration', name: 'Search Configuration' },
-    { id: 'judgment', name: 'Judgment' },
+    { id: 'judgment', name: 'Judgments' },
   ];
 
   const renderSubTabs = (tabKey: string, tabs: Array<{ id: string; label: string }>) => (
@@ -167,7 +167,7 @@ export const ResourceManagementTabs = ({
           <>
             {renderSubTabs('judgment', [
               { id: 'list', label: 'Manage Judgments' },
-              { id: 'create', label: 'Create a Judgment' },
+              { id: 'create', label: 'Create a Judgment List' },
             ])}
             <EuiSpacer size="m" />
             <EuiPanel>

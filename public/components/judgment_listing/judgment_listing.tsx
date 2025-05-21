@@ -154,7 +154,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Judgments"
-        description="View and manage your existing judgments. Click on a judgment name to view details."
+        description="View and manage your existing judgments. Click on a judgment list name to view details."
         rightSideItems={[
           <EuiButtonEmpty
             iconType="arrowLeft"
