@@ -182,8 +182,8 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
-        pageTitle="Judgment"
-        description="Configure a new judgment."
+        pageTitle="Judgment List"
+        description="Configure a new judgment list."
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -201,7 +201,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             data-test-subj="createJudgmentButton"
             color="primary"
           >
-            Create Judgment
+            Create Judgment List
           </EuiButton>,
         ]}
       />
@@ -213,7 +213,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
               label="Name"
               isInvalid={nameError.length > 0}
               error={nameError}
-              helpText="A unique name for this judgment."
+              helpText="A unique name for these judgements."
               fullWidth
             >
               <EuiFieldText
