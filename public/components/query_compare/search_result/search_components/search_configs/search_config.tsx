@@ -211,9 +211,11 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiCompressedFormRow            
+          <EuiCompressedFormRow
             label={
+              <p>
                 Pipeline <i> - optional </i>
+              </p>
             }
             fullWidth
           >
