@@ -31,6 +31,7 @@ import {
   toQuerySnapshots,
   combineResults,
 } from '../../types/index';
+import { MetricsSummaryPanel } from './metrics_summary';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -141,23 +142,21 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({ 
         },
       ]
       metricNames.forEach(metricName => {
-        if (cheatColNames[metricName]) {
-          columns.push({
-            field: 'metrics.' + metricName,
-            name: cheatColNames[metricName],
-            dataType: 'number',
-            sortable: true,
-            render: (value) => {
-              if (value !== undefined && value !== null) {
-                return new Intl.NumberFormat(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(value);
-              }
-              return '-';
+        columns.push({
+        field: 'metrics.' + metricName,
+        name: metricName + '@' + experiment.size,
+        dataType: 'number',
+        sortable: true,
+        render: (value) => {
+            if (value !== undefined && value !== null) {
+            return new Intl.NumberFormat(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }).format(value);
             }
-          })
+            return '-';
         }
+        })
       })
 
       setTableColumns(columns)
@@ -298,7 +297,9 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({ 
   return (
     <>
       {experimentDetails}
-      <EuiSpacer size="l" />
+      <EuiSpacer size="m" />
+      <MetricsSummaryPanel metrics={queryEvaluations.map(q => q.metrics)} />
+      <EuiSpacer size="m" />
       {resultsPane}
     </>
   );

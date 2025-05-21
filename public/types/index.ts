@@ -118,12 +118,16 @@ export const printType = (type: string) => {
   }
 }
 
+export type Metrics = {
+  [key: string]: number;
+}
+
+export type MetricsCollection = Metrics[];
+
 // Evaluation (multiple metric results for a single query)
 export type QueryEvaluation = {
   queryText: string;
-  metrics: {
-    [key: string]: number[];
-  };
+  metrics: Metrics;
 }
 
 export type QuerySnapshot = {
@@ -158,6 +162,12 @@ export function combineResults(
     : { success: true, data: values };
 }
 
+export const parseMetrics = (textualMetrics: { [key: string]: number; }): Metrics => {
+  return Object.fromEntries(
+    Object.entries(textualMetrics).map(([key, value]) => [key, parseFloat(value)])
+  ) as Metrics;
+}
+
 // Currently this function consumes the response of a pairwise comparison experiment
 // In the future this will be applied to an endpoint dedicated to evaluations
 export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluation>> => {
@@ -173,7 +183,7 @@ export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluati
     }
     return {
       queryText: queryText,
-      metrics: metrics.pairwiseComparison,
+      metrics: parseMetrics(metrics.pairwiseComparison),
     }
   })
 
@@ -196,7 +206,7 @@ export const toQueryEvaluation = (source: any): ParseResult<Array<QueryEvaluatio
     success: true,
     data: {
       queryText: source.searchText,
-      metrics: source.metrics,
+      metrics: parseMetrics(source.metrics),
     }
   }
 }

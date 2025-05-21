@@ -33,6 +33,7 @@ import {
   EvaluationExperiment,
   printType,
 } from '../../types/index';
+import { MetricsSummaryPanel } from './metrics_summary';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -222,7 +223,11 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
   return (
     <>
       {experimentDetails}
-      <EuiSpacer size="l" />
+      <EuiSpacer size="m" />
+      <MetricsSummaryPanel
+        metrics={queryEvaluations.map(q => q.metrics)}
+      />
+      <EuiSpacer size="m" />
       {resultsPane}
     </>
   );
