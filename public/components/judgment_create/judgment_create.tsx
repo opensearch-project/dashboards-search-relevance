@@ -279,7 +279,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
 
                 <EuiCompressedFormRow 
                   label="K Value"
-                  helpText="The depth in the result set to include in judging process."
+                  helpText="The number of documents from the result list to include in the judging process."
                   fullWidth
                 >
                   <EuiFieldNumber
@@ -292,7 +292,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
 
                 <EuiCompressedFormRow
                   label="Model ID"
-                  helpText="The LLM model to power the judging process."
+                  helpText="The ID of the LLM model that is used for the judging process."
                   fullWidth
                 >
                   <EuiFieldText

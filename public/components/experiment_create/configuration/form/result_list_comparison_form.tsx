@@ -46,7 +46,7 @@ export const ResultListComparisonForm = ({
             />
           </EuiFlexItem>
           <EuiFlexItem grow={1}>
-            <EuiFormRow label="K Value" helpText="The depth in the result set to include.">
+            <EuiFormRow label="K Value" helpText="The number of documents to include from the result list.">
               <EuiFieldNumber
                 placeholder="Enter k value"
                 value={k}
