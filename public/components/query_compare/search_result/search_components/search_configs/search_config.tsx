@@ -211,7 +211,12 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           </EuiCompressedFormRow>
         </EuiFlexItem>
         <EuiFlexItem>
-          <EuiCompressedFormRow fullWidth label="Pipeline-optional">
+          <EuiCompressedFormRow            
+            label={
+                Pipeline <i> - optional </i>
+            }
+            fullWidth
+          >
             <EuiCompressedComboBox
               placeholder=""
               singleSelection={{ asPlainText: true }}
