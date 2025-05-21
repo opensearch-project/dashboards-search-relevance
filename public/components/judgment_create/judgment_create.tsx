@@ -280,8 +280,8 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             >
               <EuiSelect
                 options={[
-                  { value: JudgmentType.LLM, text: 'LLM Judgment' },
-                  { value: JudgmentType.UBI, text: 'UBI Judgment' },
+                  { value: JudgmentType.LLM, text: 'Explicit (LLM Judge)' },
+                  { value: JudgmentType.UBI, text: 'Implicit (Click based)' },
                 ]}
                 value={type}
                 onChange={(e) => setType(e.target.value as JudgmentType)}
