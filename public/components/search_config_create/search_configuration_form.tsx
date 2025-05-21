@@ -142,7 +142,15 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow label="Search Pipeline" helpText="Define the search pipeline to be used." fullWidth>
+    <EuiFormRow
+      label={
+        <p>
+          Search Pipeline <i> - optional </i>
+        </p>
+      }
+      helpText="Define the search pipeline to be used." 
+      fullWidth
+    >
       <EuiComboBox
         placeholder="Select a search pipeline"
         options={pipelineOptions}
@@ -159,7 +167,15 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow label="Search Template" helpText="Define the search template." fullWidth>
+    <EuiFormRow
+      label={
+        <p>
+          Search Template <i> - optional </i>
+        </p>
+      }
+      helpText="Define the search template."
+      fullWidth
+    >
       <EuiFieldText
         placeholder="Enter search template"
         value={searchTemplate}
