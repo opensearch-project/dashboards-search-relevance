@@ -46,7 +46,7 @@ export const ResultListComparisonForm = ({
             />
           </EuiFlexItem>
           <EuiFlexItem grow={1}>
-            <EuiFormRow label="K Value">
+            <EuiFormRow label="K Value" helpText="The number of documents to include from the result list.">
               <EuiFieldNumber
                 placeholder="Enter k value"
                 value={k}
@@ -63,6 +63,7 @@ export const ResultListComparisonForm = ({
           selectedOptions={selectedSearchConfigs}
           onChange={handleSearchConfigChange}
           http={http}
+          maxNumberOfOptions={2}
         />
       </EuiFlexItem>
     </EuiFlexGroup>

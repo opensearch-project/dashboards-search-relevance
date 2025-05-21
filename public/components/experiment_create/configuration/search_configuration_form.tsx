@@ -38,14 +38,14 @@ export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfO
   return (
     <EuiFormRow
       label="Search Configurations"
-      helpText={`Select ${maxNumberOfOptions || 2} search configurations`}
+      helpText={`Select ${maxNumberOfOptions} search configuration${maxNumberOfOptions > 1 ? 's' : ''}${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
     >
       <EuiComboBox
         placeholder="Select search configuration"
         options={searchConfigOptions}
         selectedOptions={selectedOptions}
         onChange={(selected) => {
-          if (selected.length > (maxNumberOfOptions || 2)) {
+          if (selected.length > maxNumberOfOptions) {
             return;
           }
           onChange(selected);

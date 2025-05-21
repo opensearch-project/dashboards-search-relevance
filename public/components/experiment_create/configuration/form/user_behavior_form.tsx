@@ -55,7 +55,7 @@ export const UserBehaviorForm = ({
             />
           </EuiFlexItem>
           <EuiFlexItem grow={1}>
-            <EuiFormRow label="K Value">
+            <EuiFormRow label="K Value" helpText="The number of documents to include from the result list.">
               <EuiFieldNumber
                 placeholder="Enter k value"
                 value={k}
