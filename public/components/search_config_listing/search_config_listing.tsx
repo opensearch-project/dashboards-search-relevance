@@ -5,6 +5,7 @@
 
 import {
   EuiButtonEmpty,
+  EuiButton,
   EuiButtonIcon,
   EuiCallOut,
   EuiFlexItem,
@@ -172,14 +173,16 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         description="View and manage your existing search configurations. Click on a configuration name
                 to view details."
         rightSideItems={[
-          <EuiButtonEmpty
-            iconType="arrowLeft"
+          <EuiButton
+            onClick={() => history.push('/searchConfiguration/create')}
+            fill
             size="s"
-            onClick={() => history.push('/')}
-            data-test-subj="backToHomeButton"
+            iconType="plus"
+            data-test-subj="createSearchConfigurationButton"
+            color="primary"
           >
-            Back to Home
-          </EuiButtonEmpty>,
+            Create Search Configuration
+          </EuiButton>,
         ]}
       />
 
