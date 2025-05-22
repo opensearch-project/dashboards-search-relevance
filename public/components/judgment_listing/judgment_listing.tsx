@@ -7,6 +7,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import React, { useState } from 'react';
 import {
   EuiButtonEmpty,
+  EuiButton,
   EuiButtonIcon,
   EuiCallOut,
   EuiFlexItem,
@@ -156,14 +157,16 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         pageTitle="Judgments"
         description="View and manage your existing judgments. Click on a judgment name to view details."
         rightSideItems={[
-          <EuiButtonEmpty
-            iconType="arrowLeft"
+          <EuiButton
+            onClick={() => history.push('/judgment/create')}
+            fill
             size="s"
-            onClick={() => history.push('/')}
-            data-test-subj="backToHomeButton"
+            iconType="plus"
+            data-test-subj="createJudgmentButton"
+            color="primary"
           >
-            Back to Home
-          </EuiButtonEmpty>,
+            Create Judgment
+          </EuiButton>,
         ]}
       />
 

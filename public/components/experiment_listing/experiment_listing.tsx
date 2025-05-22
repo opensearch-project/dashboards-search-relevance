@@ -12,6 +12,7 @@ import {
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
+  EuiButton,
 } from '@elastic/eui';
 import {
   reactRouterNavigate,
@@ -178,14 +179,16 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         pageTitle="Experiments"
         description="View and manage your existing experiments. Click on a experiment id to view details."
         rightSideItems={[
-          <EuiButtonEmpty
-            iconType="arrowLeft"
+          <EuiButton
+            onClick={() => history.push('/experiment/create')}
+            fill
             size="s"
-            onClick={() => history.push('/')}
-            data-test-subj="backToHomeButton"
+            iconType="plus"
+            data-test-subj="createExperimentButton"
+            color="primary"
           >
-            Back to Home
-          </EuiButtonEmpty>,
+            Create Experiment
+          </EuiButton>
         ]}
       />
 
