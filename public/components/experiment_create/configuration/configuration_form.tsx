@@ -9,10 +9,11 @@ import {
   ResultListComparisonFormData,
   UserBehaviorFormData,
   LLMFormData,
+  TemplateType,
 } from './types';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
-const getInitialFormData = (templateType: string): ConfigurationFormData => {
+const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseData = {
     querySetId: '',
     size: 10,
@@ -20,12 +21,12 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
   };
 
   switch (templateType) {
-    case 'Query Set Comparison':
+    case TemplateType.QuerySetComparison:
       return {
         ...baseData,
         type: "PAIRWISE_COMPARISON",
       };
-    case 'Search Evaluation':
+    case TemplateType.SearchEvaluation:
       return {
         ...baseData,
         judgmentList: [],
@@ -67,7 +68,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
 
   const renderForm = () => {
     switch (templateType) {
-      case 'Query Set Comparison':
+      case TemplateType.QuerySetComparison:
         return (
           <ResultListComparisonForm
             formData={formData as ResultListComparisonFormData}
@@ -75,11 +76,11 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
             http={http}
           />
         );
-      case 'Search Evaluation':
+      case TemplateType.SearchEvaluation:
         return (
           <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
         );
-      case 'LLM Query Evaluation':
+      case TemplateType.HybridSearchOptimizer:
         return (
           <>
             <LLMForm formData={formData as LLMFormData} onChange={handleChange} />

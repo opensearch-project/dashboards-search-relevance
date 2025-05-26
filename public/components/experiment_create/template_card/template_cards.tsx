@@ -12,6 +12,7 @@ import { Home as QueryCompareHome } from '../../query_compare/home';
 import { useConfig } from '../../../contexts/date_format_context';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME } from '../../../../common';
+import { TemplateType } from '../configuration/types';
 
 interface TemplateCardsProps {
   onClose: () => void;
@@ -19,31 +20,42 @@ interface TemplateCardsProps {
 
 const templates = [
   {
+    id: TemplateType.SingleQueryComparison,
     name: 'Single Query Comparison',
     description:
       'Test two search configurations with a single query. View side-by-side results to find the best performer.',
     isDisabled: false,
   },
   {
+    id: TemplateType.QuerySetComparison,
     name: 'Query Set Comparison',
     description:
-      'Perform a comparison across an entire set of queries. Determine differences for your complete use case.',
+      'Perform a comparison across an entire set of queries. Determine differences across your complete use case.',
     isDisabled: false,
   },
   {
-    name: 'Query Evaluation',
-    description: 'Evaluate a search configuration with user behavior judgments.',
+    id: TemplateType.SearchEvaluation,
+    name: 'Search Evaluation',
+    description: 'Calculate search quality metrics to evaluate specific search configuration.',
     isDisabled: false,
   },
   {
-    name: 'LLM Query Evaluation',
-    description: 'Evaluate a search configuration using LLM as a judge.',
+    id: TemplateType.HybridSearchOptimizer,
+    name: 'Hybrid Search Optimizer',
+    description: 'Find the best balance between neural and lexical hybrid search configuration.',
     isDisabled: false,
   },
 ];
 
+const iconMap = {
+  [TemplateType.SingleQueryComparison]: 'beaker',
+  [TemplateType.QuerySetComparison]: 'beaker',
+  [TemplateType.SearchEvaluation]: 'beaker',
+  [TemplateType.HybridSearchOptimizer]: 'beaker',
+};
+
 export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
   const { dataSourceEnabled, dataSourceManagement, setHeaderActionMenu, navigation } = useConfig();
   const { services } = useOpenSearchDashboards();
   const { notifications, http, chrome, savedObjects, application } = services;
@@ -53,11 +65,11 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
     ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
     : [{ text: PLUGIN_NAME, href: '#' }];
 
-  const handleCardClick = (templateName: string) => {
-    setSelectedTemplate(templateName);
+  const handleCardClick = (templateId: TemplateType) => {
+    setSelectedTemplate(templateId);
   };
 
-  if (selectedTemplate === 'Single Query Comparison') {
+  if (selectedTemplate === TemplateType.SingleQueryComparison) {
     return (
       <QueryCompareHome
         application={application}
@@ -102,11 +114,11 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
           {templates.map((template, index) => (
             <EuiFlexItem key={index}>
               <EuiCard
-                icon={<EuiIcon size="xxl" type={`logo${template.name}`} />}
+                icon={<EuiIcon size="xxl" type={iconMap[template.id]} />}
                 title={template.name}
                 isDisabled={template.isDisabled}
                 description={template.description}
-                onClick={() => handleCardClick(template.name)}
+                onClick={() => handleCardClick(template.id)}
               />
             </EuiFlexItem>
           ))}

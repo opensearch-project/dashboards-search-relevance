@@ -1,5 +1,12 @@
 import { RouteComponentProps } from 'react-router-dom';
 
+export enum TemplateType {
+  SingleQueryComparison = 'Single Query Comparison',
+  QuerySetComparison = 'Query Set Comparison',
+  SearchEvaluation = 'Search Evaluation',
+  HybridSearchOptimizer = 'Hybrid Search Optimizer',
+}
+
 export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;
   onBack: () => void;
