@@ -7,7 +7,6 @@ import { I18nProvider } from '@osd/i18n/react';
 import React from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
 import { SearchRelevanceContextProvider } from '../contexts';
-import { ResourceManagementPage } from './resource_management_home/resource_management_page';
 import { EuiPageSideBar, EuiSideNav, EuiTitle, EuiSpacer, EuiPage, EuiPageBody } from '@elastic/eui';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { ExperimentListingWithRoute } from './experiment_listing';
@@ -36,7 +35,6 @@ enum Navigation {
 const SearchRelevancePage = ({history}) => {
   const location = useLocation();
   const { http, notifications } = useOpenSearchDashboards().services;
-  console.log("location", location);
 
   const sideNavItems = [
     {

@@ -5,10 +5,9 @@ import { withRouter } from 'react-router-dom';
 import { ConfigurationForm } from './configuration_form';
 import { ConfigurationActions } from './configuration_action';
 import { TemplateConfigurationProps, ConfigurationFormData, SearchConfigFromData } from './types';
-import { SearchConfigForm } from './search_configuration_form';
 import { ServiceEndpoints } from '../../../../common';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-
+import { EuiPanel } from '@elastic/eui';
 export const TemplateConfiguration = ({
   templateType,
   onBack,
@@ -64,19 +63,21 @@ export const TemplateConfiguration = ({
   };
 
   const renderConfiguration = () => (
-    <EuiFlexGroup direction="column" gutterSize="m">
-      <EuiFlexItem grow={false}>
-        <EuiTitle size="m">
-          <h2>{templateType} Experiment</h2>
-        </EuiTitle>
-        <EuiSpacer size="m" />
-        <ConfigurationForm templateType={templateType} onSave={handleConfigSave} />
-      </EuiFlexItem>
+    <EuiPanel>
+      <EuiFlexGroup direction="column" gutterSize="m">
+        <EuiFlexItem grow={false}>
+          <EuiTitle size="m">
+            <h2>{templateType} Experiment</h2>
+          </EuiTitle>
+          <EuiSpacer size="m" />
+          <ConfigurationForm templateType={templateType} onSave={handleConfigSave} />
+        </EuiFlexItem>
 
-      <EuiFlexItem>
-        <ConfigurationActions onBack={onBack} onClose={onClose} onNext={handleNext} />
-      </EuiFlexItem>
-    </EuiFlexGroup>
+        <EuiFlexItem>
+          <ConfigurationActions onBack={onBack} onClose={onClose} onNext={handleNext} />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+    </EuiPanel>
   );
 
   return (
