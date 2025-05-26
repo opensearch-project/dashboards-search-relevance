@@ -16,6 +16,8 @@ import { TemplateType } from '../configuration/types';
 
 interface TemplateCardsProps {
   onClose: () => void;
+  inputSelectedTemplate?: TemplateType | null;
+  onCardClick?: (templateId: TemplateType) => void;
 }
 
 const templates = [
@@ -54,8 +56,8 @@ const iconMap = {
   [TemplateType.HybridSearchOptimizer]: 'beaker',
 };
 
-export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(null);
+export const TemplateCards = ({ onClose, inputSelectedTemplate, onCardClick }: TemplateCardsProps) => {
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(inputSelectedTemplate ?? null);
   const { dataSourceEnabled, dataSourceManagement, setHeaderActionMenu, navigation } = useConfig();
   const { services } = useOpenSearchDashboards();
   const { notifications, http, chrome, savedObjects, application } = services;
@@ -67,6 +69,7 @@ export const TemplateCards = ({ onClose }: TemplateCardsProps) => {
 
   const handleCardClick = (templateId: TemplateType) => {
     setSelectedTemplate(templateId);
+    onCardClick?.(templateId);
   };
 
   if (selectedTemplate === TemplateType.SingleQueryComparison) {

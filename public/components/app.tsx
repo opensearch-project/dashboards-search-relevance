@@ -4,7 +4,7 @@
  */
 
 import { I18nProvider } from '@osd/i18n/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { EuiPageSideBar, EuiSideNav, EuiTitle, EuiSpacer, EuiPage, EuiPageBody } from '@elastic/eui';
@@ -22,11 +22,15 @@ import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
 import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
 import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
 import { GetStartedAccordion } from './resource_management_home/get_started_accordion';
+import { TemplateType } from './experiment_create/configuration/types';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
   Overview = 'Overview',
   Experiments = 'Experiments',
+  ExperimentsSingleQueryComparison = 'Single Query Comparison',
+  ExperimentsQuerySetComparison = 'Query Set Comparison',
+  ExperimentsSearchEvaluation = 'Search Evaluation',
   QuerySets = 'Query Sets',
   SearchConfigurations = 'Search Configurations',
   Judgments = 'Judgments',
@@ -35,6 +39,48 @@ enum Navigation {
 const SearchRelevancePage = ({history}) => {
   const location = useLocation();
   const { http, notifications } = useOpenSearchDashboards().services;
+
+  const routeToSelectedNavItem = (pathname: string) => {
+    if (pathname === '/') {
+      return Navigation.Overview;
+    } else if (pathname.startsWith('/experiment')) {
+      return Navigation.Experiments;
+    } else if (pathname.startsWith('/querySet')) {
+      return Navigation.QuerySets;
+    } else if (pathname.startsWith('/searchConfiguration')) {
+      return Navigation.SearchConfigurations;
+    } else if (pathname.startsWith('/judgment')) {
+      return Navigation.Judgments;
+    }
+  }
+
+  const [selectedNavItem, setSelectedNavItem] = useState<Navigation | null>(routeToSelectedNavItem(location.pathname));
+
+  // The following two functions connect the Experiment sub menus to the cards
+  const extractSelectedTemplate = (selectedNavItem: Navigation) => {
+    if (selectedNavItem === Navigation.ExperimentsSingleQueryComparison) {
+      return TemplateType.SingleQueryComparison;
+    }
+    if (selectedNavItem === Navigation.ExperimentsQuerySetComparison) {
+      return TemplateType.QuerySetComparison;
+    }
+    if (selectedNavItem === Navigation.ExperimentsSearchEvaluation) {
+      return TemplateType.SearchEvaluation;
+    }
+    return null;
+  }
+
+  const onCardClick = (templateId: TemplateType) => {
+    if (templateId === TemplateType.SingleQueryComparison) {
+      setSelectedNavItem(Navigation.ExperimentsSingleQueryComparison);
+    }
+    if (templateId === TemplateType.QuerySetComparison) {
+      setSelectedNavItem(Navigation.ExperimentsQuerySetComparison);
+    }
+    if (templateId === TemplateType.SearchEvaluation) {
+      setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
+    }
+  }
 
   const sideNavItems = [
     {
@@ -56,45 +102,80 @@ const SearchRelevancePage = ({history}) => {
           id: Navigation.Overview,
           onClick: () => {
             history.push('/');
+            setSelectedNavItem(Navigation.Overview);
           },
-          isSelected: location.pathname === '/',
+          isSelected: selectedNavItem === Navigation.Overview
         },
         {
           name: Navigation.Experiments,
           id: Navigation.Experiments,
           onClick: () => {
             history.push("/experiment");
+            setSelectedNavItem(Navigation.Experiments);
           },
-          isSelected: location.pathname.startsWith('/experiment'),
+          isSelected: selectedNavItem === Navigation.Experiments,
+          forceOpen: true,
+          items: [
+            {
+              name: Navigation.ExperimentsSingleQueryComparison,
+              id: Navigation.ExperimentsSingleQueryComparison,
+              onClick: () => {
+                history.push("/experiment/create");
+                setSelectedNavItem(Navigation.ExperimentsSingleQueryComparison);
+              },
+              isSelected: selectedNavItem === Navigation.ExperimentsSingleQueryComparison,
+            },
+            {
+              name: Navigation.ExperimentsQuerySetComparison,
+              id: Navigation.ExperimentsQuerySetComparison,
+              onClick: () => {
+                history.push("/experiment/create");
+                setSelectedNavItem(Navigation.ExperimentsQuerySetComparison);
+              },
+              isSelected: selectedNavItem === Navigation.ExperimentsQuerySetComparison,
+            },
+            {
+              name: Navigation.ExperimentsSearchEvaluation,
+              id: Navigation.ExperimentsSearchEvaluation,
+              onClick: () => {
+                history.push("/experiment/create");
+                setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
+              },
+              isSelected: selectedNavItem === Navigation.ExperimentsSearchEvaluation,
+            },
+          ]
         },
         {
           name: Navigation.QuerySets,
           id: Navigation.QuerySets,
           onClick: () => {
             history.push("/querySet");
+            setSelectedNavItem(Navigation.QuerySets);
           },
-          isSelected: location.pathname.startsWith('/querySet'),
+          isSelected: selectedNavItem === Navigation.QuerySets,
         },
         {
           name: Navigation.SearchConfigurations,
           id: Navigation.SearchConfigurations,
           onClick: () => {
             history.push("/searchConfiguration");
+            setSelectedNavItem(Navigation.SearchConfigurations);
           },
-          isSelected: location.pathname.startsWith('/searchConfiguration'),
+          isSelected: selectedNavItem === Navigation.SearchConfigurations,
         },
         {
           name: Navigation.Judgments,
           id: Navigation.Judgments,
           onClick: () => {
             history.push("/judgment");
+            setSelectedNavItem(Navigation.Judgments);
           },
-          isSelected: location.pathname.startsWith('/judgment'),
+          isSelected: selectedNavItem === Navigation.Judgments,
         },
       ],
     },
   ]
-  
+
   return (
     <EuiPage restrictWidth={'100%'}>
       <EuiPageSideBar style={{ minWidth: 200 }}>          
@@ -134,7 +215,12 @@ const SearchRelevancePage = ({history}) => {
             return <JudgmentView http={http} id={entityId} />;
           }} />
           <Route path="/experiment/create" exact render={() => {
-            return <TemplateCards onClose={() => {}} />;
+            return <TemplateCards
+              key={`selection-${selectedNavItem}`}
+              onClose={() => {}}
+              inputSelectedTemplate={extractSelectedTemplate(selectedNavItem)}
+              onCardClick={onCardClick}
+            />;
           }} />
           <Route path="/querySet/create" exact render={() => {
             return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
