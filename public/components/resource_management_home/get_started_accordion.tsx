@@ -15,13 +15,15 @@ import {
   EuiAccordion,
 } from '@elastic/eui';
 
-interface GetStartedAccordionProps {}
+interface GetStartedAccordionProps {
+  isOpen?: boolean;
+}
 
 export function GetStartedAccordion(props: GetStartedAccordionProps) {
   return (
     <EuiAccordion
       style={{ marginBottom: '-16px' }}
-      initialIsOpen={false}
+      initialIsOpen={props.isOpen}
       id={`accordionGetStarted`}
       buttonContent={
         <EuiFlexGroup direction="row">
