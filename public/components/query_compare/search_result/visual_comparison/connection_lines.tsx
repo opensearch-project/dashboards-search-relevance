@@ -6,6 +6,7 @@ interface ConnectionLinesProps {
   result2: any[];
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
+  getStatusColor: (item: any, resultNum: number) => string;
 }
 
 export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
@@ -14,6 +15,7 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
   result2,
   result1ItemsRef,
   result2ItemsRef,
+  getStatusColor,
 }) => {
   return (
     <svg width="100%" height="420" style={{ overflow: 'visible' }} className="absolute top-0 left-0" id="connection-lines">
@@ -22,16 +24,6 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
         // Find if this item exists in result2
         const r2Match = result2.find(r2 => r2._id === r1Item._id);
         if (!r2Match) return null; // Skip if no match
-        
-        // Line color based on rank comparison
-        let lineColor;
-        if (r1Item.rank === r2Match.rank) {
-          lineColor = "#93C5FD"; // Blue for unchanged
-        } else if (r1Item.rank < r2Match.rank) {
-          lineColor = "#FCA5A5"; // Red for dropped
-        } else {
-          lineColor = "#86EFAC"; // Green for improved
-        }
         
         // Get elements by ref to ensure we have their positions
         const r1El = result1ItemsRef.current[r1Item._id];
@@ -51,6 +43,9 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
           // Calculate relative positions within the SVG
           const y1 = r1Rect.top - svgRect.top + r1Rect.height / 2;
           const y2 = r2Rect.top - svgRect.top + r2Rect.height / 2;
+          
+          // Get color using the provided function
+          const lineColor = getStatusColor(r1Item, 1);
           
           return (
             <line 

@@ -396,6 +396,15 @@
   background-color: #fefce8;
 }
 
+:root {
+  --yellow-custom: 254, 245, 150;
+  --purple-custom: 233, 213, 255;
+}
+
+.bg-yellow-custom {
+  background-color: rgb(var(--yellow-custom));
+}
+
 .bg-yellow-300 {
   background-color: #fcd34d;
 }
@@ -410,6 +419,10 @@
 
 .bg-purple-300 {
   background-color: #c4b5fd;
+}
+
+.bg-purple-custom {
+  background-color: rgb(var(--purple-custom));
 }
 
 .bg-red-300 {
@@ -564,7 +577,7 @@ svg line {
   position: absolute;
   left: 50%;
   transform: translateX(-84%);
-  background-color: rgba(254, 249, 195, 0.9); /* bg-yellow-100 with opacity */
+  background-color: rgba(var(--yellow-custom), 0.9);
   width: 50%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
@@ -597,7 +610,7 @@ svg line {
   position: absolute;
   left: 50%;
   transform: translateX(-16%);
-  background-color: rgba(233, 213, 255, 0.3); /* bg-purple-100 with opacity */
+  background-color: rgba(var(--purple-custom), 0.9);
   width: 50%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
