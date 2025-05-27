@@ -96,7 +96,22 @@ export const VisualComparison = ({
   resultText1,
   resultText2,
 }: OpenSearchComparisonProps) => {
-  const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = defaultStyle;
+  // Add state for selected style
+  const [selectedStyle, setSelectedStyle] = useState('default');
+  
+  // Get the style based on selection
+  const getCurrentStyle = () => {
+    switch (selectedStyle) {
+      case 'simpler':
+        return simplerVennDiagramStyle;
+      case 'twoColor':
+        return twoColorScheme;
+      default:
+        return defaultStyle;
+    }
+  };
+
+  const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = getCurrentStyle();
 
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
@@ -377,6 +392,24 @@ export const VisualComparison = ({
       <EuiPageBody>
         <EuiPageContent>
           <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
+
+          {/* Style selector dropdown */}
+          <div className="mb-4">
+            <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
+              <EuiSuperSelect
+                id="style-selector"
+                options={[
+                  { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
+                  { value: 'simpler', inputDisplay: 'Simpler Style', dropdownDisplay: 'Simpler Style' },
+                  { value: 'twoColor', inputDisplay: 'Two Color Style', dropdownDisplay: 'Two Color Style' }
+                ]}
+                valueOfSelected={selectedStyle}
+                onChange={(value) => setSelectedStyle(value)}
+                fullWidth
+                hasDividers
+              />
+            </EuiFormRow>
+          </div>
 
           {/* Field selector dropdown */}
           <div className="mb-4">
