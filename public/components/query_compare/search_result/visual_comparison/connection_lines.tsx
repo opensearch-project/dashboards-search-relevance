@@ -6,7 +6,7 @@ interface ConnectionLinesProps {
   result2: any[];
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
-  getStatusColor: (item: any, resultNum: number) => string;
+  lineColors: { [key: string]: string };
 }
 
 export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
@@ -15,7 +15,7 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
   result2,
   result1ItemsRef,
   result2ItemsRef,
-  getStatusColor,
+  lineColors,
 }) => {
   return (
     <svg width="100%" height="420" style={{ overflow: 'visible' }} className="absolute top-0 left-0" id="connection-lines">
@@ -31,7 +31,7 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
         
         // Only draw line if both elements exist
         if (!r1El || !r2El) return null;
-        
+
         try {
           // Calculate positions for connecting line
           const r1Rect = r1El.getBoundingClientRect();
@@ -44,9 +44,13 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
           const y1 = r1Rect.top - svgRect.top + r1Rect.height / 2;
           const y2 = r2Rect.top - svgRect.top + r2Rect.height / 2;
           
-          // Get color using the provided function
-          const lineColor = getStatusColor(r1Item, 1);
-          
+          let lineColor = lineColors.unchanged;
+          if (r1Item.rank < r2Match.rank) {
+            lineColor = lineColors.decreased;
+          } else if (r1Item.rank > r2Match.rank) {
+            lineColor = lineColors.increased;
+          }
+
           return (
             <line 
               key={`line-${r1Item._id}`}

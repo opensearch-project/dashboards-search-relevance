@@ -26,38 +26,45 @@ export const convertFromSearchResult = (searchResult) => {
   }));
 }
 
-// Helper function to determine color based on item status
-const getItemStatusColor = (params: {
-  isResult1: boolean;
-  isOnlyInCurrentResult: boolean;
-  isSamePosition: boolean;
-  isImproved: boolean;
-}) => {
-  const { isResult1, isOnlyInCurrentResult, isSamePosition, isImproved } = params;
+type LineColors = {
+  unchanged: string;
+  increased: string;
+  decreased: string;
+}
 
-  if (isOnlyInCurrentResult) {
-    return isResult1 ? "bg-yellow-custom" : "bg-purple-custom";
-  }
+type StatusClassName = {
+  unchanged: string;
+  increased: string;
+  decreased: string;
+  inResult1: string;
+  inResult2: string;
+}
 
-  if (isSamePosition) {
-    return "bg-blue-300";
-  }
+type VennDiagramStyle = {
+  left: { [key: string]: string };
+  middle: { [key: string]: string };
+  right: { [key: string]: string };
+}
 
-  if (isImproved) {
-    return "bg-green-300";
-  }
+const lineColors: LineColors = {
+  unchanged: "#93C5FD",
+  increased: "#86EFAC",
+  decreased: "#FCA5A5",
+}
 
-  return "bg-red-300";
-};
+const statusClassName: StatusClassName = {
+  unchanged: "bg-blue-300",
+  increased: "bg-green-300",
+  decreased: "bg-red-300",
+  inResult1: "bg-yellow-custom",
+  inResult2: "bg-purple-custom",
+}
 
-// Helper function to get legend colors
-const getLegendColors = () => ({
-  unchanged: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: true, isImproved: false }),
-  increased: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: false, isImproved: true }),
-  decreased: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: false, isImproved: false }),
-  onlyInResult1: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: true, isSamePosition: false, isImproved: false }),
-  onlyInResult2: getItemStatusColor({ isResult1: false, isOnlyInCurrentResult: true, isSamePosition: false, isImproved: false })
-});
+const vennDiagramStyle: VennDiagramStyle = {
+  left: { backgroundColor: "rgba(var(--yellow-custom), 0.9)"},
+  middle: {},
+  right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+}
 
 export const VisualComparison = ({
   queryResult1,
@@ -107,19 +114,19 @@ export const VisualComparison = ({
   const vennDiagram = (
     <div className="venn-container">
       {/* Result 1 rectangle (left) */}
-      <div className="venn-left">
+      <div className="venn-left" style={vennDiagramStyle.left}>
         <div className="venn-value">{statistics.onlyInResult1}</div>
         <div className="venn-label">Unique</div>
       </div>
       
       {/* Intersection (middle) */}
-      <div className="venn-middle">
+      <div className="venn-middle" style={vennDiagramStyle.middle}>
         <div className="venn-value">{statistics.inBoth}</div>
         <div className="venn-label">Common</div>
       </div>
       
       {/* Result 2 rectangle (right) */}
-      <div className="venn-right">
+      <div className="venn-right" style={vennDiagramStyle.right}>
         <div className="venn-value">{statistics.onlyInResult2}</div>
         <div className="venn-label">Unique</div>
       </div>
@@ -274,16 +281,33 @@ export const VisualComparison = ({
     const isResult1 = resultNum === 1;
     const otherResult = isResult1 ? result2 : result1;
     const matchingItem = otherResult.find(r => r._id === item._id);
+
+    if (!matchingItem) {
+      if (isResult1) {
+        return statusClassName.inResult1;
+      } else {
+        return statusClassName.inResult2;
+      }
+    }
     
-    return getItemStatusColor({
-      isResult1,
-      isOnlyInCurrentResult: !matchingItem,
-      isSamePosition: matchingItem && item.rank === matchingItem.rank,
-      isImproved: matchingItem && (
-        (isResult1 && item.rank > matchingItem.rank) || 
-        (!isResult1 && item.rank < matchingItem.rank)
-      )
-    });
+    if (isResult1) {
+      if (item.rank === matchingItem.rank) {
+        return statusClassName.unchanged;
+      } else if (item.rank > matchingItem.rank) {
+        return statusClassName.increased;
+      } else {
+        return statusClassName.decreased;
+      }
+    } else {
+      if (item.rank === matchingItem.rank) {
+        return statusClassName.unchanged;
+      } else if (item.rank > matchingItem.rank) {
+        return statusClassName.decreased;
+      } else {
+        return statusClassName.increased;
+      }
+    }
+
   };
 
   // Function to handle hover for item details
@@ -392,7 +416,7 @@ export const VisualComparison = ({
                   result2={result2}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
-                  getStatusColor={getStatusColor}
+                  lineColors={lineColors}
                 />
                 <div className="w-full h-full flex items-center justify-center">
                   {/* Center area for any additional stats */}
@@ -418,19 +442,19 @@ export const VisualComparison = ({
 
           <div className="mt-4 flex gap-4 text-sm">
             <div className="flex items-center">
-              <div className={`w-4 h-4 ${getLegendColors().unchanged} mr-1`}></div> Unchanged position
+              <div className={`w-4 h-4 ${statusClassName.unchanged} mr-1`}></div> Unchanged position
             </div>
             <div className="flex items-center">
-              <div className={`w-4 h-4 ${getLegendColors().increased} mr-1`}></div> Increased position
+              <div className={`w-4 h-4 ${statusClassName.increased} mr-1`}></div> Increased position
             </div>
             <div className="flex items-center">
-              <div className={`w-4 h-4 ${getLegendColors().decreased} mr-1`}></div> Decreased position
+              <div className={`w-4 h-4 ${statusClassName.decreased} mr-1`}></div> Decreased position
             </div>
             <div className="flex items-center">
-              <div className={`w-4 h-4 ${getLegendColors().onlyInResult1} mr-1`}></div> Only in {resultText1}
+              <div className={`w-4 h-4 ${statusClassName.inResult1} mr-1`}></div> Only in {resultText1}
             </div>
             <div className="flex items-center">
-              <div className={`w-4 h-4 ${getLegendColors().onlyInResult2} mr-1`}></div> Only in {resultText2}
+              <div className={`w-4 h-4 ${statusClassName.inResult2} mr-1`}></div> Only in {resultText2}
             </div>
           </div>
 
