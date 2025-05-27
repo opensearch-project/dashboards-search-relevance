@@ -26,6 +26,39 @@ export const convertFromSearchResult = (searchResult) => {
   }));
 }
 
+// Helper function to determine color based on item status
+const getItemStatusColor = (params: {
+  isResult1: boolean;
+  isOnlyInCurrentResult: boolean;
+  isSamePosition: boolean;
+  isImproved: boolean;
+}) => {
+  const { isResult1, isOnlyInCurrentResult, isSamePosition, isImproved } = params;
+
+  if (isOnlyInCurrentResult) {
+    return isResult1 ? "bg-yellow-custom" : "bg-purple-custom";
+  }
+
+  if (isSamePosition) {
+    return "bg-blue-300";
+  }
+
+  if (isImproved) {
+    return "bg-green-300";
+  }
+
+  return "bg-red-300";
+};
+
+// Helper function to get legend colors
+const getLegendColors = () => ({
+  unchanged: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: true, isImproved: false }),
+  increased: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: false, isImproved: true }),
+  decreased: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: false, isSamePosition: false, isImproved: false }),
+  onlyInResult1: getItemStatusColor({ isResult1: true, isOnlyInCurrentResult: true, isSamePosition: false, isImproved: false }),
+  onlyInResult2: getItemStatusColor({ isResult1: false, isOnlyInCurrentResult: true, isSamePosition: false, isImproved: false })
+});
+
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
@@ -238,23 +271,19 @@ export const VisualComparison = ({
 
   // Color function for item status
   const getStatusColor = (item, resultNum) => {
-    if (resultNum === 1) {
-      // For Result 1 items
-      const matchingItem = result2.find(r2 => r2._id === item._id);
-      if (!matchingItem) return "bg-yellow-300"; // Only in Result 1
-      
-      if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank < matchingItem.rank) return "bg-red-300"; // Dropped in Result 2
-      return "bg-green-300"; // Improved in Result 2
-    } else {
-      // For Result 2 items
-      const matchingItem = result1.find(r1 => r1._id === item._id);
-      if (!matchingItem) return "bg-purple-300"; // Only in Result 2
-      
-      if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank > matchingItem.rank) return "bg-red-300"; // Improved from Result 1
-      return "bg-green-300"; // Dropped from Result 1
-    }
+    const isResult1 = resultNum === 1;
+    const otherResult = isResult1 ? result2 : result1;
+    const matchingItem = otherResult.find(r => r._id === item._id);
+    
+    return getItemStatusColor({
+      isResult1,
+      isOnlyInCurrentResult: !matchingItem,
+      isSamePosition: matchingItem && item.rank === matchingItem.rank,
+      isImproved: matchingItem && (
+        (isResult1 && item.rank > matchingItem.rank) || 
+        (!isResult1 && item.rank < matchingItem.rank)
+      )
+    });
   };
 
   // Function to handle hover for item details
@@ -363,6 +392,7 @@ export const VisualComparison = ({
                   result2={result2}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  getStatusColor={getStatusColor}
                 />
                 <div className="w-full h-full flex items-center justify-center">
                   {/* Center area for any additional stats */}
@@ -388,19 +418,19 @@ export const VisualComparison = ({
 
           <div className="mt-4 flex gap-4 text-sm">
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-blue-300 mr-1"></div> Same position
+              <div className={`w-4 h-4 ${getLegendColors().unchanged} mr-1`}></div> Unchanged position
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-green-300 mr-1"></div> Improved position
+              <div className={`w-4 h-4 ${getLegendColors().increased} mr-1`}></div> Increased position
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
+              <div className={`w-4 h-4 ${getLegendColors().decreased} mr-1`}></div> Decreased position
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
+              <div className={`w-4 h-4 ${getLegendColors().onlyInResult1} mr-1`}></div> Only in {resultText1}
             </div>
             <div className="flex items-center">
-              <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
+              <div className={`w-4 h-4 ${getLegendColors().onlyInResult2} mr-1`}></div> Only in {resultText2}
             </div>
           </div>
 
