@@ -63,7 +63,26 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       });
 
       if (!response || !response.result?.hits?.hits?.length) {
-          throw new Error('Search returned no results');
+        throw new Error('Search returned no results');
+      }
+
+      if (response.result.hits.hits) {
+        // Create a Map to store unique hits by ID
+        const uniqueHits = new Map();
+
+        response.result.hits.hits.forEach((hit) => {
+          const id = hit._id || hit._source?.id;
+          if (!uniqueHits.has(id)) {
+            uniqueHits.set(id, hit);
+          }
+        });
+
+        response.result.hits.hits = Array.from(uniqueHits.values());
+
+        console.log(
+          'Final unique hits:',
+          response.result.hits.hits.map((hit) => ({ id: hit._id, source: hit._source }))
+        );
       }
 
       setSearchResults(response.result);

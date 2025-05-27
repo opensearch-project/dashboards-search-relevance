@@ -315,12 +315,16 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       const resBody: SearchResultResponse = {};
 
       const { index, size, search_pipeline, ...rest } = query;
+
       const params: RequestParams.Search = {
         index,
         size,
-        search_pipeline,
         body: rest,
       };
+
+      if (typeof search_pipeline === 'string' && search_pipeline.trim() !== '') {
+        params.search_pipeline = search_pipeline;
+      }
 
       try {
         // Execute search
