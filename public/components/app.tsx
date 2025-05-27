@@ -31,6 +31,7 @@ enum Navigation {
   ExperimentsSingleQueryComparison = 'Single Query Comparison',
   ExperimentsQuerySetComparison = 'Query Set Comparison',
   ExperimentsSearchEvaluation = 'Search Evaluation',
+  ExperimentsHybridOptimizer = 'Hybrid Optimizer',
   QuerySets = 'Query Sets',
   SearchConfigurations = 'Search Configurations',
   Judgments = 'Judgments',
@@ -67,6 +68,9 @@ const SearchRelevancePage = ({history}) => {
     if (selectedNavItem === Navigation.ExperimentsSearchEvaluation) {
       return TemplateType.SearchEvaluation;
     }
+    if (selectedNavItem === Navigation.ExperimentsHybridOptimizer) {
+      return TemplateType.HybridSearchOptimizer;
+    }
     return null;
   }
 
@@ -79,6 +83,9 @@ const SearchRelevancePage = ({history}) => {
     }
     if (templateId === TemplateType.SearchEvaluation) {
       setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
+    }
+    if (templateId === TemplateType.HybridSearchOptimizer) {
+      setSelectedNavItem(Navigation.ExperimentsHybridOptimizer);
     }
   }
 
@@ -142,6 +149,15 @@ const SearchRelevancePage = ({history}) => {
                 setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
               },
               isSelected: selectedNavItem === Navigation.ExperimentsSearchEvaluation,
+            },
+            {
+              name: Navigation.ExperimentsHybridOptimizer,
+              id: Navigation.ExperimentsHybridOptimizer,
+              onClick: () => {
+                history.push("/experiment/create");
+                setSelectedNavItem(Navigation.ExperimentsHybridOptimizer);
+              },
+              isSelected: selectedNavItem === Navigation.ExperimentsHybridOptimizer,
             },
           ]
         },

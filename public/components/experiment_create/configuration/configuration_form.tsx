@@ -82,17 +82,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
         );
       case TemplateType.HybridSearchOptimizer:
         return (
-          <>
-            <LLMForm formData={formData as LLMFormData} onChange={handleChange} />
-
-            <EuiFlexGroup justifyContent="flexEnd">
-              <EuiFlexItem grow={false}>
-                <EuiFormRow hasEmptyLabelSpace>
-                  <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
-                </EuiFormRow>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </>
+          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
         );
       default:
         return null;
