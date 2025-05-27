@@ -44,11 +44,11 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
           const y1 = r1Rect.top - svgRect.top + r1Rect.height / 2;
           const y2 = r2Rect.top - svgRect.top + r2Rect.height / 2;
           
-          let lineColor = lineColors.unchanged;
+          let lineProps = lineColors.unchanged;
           if (r1Item.rank < r2Match.rank) {
-            lineColor = lineColors.decreased;
+            lineProps = lineColors.decreased;
           } else if (r1Item.rank > r2Match.rank) {
-            lineColor = lineColors.increased;
+            lineProps = lineColors.increased;
           }
 
           return (
@@ -58,8 +58,7 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
               y1={y1} 
               x2="100%" 
               y2={y2} 
-              stroke={lineColor} 
-              strokeWidth="4"
+              {...lineProps}
             />
           );
         } catch (error) {

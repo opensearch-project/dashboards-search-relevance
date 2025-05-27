@@ -26,44 +26,67 @@ export const convertFromSearchResult = (searchResult) => {
   }));
 }
 
-type LineColors = {
-  unchanged: string;
-  increased: string;
-  decreased: string;
+export const defaultStyle = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "bg-yellow-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--yellow-custom), 0.9)"},
+    middle: {},
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: [],
 }
 
-type StatusClassName = {
-  unchanged: string;
-  increased: string;
-  decreased: string;
-  inResult1: string;
-  inResult2: string;
+export const simplerVennDiagramStyle = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "bg-purple-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
+    middle: {},
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2'],
 }
 
-type VennDiagramStyle = {
-  left: { [key: string]: string };
-  middle: { [key: string]: string };
-  right: { [key: string]: string };
-}
-
-const lineColors: LineColors = {
-  unchanged: "#93C5FD",
-  increased: "#86EFAC",
-  decreased: "#FCA5A5",
-}
-
-const statusClassName: StatusClassName = {
-  unchanged: "bg-blue-300",
-  increased: "bg-green-300",
-  decreased: "bg-red-300",
-  inResult1: "bg-yellow-custom",
-  inResult2: "bg-purple-custom",
-}
-
-const vennDiagramStyle: VennDiagramStyle = {
-  left: { backgroundColor: "rgba(var(--yellow-custom), 0.9)"},
-  middle: {},
-  right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+export const twoColorScheme = {
+  lineColors: {
+    unchanged: { stroke: "black", strokeWidth: 2 },
+    increased: { stroke: "black", strokeWidth: 2 },
+    decreased: { stroke: "black", strokeWidth: 2 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-100",
+    increased: "bg-blue-100",
+    decreased: "bg-blue-100",
+    inResult1: "bg-purple-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
+    middle: {},
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
 }
 
 export const VisualComparison = ({
@@ -73,6 +96,8 @@ export const VisualComparison = ({
   resultText1,
   resultText2,
 }: OpenSearchComparisonProps) => {
+  const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = defaultStyle;
+
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
   const [imageFieldName, setImageFieldName] = useState(null);
@@ -441,21 +466,31 @@ export const VisualComparison = ({
           </div>
 
           <div className="mt-4 flex gap-4 text-sm">
-            <div className="flex items-center">
-              <div className={`w-4 h-4 ${statusClassName.unchanged} mr-1`}></div> Unchanged position
-            </div>
-            <div className="flex items-center">
-              <div className={`w-4 h-4 ${statusClassName.increased} mr-1`}></div> Increased position
-            </div>
-            <div className="flex items-center">
-              <div className={`w-4 h-4 ${statusClassName.decreased} mr-1`}></div> Decreased position
-            </div>
-            <div className="flex items-center">
-              <div className={`w-4 h-4 ${statusClassName.inResult1} mr-1`}></div> Only in {resultText1}
-            </div>
-            <div className="flex items-center">
-              <div className={`w-4 h-4 ${statusClassName.inResult2} mr-1`}></div> Only in {resultText2}
-            </div>
+            { !hideLegend.includes('unchanged') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.unchanged} mr-1`}></div> Unchanged rank
+              </div>
+            )}
+            { !hideLegend.includes('increased') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.increased} mr-1`}></div> Increased rank
+              </div>
+            )}
+            { !hideLegend.includes('decreased') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.decreased} mr-1`}></div> Decreased rank
+              </div>
+            )}
+            { !hideLegend.includes('inResult1') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.inResult1} mr-1`}></div> Only in {resultText1}
+              </div>
+            )}
+            { !hideLegend.includes('inResult2') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.inResult2} mr-1`}></div> Only in {resultText2}
+              </div>
+            )}
           </div>
 
           {/* Item Details Tooltip on Hover */}
