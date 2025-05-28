@@ -26,7 +26,7 @@ export const convertFromSearchResult = (searchResult) => {
   }));
 }
 
-export const defaultStyle = {
+export const defaultStyleConfig = {
   lineColors: {
     unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
     increased: { stroke: "#86EFAC", strokeWidth: 4 },
@@ -47,7 +47,7 @@ export const defaultStyle = {
   hideLegend: [],
 }
 
-export const simplerVennDiagramStyle = {
+export const rankingChangeStyleConfig = {
   lineColors: {
     unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
     increased: { stroke: "#86EFAC", strokeWidth: 4 },
@@ -68,7 +68,7 @@ export const simplerVennDiagramStyle = {
   hideLegend: ['inResult1', 'inResult2'],
 }
 
-export const twoColorScheme = {
+export const vennDiagramStyleConfig = {
   lineColors: {
     unchanged: { stroke: "black", strokeWidth: 2 },
     increased: { stroke: "black", strokeWidth: 2 },
@@ -103,11 +103,11 @@ export const VisualComparison = ({
   const getCurrentStyle = () => {
     switch (selectedStyle) {
       case 'simpler':
-        return simplerVennDiagramStyle;
+        return rankingChangeStyleConfig;
       case 'twoColor':
-        return twoColorScheme;
+        return vennDiagramStyleConfig;
       default:
-        return defaultStyle;
+        return defaultStyleConfig;
     }
   };
 
@@ -400,8 +400,8 @@ export const VisualComparison = ({
                 id="style-selector"
                 options={[
                   { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
-                  { value: 'simpler', inputDisplay: 'Simpler Style', dropdownDisplay: 'Simpler Style' },
-                  { value: 'twoColor', inputDisplay: 'Two Color Style', dropdownDisplay: 'Two Color Style' }
+                  { value: 'simpler', inputDisplay: 'Ranking Change Color Coding', dropdownDisplay: 'Ranking Change Color Coding' },
+                  { value: 'twoColor', inputDisplay: 'Venn Diagram Color Coding', dropdownDisplay: 'Venn Diagram Color Coding' }
                 ]}
                 valueOfSelected={selectedStyle}
                 onChange={(value) => setSelectedStyle(value)}
@@ -498,7 +498,7 @@ export const VisualComparison = ({
             </div>
           </div>
 
-          <div className="mt-4 flex gap-4 text-sm">
+          <div className="mt-4 flex gap-4 text-sm justify-center">
             { !hideLegend.includes('unchanged') && (
               <div className="flex items-center">
                 <div className={`w-4 h-4 ${statusClassName.unchanged} mr-1`}></div> Unchanged rank
