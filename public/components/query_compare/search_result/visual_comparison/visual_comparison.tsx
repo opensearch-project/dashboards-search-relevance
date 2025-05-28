@@ -41,7 +41,7 @@ export const defaultStyleConfig = {
   },
   vennDiagramStyle: {
     left: { backgroundColor: "rgba(var(--yellow-custom), 0.9)"},
-    middle: {},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
     right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
   },
   hideLegend: [],
@@ -62,8 +62,29 @@ export const rankingChangeStyleConfig = {
   },
   vennDiagramStyle: {
     left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
-    middle: {},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
     right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2'],
+}
+
+export const rankingChange2StyleConfig = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "rank-no-change",
+    inResult2: "rank-no-change",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--gray-custom), 0.9)" },
+    middle: { backgroundColor: "rgba(var(--gray-custom), 0.7)" },
+    right: { backgroundColor: "rgba(var(--gray-custom), 0.9)" },
   },
   hideLegend: ['inResult1', 'inResult2'],
 }
@@ -83,7 +104,7 @@ export const vennDiagramStyleConfig = {
   },
   vennDiagramStyle: {
     left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
-    middle: {},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
     right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
   },
   hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
@@ -104,6 +125,8 @@ export const VisualComparison = ({
     switch (selectedStyle) {
       case 'simpler':
         return rankingChangeStyleConfig;
+      case 'simpler2':
+        return rankingChange2StyleConfig;
       case 'twoColor':
         return vennDiagramStyleConfig;
       default:
@@ -401,6 +424,7 @@ export const VisualComparison = ({
                 options={[
                   { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
                   { value: 'simpler', inputDisplay: 'Ranking Change Color Coding', dropdownDisplay: 'Ranking Change Color Coding' },
+                  { value: 'simpler2', inputDisplay: 'Ranking Change Color Coding 2', dropdownDisplay: 'Ranking Change Color Coding 2' },
                   { value: 'twoColor', inputDisplay: 'Venn Diagram Color Coding', dropdownDisplay: 'Venn Diagram Color Coding' }
                 ]}
                 valueOfSelected={selectedStyle}
