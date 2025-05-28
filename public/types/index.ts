@@ -102,7 +102,7 @@ export type PairwiseComparisonExperiment =
 
 export type EvaluationExperiment =
   (ExperimentBase & {
-    type: "UBI_EVALUATION";
+    type: "POINTWISE_EVALUATION";
     searchConfigurationId: string;
     judgmentId: string;
   })
@@ -111,7 +111,7 @@ export const printType = (type: string) => {
   switch (type) {
     case "PAIRWISE_COMPARISON":
       return "Comparison";
-    case "UBI_EVALUATION":
+    case "POINTWISE_EVALUATION":
       return "Evaluation";
     default:
       return "Unknown";
@@ -135,7 +135,7 @@ export type QuerySnapshot = {
   documentIds: string[];
 }
 
-export type ParseResult<T> = 
+export type ParseResult<T> =
   | { success: true; data: T }
   | { success: false; errors: string[] };
 
@@ -265,7 +265,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
       },
     };
 
-  case "UBI_EVALUATION":
+  case "POINTWISE_EVALUATION":
     if (source.searchConfigurationList.length < 1) {
       return parseError("Missing search configuration for UBI evaluation (searchConfigurationList).");
     }
@@ -275,7 +275,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
     return {
       success: true,
       data: {
-        type: "UBI_EVALUATION",
+        type: "POINTWISE_EVALUATION",
         status: source.status,
         id: source.id,
         k: source.size,
