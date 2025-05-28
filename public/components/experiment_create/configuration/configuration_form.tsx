@@ -30,7 +30,7 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
       return {
         ...baseData,
         judgmentList: [],
-        type: "UBI_EVALUATION",
+        type: "POINTWISE_EVALUATION",
       };
     default:
       return (baseData as unknown) as

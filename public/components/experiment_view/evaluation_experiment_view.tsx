@@ -16,7 +16,7 @@ import {
 import {
     TableListView,
     reactRouterNavigate,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';  
+} from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart } from '../../../../../src/core/public';
@@ -65,7 +65,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
         const resultIds = Object.entries(_experiment.results).map(([key, value]) => value[inputExperiment.searchConfigurationId]);
         const query = {
-            index: ".plugins-search-relevance-evaluation-result",
+            index: "search-relevance-evaluation-result",
             query: {
               terms: {
                 _id: resultIds
@@ -75,7 +75,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
             body: JSON.stringify({ query1: query }),
         })
-        const parseResults = result && result.result1?.hits?.hits && combineResults(...result.result1.hits.hits.map((x) => toQueryEvaluation(x._source)))    
+        const parseResults = result && result.result1?.hits?.hits && combineResults(...result.result1.hits.hits.map((x) => toQueryEvaluation(x._source)))
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           setExperiment(_experiment);

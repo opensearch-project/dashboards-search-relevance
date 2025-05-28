@@ -56,14 +56,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
       <EuiPageHeader
         pageTitle="Experiment Visualization"
       />
-      {experiment && experiment.type === "PAIRWISE_COMPARISON" &&
+      {experiment && experiment.type === 'PAIRWISE_COMPARISON' &&
         <PairwiseExperimentViewWithRouter
           http={http}
           inputExperiment={experiment}
           history={history}
         />
       }
-      {experiment && experiment.type === "UBI_EVALUATION" &&
+      {experiment && experiment.type === 'POINTWISE_EVALUATION' &&
         <EvaluationExperimentViewWithRouter
           http={http}
           inputExperiment={experiment}
