@@ -399,6 +399,7 @@
 :root {
   --yellow-custom: 254, 245, 150;
   --purple-custom: 233, 213, 255;
+  --gray-custom: 240, 242, 244;
 }
 
 .bg-yellow-custom {
@@ -423,6 +424,11 @@
 
 .bg-purple-custom {
   background-color: rgb(var(--purple-custom));
+}
+
+.rank-no-change {
+  background-color: rgb(var(--gray-custom));
+  // border: 1px solid #000;
 }
 
 .bg-red-300 {
@@ -593,7 +599,7 @@ svg line {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  background-color: rgba(219, 234, 254, 0.7); /* bg-blue-100 with opacity */
+  // background-color: rgba(219, 234, 254, 0.7); /* bg-blue-100 with opacity */
   width: 17%;
   height: 6rem; /* h-32 */
   border-radius: 1rem; /* rounded-lg */
