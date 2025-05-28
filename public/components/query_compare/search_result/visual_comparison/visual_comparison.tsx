@@ -146,8 +146,7 @@ export const VisualComparison = ({
   ]);
 
   // State for hover item details
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const hoverTimeoutRef = useRef(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [mousePosition, setMousePosition] = useState(null);
 
   // Refs for elements
@@ -373,23 +372,15 @@ export const VisualComparison = ({
 
   };
 
-  // Function to handle hover for item details
-  const handleItemMouseEnter = (item, event) => {
-    // Clear any existing timeout to prevent flickering
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
+  // Function to handle click for item details
+  const handleItemClick = (item, event) => {
+    // Toggle the selected item - if clicking the same item, close it
+    if (selectedItem && selectedItem._id === item._id) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(item);
+      setMousePosition({ x: event.clientX, y: event.clientY });
     }
-
-    // Set the hovered item and mouse position
-    setHoveredItem(item);
-    setMousePosition({ x: event.clientX, y: event.clientY });
-  };
-
-  const handleItemMouseLeave = () => {
-    // Add a small delay before hiding the tooltip to prevent flickering
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredItem(null);
-    }, 100);
   };
 
   // Initial state (empty prompt) when no valid results
@@ -483,8 +474,7 @@ export const VisualComparison = ({
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
-                  handleItemMouseEnter={handleItemMouseEnter}
-                  handleItemMouseLeave={handleItemMouseLeave}
+                  handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                 />
@@ -513,8 +503,7 @@ export const VisualComparison = ({
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
-                  handleItemMouseEnter={handleItemMouseEnter}
-                  handleItemMouseLeave={handleItemMouseLeave}
+                  handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                 />
@@ -550,17 +539,12 @@ export const VisualComparison = ({
             )}
           </div>
 
-          {/* Item Details Tooltip on Hover */}
+          {/* Item Details Tooltip on Click */}
           <ItemDetailHoverPane
-            item={hoveredItem}
+            item={selectedItem}
             mousePosition={mousePosition}
-            onMouseEnter={() => {
-              // Prevent the tooltip from disappearing when mouse enters it
-              if (hoverTimeoutRef.current) {
-                clearTimeout(hoverTimeoutRef.current);
-              }
-            }}
-            onMouseLeave={handleItemMouseLeave}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => setSelectedItem(null)}
             imageFieldName={imageFieldName}
           />
         </EuiPageContent>

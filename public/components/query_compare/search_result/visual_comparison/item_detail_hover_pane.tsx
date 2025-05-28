@@ -91,6 +91,16 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
+      <div className="flex justify-between items-start mb-2">
+        <h3 className="text-lg font-semibold">Item Details</h3>
+        <button 
+          onClick={onMouseLeave}
+          className="text-gray-500 hover:text-gray-700"
+        >
+          ✕
+        </button>
+      </div>
+
       {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
         <>
           <div className="flex items-center mb-2">
