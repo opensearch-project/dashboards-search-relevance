@@ -32,7 +32,7 @@ export interface IndexOption {
 
 export interface ResultListComparisonFormData extends BaseFormData {}
 
-export interface UserBehaviorFormData extends BaseFormData {
+export interface PointwiseExperimentFormData extends BaseFormData {
   judgmentList: string[];
 }
 
@@ -43,7 +43,7 @@ export interface LLMFormData extends BaseFormData {
 
 export type ConfigurationFormData =
   | ResultListComparisonFormData
-  | UserBehaviorFormData
+  | PointwiseExperimentFormData
   | LLMFormData;
 
 export interface ConfigurationActionsProps {
