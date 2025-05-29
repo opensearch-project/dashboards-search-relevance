@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiFormRow } from '@elastic/eui';
 import { ResultListComparisonForm } from './form/result_list_comparison_form';
-import { UserBehaviorForm } from './form/user_behavior_form';
+import { PointwiseExperimentForm } from './form/pointwise_experiment_form';
+import { HybridOptimizerExperimentForm } from './form/hybrid_optimizer_experiment_form';
 import { LLMForm } from './form/llm_form';
 import {
   ConfigurationFormProps,
   ConfigurationFormData,
   ResultListComparisonFormData,
-  UserBehaviorFormData,
+  PointwiseExperimentFormData,
+  HybridOptimizerExperimentFormData,
   LLMFormData,
   TemplateType,
 } from './types';
@@ -35,7 +37,8 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
     default:
       return (baseData as unknown) as
         | ResultListComparisonFormData
-        | UserBehaviorFormData
+        | PointwiseExperimentFormData
+        | HybridOptimizerExperimentFormData
         | LLMFormData;
   }
 };
@@ -78,11 +81,11 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
         );
       case TemplateType.SearchEvaluation:
         return (
-          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
+          <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
         );
       case TemplateType.HybridSearchOptimizer:
         return (
-          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
+          <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
         );
       default:
         return null;

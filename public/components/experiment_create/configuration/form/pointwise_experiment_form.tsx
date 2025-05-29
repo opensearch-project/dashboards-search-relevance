@@ -6,17 +6,17 @@ import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
 
-interface UserBehaviorFormProps {
+interface PointwiseExperimentFormProps {
   formData: ResultListComparisonFormData;
   onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
   http: CoreStart['http'];
 }
 
-export const UserBehaviorForm = ({
+export const PointwiseExperimentForm = ({
   formData,
   onChange,
   http,
-}: UserBehaviorFormProps) => {
+}: PointwiseExperimentFormProps) => {
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<IndexOption[]>([]);
   const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
   const [k, setK] = useState<number>(10);
