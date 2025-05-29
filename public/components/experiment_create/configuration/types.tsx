@@ -36,6 +36,10 @@ export interface PointwiseExperimentFormData extends BaseFormData {
   judgmentList: string[];
 }
 
+export interface HybridOptimizerExperimentFormData extends BaseFormData {
+  judgmentList: string[];
+}
+
 export interface LLMFormData extends BaseFormData {
   modelId: string;
   scoreThreshold: string;
@@ -44,6 +48,7 @@ export interface LLMFormData extends BaseFormData {
 export type ConfigurationFormData =
   | ResultListComparisonFormData
   | PointwiseExperimentFormData
+  | HybridOptimizerExperimentFormData
   | LLMFormData;
 
 export interface ConfigurationActionsProps {
