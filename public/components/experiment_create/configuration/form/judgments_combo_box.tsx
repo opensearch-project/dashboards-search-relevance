@@ -41,7 +41,7 @@ export const JudgmentsComboBox = ({
   return (
     <EuiFormRow label="Judgments">
       <EuiComboBox
-        placeholder={isLoading ? 'Loading...' : 'Select judgments'}
+        placeholder={isLoading ? 'Loading...' : 'Select judgment list'}
         options={judgmentOptions}
         selectedOptions={selectedOptions}
         onChange={onChange}
@@ -54,4 +54,4 @@ export const JudgmentsComboBox = ({
       />
     </EuiFormRow>
   );
-}; 
+};
