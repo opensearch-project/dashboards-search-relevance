@@ -16,6 +16,11 @@ import {
   EuiPageHeader,
   EuiFieldText,
   EuiComboBox,
+  EuiSpacer,
+  EuiBadge,
+  EuiSwitch,
+  EuiFlexGroup,
+  EuiAccordion,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
@@ -38,8 +43,12 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
   const [type, setType] = useState<JudgmentType>(JudgmentType.LLM);
 
   // LLM specific states
-  const [querySetOptions, setQuerySetOptions] = useState<Array<{ label: string; value: string }>>([]);
-  const [selectedQuerySet, setSelectedQuerySet] = useState<Array<{ label: string; value: string }>>([]);
+  const [querySetOptions, setQuerySetOptions] = useState<Array<{ label: string; value: string }>>(
+    []
+  );
+  const [selectedQuerySet, setSelectedQuerySet] = useState<Array<{ label: string; value: string }>>(
+    []
+  );
   const [searchConfigOptions, setSearchConfigOptions] = useState<
     Array<{ label: string; value: string }>
   >([]);
@@ -48,6 +57,12 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
   >([]);
   const [size, setSize] = useState(5);
   const [modelId, setModelId] = useState('');
+  // Optional LLM states
+  const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
+  const [contextFields, setContextFields] = useState<string[]>([]);
+  const [newContextField, setNewContextField] = useState('');
+  const [tokenLimit, setTokenLimit] = useState<number>(4000);
+  const [ignoreFailure, setIgnoreFailure] = useState<boolean>(false);
 
   // UBI specific states
   const [clickModel, setClickModel] = useState('coec');
@@ -128,6 +143,20 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     return isValid;
   };
 
+  const addContextField = useCallback(() => {
+    if (newContextField && !contextFields.includes(newContextField)) {
+      setContextFields([...contextFields, newContextField]);
+      setNewContextField('');
+    }
+  }, [newContextField, contextFields]);
+
+  const removeContextField = useCallback(
+    (field: string) => {
+      setContextFields(contextFields.filter((f) => f !== field));
+    },
+    [contextFields]
+  );
+
   // Handle form submission
   const createJudgment = useCallback(() => {
     if (!validateForm()) {
@@ -143,6 +172,9 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             searchConfigurationList: selectedSearchConfigs.map((config) => config.value),
             size,
             modelId,
+            ...(contextFields.length > 0 && { contextFields }),
+            ...(tokenLimit !== 4000 && { tokenLimit: tokenLimit.toString() }),
+            ...(ignoreFailure && { ignoreFailure }),
           }
         : {
             name,
@@ -173,6 +205,9 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     http,
     notifications.toasts,
     history,
+    contextFields,
+    tokenLimit,
+    ignoreFailure,
   ]);
 
   const handleCancel = () => {
@@ -230,22 +265,23 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
               />
             </EuiCompressedFormRow>
 
-            <EuiCompressedFormRow 
-              label="Type" 
+            <EuiCompressedFormRow
+              label="Type"
               helpText={
                 <p>
                   There are many types of judgments available. Learn more in{' '}
                   <a href="https://opensearch.org/docs/latest/search-plugins/search-relevance/index/">
                     Types of Judgments
-                  </a>.
+                  </a>
+                  .
                 </p>
               }
               fullWidth
             >
               <EuiSelect
                 options={[
-                  { value: JudgmentType.LLM, text: 'LLM Judgment' },
-                  { value: JudgmentType.UBI, text: 'UBI Judgment' },
+                  { value: JudgmentType.LLM, text: 'Explicit (LLM Judge)' },
+                  { value: JudgmentType.UBI, text: 'Implicit (Click based)' },
                 ]}
                 value={type}
                 onChange={(e) => setType(e.target.value as JudgmentType)}
@@ -277,7 +313,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                   />
                 </EuiCompressedFormRow>
 
-                <EuiCompressedFormRow 
+                <EuiCompressedFormRow
                   label="K Value"
                   helpText="The number of documents from the result list to include in the judging process."
                   fullWidth
@@ -301,6 +337,99 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                     fullWidth
                   />
                 </EuiCompressedFormRow>
+
+                <EuiSpacer size="m" />
+                <EuiAccordion
+                  id="advancedSettings"
+                  buttonContent="Advanced Settings"
+                  paddingSize="m"
+                  isOpen={isAdvancedSettingsOpen}
+                  onToggle={(isOpen) => setIsAdvancedSettingsOpen(isOpen)}
+                >
+                  <EuiSpacer size="m" />
+
+                  <EuiCompressedFormRow
+                    label="Context Fields"
+                    helpText="Specify context fields used for the LLM judgment."
+                    fullWidth
+                  >
+                    <div>
+                      <EuiFlexGroup gutterSize="s">
+                        <EuiFlexItem>
+                          <EuiFieldText
+                            placeholder="Enter field name"
+                            value={newContextField}
+                            onChange={(e) => setNewContextField(e.target.value)}
+                            onKeyUp={(e) => {
+                              if (e.key === 'Enter' && newContextField.trim()) {
+                                addContextField();
+                              }
+                            }}
+                            fullWidth
+                          />
+                        </EuiFlexItem>
+                        <EuiFlexItem grow={false}>
+                          <EuiButton
+                            size="m"
+                            onClick={addContextField}
+                            isDisabled={!newContextField.trim()}
+                          >
+                            Add
+                          </EuiButton>
+                        </EuiFlexItem>
+                      </EuiFlexGroup>
+
+                      {contextFields.length > 0 && (
+                        <>
+                          <EuiSpacer size="s" />
+                          <div>
+                            {contextFields.map((field) => (
+                              <EuiBadge
+                                key={field}
+                                color="hollow"
+                                onClose={() => removeContextField(field)}
+                                style={{ marginRight: '4px', marginBottom: '4px' }}
+                              >
+                                {field}
+                              </EuiBadge>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </EuiCompressedFormRow>
+
+                  <EuiCompressedFormRow
+                    label="Token Limit"
+                    helpText="Please check token limit for the modelId (1000-500000)"
+                    fullWidth
+                  >
+                    <EuiFieldNumber
+                      value={tokenLimit}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value, 10);
+                        if (value >= 1000 && value <= 500000) {
+                          setTokenLimit(value);
+                        }
+                      }}
+                      min={1000}
+                      max={500000}
+                      fullWidth
+                    />
+                  </EuiCompressedFormRow>
+
+                  <EuiCompressedFormRow
+                    label="Ignore Failure"
+                    helpText="Continue processing even if some judgments fail"
+                    fullWidth
+                  >
+                    <EuiSwitch
+                      label="Ignore failures during judgment process"
+                      checked={ignoreFailure}
+                      onChange={(e) => setIgnoreFailure(e.target.checked)}
+                    />
+                  </EuiCompressedFormRow>
+                </EuiAccordion>
               </>
             ) : (
               <>

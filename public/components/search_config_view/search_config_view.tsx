@@ -59,7 +59,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
         </EuiFormRow>
 
         <EuiFormRow
-          label="Query Body"
+          label="Query"
           fullWidth
         >
           <EuiCodeBlock
@@ -69,16 +69,16 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
             isCopyable={true}
             whiteSpace="pre"
           >
-            {formatJson(searchConfiguration.queryBody)}
+            {formatJson(searchConfiguration.query)}
           </EuiCodeBlock>
         </EuiFormRow>
 
-        {(searchConfiguration.pipeline || searchConfiguration.template) && (
+        {(searchConfiguration.searchPipeline || searchConfiguration.template) && (
           <EuiDescriptionList type="column" compressed>
-            {searchConfiguration.pipeline && (
+            {searchConfiguration.searchPipeline && (
               <>
                 <EuiDescriptionListTitle>Search Pipeline</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>{searchConfiguration.pipeline}</EuiDescriptionListDescription>
+                <EuiDescriptionListDescription>{searchConfiguration.searchPipeline}</EuiDescriptionListDescription>
               </>
             )}
             {searchConfiguration.template && (

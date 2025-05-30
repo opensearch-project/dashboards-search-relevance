@@ -14,6 +14,7 @@ import {
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
+  EuiButton,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
@@ -173,14 +174,16 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         pageTitle="Query Sets"
         description="View and manage your existing query sets. Click on a query set name to view details."
         rightSideItems={[
-          <EuiButtonEmpty
-            iconType="arrowLeft"
+          <EuiButton
+            onClick={() => history.push('/querySet/create')}
+            fill
             size="s"
-            onClick={() => history.push('/')}
-            data-test-subj="backToHomeButton"
+            iconType="plus"
+            data-test-subj="createQuerySetButton"
+            color="primary"
           >
-            Back to Home
-          </EuiButtonEmpty>,
+            Create Query Set
+          </EuiButton>,
         ]}
       />
 

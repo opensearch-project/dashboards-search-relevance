@@ -33,14 +33,17 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   // Form state
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
-  const [queryBody, setQueryBody] = useState('');
-  const [queryBodyError, setQueryBodyError] = useState('');
-  const [searchPipeline, setSearchPipeline] = useState('');
+  const [query, setQuery] = useState('');
+  const [queryError, setQueryError] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
 
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [selectedIndex, setSelectedIndex] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(true);
+
+  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
+  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
+  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
 
   useEffect(() => {
     const fetchIndexes = async () => {
@@ -77,15 +80,15 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       setNameError('');
     }
 
-    if (!queryBody.trim()) {
-      setQueryBodyError('Query Body is required.');
+    if (!query.trim()) {
+      setQueryError('Query is required.');
       isValid = false;
     } else {
       try {
-        JSON.parse(queryBody);
-        setQueryBodyError('');
+        JSON.parse(query);
+        setQueryError('');
       } catch (e) {
-        setQueryBodyError('Query Body must be valid JSON.');
+        setQueryError('Query Body must be valid JSON.');
         isValid = false;
       }
     }
@@ -109,7 +112,8 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         body: JSON.stringify({
           name,
           index: selectedIndex[0].label,
-          queryBody,
+          query,
+          searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : '',
         }),
       })
       .then((response) => {
@@ -121,7 +125,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
           title: 'Failed to create search configuration',
         });
       });
-  }, [name, queryBody, searchPipeline, searchTemplate, history, notifications.toasts, selectedIndex]);
+  }, [name, query, searchTemplate, history, notifications.toasts, selectedIndex, selectedPipeline]);
 
   // Handle cancel action
   const handleCancel = () => {
@@ -138,10 +142,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     }
   };
 
-  const [pipelineOptions, setPipelineOptions] = useState<Array<{ label: string }>>([]);
-  const [selectedPipeline, setSelectedPipeline] = useState<Array<{ label: string }>>([]);
-  const [isLoadingPipelines, setIsLoadingPipelines] = useState(false);
-
   const fetchPipelines = async () => {
     setIsLoadingPipelines(true);
     try {
@@ -150,13 +150,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         label: pipelineId,
       }));
       setPipelineOptions(options);
-
-      // If there's an existing searchPipeline value, set it as selected
-      if (searchPipeline) {
-        setSelectedPipeline([{
-           label: searchPipeline,
-        }]);
-      }
     } catch (error) {
       notifications.toasts.addDanger('Failed to fetch search pipelines');
     } finally {
@@ -202,11 +195,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setName={setName}
               nameError={nameError}
               validateName={validateName}
-              queryBody={queryBody}
-              setQueryBody={setQueryBody}
-              queryBodyError={queryBodyError}
-              setQueryBodyError={setQueryBodyError}
-              setSearchPipeline={setSearchPipeline}
+              query={query}
+              setQuery={setQuery}
+              queryError={queryError}
+              setQueryError={setQueryError}
               searchTemplate={searchTemplate}
               setSearchTemplate={setSearchTemplate}
               indexOptions={indexOptions}
@@ -223,7 +215,8 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
         <EuiFlexItem grow={5} style={{ maxWidth: '41.67%', maxHeight: '80vh', overflow: 'auto' }}>
           <ValidationPanel
             selectedIndex={selectedIndex}
-            queryBody={queryBody}
+            selectedPipeline={selectedPipeline}
+            query={query}
             http={http}
             notifications={notifications}
           />

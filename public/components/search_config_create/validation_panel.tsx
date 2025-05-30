@@ -11,14 +11,16 @@ import { ResultsPanel } from './results_panel';
 
 interface ValidationPanelProps {
   selectedIndex: Array<{ label: string }>;
-  queryBody: string;
+  selectedPipeline: Array<{ label: string }>;
+  query: string;
   http: CoreStart['http'];
   notifications: NotificationsStart;
 }
 
 export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   selectedIndex,
-  queryBody,
+  selectedPipeline,
+  query,
   http,
   notifications,
 }) => {
@@ -32,30 +34,55 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       return;
     }
 
-    if (!queryBody.trim()) {
+    if (!query.trim()) {
       notifications.toasts.addWarning({title: 'Validation Warning', text: 'Query body is required'});
       return;
     }
 
     try {
       setIsValidating(true);
-      const replacedQueryBody = queryBody.replace(/%SearchText%/g, testSearchText || '');
-      const parsedQuery = JSON.parse(replacedQueryBody);
+      const replacedQuery = query.replace(/%SearchText%/g, testSearchText || '');
+      const parsedQuery = JSON.parse(replacedQuery);
+      const queryBody = parsedQuery.query ? parsedQuery : { query: parsedQuery };
 
       const requestBody = {
         query: {
           index: selectedIndex[0].label,
           size: 5, // hard-coded to return 5 items
-          query: parsedQuery,
+          ...queryBody,
         },
       };
+
+      // Add the pipeline to the request if it's selected
+      if (selectedPipeline.length > 0) {
+        requestBody.query.search_pipeline = selectedPipeline[0].label;
+      }
 
       const response = await http.post(ServiceEndpoints.GetSingleSearchResults, {
         body: JSON.stringify(requestBody),
       });
 
       if (!response || !response.result?.hits?.hits?.length) {
-          throw new Error('Search returned no results');
+        throw new Error('Search returned no results');
+      }
+
+      if (response.result.hits.hits) {
+        // Create a Map to store unique hits by ID
+        const uniqueHits = new Map();
+
+        response.result.hits.hits.forEach((hit) => {
+          const id = hit._id || hit._source?.id;
+          if (!uniqueHits.has(id)) {
+            uniqueHits.set(id, hit);
+          }
+        });
+
+        response.result.hits.hits = Array.from(uniqueHits.values());
+
+        console.log(
+          'Final unique hits:',
+          response.result.hits.hits.map((hit) => ({ id: hit._id, source: hit._source }))
+        );
       }
 
       setSearchResults(response.result);

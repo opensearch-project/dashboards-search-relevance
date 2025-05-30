@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiFormRow } from '@elastic/eui';
 import { ResultListComparisonForm } from './form/result_list_comparison_form';
-import { UserBehaviorForm } from './form/user_behavior_form';
+import { PointwiseExperimentForm } from './form/pointwise_experiment_form';
+import { HybridOptimizerExperimentForm } from './form/hybrid_optimizer_experiment_form';
 import { LLMForm } from './form/llm_form';
 import {
   ConfigurationFormProps,
   ConfigurationFormData,
   ResultListComparisonFormData,
-  UserBehaviorFormData,
+  PointwiseExperimentFormData,
+  HybridOptimizerExperimentFormData,
   LLMFormData,
+  TemplateType,
 } from './types';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
-const getInitialFormData = (templateType: string): ConfigurationFormData => {
+const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseData = {
     querySetId: '',
     size: 10,
@@ -20,21 +23,22 @@ const getInitialFormData = (templateType: string): ConfigurationFormData => {
   };
 
   switch (templateType) {
-    case 'Query Set Comparison':
+    case TemplateType.QuerySetComparison:
       return {
         ...baseData,
         type: "PAIRWISE_COMPARISON",
       };
-    case 'Search Evaluation':
+    case TemplateType.SearchEvaluation:
       return {
         ...baseData,
         judgmentList: [],
-        type: "UBI_EVALUATION",
+        type: "POINTWISE_EVALUATION",
       };
     default:
       return (baseData as unknown) as
         | ResultListComparisonFormData
-        | UserBehaviorFormData
+        | PointwiseExperimentFormData
+        | HybridOptimizerExperimentFormData
         | LLMFormData;
   }
 };
@@ -67,7 +71,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
 
   const renderForm = () => {
     switch (templateType) {
-      case 'Query Set Comparison':
+      case TemplateType.QuerySetComparison:
         return (
           <ResultListComparisonForm
             formData={formData as ResultListComparisonFormData}
@@ -75,23 +79,13 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
             http={http}
           />
         );
-      case 'Search Evaluation':
+      case TemplateType.SearchEvaluation:
         return (
-          <UserBehaviorForm formData={formData as UserBehaviorFormData} onChange={handleChange} http={http} />
+          <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
         );
-      case 'LLM Query Evaluation':
+      case TemplateType.HybridSearchOptimizer:
         return (
-          <>
-            <LLMForm formData={formData as LLMFormData} onChange={handleChange} />
-
-            <EuiFlexGroup justifyContent="flexEnd">
-              <EuiFlexItem grow={false}>
-                <EuiFormRow hasEmptyLabelSpace>
-                  <EuiButton onClick={handleSave}>Save Judgement</EuiButton>
-                </EuiFormRow>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </>
+          <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
         );
       default:
         return null;
