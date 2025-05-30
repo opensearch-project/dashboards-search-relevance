@@ -74,25 +74,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       sortable: true,
     },
     {
-      field: 'query',
-      name: 'Query',
-      dataType: 'string',
-      sortable: false,
-      render: (query: string) => (
-        <EuiText
-          size="s"
-          style={{
-            maxWidth: '400px',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {query}
-        </EuiText>
-      ),
-    },
-    {
       field: 'timestamp',
       name: 'Timestamp',
       dataType: 'string',
