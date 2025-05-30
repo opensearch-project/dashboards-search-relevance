@@ -19,6 +19,17 @@ export const renderApp = (
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
   const { notifications, http, chrome, savedObjects, application, uiSettings } = coreStart;
+  const props = {
+    notifications,
+    http,
+    navigation,
+    chrome,
+    savedObjects,
+    dataSourceEnabled: !!dataSource,
+    dataSourceManagement,
+    setActionMenu: setHeaderActionMenu,
+    application,
+  };
 
   ReactDOM.render(
     <OpenSearchDashboardsContextProvider services={coreStart}>
@@ -29,7 +40,7 @@ export const renderApp = (
         setHeaderActionMenu={setHeaderActionMenu}
         navigation={navigation}
       >
-        <SearchRelevanceApp/>
+        <SearchRelevanceApp {...props} />
       </ConfigProvider>
     </OpenSearchDashboardsContextProvider>,
     element

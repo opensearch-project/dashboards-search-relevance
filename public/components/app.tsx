@@ -3,12 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { EuiGlobalToastList } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
+import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
+import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
+import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE, ServiceEndpoints } from "../../common";
 import { SearchRelevanceContextProvider } from '../contexts';
-import { EuiPageSideBar, EuiSideNav, EuiTitle, EuiSpacer, EuiPage, EuiPageBody } from '@elastic/eui';
+import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
+import { EuiPageSideBar, EuiSideNav, EuiTitle, EuiSpacer, EuiPage, EuiPageBody, EuiLoadingSpinner } from '@elastic/eui';
 import { ExperimentListingWithRoute } from './experiment_listing';
 import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
 import { TemplateCards } from './experiment_create/template_card/template_cards';
@@ -37,6 +43,19 @@ enum Navigation {
   Judgments = 'Judgments',
 }
 
+interface SearchRelevanceAppDeps {
+  notifications: CoreStart['notifications'];
+  http: CoreStart['http'];
+  navigation: NavigationPublicPluginStart;
+  chrome: CoreStart['chrome'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
+  setActionMenu: (menuMount: MountPoint | undefined) => void;
+  application: CoreStart['application'];
+  isNewExperienceEnabled?: boolean;
+}
+
 const SearchRelevancePage = ({history}) => {
   const location = useLocation();
   const { http, notifications } = useOpenSearchDashboards().services;
@@ -57,7 +76,6 @@ const SearchRelevancePage = ({history}) => {
 
   const [selectedNavItem, setSelectedNavItem] = useState<Navigation | null>(routeToSelectedNavItem(location.pathname));
 
-  // The following two functions connect the Experiment sub menus to the cards
   const extractSelectedTemplate = (selectedNavItem: Navigation) => {
     if (selectedNavItem === Navigation.ExperimentsSingleQueryComparison) {
       return TemplateType.SingleQueryComparison;
@@ -194,7 +212,7 @@ const SearchRelevancePage = ({history}) => {
 
   return (
     <EuiPage restrictWidth={'100%'}>
-      <EuiPageSideBar style={{ minWidth: 200 }}>          
+      <EuiPageSideBar style={{ minWidth: 200 }}>
         <EuiSideNav style={{ width: 200 }} items={sideNavItems} />
       </EuiPageSideBar>
       <EuiPageBody>
@@ -255,8 +273,78 @@ const SearchRelevancePage = ({history}) => {
 
 const SearchRelevancePageWithRouter = withRouter(SearchRelevancePage);
 
-export const SearchRelevanceApp = () => {
-  return (
+export const SearchRelevanceApp = ({
+                                     notifications,
+                                     http,
+                                     navigation,
+                                     chrome,
+                                     savedObjects,
+                                     dataSourceEnabled,
+                                     setActionMenu,
+                                     dataSourceManagement,
+                                     application,
+                                   }: SearchRelevanceAppDeps) => {
+  // Move all useState declarations to the top
+  const [isNewExperienceEnabled, setIsNewExperienceEnabled] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [toastRightSide, setToastRightSide] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchClusterSettings = async () => {
+      try {
+        const response = await http.get(ServiceEndpoints.GetClusterSettings);
+        console.log('Full cluster settings response:', response);
+
+        // Check both persistent and defaults settings
+        const persistentEnabled = response?.persistent?.plugins?.search_relevance?.workbench_enabled === 'true';
+        const defaultsEnabled = response?.defaults?.plugins?.search_relevance?.workbench_enabled === 'true';
+
+        // Use persistent setting if available, otherwise use defaults
+        const enabled = persistentEnabled || defaultsEnabled;
+
+        console.log('workbench_enabled from persistent:', persistentEnabled);
+        console.log('workbench_enabled from defaults:', defaultsEnabled);
+        console.log('final isNewExperienceEnabled:', enabled);
+        setIsNewExperienceEnabled(enabled);
+      } catch (error) {
+        console.error('Error fetching cluster settings:', error);
+        notifications.toasts.addError(error as Error, {
+          title: 'Error fetching cluster settings',
+          toastLifeTimeMs: 5000
+        });
+        setIsNewExperienceEnabled(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchClusterSettings();
+  }, [http, notifications]);
+
+  if (isLoading) {
+    return <EuiLoadingSpinner size="xl" />;
+  }
+
+  const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+
+  const parentBreadCrumbs = getNavGroupEnabled
+    ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
+    : [{ text: PLUGIN_NAME, href: '#' }];
+
+  const setToast = (title: string, color = 'success', text?: ReactChild, side?: string) => {
+    if (!text) text = '';
+    setToastRightSide(!side ? true : false);
+    setToasts([...toasts, { id: new Date().toISOString(), title, text, color } as Toast]);
+  };
+
+  if (isLoading) {
+    return (
+      <EuiLoadingSpinner size="xl" />
+    );
+  }
+
+  const renderNewExperience = () => (
     <HashRouter>
       <I18nProvider>
         <SearchRelevanceContextProvider>
@@ -265,4 +353,48 @@ export const SearchRelevanceApp = () => {
       </I18nProvider>
     </HashRouter>
   );
+
+  const renderOldExperience = () => (
+    <HashRouter>
+      <I18nProvider>
+        <SearchRelevanceContextProvider>
+          <>
+            <EuiGlobalToastList
+              toasts={toasts}
+              dismissToast={(removedToast) => {
+                setToasts(toasts.filter((toast) => toast.id !== removedToast.id));
+              }}
+              side={toastRightSide ? 'right' : 'left'}
+              toastLifeTimeMs={6000}
+            />
+            <Switch>
+              <Route
+                path={['/']}
+                render={(props) => {
+                  return (
+                    <QueryCompareHome
+                      application={application}
+                      parentBreadCrumbs={parentBreadCrumbs}
+                      notifications={notifications}
+                      http={http}
+                      navigation={navigation}
+                      setBreadcrumbs={chrome.setBreadcrumbs}
+                      setToast={setToast}
+                      chrome={chrome}
+                      savedObjects={savedObjects}
+                      dataSourceEnabled={dataSourceEnabled}
+                      dataSourceManagement={dataSourceManagement}
+                      setActionMenu={setActionMenu}
+                    />
+                  );
+                }}
+              />
+            </Switch>
+          </>
+        </SearchRelevanceContextProvider>
+      </I18nProvider>
+    </HashRouter>
+  );
+
+  return isNewExperienceEnabled ? renderNewExperience() : renderOldExperience();
 };
