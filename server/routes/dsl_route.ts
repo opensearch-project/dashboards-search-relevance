@@ -352,4 +352,49 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       });
     }
   );
+
+  router.get(
+    {
+      path: ServiceEndpoints.GetClusterSettings,
+      validate: {},
+    },
+    async (context, request, response) => {
+      const params = {
+        include_defaults: true,
+      };
+      const start = performance.now();
+      try {
+        let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+        if (dataSourceEnabled && request.params.dataSourceId) {
+          callApi = context.dataSource.opensearch.legacy.getClient(request.params.dataSourceId).callAPI;
+        } else {
+          callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        }
+        const resp = await callApi('cluster.getSettings', params);
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_CLUSTER_SETTINGS,
+          200,
+          end - start
+        );
+        return response.ok({
+          body: resp,
+        });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_CLUSTER_SETTINGS,
+          error.statusCode,
+          end - start
+        );
+        if (error.statusCode !== 404) console.error(error);
+        return response.custom({
+          statusCode: error.statusCode || 400,
+          body: error.message,
+        });
+      }
+    }
+  );
 }

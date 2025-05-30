@@ -14,6 +14,7 @@ export enum ServiceEndpoints {
   GetSearchResults = '/api/relevancy/search',
   GetSingleSearchResults = '/api/relevancy/single_search',
   GetStats = '/api/relevancy/stats',
+  GetClusterSettings = '/api/relevancy/cluster_settings',
 
   // Search Relevance node APIs
   QuerySets = '/api/relevancy/query_sets',
