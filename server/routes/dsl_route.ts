@@ -135,14 +135,9 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         const start = performance.now();
         try {
           let resp;
-          const invalidCharactersPattern = /[\s,:\"*+\/\\|?#><]/;
-          if (
-            index !== index.toLowerCase() ||
-            index.startsWith('_') ||
-            index.startsWith('-') ||
-            invalidCharactersPattern.test(index)
-          ) {
-            throw new Error('Index invalid or missing.');
+          const invalidCharactersPattern = /[\s,\"*+\/\\|?#><]/;
+          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
+            throw new Error("Index invalid or missing.");
           }
           if (
             pipeline !== '*' &&
@@ -218,7 +213,25 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         } else {
           callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
         }
-        const resp = await callApi('cat.indices', params);
+        let resp = await callApi('cat.indices', params);
+        const remoteConnections = await callApi('transport.request',{
+          method: 'GET',
+          path: "/_remote/info",
+        });
+        if (Object.keys(remoteConnections).length > 0) { // fetch remote indices if remote clusters exist
+          const remoteClusters = Object.keys(remoteConnections)
+            .map((key) => `${key}:*`)
+            .join(',');
+          const resolveResponse = await callApi('transport.request',{
+            method: 'GET',
+            path: `/_resolve/index/${remoteClusters}`,
+          });
+          let remoteIndices = resolveResponse.indices.map((item: { name: string }) => ({
+            index: item.name,
+            format: 'json'
+          }));
+          resp = resp.concat(remoteIndices);
+        }
         const end = performance.now();
         context.searchRelevance.metricsService.addMetric(
           METRIC_NAME.SEARCH_RELEVANCE,
