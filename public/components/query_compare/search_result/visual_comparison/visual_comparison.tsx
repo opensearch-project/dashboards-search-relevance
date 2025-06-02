@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent, EuiSuperSelect, EuiFormRow } from '@elastic/eui';
+import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent, EuiSuperSelect, EuiFormRow, EuiAccordion } from '@elastic/eui';
 
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
@@ -407,25 +407,6 @@ export const VisualComparison = ({
         <EuiPageContent>
           <h3 className="text-lg font-semibold mb-2">Results for query: <em>{queryText}</em></h3>
 
-          {/* Style selector dropdown */}
-          <div className="mb-4">
-            <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
-              <EuiSuperSelect
-                id="style-selector"
-                options={[
-                  { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
-                  { value: 'simpler', inputDisplay: 'Ranking Change Color Coding', dropdownDisplay: 'Ranking Change Color Coding' },
-                  { value: 'simpler2', inputDisplay: 'Ranking Change Color Coding 2', dropdownDisplay: 'Ranking Change Color Coding 2' },
-                  { value: 'twoColor', inputDisplay: 'Venn Diagram Color Coding', dropdownDisplay: 'Venn Diagram Color Coding' }
-                ]}
-                valueOfSelected={selectedStyle}
-                onChange={(value) => setSelectedStyle(value)}
-                fullWidth
-                hasDividers
-              />
-            </EuiFormRow>
-          </div>
-
           {/* Field selector dropdown */}
           <div className="mb-4">
             <EuiFormRow label="Display Field:" id="fieldSelectorForm">
@@ -537,6 +518,31 @@ export const VisualComparison = ({
                 <div className={`w-4 h-4 ${statusClassName.inResult2} mr-1`}></div> Only in {resultText2}
               </div>
             )}
+          </div>
+
+          {/* Style selector dropdown */}
+          <div className="mt-4">
+            <EuiAccordion
+              id="styleSelectorAccordion"
+              buttonContent={<span className="text-xs">Visualization Style Options</span>}
+              paddingSize="m"
+            >
+              <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
+                <EuiSuperSelect
+                  id="style-selector"
+                  options={[
+                    { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
+                    { value: 'simpler', inputDisplay: 'Ranking Change Color Coding', dropdownDisplay: 'Ranking Change Color Coding' },
+                    { value: 'simpler2', inputDisplay: 'Ranking Change Color Coding 2', dropdownDisplay: 'Ranking Change Color Coding 2' },
+                    { value: 'twoColor', inputDisplay: 'Venn Diagram Color Coding', dropdownDisplay: 'Venn Diagram Color Coding' }
+                  ]}
+                  valueOfSelected={selectedStyle}
+                  onChange={(value) => setSelectedStyle(value)}
+                  fullWidth
+                  hasDividers
+                />
+              </EuiFormRow>
+            </EuiAccordion>
           </div>
 
           {/* Item Details Tooltip on Click */}
