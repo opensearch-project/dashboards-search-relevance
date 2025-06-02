@@ -15,9 +15,7 @@ export const registerCompareQueryCard = (
   contentManagement: ContentManagementPluginStart,
   core: CoreStart
 ) => {
-  const icon = (
-    <EuiIcon size="original" aria-label="compare search queries" type={compareQueriesIcon} />
-  );
+  const icon = <EuiIcon size="original" aria-label="search relevance" type={compareQueriesIcon} />;
 
   const footer = (
     <EuiFlexGroup justifyContent="flexEnd">
@@ -28,8 +26,8 @@ export const registerCompareQueryCard = (
             core.application.navigateToApp(PLUGIN_ID);
           }}
         >
-          {i18n.translate('searchRelevanceDashboards.compareQueryCard.footer', {
-            defaultMessage: 'Compare search results',
+          {i18n.translate('searchRelevanceDashboards.searchRelevanceCard.footer', {
+            defaultMessage: 'Search relevance',
           })}
         </EuiButton>
       </EuiFlexItem>
@@ -37,17 +35,17 @@ export const registerCompareQueryCard = (
   );
 
   contentManagement.registerContentProvider({
-    id: 'compare_query_card',
+    id: 'search_relevance_card',
     getContent: () => ({
-      id: 'compare_query',
+      id: 'search_relevance',
       kind: 'card',
       order: 20,
-      title: i18n.translate('searchRelevanceDashboards.compareQueryCard.title', {
-        defaultMessage: 'Compare queries',
+      title: i18n.translate('searchRelevanceDashboards.searchRelevanceCard.title', {
+        defaultMessage: 'Search relevance',
       }),
-      description: i18n.translate('searchRelevanceDashboards.compareQueryCard.description', {
+      description: i18n.translate('searchRelevanceDashboards.searchRelevanceCard.description', {
         defaultMessage:
-          'The search comparison tool lets you compare the results of two different DSL queries applied to the same user query.',
+          'The search relevance tool lets you compare or evaluate the results of various DSL queries.',
       }),
       getIcon: () => icon,
       cardProps: {

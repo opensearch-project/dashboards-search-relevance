@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { TableContent } from './types';
 import { QuerySetOption, SearchConfigOption } from '../experiment_create/configuration/types';
 

@@ -30,12 +30,18 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
   const validateSearchQuery = async () => {
     if (!selectedIndex.length) {
-      notifications.toasts.addWarning({title: 'Validation Warning', text: 'No index. Please select an index'});
+      notifications.toasts.addWarning({
+        title: 'Validation Warning',
+        text: 'No index. Please select an index',
+      });
       return;
     }
 
     if (!query.trim()) {
-      notifications.toasts.addWarning({title: 'Validation Warning', text: 'Query body is required'});
+      notifications.toasts.addWarning({
+        title: 'Validation Warning',
+        text: 'Query body is required',
+      });
       return;
     }
 
@@ -78,11 +84,6 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
         });
 
         response.result.hits.hits = Array.from(uniqueHits.values());
-
-        console.log(
-          'Final unique hits:',
-          response.result.hits.hits.map((hit) => ({ id: hit._id, source: hit._source }))
-        );
       }
 
       setSearchResults(response.result);

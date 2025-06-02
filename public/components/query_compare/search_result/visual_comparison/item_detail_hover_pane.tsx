@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useRef, useEffect, useState } from 'react';
 
 interface Position {
@@ -7,28 +12,45 @@ interface Position {
 
 interface ItemDetailHoverPaneProps {
   item: any;
-  mousePosition: { x: number, y: number } | null;
+  mousePosition: { x: number; y: number } | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   imageFieldName: string | null;
 }
+
+const EXCLUDED_FIELDS = [
+  '_id',
+  '_score',
+  'rank',
+  'rank1',
+  'rank2',
+  'score1',
+  'score2',
+  'change',
+  'status',
+];
+const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i;
 
 export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
   item,
   mousePosition,
   onMouseEnter,
   onMouseLeave,
-  imageFieldName
+  imageFieldName,
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState<Position>({ top: 0, left: 0 });
-  
+
   // Calculate tooltip position based on mouse position and viewport
   useEffect(() => {
     if (!mousePosition) return;
-    
+
     // Get viewport dimensions
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    // Calculate tooltip width (approximately 30% of viewport)
+    const tooltipWidth = viewportWidth * 0.3;
+    // Calculate position with 1/6th viewport width spacing
+    const spacing = viewportWidth / 6;
 
     // Get mouse position
     const mouseX = mousePosition.x;
@@ -38,40 +60,18 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
     const spaceOnRight = viewportWidth - mouseX;
     const spaceOnLeft = mouseX;
 
-    // Calculate tooltip width (approximately 30% of viewport)
-    const tooltipWidth = viewportWidth * 0.3;
+    const left =
+      spaceOnRight > spaceOnLeft
+        ? Math.min(mousePosition.x + spacing, viewportWidth - tooltipWidth - 20)
+        : Math.max(20, mousePosition.x - spacing - tooltipWidth);
 
-    // Calculate position with 1/6th viewport width spacing
-    const spacing = viewportWidth / 6;
-    let left;
-
-    // Place tooltip on the side with more space
-    if (spaceOnRight > spaceOnLeft) {
-      // Position on right side with spacing
-      left = mouseX + spacing;
-      // Ensure tooltip stays within viewport
-      if (left + tooltipWidth > viewportWidth - 20) {
-        left = viewportWidth - tooltipWidth - 20;
-      }
-    } else {
-      // Position on left side with spacing
-      left = mouseX - spacing - tooltipWidth;
-      // Ensure tooltip stays within viewport
-      if (left < 20) {
-        left = 20;
-      }
-    }
-
-    // Calculate vertical position relative to mouse pointer
-    // Center it vertically with the mouse position if possible
-    let top = mouseY - 200; // Assume tooltip is about 400px tall
-
-    // Ensure tooltip stays within viewport vertically
-    if (top < 20) {
-      top = 20;
-    } else if (top + 400 > viewportHeight - 20) {
-      top = viewportHeight - 400 - 20;
-    }
+    const top = Math.max(
+      20,
+      Math.min(
+        mousePosition.y - 200,
+        viewportHeight - 420 // 400 + 20 padding
+      )
+    );
 
     // Update tooltip position
     setTooltipPosition({ left, top });
@@ -86,22 +86,19 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
         left: `${tooltipPosition.left}px`,
         top: `${tooltipPosition.top}px`,
         maxHeight: '400px',
-        overflow: 'auto'
+        overflow: 'auto',
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <div className="flex justify-between items-start mb-2">
         <h3 className="text-lg font-semibold">Item Details</h3>
-        <button 
-          onClick={onMouseLeave}
-          className="text-gray-500 hover:text-gray-700"
-        >
+        <button onClick={onMouseLeave} className="text-gray-500 hover:text-gray-700">
           ✕
         </button>
       </div>
 
-      {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+      {imageFieldName && item[imageFieldName] && item[imageFieldName].match(IMAGE_REGEX) ? (
         <>
           <div className="flex items-center mb-2">
             <div className="w-16 h-16 flex-shrink-0 mr-3">
@@ -113,7 +110,7 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
               />
             </div>
           </div>
-          <div className="border-t border-b py-2 mb-2"></div>
+          <div className="border-t border-b py-2 mb-2" />
         </>
       ) : null}
 
@@ -122,14 +119,14 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
           <span className="font-semibold">ID:</span> <span className="font-mono">{item._id}</span>
         </div>
       </div>
-      
+
       {/* Display all fields from the item */}
       {Object.entries(item)
-        .filter(([key]) => !['_id', '_score', 'rank', 'rank1', 'rank2', 'score1', 'score2', 'change', 'status'].includes(key))
+        .filter(([key]) => !EXCLUDED_FIELDS.includes(key))
         .filter(([key, value]) => typeof value === 'string')
         .map(([key, value]) => (
           <div key={key} className="mb-1 text-sm">
-            <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span> 
+            <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
             {typeof value === 'string' && value.length > 100 ? (
               <p className="text-xs mt-1">{String(value)}</p>
             ) : (

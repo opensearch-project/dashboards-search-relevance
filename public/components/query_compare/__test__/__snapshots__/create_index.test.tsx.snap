@@ -40,7 +40,7 @@ exports[`Create index component Renders create index component 1`] = `
           <h1
             className="euiTitle euiTitle--medium"
           >
-            Compare search results
+            Search Relevance Workbench
           </h1>
         </EuiTitle>
         <EuiText>
@@ -48,7 +48,7 @@ exports[`Create index component Renders create index component 1`] = `
             className="euiText euiText--medium"
           >
             <p>
-              Compare results using the same search text with different queries.
+              Compare/Evaluate results using the same search text with different queries.
                
               <EuiLink
                 href="https://opensearch.org/docs/latest/search-plugins/search-relevance"

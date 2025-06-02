@@ -38,24 +38,15 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
 
     return (
       <EuiForm>
-        <EuiFormRow
-          label="Judgment Name"
-          fullWidth
-        >
+        <EuiFormRow label="Judgment Name" fullWidth>
           <EuiText>{judgment.name}</EuiText>
         </EuiFormRow>
 
-        <EuiFormRow
-          label="Type"
-          fullWidth
-        >
+        <EuiFormRow label="Type" fullWidth>
           <EuiText>{judgment.type}</EuiText>
         </EuiFormRow>
 
-        <EuiFormRow
-          label="Metadata"
-          fullWidth
-        >
+        <EuiFormRow label="Metadata" fullWidth>
           <EuiText>
             {Object.entries(judgment.metadata).map(([key, value]) => (
               <p key={key}>
@@ -65,23 +56,18 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
           </EuiText>
         </EuiFormRow>
 
-        <EuiFormRow
-          label="JudgmentScores"
-          fullWidth
-        >
+        <EuiFormRow label="JudgmentRatings" fullWidth>
           <EuiPanel
             paddingSize="s"
             hasShadow={false}
             style={{ maxHeight: '200px', overflow: 'auto' }}
           >
             <EuiCodeBlock language="json" paddingSize="s" isCopyable>
-              {JSON.stringify(judgment.judgmentScores, null, 2)}
+              {JSON.stringify(judgment.judgmentRatings, null, 2)}
             </EuiCodeBlock>
           </EuiPanel>
         </EuiFormRow>
       </EuiForm>
-
-
     );
   };
 
@@ -99,6 +85,7 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
           setError('No matching judgment found');
         }
       } catch (err) {
+        console.error('Failed to load judgment', err);
         setError('Error loading judgment data');
         // eslint-disable-next-line no-console
         console.error(err);
@@ -120,10 +107,7 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
 
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
-      <EuiPageHeader
-        pageTitle="Judgment Details"
-        description="View the details of your judgment"
-      />
+      <EuiPageHeader pageTitle="Judgment Details" description="View the details of your judgment" />
       <EuiSpacer size="l" />
       <EuiPanel hasBorder={true}>
         <JudgmentViewPane />

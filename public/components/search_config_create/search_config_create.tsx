@@ -101,9 +101,11 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       return;
     }
 
-    console.log("selectedIndex", selectedIndex);
     if (selectedIndex.length === 0) {
-      notifications.toasts.addWarning({title: 'Invalid input', text: 'No index. Please select an index'});
+      notifications.toasts.addWarning({
+        title: 'Invalid input',
+        text: 'No index. Please select an index',
+      });
       return;
     }
 
@@ -146,7 +148,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     setIsLoadingPipelines(true);
     try {
       const response = await http.get(ServiceEndpoints.GetPipelines);
-      const options = Object.keys(response).map(pipelineId => ({
+      const options = Object.keys(response).map((pipelineId) => ({
         label: pipelineId,
       }));
       setPipelineOptions(options);

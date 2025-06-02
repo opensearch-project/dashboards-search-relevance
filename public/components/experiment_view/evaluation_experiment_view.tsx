@@ -4,22 +4,22 @@
  */
 
 import {
-    EuiButtonEmpty,
-    EuiCallOut,
-    EuiPanel,
-    EuiResizableContainer,
-    EuiDescriptionList,
-    EuiDescriptionListTitle,
-    EuiDescriptionListDescription,
-    EuiSpacer,
-  } from '@elastic/eui';
-import {
-    TableListView,
-    reactRouterNavigate,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
+  EuiButtonEmpty,
+  EuiCallOut,
+  EuiPanel,
+  EuiResizableContainer,
+  EuiDescriptionList,
+  EuiDescriptionListTitle,
+  EuiDescriptionListDescription,
+  EuiSpacer,
+} from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart } from '../../../../../src/core/public';
+import {
+  TableListView,
+  reactRouterNavigate,
+} from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart, ToastsStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import {
   Experiment,
@@ -37,10 +37,16 @@ import { MetricsSummaryPanel } from './metrics_summary';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  notifications: CoreStart['notifications'];
   inputExperiment: EvaluationExperiment;
 }
 
-export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> = ({ http, inputExperiment, history }) => {
+export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> = ({
+  http,
+  notifications,
+  inputExperiment,
+  history,
+}) => {
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [querySet, setQuerySet] = useState<any | null>(null);
@@ -58,24 +64,47 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const _experiment = await http.get(ServiceEndpoints.Experiments + "/" + inputExperiment.id).then(sanitizeResponse)
-        const _searchConfiguration = _experiment && await http.get(ServiceEndpoints.SearchConfigurations + "/" + inputExperiment.searchConfigurationId).then(sanitizeResponse);
-        const _querySet = _experiment && await http.get(ServiceEndpoints.QuerySets + "/" + inputExperiment.querySetId).then(sanitizeResponse);
-        const _judgmentSet = _experiment && await http.get(ServiceEndpoints.Judgments + "/" + inputExperiment.judgmentId).then(sanitizeResponse);
+        const _experiment = await http
+          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id)
+          .then(sanitizeResponse);
+        const _searchConfiguration =
+          _experiment &&
+          (await http
+            .get(
+              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId
+            )
+            .then(sanitizeResponse));
+        const _querySet =
+          _experiment &&
+          (await http
+            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId)
+            .then(sanitizeResponse));
+        const _judgmentSet =
+          _experiment &&
+          (await http
+            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
+            .then(sanitizeResponse));
 
-        const resultIds = Object.entries(_experiment.results).map(([key, value]) => value[inputExperiment.searchConfigurationId]);
+        // the .filter(Boolean) is used to filter out undefineds which show up for queries that are ZSR.
+        const resultIds = Object.entries(_experiment.results)
+          .map(([key, value]) => value[inputExperiment.searchConfigurationId])
+          .filter(Boolean);
+
         const query = {
-            index: "search-relevance-evaluation-result",
-            query: {
-              terms: {
-                _id: resultIds
-              }
-            }
-          }
+          index: 'search-relevance-evaluation-result',
+          query: {
+            terms: {
+              _id: resultIds,
+            },
+          },
+        };
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query1: query }),
-        })
-        const parseResults = result && result.result1?.hits?.hits && combineResults(...result.result1.hits.hits.map((x) => toQueryEvaluation(x._source)))
+          body: JSON.stringify({ query1: query }),
+        });
+        const parseResults =
+          result &&
+          result.result1?.hits?.hits &&
+          combineResults(...result.result1.hits.hits.map((x) => toQueryEvaluation(x._source)));
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           setExperiment(_experiment);
@@ -84,6 +113,20 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           setJudgmentSet(_judgmentSet);
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
+            // Check if there are ZSR queries by comparing resultIds count with query set count
+            if (
+              _querySet &&
+              _querySet.querySetQueries &&
+              Object.keys(_querySet.querySetQueries).length > resultIds.length
+            ) {
+              const zsrCount = Object.keys(_querySet.querySetQueries).length - resultIds.length;
+              notifications.toasts.addWarning({
+                title: 'You have some ZSR queries',
+                text: `${zsrCount} queries returned Zero Search Results`,
+                'data-test-subj': 'zsrQueriesWarningToast',
+                toastLifeTimeMs: 10000,
+              });
+            }
           } else {
             setError('Error parsing experiment');
             console.error('Error parsing query evaluations:', parseResults.errors);
@@ -93,9 +136,10 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           setError('No matching experiment found');
         }
       } catch (err) {
+        console.error('Failed to load experiment', err);
         setExperiment(null);
         setError('Error loading experiment data');
-        console.error("Error loading experiment data:", err);
+        console.error('Error loading experiment data:', err);
       } finally {
       }
     };
@@ -105,60 +149,61 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
   function extractMetricNames(queryEvaluations: any): string[] {
     if (queryEvaluations.length > 0) {
-      return Object.keys(queryEvaluations[0].metrics)
+      return Object.keys(queryEvaluations[0].metrics);
     }
     return [];
   }
 
   useEffect(() => {
     if (experiment) {
-      const metricNames = extractMetricNames(queryEvaluations)
+      const metricNames = extractMetricNames(queryEvaluations);
 
-      let columns = [
+      const columns = [
         {
-            field: 'queryText',
-            name: 'Query',
-            dataType: 'string',
-            sortable: true,
+          field: 'queryText',
+          name: 'Query',
+          dataType: 'string',
+          sortable: true,
         },
-      ]
-      metricNames.forEach(metricName => {
+      ];
+      metricNames.forEach((metricName) => {
         columns.push({
-        field: 'metrics.' + metricName,
-        name: metricName,
-        dataType: 'number',
-        sortable: true,
-        render: (value) => {
+          field: 'metrics.' + metricName,
+          name: metricName,
+          dataType: 'number',
+          sortable: true,
+          render: (value) => {
             if (value !== undefined && value !== null) {
-            return new Intl.NumberFormat(undefined, {
+              return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-            }).format(value);
+              }).format(value);
             }
             return '-';
-        }
-        })
-      })
+          },
+        });
+      });
 
-      setTableColumns(columns)
+      setTableColumns(columns);
       setLoading(false);
     }
-  }, [experiment, queryEvaluations])
+  }, [experiment, queryEvaluations]);
 
-  const findQueries = useCallback(async (search: any) => {
-    const filteredQueryEntries = search ?
-      queryEvaluations.filter(q => q.queryText.includes(search)) :
-      queryEvaluations;
-    return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
-  }, [queryEvaluations]);
+  const findQueries = useCallback(
+    async (search: any) => {
+      const filteredQueryEntries = search
+        ? queryEvaluations.filter((q) => q.queryText.includes(search))
+        : queryEvaluations;
+      return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
+    },
+    [queryEvaluations]
+  );
 
   const experimentDetails = (
     <EuiPanel hasBorder={true}>
       <EuiDescriptionList type="column" compressed>
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
-        <EuiDescriptionListDescription>
-          {printType(experiment?.type)}
-        </EuiDescriptionListDescription>
+        <EuiDescriptionListDescription>{printType(experiment?.type)}</EuiDescriptionListDescription>
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -170,21 +215,24 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         </EuiDescriptionListDescription>
         <EuiDescriptionListTitle>Search Configuration</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
-            <EuiButtonEmpty
+          <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/searchConfiguration/view/${inputExperiment.searchConfigurationId}`)}
-            >
+            {...reactRouterNavigate(
+              history,
+              `/searchConfiguration/view/${inputExperiment.searchConfigurationId}`
+            )}
+          >
             {searchConfiguration?.name}
-            </EuiButtonEmpty>
+          </EuiButtonEmpty>
         </EuiDescriptionListDescription>
         <EuiDescriptionListTitle>Judgment Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
-            <EuiButtonEmpty
+          <EuiButtonEmpty
             size="xs"
             {...reactRouterNavigate(history, `/judgment/view/${inputExperiment.judgmentId}`)}
-            >
+          >
             {judgmentSet?.name}
-            </EuiButtonEmpty>
+          </EuiButtonEmpty>
         </EuiDescriptionListDescription>
       </EuiDescriptionList>
     </EuiPanel>
@@ -192,31 +240,31 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
   const resultsPane = (
     <EuiPanel hasBorder paddingSize="l">
-              {error ? (
-                <EuiCallOut title="Error" color="danger">
-                  <p>{error}</p>
-                </EuiCallOut>
-              ) : (
-                <TableListView
-                  key={`table-${queryEvaluations.length}`}
-                  entityName="Query"
-                  entityNamePlural="Queries"
-                  tableColumns={tableColumns}
-                  findItems={findQueries}
-                  loading={loading}
-                  pagination={{
-                    initialPageSize: 10,
-                    pageSizeOptions: [5, 10, 20, 50],
-                  }}
-                  search={{
-                    box: {
-                      incremental: true,
-                      placeholder: 'Query...',
-                      schema: true,
-                    },
-                  }}
-                />
-              )}
+      {error ? (
+        <EuiCallOut title="Error" color="danger">
+          <p>{error}</p>
+        </EuiCallOut>
+      ) : (
+        <TableListView
+          key={`table-${queryEvaluations.length}`}
+          entityName="Query"
+          entityNamePlural="Queries"
+          tableColumns={tableColumns}
+          findItems={findQueries}
+          loading={loading}
+          pagination={{
+            initialPageSize: 10,
+            pageSizeOptions: [5, 10, 20, 50],
+          }}
+          search={{
+            box: {
+              incremental: true,
+              placeholder: 'Query...',
+              schema: true,
+            },
+          }}
+        />
+      )}
     </EuiPanel>
   );
 
@@ -224,14 +272,11 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     <>
       {experimentDetails}
       <EuiSpacer size="m" />
-      <MetricsSummaryPanel
-        metrics={queryEvaluations.map(q => q.metrics)}
-      />
+      <MetricsSummaryPanel metrics={queryEvaluations.map((q) => q.metrics)} />
       <EuiSpacer size="m" />
       {resultsPane}
     </>
   );
-
 };
 
 export const EvaluationExperimentViewWithRouter = withRouter(EvaluationExperimentView);

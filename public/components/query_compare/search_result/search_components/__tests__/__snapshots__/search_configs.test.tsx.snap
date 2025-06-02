@@ -292,7 +292,14 @@ exports[`Flyout component Renders flyout component 1`] = `
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            label="Pipeline-optional"
+                            label={
+                              <p>
+                                Pipeline 
+                                <i>
+                                   - optional 
+                                </i>
+                              </p>
+                            }
                             labelType="label"
                           >
                             <div
@@ -312,7 +319,12 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline-optional
+                                    <p>
+                                      Pipeline 
+                                      <i>
+                                         - optional 
+                                      </i>
+                                    </p>
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -1057,7 +1069,14 @@ exports[`Flyout component Renders flyout component 1`] = `
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            label="Pipeline-optional"
+                            label={
+                              <p>
+                                Pipeline 
+                                <i>
+                                   - optional 
+                                </i>
+                              </p>
+                            }
                             labelType="label"
                           >
                             <div
@@ -1077,7 +1096,12 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline-optional
+                                    <p>
+                                      Pipeline 
+                                      <i>
+                                         - optional 
+                                      </i>
+                                    </p>
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -1870,7 +1894,14 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            label="Pipeline-optional"
+                            label={
+                              <p>
+                                Pipeline 
+                                <i>
+                                   - optional 
+                                </i>
+                              </p>
+                            }
                             labelType="label"
                           >
                             <div
@@ -1890,7 +1921,12 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline-optional
+                                    <p>
+                                      Pipeline 
+                                      <i>
+                                         - optional 
+                                      </i>
+                                    </p>
                                   </label>
                                 </EuiFormLabel>
                               </div>
@@ -2631,7 +2667,14 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                             fullWidth={true}
                             hasChildLabel={true}
                             hasEmptyLabelSpace={false}
-                            label="Pipeline-optional"
+                            label={
+                              <p>
+                                Pipeline 
+                                <i>
+                                   - optional 
+                                </i>
+                              </p>
+                            }
                             labelType="label"
                           >
                             <div
@@ -2651,7 +2694,12 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                                     className="euiFormLabel euiFormRow__label"
                                     htmlFor="random_html_id"
                                   >
-                                    Pipeline-optional
+                                    <p>
+                                      Pipeline 
+                                      <i>
+                                         - optional 
+                                      </i>
+                                    </p>
                                   </label>
                                 </EuiFormLabel>
                               </div>

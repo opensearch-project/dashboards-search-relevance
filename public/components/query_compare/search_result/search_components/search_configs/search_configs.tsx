@@ -50,7 +50,7 @@ export const SearchConfigsPanel = ({
   setActionMenu,
   navigation,
   dataSourceOptions,
-  notifications
+  notifications,
 }: SearchConfigsPanelProps) => {
   const {
     selectedIndex1,

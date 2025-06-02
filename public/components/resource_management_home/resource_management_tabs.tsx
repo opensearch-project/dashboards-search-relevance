@@ -104,7 +104,11 @@ export const ResourceManagementTabs = ({
               ) : (
                 <></>
               )}
-              {entityAction === 'view' ? <ExperimentViewWithRouter http={http} id={entityId} /> : <></>}
+              {entityAction === 'view' ? (
+                <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />
+              ) : (
+                <></>
+              )}
               {selectedSubTabs === 'create' ? <TemplateCards onClose={() => {}} /> : <></>}
             </EuiPanel>
           </>
@@ -176,9 +180,13 @@ export const ResourceManagementTabs = ({
               ) : (
                 <></>
               )}
-              {entityAction === 'view' ? <JudgmentView http={http} id={entityId}/> : <></>}
+              {entityAction === 'view' ? <JudgmentView http={http} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? (
-                <JudgmentCreateWithRouter http={http} notifications={notifications} history={history}/>
+                <JudgmentCreateWithRouter
+                  http={http}
+                  notifications={notifications}
+                  history={history}
+                />
               ) : (
                 <></>
               )}

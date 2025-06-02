@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React from 'react';
 
 interface ResultItemsProps {
@@ -24,22 +29,33 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
   return (
     <div id={`result${resultNum}-items`}>
       {items.map((item, index) => (
-        <div 
+        <div
           key={`r${resultNum}-${index}`}
           id={`r${resultNum}-item-${item._id}`}
-          ref={el => {
+          ref={(el) => {
             if (el) {
               (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el;
             }
           }}
-          className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded cursor-pointer`}
+          className={`flex ${
+            resultNum === 1 ? 'flex-row-reverse' : ''
+          } items-center mb-2 hover:bg-gray-100 p-1 rounded cursor-pointer`}
           onClick={(event) => handleItemClick(item, event)}
         >
-          <div className={`w-8 h-8 rounded-full ${getStatusColor(item, resultNum)} flex items-center justify-center font-bold ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
+          <div
+            className={`w-8 h-8 rounded-full ${getStatusColor(
+              item,
+              resultNum
+            )} flex items-center justify-center font-bold ${
+              resultNum === 1 ? 'ml-2' : 'mr-2'
+            } flex-shrink-0`}
+          >
             {item.rank}
           </div>
           <div className={`w-8 h-8 ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
-            {imageFieldName && item[imageFieldName] && item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+            {imageFieldName &&
+            item[imageFieldName] &&
+            item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
               <img
                 width="32"
                 height="32"
@@ -47,9 +63,7 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
                 className="w-8 h-8 object-cover rounded"
               />
             ) : (
-              <div
-                className="w-8 h-8 object-cover rounded"
-              />
+              <div className="w-8 h-8 object-cover rounded" />
             )}
           </div>
           <div className="font-mono text-sm truncate overflow-hidden">
@@ -59,4 +73,4 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
       ))}
     </div>
   );
-}; 
+};
