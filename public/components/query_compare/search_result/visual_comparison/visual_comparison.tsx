@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent, EuiSuperSelect, EuiFormRow } from '@elastic/eui';
+import { EuiPanel, EuiEmptyPrompt, EuiPage, EuiPageBody, EuiPageContent, EuiSuperSelect, EuiFormRow, EuiAccordion } from '@elastic/eui';
 
 import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
@@ -26,6 +26,90 @@ export const convertFromSearchResult = (searchResult) => {
   }));
 }
 
+export const defaultStyleConfig = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "bg-yellow-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--yellow-custom), 0.9)"},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: [],
+}
+
+export const rankingChangeStyleConfig = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "bg-purple-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2'],
+}
+
+export const rankingChange2StyleConfig = {
+  lineColors: {
+    unchanged: { stroke: "#93C5FD", strokeWidth: 4 },
+    increased: { stroke: "#86EFAC", strokeWidth: 4 },
+    decreased: { stroke: "#FCA5A5", strokeWidth: 4 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-300",
+    increased: "bg-green-300",
+    decreased: "bg-red-300",
+    inResult1: "rank-no-change",
+    inResult2: "rank-no-change",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--gray-custom), 0.9)" },
+    middle: { backgroundColor: "rgba(var(--gray-custom), 0.7)" },
+    right: { backgroundColor: "rgba(var(--gray-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2'],
+}
+
+export const vennDiagramStyleConfig = {
+  lineColors: {
+    unchanged: { stroke: "black", strokeWidth: 2 },
+    increased: { stroke: "black", strokeWidth: 2 },
+    decreased: { stroke: "black", strokeWidth: 2 },
+  },
+  statusClassName: {
+    unchanged: "bg-blue-100",
+    increased: "bg-blue-100",
+    decreased: "bg-blue-100",
+    inResult1: "bg-purple-custom",
+    inResult2: "bg-purple-custom",
+  },
+  vennDiagramStyle: {
+    left: { backgroundColor: "rgba(var(--purple-custom), 0.9)"},
+    middle: { backgroundColor: "rgba(219, 234, 254, 0.7)" },
+    right: { backgroundColor: "rgba(var(--purple-custom), 0.9)" },
+  },
+  hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
+}
+
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
@@ -33,6 +117,25 @@ export const VisualComparison = ({
   resultText1,
   resultText2,
 }: OpenSearchComparisonProps) => {
+  // Add state for selected style
+  const [selectedStyle, setSelectedStyle] = useState('default');
+  
+  // Get the style based on selection
+  const getCurrentStyle = () => {
+    switch (selectedStyle) {
+      case 'simpler':
+        return rankingChangeStyleConfig;
+      case 'simpler2':
+        return rankingChange2StyleConfig;
+      case 'twoColor':
+        return vennDiagramStyleConfig;
+      default:
+        return defaultStyleConfig;
+    }
+  };
+
+  const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = getCurrentStyle();
+
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
   const [imageFieldName, setImageFieldName] = useState(null);
@@ -43,8 +146,7 @@ export const VisualComparison = ({
   ]);
 
   // State for hover item details
-  const [hoveredItem, setHoveredItem] = useState(null);
-  const hoverTimeoutRef = useRef(null);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [mousePosition, setMousePosition] = useState(null);
 
   // Refs for elements
@@ -74,19 +176,19 @@ export const VisualComparison = ({
   const vennDiagram = (
     <div className="venn-container">
       {/* Result 1 rectangle (left) */}
-      <div className="venn-left">
+      <div className="venn-left" style={vennDiagramStyle.left}>
         <div className="venn-value">{statistics.onlyInResult1}</div>
         <div className="venn-label">Unique</div>
       </div>
       
       {/* Intersection (middle) */}
-      <div className="venn-middle">
+      <div className="venn-middle" style={vennDiagramStyle.middle}>
         <div className="venn-value">{statistics.inBoth}</div>
         <div className="venn-label">Common</div>
       </div>
       
       {/* Result 2 rectangle (right) */}
-      <div className="venn-right">
+      <div className="venn-right" style={vennDiagramStyle.right}>
         <div className="venn-value">{statistics.onlyInResult2}</div>
         <div className="venn-label">Unique</div>
       </div>
@@ -238,42 +340,47 @@ export const VisualComparison = ({
 
   // Color function for item status
   const getStatusColor = (item, resultNum) => {
-    if (resultNum === 1) {
-      // For Result 1 items
-      const matchingItem = result2.find(r2 => r2._id === item._id);
-      if (!matchingItem) return "bg-yellow-300"; // Only in Result 1
-      
-      if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank < matchingItem.rank) return "bg-red-300"; // Dropped in Result 2
-      return "bg-green-300"; // Improved in Result 2
+    const isResult1 = resultNum === 1;
+    const otherResult = isResult1 ? result2 : result1;
+    const matchingItem = otherResult.find(r => r._id === item._id);
+
+    if (!matchingItem) {
+      if (isResult1) {
+        return statusClassName.inResult1;
+      } else {
+        return statusClassName.inResult2;
+      }
+    }
+    
+    if (isResult1) {
+      if (item.rank === matchingItem.rank) {
+        return statusClassName.unchanged;
+      } else if (item.rank > matchingItem.rank) {
+        return statusClassName.increased;
+      } else {
+        return statusClassName.decreased;
+      }
     } else {
-      // For Result 2 items
-      const matchingItem = result1.find(r1 => r1._id === item._id);
-      if (!matchingItem) return "bg-purple-300"; // Only in Result 2
-      
-      if (item.rank === matchingItem.rank) return "bg-blue-300"; // Same position
-      if (item.rank > matchingItem.rank) return "bg-red-300"; // Improved from Result 1
-      return "bg-green-300"; // Dropped from Result 1
-    }
-  };
-
-  // Function to handle hover for item details
-  const handleItemMouseEnter = (item, event) => {
-    // Clear any existing timeout to prevent flickering
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
+      if (item.rank === matchingItem.rank) {
+        return statusClassName.unchanged;
+      } else if (item.rank > matchingItem.rank) {
+        return statusClassName.decreased;
+      } else {
+        return statusClassName.increased;
+      }
     }
 
-    // Set the hovered item and mouse position
-    setHoveredItem(item);
-    setMousePosition({ x: event.clientX, y: event.clientY });
   };
 
-  const handleItemMouseLeave = () => {
-    // Add a small delay before hiding the tooltip to prevent flickering
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredItem(null);
-    }, 100);
+  // Function to handle click for item details
+  const handleItemClick = (item, event) => {
+    // Toggle the selected item - if clicking the same item, close it
+    if (selectedItem && selectedItem._id === item._id) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem(item);
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    }
   };
 
   // Initial state (empty prompt) when no valid results
@@ -348,8 +455,7 @@ export const VisualComparison = ({
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
-                  handleItemMouseEnter={handleItemMouseEnter}
-                  handleItemMouseLeave={handleItemMouseLeave}
+                  handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                 />
@@ -363,6 +469,7 @@ export const VisualComparison = ({
                   result2={result2}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  lineColors={lineColors}
                 />
                 <div className="w-full h-full flex items-center justify-center">
                   {/* Center area for any additional stats */}
@@ -377,8 +484,7 @@ export const VisualComparison = ({
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
-                  handleItemMouseEnter={handleItemMouseEnter}
-                  handleItemMouseLeave={handleItemMouseLeave}
+                  handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                 />
@@ -386,35 +492,65 @@ export const VisualComparison = ({
             </div>
           </div>
 
-          <div className="mt-4 flex gap-4 text-sm">
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-blue-300 mr-1"></div> Same position
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-green-300 mr-1"></div> Improved position
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-red-300 mr-1"></div> Dropped position
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-yellow-300 mr-1"></div> Only in {resultText1}
-            </div>
-            <div className="flex items-center">
-              <div className="w-4 h-4 bg-purple-300 mr-1"></div> Only in {resultText2}
-            </div>
+          <div className="mt-4 flex gap-4 text-sm justify-center">
+            { !hideLegend.includes('unchanged') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.unchanged} mr-1`}></div> Unchanged rank
+              </div>
+            )}
+            { !hideLegend.includes('increased') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.increased} mr-1`}></div> Increased rank
+              </div>
+            )}
+            { !hideLegend.includes('decreased') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.decreased} mr-1`}></div> Decreased rank
+              </div>
+            )}
+            { !hideLegend.includes('inResult1') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.inResult1} mr-1`}></div> Only in {resultText1}
+              </div>
+            )}
+            { !hideLegend.includes('inResult2') && (
+              <div className="flex items-center">
+                <div className={`w-4 h-4 ${statusClassName.inResult2} mr-1`}></div> Only in {resultText2}
+              </div>
+            )}
           </div>
 
-          {/* Item Details Tooltip on Hover */}
+          {/* Style selector dropdown */}
+          <div className="mt-4">
+            <EuiAccordion
+              id="styleSelectorAccordion"
+              buttonContent={<span className="text-xs">Visualization Style Options</span>}
+              paddingSize="m"
+            >
+              <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
+                <EuiSuperSelect
+                  id="style-selector"
+                  options={[
+                    { value: 'default', inputDisplay: 'Default Style', dropdownDisplay: 'Default Style' },
+                    { value: 'simpler', inputDisplay: 'Ranking Change Color Coding', dropdownDisplay: 'Ranking Change Color Coding' },
+                    { value: 'simpler2', inputDisplay: 'Ranking Change Color Coding 2', dropdownDisplay: 'Ranking Change Color Coding 2' },
+                    { value: 'twoColor', inputDisplay: 'Venn Diagram Color Coding', dropdownDisplay: 'Venn Diagram Color Coding' }
+                  ]}
+                  valueOfSelected={selectedStyle}
+                  onChange={(value) => setSelectedStyle(value)}
+                  fullWidth
+                  hasDividers
+                />
+              </EuiFormRow>
+            </EuiAccordion>
+          </div>
+
+          {/* Item Details Tooltip on Click */}
           <ItemDetailHoverPane
-            item={hoveredItem}
+            item={selectedItem}
             mousePosition={mousePosition}
-            onMouseEnter={() => {
-              // Prevent the tooltip from disappearing when mouse enters it
-              if (hoverTimeoutRef.current) {
-                clearTimeout(hoverTimeoutRef.current);
-              }
-            }}
-            onMouseLeave={handleItemMouseLeave}
+            onMouseEnter={() => {}}
+            onMouseLeave={() => setSelectedItem(null)}
             imageFieldName={imageFieldName}
           />
         </EuiPageContent>

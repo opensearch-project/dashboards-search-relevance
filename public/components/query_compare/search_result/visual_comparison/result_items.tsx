@@ -6,8 +6,7 @@ interface ResultItemsProps {
   imageFieldName?: string;
   displayField: string;
   getStatusColor: (item: any, resultNum: number) => string;
-  handleItemMouseEnter: (item: any, event: React.MouseEvent) => void;
-  handleItemMouseLeave: () => void;
+  handleItemClick: (item: any, event: React.MouseEvent) => void;
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
 }
@@ -18,8 +17,7 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
   imageFieldName,
   displayField,
   getStatusColor,
-  handleItemMouseEnter,
-  handleItemMouseLeave,
+  handleItemClick,
   result1ItemsRef,
   result2ItemsRef,
 }) => {
@@ -34,9 +32,8 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
               (resultNum === 1 ? result1ItemsRef : result2ItemsRef).current[item._id] = el;
             }
           }}
-          className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded`}
-          onMouseEnter={(event) => handleItemMouseEnter(item, event)}
-          onMouseLeave={handleItemMouseLeave}
+          className={`flex ${resultNum === 1 ? 'flex-row-reverse' : ''} items-center mb-2 hover:bg-gray-100 p-1 rounded cursor-pointer`}
+          onClick={(event) => handleItemClick(item, event)}
         >
           <div className={`w-8 h-8 rounded-full ${getStatusColor(item, resultNum)} flex items-center justify-center font-bold ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
             {item.rank}
