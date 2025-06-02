@@ -172,7 +172,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             searchConfigurationList: selectedSearchConfigs.map((config) => config.value),
             size,
             modelId,
-            ...(contextFields.length > 0 && { contextFields }),
+            contextFields,
             ...(tokenLimit !== 4000 && { tokenLimit: tokenLimit.toString() }),
             ...(ignoreFailure && { ignoreFailure }),
           }
@@ -387,7 +387,13 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                               <EuiBadge
                                 key={field}
                                 color="hollow"
-                                onClose={() => removeContextField(field)}
+                                iconType="cross"
+                                iconSide="right"
+                                iconOnClick={() => {
+                                  console.log('Removing field:', field); // For debugging
+                                  removeContextField(field);
+                                }}
+                                iconOnClickAriaLabel={`Remove ${field} from context fields`}
                                 style={{ marginRight: '4px', marginBottom: '4px' }}
                               >
                                 {field}
@@ -414,6 +420,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                       }}
                       min={1000}
                       max={500000}
+                      step={1000} // Add step value for larger increments
                       fullWidth
                     />
                   </EuiCompressedFormRow>
