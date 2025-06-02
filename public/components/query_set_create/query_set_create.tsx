@@ -71,7 +71,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
             if (parsed.queryText) {
               queryList.push({
                 queryText: String(parsed.queryText).trim(),
-                referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : ''
+                referenceAnswer: parsed.referenceAnswer
+                  ? String(parsed.referenceAnswer).trim()
+                  : '',
               });
             }
           } catch (e) {
@@ -89,12 +91,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
         // Store the raw query objects instead of converting to string
         setManualQueries(JSON.stringify(queryList));
-        setParsedQueries(queryList.map(q => JSON.stringify(q)));
+        setParsedQueries(queryList.map((q) => JSON.stringify(q)));
         setFiles([file]);
         setManualQueriesError('');
-
-        console.log('Parsed query list:', queryList);
-
       } catch (error) {
         console.error('Error processing file:', error);
         setManualQueriesError('Error reading file content');
@@ -185,7 +184,6 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       },
     })
       .then((response) => {
-        console.log('Response:', response);
         notifications.toasts.addSuccess(`Query set "${name}" created successfully`);
         history.push('/querySet');
       })
@@ -272,7 +270,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 size="s"
                 iconType={isManualInput ? 'aggregate' : 'inputOutput'}
               >
-                Switch to {isManualInput ? 'sampling queries from UBI data' : 'manually adding queries'}
+                Switch to{' '}
+                {isManualInput ? 'sampling queries from UBI data' : 'manually adding queries'}
               </EuiButton>
             </EuiFormRow>
             {/* Name field */}
@@ -378,10 +377,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
             )}
           </EuiForm>
           {isManualInput && parsedQueries.length > 0 && (
-            <EuiFormRow
-              fullWidth
-              label="Parsed Queries Preview"
-            >
+            <EuiFormRow fullWidth label="Parsed Queries Preview">
               <EuiPanel paddingSize="s">
                 <EuiText size="s">
                   <h4>Preview ({parsedQueries.length} queries)</h4>
@@ -390,7 +386,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                       const parsed = JSON.parse(query);
                       return (
                         <li key={idx}>
-                          <strong>Query:</strong> {parsed.queryText}<br />
+                          <strong>Query:</strong> {parsed.queryText}
+                          <br />
                           <strong>Reference:</strong> {parsed.referenceAnswer}
                         </li>
                       );

@@ -5,8 +5,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
 import {
   EuiPageTemplate,
   EuiPageHeader,
@@ -20,15 +18,14 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
 } from '@elastic/eui';
+import { CoreStart } from '../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../common';
 
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
-export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({
-  http,
-  id,
-}) => {
+export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id }) => {
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,24 +41,15 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
 
     return (
       <EuiForm>
-        <EuiFormRow
-          label="Search Configuration Name"
-          fullWidth
-        >
+        <EuiFormRow label="Search Configuration Name" fullWidth>
           <EuiText>{searchConfiguration.name}</EuiText>
         </EuiFormRow>
 
-        <EuiFormRow
-          label="Index"
-          fullWidth
-        >
+        <EuiFormRow label="Index" fullWidth>
           <EuiText>{searchConfiguration.index}</EuiText>
         </EuiFormRow>
 
-        <EuiFormRow
-          label="Query"
-          fullWidth
-        >
+        <EuiFormRow label="Query" fullWidth>
           <EuiCodeBlock
             language="json"
             fontSize="m"
@@ -78,13 +66,17 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
             {searchConfiguration.searchPipeline && (
               <>
                 <EuiDescriptionListTitle>Search Pipeline</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>{searchConfiguration.searchPipeline}</EuiDescriptionListDescription>
+                <EuiDescriptionListDescription>
+                  {searchConfiguration.searchPipeline}
+                </EuiDescriptionListDescription>
               </>
             )}
             {searchConfiguration.template && (
               <>
                 <EuiDescriptionListTitle>Search Template</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>{searchConfiguration.template}</EuiDescriptionListDescription>
+                <EuiDescriptionListDescription>
+                  {searchConfiguration.template}
+                </EuiDescriptionListDescription>
               </>
             )}
           </EuiDescriptionList>
@@ -107,6 +99,7 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
           setError('No matching search configuration found');
         }
       } catch (err) {
+        console.error('Failed to load search config', err);
         setError('Error loading search configuration data');
         // eslint-disable-next-line no-console
         console.error(err);

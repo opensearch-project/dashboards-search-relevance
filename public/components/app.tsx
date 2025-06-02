@@ -5,19 +5,32 @@
 
 import { EuiGlobalToastList } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
+import {
+  EuiPageSideBar,
+  EuiSideNav,
+  EuiTitle,
+  EuiSpacer,
+  EuiPage,
+  EuiPageBody,
+  EuiLoadingSpinner,
+} from '@elastic/eui';
 import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE, ServiceEndpoints } from "../../common";
+import {
+  PLUGIN_NAME,
+  COMPARE_SEARCH_RESULTS_TITLE,
+  SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED,
+  ServiceEndpoints,
+  Routes,
+} from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
-import { EuiPageSideBar, EuiSideNav, EuiTitle, EuiSpacer, EuiPage, EuiPageBody, EuiLoadingSpinner } from '@elastic/eui';
 import { ExperimentListingWithRoute } from './experiment_listing';
 import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
-import { TemplateCards } from './experiment_create/template_card/template_cards';
 import { QuerySetListingWithRoute } from './query_set_listing';
 import { SearchConfigurationListingWithRoute } from './search_config_listing';
 import { JudgmentListingWithRoute } from './judgment_listing';
@@ -27,8 +40,9 @@ import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
 import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
 import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
-import { GetStartedAccordion } from './resource_management_home/get_started_accordion';
-import { TemplateType } from './experiment_create/configuration/types';
+import { GetStartedAccordion } from './experiment_create/get_started_accordion';
+import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
+import { TemplateConfigurationWithRouter } from './experiment_create/configuration/template_configuration';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -53,59 +67,32 @@ interface SearchRelevanceAppDeps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
-  isNewExperienceEnabled?: boolean;
+  uiSettings: CoreStart['uiSettings'];
 }
 
-const SearchRelevancePage = ({history}) => {
+interface SearchRelevancePageProps extends SearchRelevanceAppDeps {
+  history: any; // From withRouter
+}
+
+const SearchRelevancePage = ({
+  history,
+  application,
+  notifications,
+  http,
+  navigation,
+  chrome,
+  savedObjects,
+  dataSourceEnabled,
+  dataSourceManagement,
+  setActionMenu,
+}: SearchRelevancePageProps) => {
   const location = useLocation();
-  const { http, notifications } = useOpenSearchDashboards().services;
+  const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
 
-  const routeToSelectedNavItem = (pathname: string) => {
-    if (pathname === '/') {
-      return Navigation.Overview;
-    } else if (pathname.startsWith('/experiment')) {
-      return Navigation.Experiments;
-    } else if (pathname.startsWith('/querySet')) {
-      return Navigation.QuerySets;
-    } else if (pathname.startsWith('/searchConfiguration')) {
-      return Navigation.SearchConfigurations;
-    } else if (pathname.startsWith('/judgment')) {
-      return Navigation.Judgments;
-    }
-  }
-
-  const [selectedNavItem, setSelectedNavItem] = useState<Navigation | null>(routeToSelectedNavItem(location.pathname));
-
-  const extractSelectedTemplate = (selectedNavItem: Navigation) => {
-    if (selectedNavItem === Navigation.ExperimentsSingleQueryComparison) {
-      return TemplateType.SingleQueryComparison;
-    }
-    if (selectedNavItem === Navigation.ExperimentsQuerySetComparison) {
-      return TemplateType.QuerySetComparison;
-    }
-    if (selectedNavItem === Navigation.ExperimentsSearchEvaluation) {
-      return TemplateType.SearchEvaluation;
-    }
-    if (selectedNavItem === Navigation.ExperimentsHybridOptimizer) {
-      return TemplateType.HybridSearchOptimizer;
-    }
-    return null;
-  }
-
-  const onCardClick = (templateId: TemplateType) => {
-    if (templateId === TemplateType.SingleQueryComparison) {
-      setSelectedNavItem(Navigation.ExperimentsSingleQueryComparison);
-    }
-    if (templateId === TemplateType.QuerySetComparison) {
-      setSelectedNavItem(Navigation.ExperimentsQuerySetComparison);
-    }
-    if (templateId === TemplateType.SearchEvaluation) {
-      setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
-    }
-    if (templateId === TemplateType.HybridSearchOptimizer) {
-      setSelectedNavItem(Navigation.ExperimentsHybridOptimizer);
-    }
-  }
+  const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
+  const parentBreadCrumbs = getNavGroupEnabled
+    ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
+    : [{ text: PLUGIN_NAME, href: '#' }];
 
   const sideNavItems = [
     {
@@ -123,92 +110,79 @@ const SearchRelevancePage = ({history}) => {
       },
       items: [
         {
-          name: Navigation.Overview,
-          id: Navigation.Overview,
-          onClick: () => {
-            history.push('/');
-            setSelectedNavItem(Navigation.Overview);
-          },
-          isSelected: selectedNavItem === Navigation.Overview
-        },
-        {
           name: Navigation.Experiments,
           id: Navigation.Experiments,
           onClick: () => {
-            history.push("/experiment");
-            setSelectedNavItem(Navigation.Experiments);
+            history.push(Routes.Home);
           },
-          isSelected: selectedNavItem === Navigation.Experiments,
+          isSelected:
+            location.pathname === Routes.Home ||
+            location.pathname.startsWith(Routes.ExperimentViewPrefix),
           forceOpen: true,
           items: [
             {
               name: Navigation.ExperimentsSingleQueryComparison,
               id: Navigation.ExperimentsSingleQueryComparison,
               onClick: () => {
-                history.push("/experiment/create");
-                setSelectedNavItem(Navigation.ExperimentsSingleQueryComparison);
+                history.push(Routes.ExperimentCreateSingleQueryComparison);
               },
-              isSelected: selectedNavItem === Navigation.ExperimentsSingleQueryComparison,
+              isSelected: location.pathname.startsWith(
+                Routes.ExperimentCreateSingleQueryComparison
+              ),
             },
             {
               name: Navigation.ExperimentsQuerySetComparison,
               id: Navigation.ExperimentsQuerySetComparison,
               onClick: () => {
-                history.push("/experiment/create");
-                setSelectedNavItem(Navigation.ExperimentsQuerySetComparison);
+                history.push(Routes.ExperimentCreateQuerySetComparison);
               },
-              isSelected: selectedNavItem === Navigation.ExperimentsQuerySetComparison,
+              isSelected: location.pathname.startsWith(Routes.ExperimentCreateQuerySetComparison),
             },
             {
               name: Navigation.ExperimentsSearchEvaluation,
               id: Navigation.ExperimentsSearchEvaluation,
               onClick: () => {
-                history.push("/experiment/create");
-                setSelectedNavItem(Navigation.ExperimentsSearchEvaluation);
+                history.push(Routes.ExperimentCreateSearchEvaluation);
               },
-              isSelected: selectedNavItem === Navigation.ExperimentsSearchEvaluation,
+              isSelected: location.pathname.startsWith(Routes.ExperimentCreateSearchEvaluation),
             },
             {
               name: Navigation.ExperimentsHybridOptimizer,
               id: Navigation.ExperimentsHybridOptimizer,
               onClick: () => {
-                history.push("/experiment/create");
-                setSelectedNavItem(Navigation.ExperimentsHybridOptimizer);
+                history.push(Routes.ExperimentCreateHybridOptimizer);
               },
-              isSelected: selectedNavItem === Navigation.ExperimentsHybridOptimizer,
+              isSelected: location.pathname.startsWith(Routes.ExperimentCreateHybridOptimizer),
             },
-          ]
+          ],
         },
         {
           name: Navigation.QuerySets,
           id: Navigation.QuerySets,
           onClick: () => {
-            history.push("/querySet");
-            setSelectedNavItem(Navigation.QuerySets);
+            history.push(Routes.QuerySetListing);
           },
-          isSelected: selectedNavItem === Navigation.QuerySets,
+          isSelected: location.pathname.startsWith(Routes.QuerySetListing),
         },
         {
           name: Navigation.SearchConfigurations,
           id: Navigation.SearchConfigurations,
           onClick: () => {
-            history.push("/searchConfiguration");
-            setSelectedNavItem(Navigation.SearchConfigurations);
+            history.push(Routes.SearchConfigurationListing);
           },
-          isSelected: selectedNavItem === Navigation.SearchConfigurations,
+          isSelected: location.pathname.startsWith(Routes.SearchConfigurationListing),
         },
         {
           name: Navigation.Judgments,
           id: Navigation.Judgments,
           onClick: () => {
-            history.push("/judgment");
-            setSelectedNavItem(Navigation.Judgments);
+            history.push(Routes.JudgmentListing);
           },
-          isSelected: selectedNavItem === Navigation.Judgments,
+          isSelected: location.pathname.startsWith(Routes.JudgmentListing),
         },
       ],
     },
-  ]
+  ];
 
   return (
     <EuiPage restrictWidth={'100%'}>
@@ -217,54 +191,142 @@ const SearchRelevancePage = ({history}) => {
       </EuiPageSideBar>
       <EuiPageBody>
         <Switch>
-          <Route path="/" exact render={() => {
-            return <GetStartedAccordion isOpen={true} />;
-          }} />
-          <Route path="/experiment" exact render={() => {
-            return <ExperimentListingWithRoute http={http} />;
-          }} />
-          <Route path="/querySet" exact render={() => {
-            return <QuerySetListingWithRoute http={http} />;
-          }} />
-          <Route path="/searchConfiguration" exact render={() => {
-            return <SearchConfigurationListingWithRoute http={http} />;
-          }} />
-          <Route path="/judgment" exact render={() => {
-            return <JudgmentListingWithRoute http={http} />;
-          }} />
-          <Route path="/experiment/view/:entityId" exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <ExperimentViewWithRouter http={http} id={entityId} />;
-          }} />
-          <Route path="/querySet/view/:entityId" exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <QuerySetView http={http} id={entityId} />;
-          }} />
-          <Route path="/searchConfiguration/view/:entityId" exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <SearchConfigurationView http={http} id={entityId} />;
-          }} />
-          <Route path="/judgment/view/:entityId" exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <JudgmentView http={http} id={entityId} />;
-          }} />
-          <Route path="/experiment/create" exact render={() => {
-            return <TemplateCards
-              key={`selection-${selectedNavItem}`}
-              onClose={() => {}}
-              inputSelectedTemplate={extractSelectedTemplate(selectedNavItem)}
-              onCardClick={onCardClick}
-            />;
-          }} />
-          <Route path="/querySet/create" exact render={() => {
-            return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
-          }} />
-          <Route path="/searchConfiguration/create" exact render={() => {
-            return <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />;
-          }} />
-          <Route path="/judgment/create" exact render={() => {
-            return <JudgmentCreateWithRouter http={http} notifications={notifications} history={history}/>;
-          }} />
+          <Route
+            path={Routes.Home}
+            exact
+            render={() => {
+              return <ExperimentListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.QuerySetListing}
+            exact
+            render={() => {
+              return <QuerySetListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationListing}
+            exact
+            render={() => {
+              return <SearchConfigurationListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.JudgmentListing}
+            exact
+            render={() => {
+              return <JudgmentListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.ExperimentView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return (
+                <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />
+              );
+            }}
+          />
+          <Route
+            path={Routes.QuerySetView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <QuerySetView http={http} id={entityId} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <SearchConfigurationView http={http} id={entityId} />;
+            }}
+          />
+          <Route
+            path={Routes.JudgmentView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <JudgmentView http={http} id={entityId} />;
+            }}
+          />
+          <Route
+            path={Routes.ExperimentCreateTemplate}
+            exact
+            render={(props) => {
+              const templateId = routeToTemplateType(props.match.params.templateId);
+              if (templateId === TemplateType.SingleQueryComparison) {
+                return (
+                  <QueryCompareHome
+                    application={application}
+                    parentBreadCrumbs={parentBreadCrumbs}
+                    notifications={notifications}
+                    http={http}
+                    navigation={navigation}
+                    setBreadcrumbs={chrome.setBreadcrumbs}
+                    chrome={chrome}
+                    savedObjects={savedObjects}
+                    dataSourceEnabled={dataSourceEnabled}
+                    dataSourceManagement={dataSourceManagement}
+                    setActionMenu={setActionMenu}
+                    setToast={(title: string, color = 'success', text?: React.ReactNode) => {
+                      if (color === 'success') {
+                        notifications.toasts.addSuccess({ title, text });
+                      } else if (color === 'warning') {
+                        notifications.toasts.addWarning({ title, text });
+                      } else if (color === 'danger') {
+                        notifications.toasts.addDanger({ title, text });
+                      } else {
+                        notifications.toasts.add({ title, text });
+                      }
+                    }}
+                  />
+                );
+              } else {
+                return (
+                  <TemplateConfigurationWithRouter
+                    templateType={templateId}
+                    onBack={() => {
+                      history.goBack();
+                    }}
+                    onClose={() => {}}
+                  />
+                );
+              }
+            }}
+          />
+          <Route
+            path={Routes.QuerySetCreate}
+            exact
+            render={() => {
+              return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationCreate}
+            exact
+            render={() => {
+              return (
+                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
+              );
+            }}
+          />
+          <Route
+            path={Routes.JudgmentCreate}
+            exact
+            render={() => {
+              return (
+                <JudgmentCreateWithRouter
+                  http={http}
+                  notifications={notifications}
+                  history={history}
+                />
+              );
+            }}
+          />
         </Switch>
       </EuiPageBody>
     </EuiPage>
@@ -274,57 +336,20 @@ const SearchRelevancePage = ({history}) => {
 const SearchRelevancePageWithRouter = withRouter(SearchRelevancePage);
 
 export const SearchRelevanceApp = ({
-                                     notifications,
-                                     http,
-                                     navigation,
-                                     chrome,
-                                     savedObjects,
-                                     dataSourceEnabled,
-                                     setActionMenu,
-                                     dataSourceManagement,
-                                     application,
-                                   }: SearchRelevanceAppDeps) => {
+  notifications,
+  http,
+  navigation,
+  chrome,
+  savedObjects,
+  dataSourceEnabled,
+  setActionMenu,
+  dataSourceManagement,
+  application,
+  uiSettings,
+}: SearchRelevanceAppDeps) => {
   // Move all useState declarations to the top
-  const [isNewExperienceEnabled, setIsNewExperienceEnabled] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchClusterSettings = async () => {
-      try {
-        const response = await http.get(ServiceEndpoints.GetClusterSettings);
-        console.log('Full cluster settings response:', response);
-
-        // Check both persistent and defaults settings
-        const persistentEnabled = response?.persistent?.plugins?.search_relevance?.workbench_enabled === 'true';
-        const defaultsEnabled = response?.defaults?.plugins?.search_relevance?.workbench_enabled === 'true';
-
-        // Use persistent setting if available, otherwise use defaults
-        const enabled = persistentEnabled || defaultsEnabled;
-
-        console.log('workbench_enabled from persistent:', persistentEnabled);
-        console.log('workbench_enabled from defaults:', defaultsEnabled);
-        console.log('final isNewExperienceEnabled:', enabled);
-        setIsNewExperienceEnabled(enabled);
-      } catch (error) {
-        console.error('Error fetching cluster settings:', error);
-        notifications.toasts.addError(error as Error, {
-          title: 'Error fetching cluster settings',
-          toastLifeTimeMs: 5000
-        });
-        setIsNewExperienceEnabled(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchClusterSettings();
-  }, [http, notifications]);
-
-  if (isLoading) {
-    return <EuiLoadingSpinner size="xl" />;
-  }
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
@@ -338,17 +363,27 @@ export const SearchRelevanceApp = ({
     setToasts([...toasts, { id: new Date().toISOString(), title, text, color } as Toast]);
   };
 
-  if (isLoading) {
-    return (
-      <EuiLoadingSpinner size="xl" />
-    );
-  }
+  // UI Experience are controlled by ui settings
+  const isNewExperienceEnabled = Boolean(
+    uiSettings?.get(SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED)
+  );
 
   const renderNewExperience = () => (
     <HashRouter>
       <I18nProvider>
         <SearchRelevanceContextProvider>
-          <SearchRelevancePageWithRouter />
+          <SearchRelevancePageWithRouter
+            application={application}
+            parentBreadCrumbs={parentBreadCrumbs}
+            notifications={notifications}
+            http={http}
+            navigation={navigation}
+            chrome={chrome}
+            savedObjects={savedObjects}
+            dataSourceEnabled={dataSourceEnabled}
+            dataSourceManagement={dataSourceManagement}
+            setActionMenu={setActionMenu}
+          />
         </SearchRelevanceContextProvider>
       </I18nProvider>
     </HashRouter>

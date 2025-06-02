@@ -18,7 +18,11 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     {
       path: ServiceEndpoints.QuerySets,
       validate: {
-        body: schema.any(),
+        body: schema.object({
+          name: schema.string(),
+          description: schema.string(),
+          sampling: schema.string(),
+        }),
       },
     },
     backendAction('POST', BackendEndpoints.QuerySets)
@@ -27,7 +31,21 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     {
       path: ServiceEndpoints.QuerySets,
       validate: {
-        body: schema.any(),
+        body: schema.object({
+          name: schema.string(),
+          description: schema.string(),
+          sampling: schema.string(),
+          querySetQueries: schema.oneOf([
+            schema.arrayOf(
+              schema.object({
+                queryText: schema.string(),
+                referenceAnswer: schema.maybe(schema.string()),
+              }),
+              { minSize: 1 }
+            ),
+            schema.string(),
+          ]),
+        }),
       },
     },
     backendAction('PUT', BackendEndpoints.QuerySets)
@@ -54,7 +72,12 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     {
       path: ServiceEndpoints.SearchConfigurations,
       validate: {
-        body: schema.any(),
+        body: schema.object({
+          name: schema.string(),
+          index: schema.string(),
+          query: schema.string(),
+          searchPipeline: schema.maybe(schema.string()),
+        }),
       },
     },
     backendAction('PUT', BackendEndpoints.SearchConfigurations)
@@ -81,7 +104,14 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     {
       path: ServiceEndpoints.Experiments,
       validate: {
-        body: schema.any(),
+        body: schema.object({
+          querySetId: schema.string(),
+          searchConfigurationList: schema.arrayOf(schema.string()),
+          size: schema.number(),
+          type: schema.string(),
+          // TODO: make mandatory conditional on experiment type
+          judgmentList: schema.maybe(schema.arrayOf(schema.string())),
+        }),
       },
     },
     backendAction('PUT', BackendEndpoints.Experiments)
@@ -141,7 +171,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     {
       path: ServiceEndpoints.Judgments,
       validate: {
-        body: schema.any(),
+        body: schema.object({
+          name: schema.string(),
+          type: schema.string(),
+        }),
       },
     },
     backendAction('PUT', BackendEndpoints.Judgments)
@@ -194,27 +227,28 @@ const backendAction = (method, path) => {
         const { id } = req.params;
         const deletePath = `${path}/${id}`;
         response = await caller('transport.request', {
-          method: method,
+          method,
           path: deletePath,
         });
       } else if (method === 'GET' && req.params.id) {
         // Handle GET request for individual experiment
         const getPath = `${path}/${req.params.id}`;
         response = await caller('transport.request', {
-          method: method,
+          method,
           path: getPath,
         });
       } else {
         // Handle PUT, POST, GET as before
         response = await caller('transport.request', {
-          method: method,
-          path: path,
+          method,
+          path,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
         });
       }
 
       return res.ok({ body: response });
     } catch (err) {
+      console.error('Failed to call search-relevance APIs', err);
       return res.customError({
         statusCode: err.statusCode || 500,
         body: {

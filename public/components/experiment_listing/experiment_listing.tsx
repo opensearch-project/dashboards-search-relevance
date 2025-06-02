@@ -13,18 +13,20 @@ import {
   EuiPageHeader,
   EuiButtonIcon,
   EuiButton,
+  EuiSpacer,
 } from '@elastic/eui';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import moment from 'moment';
 import { combineResults, printType, toExperiment } from '../../types/index';
+import { TemplateCards } from '../experiment_create/template_card/template_cards';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -46,7 +48,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       const response = await http.delete(
         `${ServiceEndpoints.Experiments}/${experimentToDelete.id}`
       );
-      console.log('Delete successful:', response);
 
       // Close modal and clear state
       setShowDeleteModal(false);
@@ -56,6 +57,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
+      console.error('Failed to delete experiment', err);
       setError('Failed to delete experiment');
       setShowDeleteModal(false);
       setExperimentToDelete(null);
@@ -80,7 +82,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/experiment/view/${experiment.id}`)}
+            {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
           >
             {id}
           </EuiButtonEmpty>
@@ -141,7 +143,9 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.Experiments);
-      const parseResults = combineResults(...(response ? response.hits.hits.map(hit => toExperiment(hit._source)) : []));
+      const parseResults = combineResults(
+        ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
+      );
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -162,7 +166,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         hits: filteredList,
       };
     } catch (err) {
-      console.log(err);
+      console.error('Failed to load experiment', err);
       setError('Failed to load experiments');
       return {
         total: 0,
@@ -177,22 +181,17 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Experiments"
-        description="View and manage your existing experiments. Click on a experiment id to view details."
-        rightSideItems={[
-          <EuiButton
-            onClick={() => history.push('/experiment/create')}
-            fill
-            size="s"
-            iconType="plus"
-            data-test-subj="createExperimentButton"
-            color="primary"
-          >
-            Create Experiment
-          </EuiButton>
-        ]}
+        description="Manage your existing experiments and create new ones. Click on a card to create an experiment."
       />
 
+      <EuiSpacer size="m" />
+
+      <TemplateCards history={history} onClose={() => {}} />
+
+      <EuiSpacer size="m" />
+
       <EuiFlexItem>
+        <EuiText>Click on an experiment id to view details.</EuiText>
         {error ? (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>

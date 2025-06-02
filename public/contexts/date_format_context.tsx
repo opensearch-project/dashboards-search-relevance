@@ -34,12 +34,27 @@ export const ConfigProvider: React.FC<{
   setHeaderActionMenu: AppMountParameters['setHeaderActionMenu'];
   navigation: NavigationPublicPluginStart;
   children: React.ReactNode;
-}> = ({ uiSettings, dataSourceEnabled, dataSourceManagement, setHeaderActionMenu, navigation, children }) => {
+}> = ({
+  uiSettings,
+  dataSourceEnabled,
+  dataSourceManagement,
+  setHeaderActionMenu,
+  navigation,
+  children,
+}) => {
   const dateFormat = uiSettings.get('dateFormat') || 'MMM D, YYYY @ HH:mm:ss.SSS';
 
   return (
-    <ConfigContext.Provider value={{ dateFormat, dataSourceEnabled, dataSourceManagement, setHeaderActionMenu, navigation }}>
+    <ConfigContext.Provider
+      value={{
+        dateFormat,
+        dataSourceEnabled,
+        dataSourceManagement,
+        setHeaderActionMenu,
+        navigation,
+      }}
+    >
       {children}
     </ConfigContext.Provider>
   );
-}; 
+};

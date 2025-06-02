@@ -15,6 +15,7 @@ import {
   EuiPageTemplate,
   EuiText,
 } from '@elastic/eui';
+import moment from 'moment';
 import { CoreStart } from '../../../../../src/core/public';
 import {
   reactRouterNavigate,
@@ -22,8 +23,7 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import { ServiceEndpoints } from '../../../common';
-import moment from 'moment';
+import { Routes, ServiceEndpoints } from '../../../common';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -43,7 +43,6 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     setIsLoading(true);
     try {
       const response = await http.delete(`${ServiceEndpoints.Judgments}/${judgmentToDelete.id}`);
-      console.log('Delete successful:', response);
 
       // Close modal and clear state
       setShowDeleteModal(false);
@@ -53,6 +52,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
+      console.error('Failed to delete judgment', err);
       setError('Failed to delete judgment');
       setShowDeleteModal(false);
       setJudgmentToDelete(null);
@@ -77,7 +77,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/judgment/view/${judgment.id}`)}
+            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -142,6 +142,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
+      console.error('Failed to list judgment', err);
       setError('Failed to load judgments');
       return {
         total: 0,
@@ -158,7 +159,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         description="View and manage your existing judgments. Click on a judgment list name to view details."
         rightSideItems={[
           <EuiButton
-            onClick={() => history.push('/judgment/create')}
+            onClick={() => history.push(Routes.JudgmentCreate)}
             fill
             size="s"
             iconType="plus"
