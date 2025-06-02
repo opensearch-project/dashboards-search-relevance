@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-export const PLUGIN_ID = 'searchRelevanceWorkbench';
-export const PLUGIN_NAME = 'Search Relevance Workbench';
+export const PLUGIN_ID = 'searchRelevance';
+export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
 
 export enum ServiceEndpoints {
