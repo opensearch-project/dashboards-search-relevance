@@ -1,3 +1,4 @@
+import { RouteTemplateType } from '../../../../common';
 import { RouteComponentProps } from 'react-router-dom';
 
 export enum TemplateType {
@@ -5,6 +6,19 @@ export enum TemplateType {
   QuerySetComparison = 'Query Set Comparison',
   SearchEvaluation = 'Search Evaluation',
   HybridSearchOptimizer = 'Hybrid Search Optimizer',
+}
+
+export const routeToTemplateType = (templateId: string) => {
+  switch (templateId) {
+    case RouteTemplateType.SingleQueryComparison:
+      return TemplateType.SingleQueryComparison;
+    case RouteTemplateType.QuerySetComparison:
+      return TemplateType.QuerySetComparison;
+    case RouteTemplateType.SearchEvaluation:
+      return TemplateType.SearchEvaluation;
+    case RouteTemplateType.HybridOptimizer:
+      return TemplateType.HybridSearchOptimizer;
+  }
 }
 
 export interface TemplateConfigurationProps extends RouteComponentProps {

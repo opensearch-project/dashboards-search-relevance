@@ -22,7 +22,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import moment from 'moment';
@@ -79,7 +79,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/querySet/view/${querySet.id}`)}
+            {...reactRouterNavigate(history, `${Routes.QuerySetViewPrefix}/${querySet.id}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -175,7 +175,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         description="View and manage your existing query sets. Click on a query set name to view details."
         rightSideItems={[
           <EuiButton
-            onClick={() => history.push('/querySet/create')}
+            onClick={() => history.push(Routes.QuerySetCreate)}
             fill
             size="s"
             iconType="plus"

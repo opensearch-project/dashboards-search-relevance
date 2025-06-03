@@ -11,13 +11,14 @@ import { TemplateConfigurationWithRouter } from '../configuration/template_confi
 import { Home as QueryCompareHome } from '../../query_compare/home';
 import { useConfig } from '../../../contexts/date_format_context';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME } from '../../../../common';
+import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME, Routes } from '../../../../common';
 import { TemplateType } from '../configuration/types';
 
 interface TemplateCardsProps {
   onClose: () => void;
   inputSelectedTemplate?: TemplateType | null;
   onCardClick?: (templateId: TemplateType) => void;
+  history: any;
 }
 
 const templates = [
@@ -56,7 +57,14 @@ const iconMap = {
   [TemplateType.HybridSearchOptimizer]: 'beaker',
 };
 
-export const TemplateCards = ({ onClose, inputSelectedTemplate, onCardClick }: TemplateCardsProps) => {
+const RouteMap = {
+  [TemplateType.SingleQueryComparison]: Routes.ExperimentCreateSingleQueryComparison,
+  [TemplateType.QuerySetComparison]: Routes.ExperimentCreateQuerySetComparison,
+  [TemplateType.SearchEvaluation]: Routes.ExperimentCreateSearchEvaluation,
+  [TemplateType.HybridSearchOptimizer]: Routes.ExperimentCreateHybridOptimizer,
+}
+
+export const TemplateCards = ({ onClose, inputSelectedTemplate, onCardClick, history }: TemplateCardsProps) => {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType | null>(inputSelectedTemplate ?? null);
   const { dataSourceEnabled, dataSourceManagement, setHeaderActionMenu, navigation } = useConfig();
   const { services } = useOpenSearchDashboards();
@@ -68,8 +76,7 @@ export const TemplateCards = ({ onClose, inputSelectedTemplate, onCardClick }: T
     : [{ text: PLUGIN_NAME, href: '#' }];
 
   const handleCardClick = (templateId: TemplateType) => {
-    setSelectedTemplate(templateId);
-    onCardClick?.(templateId);
+    history.push(RouteMap[templateId]);
   };
 
   if (selectedTemplate === TemplateType.SingleQueryComparison) {
