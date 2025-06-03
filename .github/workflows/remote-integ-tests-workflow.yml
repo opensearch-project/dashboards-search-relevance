@@ -57,36 +57,26 @@ jobs:
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_VERSION=$MAJOR_VERSION.$MINOR_VERSION.0" >> $GITHUB_ENV
+
         shell: bash
 
       - name: Enable longer filenames
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
 
-      # It doesn't matter what plugin we use, but by launching OpenSearch
-      # from a plugin repo, we don't need to checkout and build
-      # OpenSearch itself.
-      - name: Checkout search-processor
+      # Add search-relevance backend to launch OpenSearch with plugin
+      - name: Checkout search-relevance
         uses: actions/checkout@v2
         with:
-          path: search-processor
-          repository: opensearch-project/search-processor
-          ref: ${{ env.SEARCH_PROCESSOR_PLUGIN_VERSION }}
+          path: search-relevance
+          repository: opensearch-project/search-relevance
+          ref: '${{ github.base_ref }}'
 
       - name: Run OpenSearch with plugin
         run: |
-          cd search-processor
-          ./gradlew run -Dopensearch.version=${{ env.SEARCH_PROCESSOR_VERSION }} &
-          t=0
-          while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do
-            sleep 5
-            let t=$t+5
-            if [[ $t -gt 300 ]]; then
-              exit 1
-            fi
-          done
+          cd search-relevance
+          ./gradlew run &
+          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
         shell: bash
 
       - name: Checkout OpenSearch Dashboards
