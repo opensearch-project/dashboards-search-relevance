@@ -287,6 +287,28 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
       },
     };
 
+  case 'HYBRID_OPTIMIZER':
+    if (source.searchConfigurationList.length < 1) {
+      return parseError("Missing search configuration for hybrid optimizer (searchConfigurationList).");
+    }
+    if (!source.judgmentList || source.judgmentList.length < 1) {
+      return parseError("Missing judgment for hybrid optimizer (judgmentList).");
+    }
+    return {
+      success: true,
+      data: {
+        type: "HYBRID_OPTIMIZER",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationId: source.searchConfigurationList[0],
+        judgmentId: source.judgmentList[0],
+        size
+      }
+    };
+
     default:
       return parseError(`Unknown experiment type: ${source.type}`);
   }
