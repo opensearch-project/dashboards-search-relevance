@@ -122,7 +122,7 @@ export const printType = (type: string) => {
     case "POINTWISE_EVALUATION":
       return "Evaluation";
     case "HYBRID_OPTIMIZER":
-      return "HybridOptimizer";
+      return "Hybrid Optimizer";
     default:
       return "Unknown";
   }
