@@ -93,6 +93,7 @@ export type ExperimentBase = {
 export type Experiment =
   | PairwiseComparisonExperiment
   | EvaluationExperiment
+  | HybridOptimizerExperiment
 
 export type PairwiseComparisonExperiment =
   (ExperimentBase & {
@@ -107,12 +108,21 @@ export type EvaluationExperiment =
     judgmentId: string;
   })
 
+export type HybridOptimizerExperiment =
+  (ExperimentBase & {
+    type: "HYBRID_OPTIMIZER";
+    searchConfigurationId: string;
+    judgmentId: string;
+  })
+
 export const printType = (type: string) => {
   switch (type) {
     case "PAIRWISE_COMPARISON":
       return "Comparison";
     case "POINTWISE_EVALUATION":
       return "Evaluation";
+    case "HYBRID_OPTIMIZER":
+      return "HybridOptimizer";
     default:
       return "Unknown";
   }

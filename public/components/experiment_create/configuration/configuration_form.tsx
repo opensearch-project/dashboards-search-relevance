@@ -34,11 +34,16 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
         judgmentList: [],
         type: "POINTWISE_EVALUATION",
       };
+    case TemplateType.HybridSearchOptimizer:
+      return {
+        ...baseData,
+        judgmentList: [],
+        type: "HYBRID_OPTIMIZER",
+      };
     default:
       return (baseData as unknown) as
         | ResultListComparisonFormData
         | PointwiseExperimentFormData
-        | HybridOptimizerExperimentFormData
         | LLMFormData;
   }
 };
