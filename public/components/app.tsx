@@ -96,20 +96,12 @@ const SearchRelevancePage = ({
       },
       items: [
         {
-          name: Navigation.Overview,
-          id: Navigation.Overview,
-          onClick: () => {
-            history.push(Routes.Home);
-          },
-          isSelected: location.pathname === Routes.Home
-        },
-        {
           name: Navigation.Experiments,
           id: Navigation.Experiments,
           onClick: () => {
-            history.push(Routes.ExperimentListing);
+            history.push(Routes.Home);
           },
-          isSelected: location.pathname === Routes.ExperimentListing || location.pathname.startsWith(Routes.ExperimentViewPrefix),
+          isSelected: location.pathname === Routes.Home || location.pathname.startsWith(Routes.ExperimentViewPrefix),
           forceOpen: true,
           items: [
             {
@@ -181,10 +173,7 @@ const SearchRelevancePage = ({
       </EuiPageSideBar>
       <EuiPageBody>
         <Switch>
-          <Route path="/" exact render={() => {
-            return <GetStartedAccordion isOpen={true} />;
-          }} />
-          <Route path={Routes.ExperimentListing} exact render={() => {
+          <Route path={Routes.Home} exact render={() => {
             return <ExperimentListingWithRoute http={http} />;
           }} />
           <Route path={Routes.QuerySetListing} exact render={() => {
