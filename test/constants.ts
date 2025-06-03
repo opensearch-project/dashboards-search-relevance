@@ -201,20 +201,6 @@ export const TEST_COMPARED_DOCUMENTS_RANK = {
   XgLJC4QBuER5vZIv1tvh: 100,
 };
 
-export const TEST_COMPARED_DOCUMENTS_RANK_1 = {
-  WwLJC4QBuER5vZIv1tvg: 10,
-  XALJC4QBuER5vZIv1tvh: 100,
-  XQLJC4QBuER5vZIv1tvh: 2,
-  XgLJC4QBuER5vZIv1tvh: 10,
-};
-
-export const TEST_COMPARED_DOCUMENTS_RANK_2 = {
-  WwLJC4QBuER5vZIv1tvg: 2,
-  XALJC4QBuER5vZIv1tvh: 1,
-  XQLJC4QBuER5vZIv1tvh: 10,
-  XgLJC4QBuER5vZIv1tvh: 100,
-};
-
 export const TEST_QUERY_STRING = '{}';
 
 export const TEST_QUERY_ERROR: QueryError = {

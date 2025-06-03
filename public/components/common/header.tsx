@@ -20,11 +20,11 @@ export const Header = ({ children }: HeaderProps) => {
       borderRadius="none"
     >
       <EuiTitle>
-        <h1>Search Relevance Workbench</h1>
+        <h1>Compare search results</h1>
       </EuiTitle>
       <EuiText>
         <p>
-          Evaluate on your search quality with different queries.{' '}
+          Compare results using the same search text with different queries.{' '}
           <EuiLink
             href="https://opensearch.org/docs/latest/search-plugins/search-relevance"
             target="_blank"
