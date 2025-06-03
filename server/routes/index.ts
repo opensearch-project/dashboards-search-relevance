@@ -11,5 +11,3 @@ export function defineRoutes(router: IRouter, openSearchServiceSetup: OpenSearch
   registerDslRoute(router, openSearchServiceSetup, dataSourceEnabled);
   registerMetricsRoute(router);
 }
-
-export * from './search_relevance_rourte_servce';

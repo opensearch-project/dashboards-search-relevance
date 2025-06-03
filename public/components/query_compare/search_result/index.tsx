@@ -10,6 +10,7 @@ import { CoreStart, MountPoint } from '../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { DataSourceOption } from '../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { NavigationPublicPluginStart } from '../../../../../../src/plugins/navigation/public';
+import { ServiceEndpoints } from '../../../../common';
 import { useSearchRelevanceContext } from '../../../contexts';
 import {
   QueryError,
@@ -22,7 +23,6 @@ import { Header } from '../../common/header';
 import { ResultComponents } from './result_components/result_components';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { SEARCH_NODE_API_PATH } from '../../../../common';
 
 const DEFAULT_QUERY = '{}';
 
@@ -61,7 +61,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
   const HeaderControlledPopoverWrapper = ({ children }: { children: React.ReactElement }) => {
     const HeaderControl = navigation.ui.HeaderControl;
     const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
-
+  
     if (getNavGroupEnabled && HeaderControl) {
       return (
         <HeaderControl
@@ -70,7 +70,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
         />
       );
     }
-
+  
     return <>{children}</>;
   };
 
@@ -158,7 +158,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
         // First Query
         if (Object.keys(requestBody1).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
             })
             .then((res) => {
@@ -182,7 +182,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
         // Second Query
         if (Object.keys(requestBody2).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
+            http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
             })
             .then((res) => {
