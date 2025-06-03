@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldNumber } from '@elastic/eui';
-import { IndexOption, ResultListComparisonFormData } from '../types';
+import { OptionLabel, ResultListComparisonFormData } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
@@ -10,12 +15,9 @@ interface ResultListComparisonFormProps {
   http: CoreStart['http'];
 }
 
-export const ResultListComparisonForm = ({
-  onChange,
-  http,
-}: ResultListComparisonFormProps) => {
-  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
-  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<IndexOption[]>([]);
+export const ResultListComparisonForm = ({ onChange, http }: ResultListComparisonFormProps) => {
+  const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
+  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
 
   const handleQuerySetsChange = (selectedOptions: any[]) => {
@@ -29,9 +31,12 @@ export const ResultListComparisonForm = ({
     onChange('size', value);
   };
 
-  const handleSearchConfigChange = (selectedOptions: IndexOption[]) => {
+  const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
     setSelectedSearchConfigs(selectedOptions);
-    onChange('searchConfigurationList', selectedOptions.map((o) => o.value));
+    onChange(
+      'searchConfigurationList',
+      selectedOptions.map((o) => o.value)
+    );
   };
 
   return (
@@ -46,7 +51,10 @@ export const ResultListComparisonForm = ({
             />
           </EuiFlexItem>
           <EuiFlexItem grow={1}>
-            <EuiFormRow label="K Value" helpText="The number of documents to include from the result list.">
+            <EuiFormRow
+              label="K Value"
+              helpText="The number of documents to include from the result list."
+            >
               <EuiFieldNumber
                 placeholder="Enter k value"
                 value={k}

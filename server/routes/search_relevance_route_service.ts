@@ -215,6 +215,7 @@ const backendAction = (method, path) => {
 
       return res.ok({ body: response });
     } catch (err) {
+      console.error('Failed to call search-relevance APIs', err);
       return res.customError({
         statusCode: err.statusCode || 500,
         body: {

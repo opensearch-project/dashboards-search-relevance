@@ -7,28 +7,30 @@ export const PLUGIN_ID = 'searchRelevance';
 export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
 
-export enum ServiceEndpoints {
+const SEARCH_RELEVANCE_WORKBENCH_BASE_PATH = '/api/relevancy';
+export const ServiceEndpoints = Object.freeze({
   // OpenSearch node APIs
-  GetIndexes = '/api/relevancy/search/indexes',
-  GetPipelines = '/api/relevancy/search/pipelines',
-  GetSearchResults = '/api/relevancy/search',
-  GetSingleSearchResults = '/api/relevancy/single_search',
-  GetStats = '/api/relevancy/stats',
-  GetClusterSettings = '/api/relevancy/cluster_settings',
+  GetIndexes: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/indexes`,
+  GetPipelines: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/pipelines`,
+  GetSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search`,
+  GetSingleSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/single_search`,
+  GetStats: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/stats`,
+  GetClusterSettings: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/cluster_settings`,
 
   // Search Relevance node APIs
-  QuerySets = '/api/relevancy/query_sets',
-  SearchConfigurations = '/api/relevancy/search_configurations',
-  Judgments = '/api/relevancy/judgments',
-  Experiments = '/api/relevancy/experiments',
-}
+  QuerySets: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/query_sets`,
+  SearchConfigurations: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search_configurations`,
+  Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
+  Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
+} as const);
 
-export enum BackendEndpoints {
-  QuerySets = '/_plugins/search_relevance/query_sets',
-  SearchConfigurations = '/_plugins/search_relevance/search_configurations',
-  Judgments = '/_plugins/search_relevance/judgments',
-  Experiments = '/_plugins/search_relevance/experiments',
-}
+const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/search_relevance';
+export const BackendEndpoints = Object.freeze({
+  QuerySets: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/query_sets`,
+  SearchConfigurations: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/search_configurations`,
+  Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
+  Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
+} as const);
 
 export const SEARCH_API = '/_search';
 

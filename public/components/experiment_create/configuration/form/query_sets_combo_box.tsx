@@ -1,21 +1,22 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect, useState } from 'react';
 import { EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { IndexOption } from '../types';
+import { OptionLabel } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
 interface QuerySetsComboBoxProps {
-  selectedOptions: IndexOption[];
-  onChange: (selectedOptions: IndexOption[]) => void;
+  selectedOptions: OptionLabel[];
+  onChange: (selectedOptions: OptionLabel[]) => void;
   http: CoreStart['http'];
 }
 
-export const QuerySetsComboBox = ({
-  selectedOptions,
-  onChange,
-  http,
-}: QuerySetsComboBoxProps) => {
-  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
+export const QuerySetsComboBox = ({ selectedOptions, onChange, http }: QuerySetsComboBoxProps) => {
+  const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -54,4 +55,4 @@ export const QuerySetsComboBox = ({
       />
     </EuiFormRow>
   );
-}; 
+};

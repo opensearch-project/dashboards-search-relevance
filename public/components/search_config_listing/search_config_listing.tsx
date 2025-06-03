@@ -14,16 +14,16 @@ import {
   EuiText,
 } from '@elastic/eui';
 import React, { useState } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import moment from 'moment';
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -107,8 +107,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       const response = await http.delete(
         `${ServiceEndpoints.SearchConfigurations}/${configToDelete.id}`
       );
-      // eslint-disable-next-line no-console
-      console.log('Delete successfully: ', response);
       // Close modal and clear state on success
       setShowDeleteModal(false);
       setConfigToDelete(null);
@@ -117,6 +115,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
+      console.error('Failed to delete search config', err);
       setError('Failed to delete search configuration');
       // Close modal on error
       setShowDeleteModal(false);
@@ -156,6 +155,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         hits: filteredList,
       };
     } catch (err) {
+      console.error('Failed to load search config', err);
       setError('Failed to load search configurations');
       return {
         total: 0,

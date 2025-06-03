@@ -1,71 +1,31 @@
-# Running search relevance integ tests stored in https://github.com/opensearch-project/opensearch-dashboards-functional-test
-# In the future we should pull dependencies from bundled build snapshots. Because that is not available
-# yet we build the cluster from source (besides core Opensearch, which is a pulled min artifact).
-name: Remote integ tests workflow
-on:
-  push:
-    branches:
-      - "*"
-  pull_request:
-    branches:
-      - "*"
+name: FTR E2E SW Workbench Test
+
+on: [pull_request, push]
+
+env:
+  CI: 1
+  TERM: xterm
+  OPENSEARCH_DASHBOARDS_VERSION: '3.0.0'
+  OPENSEARCH_VERSION: '3.0.0'
+  OPENSEARCH_PLUGIN_VERSION: '3.0.0.0'
+
 jobs:
-  test-without-security:
-    name: Run integ tests without security
+  tests:
+    name: Run FTR E2E SW Workbench Tests
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        java: [21]
-        include:
-          - os: windows-latest
-            cypress_cache_folder: ~/AppData/Local/Cypress/Cache
-          - os: ubuntu-latest
-            cypress_cache_folder: ~/.cache/Cypress
+        os: [ ubuntu-latest ]
+        jdk: [ 21 ]
     runs-on: ${{ matrix.os }}
+
     steps:
-      - name: Set up Java 21
-        uses: actions/setup-java@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
-          distribution: 'corretto'
-          java-version: '21'
+          java-version: ${{ matrix.jdk }}
 
-      - uses: actions/checkout@v2
-      - name: Fetch Version Information
-        id: fetch_version
-        run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
-                | jq -r '.[0].number')
-            url_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
-                | jq -r '.[0].url')
-            pr_data=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                "$url_number")
-            BRANCH_NAME=$(echo "$pr_data" | jq -r '.base.ref')
-            echo "BRANCH_NAME is $BRANCH_NAME"
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
-            BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
-          fi
-          CURRENT_VERSION=$(node -p "require('./package.json').version")
-          MAJOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f1)
-          MINOR_VERSION=$(echo $CURRENT_VERSION | cut -d. -f2)
-          PATCH_VERSION=$(echo $CURRENT_VERSION | cut -d. -f3)
-          OPENSEARCH_VERSION="$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"
-          echo "OPENSEARCH_VERSION: $OPENSEARCH_VERSION"
-          echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
-          echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-
-        shell: bash
-
-      - name: Enable longer filenames
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
-
-      # Add search-relevance backend to launch OpenSearch with plugin
-      - name: Checkout search-relevance
+      - name: Checkout Search-Relevance
         uses: actions/checkout@v2
         with:
           path: search-relevance
@@ -79,75 +39,128 @@ jobs:
           timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
         shell: bash
 
+      - name: Check OpenSearch Running on Linux
+        if: ${{ runner.os != 'Windows'}}
+        run: curl http://localhost:9200/
+        shell: bash
+
       - name: Checkout OpenSearch Dashboards
         uses: actions/checkout@v2
         with:
+          path: OpenSearch-Dashboards
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
-          path: OpenSearch-Dashboards
+          fetch-depth: 0
+          filter: |
+            cypress
+            test
 
-      - name: Checkout Search Relevance OpenSearch Dashboards plugin
+      - name: Checkout SW in OpenSearch Dashboards Plugins Dir
         uses: actions/checkout@v2
         with:
           path: OpenSearch-Dashboards/plugins/dashboards-search-relevance
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - id: tool-versions
+        run: |
+          echo "node_version=$(cat .node-version)" >> $GITHUB_OUTPUT
+          echo "yarn_version=$(jq -r '.engines.yarn' package.json)" >> $GITHUB_OUTPUT
+        working-directory: OpenSearch-Dashboards
+        shell: bash
+
+      - uses: actions/setup-node@v1
         with:
-          node-version-file: './OpenSearch-Dashboards/.nvmrc'
+          node-version: ${{ steps.tool-versions.outputs.node_version }}
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install Yarn
-        shell: bash
+      - name: Setup Opensearch Dashboards
         run: |
-          YARN_VERSION=$(node -p "require('./OpenSearch-Dashboards/package.json').engines.yarn")
-          echo "Installing yarn@$YARN_VERSION"
-          npm i -g yarn@$YARN_VERSION
-
-      - name: Bootstrap the plugin
-        run: |
-          cd OpenSearch-Dashboards/plugins/dashboards-search-relevance
-          yarn osd bootstrap
-
-      - name: Run OpenSearch Dashboards server
-        run: |
-          cd OpenSearch-Dashboards
-          yarn start --no-base-path --no-watch --server.host="0.0.0.0" --opensearch.requestTimeout=120000 &
+          npm uninstall -g yarn
+          echo "Installing yarn ${{ steps.tool-versions.outputs.yarn_version }}"
+          npm i -g yarn@${{ steps.tool-versions.outputs.yarn_version }}
+          yarn cache clean
+        working-directory: OpenSearch-Dashboards
         shell: bash
 
-      # Windows and Mac OS take a while to start, so we need a long sleep
-      - name: Sleep until OSD server starts
-        run: sleep 900
+      - name: Bootstrap OpenSearch Dashboards
+        run: |
+          yarn osd bootstrap --single-version=loose
+        working-directory: OpenSearch-Dashboards
+
+      - name: Run Opensearch Dashboards with SW Installed
+        run: |
+          nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
+        working-directory: OpenSearch-Dashboards
+
+      - name: Wait OpenSearch Dashboards Compiled Completed
+        run: |
+          if timeout 900 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
+            echo "OpenSearch Dashboards compiled successfully."
+          else
+            echo "Timeout for 900 seconds reached. OpenSearch Dashboards did not finish compiling."
+            exit 1
+          fi
+        working-directory: OpenSearch-Dashboards
+
+      - name: Show OpenSearch Dashboards Logs
+        if: always()
+        run: cat dashboard.log
+        working-directory: OpenSearch-Dashboards
+
+      - name: Health check
+        run: |
+          timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
         shell: bash
 
-      - name: Checkout opensearch-dashboards-functional-test
+      - name: Check OpenSearch Dashboards Running on Linux
+        if: ${{ runner.os != 'Windows'}}
+        run: curl http://localhost:5601/api/status
+        shell: bash
+
+      - name: Checkout Dashboards Functional Test Repo
         uses: actions/checkout@v2
         with:
           path: opensearch-dashboards-functional-test
           repository: opensearch-project/opensearch-dashboards-functional-test
-          ref: ${{ env.OPENSEARCH_DASHBOARDS_FTREPO_VERSION }}
+          ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
+          fetch-depth: 0
+
+      - name: Install Cypress
+        run: |
+          npm install cypress --save-dev
+        shell: bash
+        working-directory: opensearch-dashboards-functional-test
 
       - name: Get Cypress version
         id: cypress_version
         run: |
-          echo "::set-output name=cypress_version::$(cat ./opensearch-dashboards-functional-test/package.json | jq '.devDependencies.cypress' | tr -d '"')"
+          echo "::set-output name=cypress_version::$(cat ./package.json | jq '.dependencies.cypress' | tr -d '"')"
+        working-directory: opensearch-dashboards-functional-test
 
-      - name: Cache Cypress
-        id: cache-cypress
-        uses: actions/cache@v4
+      - name: Finding spec files and store to output
+        id: finding-files
+        run: |
+          {
+            echo 'FILELIST<<EOF'
+            find cypress/integration/plugins/search-relevance-dashboards -name '*.js' -print
+            echo EOF
+          } >> "$GITHUB_ENV"
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Run spec files from output
+        run: |
+          env CYPRESS_NO_COMMAND_LOG=1 yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*'
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Capture failure screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          path: ${{ matrix.cypress_cache_folder }}
-          key: cypress-cache-v2-${{ runner.os }}-${{ hashFiles('**/package.json') }}
-        env:
-          CYPRESS_INSTALL_BINARY: ${{ steps.cypress_version.outputs.cypress_version }}
-      - run: npx cypress cache list
-      - run: npx cypress cache path
+          name: cypress-screenshots-${{ matrix.os }}
+          path: opensearch-dashboards-functional-test/cypress/screenshots
 
-      - name: Run search-relevance cypress tests
-        uses: cypress-io/github-action@v2
+      - name: Capture failure test video
+        uses: actions/upload-artifact@v4
+        if: failure()
         with:
-          working-directory: opensearch-dashboards-functional-test
-          command: yarn run cypress run --env SECURITY_ENABLED=false --browser chrome --spec cypress/integration/plugins/search-relevance-dashboards/*.js
-        env:
-          CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
-
+          name: cypress-videos-${{ matrix.os }}
+          path: opensearch-dashboards-functional-test/cypress/videos

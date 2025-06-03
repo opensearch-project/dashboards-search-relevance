@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import { RouteComponentProps } from 'react-router-dom';
 
 export enum TemplateType {
@@ -25,12 +30,12 @@ export interface BaseFormData {
   searchConfigurationList: string[];
 }
 
-export interface IndexOption {
+export interface OptionLabel {
   label: string;
   value: string;
 }
 
-export interface ResultListComparisonFormData extends BaseFormData {}
+export type ResultListComparisonFormData = BaseFormData;
 
 export interface PointwiseExperimentFormData extends BaseFormData {
   judgmentList: string[];

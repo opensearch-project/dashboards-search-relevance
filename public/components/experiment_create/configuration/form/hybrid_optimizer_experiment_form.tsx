@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldNumber } from '@elastic/eui';
-import { ResultListComparisonFormData, IndexOption } from '../types';
+import { ResultListComparisonFormData, OptionLabel } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
@@ -17,19 +22,22 @@ export const HybridOptimizerExperimentForm = ({
   onChange,
   http,
 }: HybridOptimizerExperimentFormProps) => {
-  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<IndexOption[]>([]);
-  const [querySetOptions, setQuerySetOptions] = useState<IndexOption[]>([]);
+  const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
+  const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
-  const [judgmentOptions, setJudgmentOptions] = useState<IndexOption[]>([]);
+  const [judgmentOptions, setJudgmentOptions] = useState<OptionLabel[]>([]);
 
   const handleQuerySetsChange = (selectedOptions: any[]) => {
     setQuerySetOptions(selectedOptions || []);
     onChange('querySetId', selectedOptions?.[0]?.value);
   };
 
-  const handleJudgmentsChange = (selectedOptions: IndexOption[]) => {
+  const handleJudgmentsChange = (selectedOptions: OptionLabel[]) => {
     setJudgmentOptions(selectedOptions || []);
-    onChange('judgmentList', selectedOptions.map((o) => o.value));
+    onChange(
+      'judgmentList',
+      selectedOptions.map((o) => o.value)
+    );
   };
 
   const handleKChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,9 +46,12 @@ export const HybridOptimizerExperimentForm = ({
     onChange('size', value);
   };
 
-  const handleSearchConfigChange = (selectedOptions: IndexOption[]) => {
+  const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
     setSelectedSearchConfigs(selectedOptions);
-    onChange('searchConfigurationList', selectedOptions.map((o) => o.value));
+    onChange(
+      'searchConfigurationList',
+      selectedOptions.map((o) => o.value)
+    );
   };
 
   return (
@@ -55,7 +66,10 @@ export const HybridOptimizerExperimentForm = ({
             />
           </EuiFlexItem>
           <EuiFlexItem grow={1}>
-            <EuiFormRow label="K Value" helpText="The number of documents to include from the result list.">
+            <EuiFormRow
+              label="K Value"
+              helpText="The number of documents to include from the result list."
+            >
               <EuiFieldNumber
                 placeholder="Enter k value"
                 value={k}
