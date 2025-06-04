@@ -17,6 +17,7 @@ import {
   EuiButton,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
@@ -25,7 +26,6 @@ import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import moment from 'moment';
 
 interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -45,7 +45,6 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
     setIsLoading(true);
     try {
       const response = await http.delete(`${ServiceEndpoints.QuerySets}/${querySetToDelete.id}`);
-      console.log('Delete successful:', response);
 
       // Close modal and clear state
       setShowDeleteModal(false);
@@ -55,6 +54,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
+      console.error('Failed to delete queryy set', err);
       setError('Failed to delete query set');
       setShowDeleteModal(false);
       setQuerySetToDelete(null);
@@ -158,6 +158,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
+      console.error('Failed to load query set', err);
       setError('Failed to load query sets');
       return {
         total: 0,

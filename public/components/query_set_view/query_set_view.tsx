@@ -5,8 +5,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
 import {
   EuiPageTemplate,
   EuiPageHeader,
@@ -16,10 +14,9 @@ import {
   EuiFormRow,
   EuiText,
 } from '@elastic/eui';
-import {
-  TableListView,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';  
-
+import { CoreStart } from '../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../common';
+import { TableListView } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 
 interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -44,6 +41,7 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
           setError('No matching query set found');
         }
       } catch (err) {
+        console.error('Failed to load query set', err);
         setError('Error loading query set data');
         console.error(err);
       } finally {
@@ -56,18 +54,23 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
 
   const QuerySetQueriesView: React.FC = () => {
     const findQueries = async (search: any) => {
-      const queryEntries = Object.entries(querySet.querySetQueries).map(entry => ({query: entry[0], count: entry[1]}))
-      const filteredQueryEntries = search ? queryEntries.filter(q => q.query.includes(search)) : queryEntries
-      return {hits: filteredQueryEntries, total: filteredQueryEntries.length}
-    }
+      const queryEntries = Object.entries(querySet.querySetQueries).map((entry) => ({
+        query: entry[0],
+        count: entry[1],
+      }));
+      const filteredQueryEntries = search
+        ? queryEntries.filter((q) => q.query.includes(search))
+        : queryEntries;
+      return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
+    };
 
     return (
       <TableListView
         entityName="Query"
         entityNamePlural="Queries"
         tableColumns={[
-          {field: 'query', name: 'Query', dataType: 'string', sortable: true},
-          {field: 'count', name: 'Count', dataType: 'number', sortable: true},
+          { field: 'query', name: 'Query', dataType: 'string', sortable: true },
+          { field: 'count', name: 'Count', dataType: 'number', sortable: true },
         ]}
         findItems={findQueries}
         loading={loading}
@@ -88,33 +91,21 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
 
   const QuerySetViewPane: React.FC = () => (
     <EuiForm>
-      <EuiFormRow
-        label="Query Set Name"
-        fullWidth
-      >
+      <EuiFormRow label="Query Set Name" fullWidth>
         <EuiText>{querySet.name}</EuiText>
       </EuiFormRow>
 
-      <EuiFormRow
-        label="Description"
-        fullWidth
-      >
+      <EuiFormRow label="Description" fullWidth>
         <EuiText>{querySet.description}</EuiText>
       </EuiFormRow>
 
-      <EuiFormRow
-        label="Sampling Method"
-        fullWidth
-      >
+      <EuiFormRow label="Sampling Method" fullWidth>
         <EuiText>{querySet.sampling}</EuiText>
       </EuiFormRow>
 
       <EuiSpacer size="l" />
 
-      <EuiFormRow
-        label="Queries"
-        fullWidth
-      >
+      <EuiFormRow label="Queries" fullWidth>
         <QuerySetQueriesView />
       </EuiFormRow>
     </EuiForm>

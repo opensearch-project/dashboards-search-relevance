@@ -46,7 +46,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
               }
             >
               <EuiText>
-                Select query sets that created either by sampling real live queries or upload the queries that you're interested in.
+                Select query sets that created either by sampling real live queries or upload the
+                queries that you're interested in.
               </EuiText>
             </EuiCard>
           </EuiFlexItem>
@@ -74,7 +75,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
               }
             >
               <EuiText>
-                You can select to evaluate your experiment either by customized calculator or user behavior or LLM.
+                You can select to evaluate your experiment either by customized calculator or user
+                behavior or LLM.
               </EuiText>
             </EuiCard>
           </EuiFlexItem>
@@ -88,7 +90,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
               }
             >
               <EuiText>
-                Document-based judgement scores will be collect and aggregated into evaluation metrics.
+                Document-based judgement scores will be collect and aggregated into evaluation
+                metrics.
               </EuiText>
             </EuiCard>
           </EuiFlexItem>

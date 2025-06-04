@@ -1,13 +1,18 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
 
 import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } from '@elastic/eui';
 import { withRouter } from 'react-router-dom';
+import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm } from './configuration_form';
 import { ConfigurationActions } from './configuration_action';
 import { TemplateConfigurationProps, ConfigurationFormData, SearchConfigFromData } from './types';
 import { ServiceEndpoints } from '../../../../common';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { EuiPanel } from '@elastic/eui';
 export const TemplateConfiguration = ({
   templateType,
   onBack,
@@ -32,29 +37,32 @@ export const TemplateConfiguration = ({
   } = useOpenSearchDashboards();
 
   const handleNext = async () => {
-    if (configFormData) {
-      try {
-        setIsCreating(true);
-        const response = await http.post(ServiceEndpoints.Experiments, {
-          body: JSON.stringify(configFormData),
-        });
+    if (!configFormData) {
+      notifications.toasts.addWarning('Please fill in all required fields');
+      return;
+    }
+    try {
+      setIsCreating(true);
+      const response = await http.post(ServiceEndpoints.Experiments, {
+        body: JSON.stringify(configFormData),
+      });
 
-        if (response.experiment_id) {
-          setExperimentId(response.experiment_id);
-          notifications.toasts.addSuccess(`Experiment ${response.experiment_id} created successfully`);
-          history.push(`/experiment/`);
-        } else {
-          throw new Error('No experiment ID received');
-        }
-      } catch (err) {
-        notifications.toasts.addError(err, {
-          title: 'Failed to create experiment',
-        });
-      } finally {
-        setIsCreating(false);
+      if (response.experiment_id) {
+        setExperimentId(response.experiment_id);
+        notifications.toasts.addSuccess(
+          `Experiment ${response.experiment_id} created successfully`
+        );
+        history.push(`/experiment/`);
+      } else {
+        throw new Error('No experiment ID received');
       }
-    } else {
-      console.log('Validation failed: Please fill in all required fields');
+    } catch (err) {
+      console.error('Failed to create experiment', err);
+      notifications.toasts.addError(err, {
+        title: 'Failed to create experiment',
+      });
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -80,15 +88,7 @@ export const TemplateConfiguration = ({
     </EuiPanel>
   );
 
-  return (
-    <>
-      {isCreating ? (
-        <EuiLoadingSpinner size="xl" />
-      ) : (
-        renderConfiguration()
-      )}
-    </>
-  );
+  return <>{isCreating ? <EuiLoadingSpinner size="xl" /> : renderConfiguration()}</>;
 };
 
 export const TemplateConfigurationWithRouter = withRouter(TemplateConfiguration);

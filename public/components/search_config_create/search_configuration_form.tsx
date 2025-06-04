@@ -4,13 +4,7 @@
  */
 
 import React from 'react';
-import {
-  EuiForm,
-  EuiFormRow,
-  EuiFieldText,
-  EuiComboBox,
-  EuiCodeEditor,
-} from '@elastic/eui';
+import { EuiForm, EuiFormRow, EuiFieldText, EuiComboBox, EuiCodeEditor } from '@elastic/eui';
 
 interface SearchConfigurationFormProps {
   name: string;
@@ -75,11 +69,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow
-      label="Index"
-      helpText="Select an index for this search configuration."
-      fullWidth
-    >
+    <EuiFormRow label="Index" helpText="Select an index for this search configuration." fullWidth>
       <EuiComboBox
         placeholder="Select an index"
         options={indexOptions}
@@ -145,7 +135,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
           Search Pipeline <i> - optional </i>
         </p>
       }
-      helpText="Define the search pipeline to be used." 
+      helpText="Define the search pipeline to be used."
       fullWidth
     >
       <EuiComboBox

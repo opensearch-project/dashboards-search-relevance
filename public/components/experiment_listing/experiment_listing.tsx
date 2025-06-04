@@ -14,16 +14,16 @@ import {
   EuiButtonIcon,
   EuiButton,
 } from '@elastic/eui';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import moment from 'moment';
 import { combineResults, printType, toExperiment } from '../../types/index';
 
 interface ExperimentListingProps extends RouteComponentProps {
@@ -46,7 +46,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       const response = await http.delete(
         `${ServiceEndpoints.Experiments}/${experimentToDelete.id}`
       );
-      console.log('Delete successful:', response);
 
       // Close modal and clear state
       setShowDeleteModal(false);
@@ -56,6 +55,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
+      console.error('Failed to delete experiment', err);
       setError('Failed to delete experiment');
       setShowDeleteModal(false);
       setExperimentToDelete(null);
@@ -141,7 +141,9 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.Experiments);
-      const parseResults = combineResults(...(response ? response.hits.hits.map(hit => toExperiment(hit._source)) : []));
+      const parseResults = combineResults(
+        ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
+      );
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -162,7 +164,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         hits: filteredList,
       };
     } catch (err) {
-      console.log(err);
+      console.error('Failed to load experiment', err);
       setError('Failed to load experiments');
       return {
         total: 0,
@@ -188,7 +190,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
             color="primary"
           >
             Create Experiment
-          </EuiButton>
+          </EuiButton>,
         ]}
       />
 

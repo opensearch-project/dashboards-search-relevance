@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState, useEffect } from 'react';
 import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiFormRow } from '@elastic/eui';
 import { ResultListComparisonForm } from './form/result_list_comparison_form';
@@ -14,6 +19,7 @@ import {
   TemplateType,
 } from './types';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { ExperimentType } from '../../../types/index';
 
 const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseData = {
@@ -26,13 +32,13 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
     case TemplateType.QuerySetComparison:
       return {
         ...baseData,
-        type: "PAIRWISE_COMPARISON",
+        type: ExperimentType.PAIRWISE_COMPARISON,
       };
     case TemplateType.SearchEvaluation:
       return {
         ...baseData,
         judgmentList: [],
-        type: "POINTWISE_EVALUATION",
+        type: ExperimentType.POINTWISE_EVALUATION,
       };
     default:
       return (baseData as unknown) as
@@ -81,11 +87,19 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
         );
       case TemplateType.SearchEvaluation:
         return (
-          <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
+          <PointwiseExperimentForm
+            formData={formData as PointwiseExperimentFormData}
+            onChange={handleChange}
+            http={http}
+          />
         );
       case TemplateType.HybridSearchOptimizer:
         return (
-          <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
+          <HybridOptimizerExperimentForm
+            formData={formData as HybridOptimizerExperimentFormData}
+            onChange={handleChange}
+            http={http}
+          />
         );
       default:
         return null;

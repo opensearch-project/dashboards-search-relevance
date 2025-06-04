@@ -1,6 +1,11 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect, useState } from 'react';
 import { EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { IndexOption } from '../types';
+import { OptionLabel } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
@@ -10,12 +15,8 @@ interface JudgmentsComboBoxProps {
   http: CoreStart['http'];
 }
 
-export const JudgmentsComboBox = ({
-  selectedOptions,
-  onChange,
-  http,
-}: JudgmentsComboBoxProps) => {
-  const [judgmentOptions, setJudgmentOptions] = useState<IndexOption[]>([]);
+export const JudgmentsComboBox = ({ selectedOptions, onChange, http }: JudgmentsComboBoxProps) => {
+  const [judgmentOptions, setJudgmentOptions] = useState<OptionLabel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {

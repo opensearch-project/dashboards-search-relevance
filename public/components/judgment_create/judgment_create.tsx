@@ -390,7 +390,6 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                                 iconType="cross"
                                 iconSide="right"
                                 iconOnClick={() => {
-                                  console.log('Removing field:', field); // For debugging
                                   removeContextField(field);
                                 }}
                                 iconOnClickAriaLabel={`Remove ${field} from context fields`}

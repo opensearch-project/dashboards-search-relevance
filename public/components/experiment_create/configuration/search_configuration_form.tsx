@@ -1,18 +1,28 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useEffect, useState } from 'react';
 import { EuiFormRow, EuiComboBox } from '@elastic/eui';
-import { IndexOption } from './types';
+import { OptionLabel } from './types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../common';
 
 interface SearchConfigFormProps {
-  selectedOptions: IndexOption[];
-  onChange: (selectedOptions: IndexOption[]) => void;
+  selectedOptions: OptionLabel[];
+  onChange: (selectedOptions: OptionLabel[]) => void;
   http: CoreStart['http'];
   maxNumberOfOptions: number;
 }
 
-export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfOptions }: SearchConfigFormProps) => {
-  const [searchConfigOptions, setSearchConfigOptions] = useState<IndexOption[]>([]);
+export const SearchConfigForm = ({
+  selectedOptions,
+  onChange,
+  http,
+  maxNumberOfOptions,
+}: SearchConfigFormProps) => {
+  const [searchConfigOptions, setSearchConfigOptions] = useState<OptionLabel[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
 
   useEffect(() => {
@@ -38,7 +48,9 @@ export const SearchConfigForm = ({ selectedOptions, onChange, http, maxNumberOfO
   return (
     <EuiFormRow
       label="Search Configurations"
-      helpText={`Select ${maxNumberOfOptions} search configuration${maxNumberOfOptions > 1 ? 's' : ''}${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
+      helpText={`Select ${maxNumberOfOptions} search configuration${
+        maxNumberOfOptions > 1 ? 's' : ''
+      }${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
     >
       <EuiComboBox
         placeholder="Select search configuration"
