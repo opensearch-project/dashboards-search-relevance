@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { EuiButton, EuiFlexGroup, EuiFlexItem, EuiFormRow } from '@elastic/eui';
+import { EuiSpacer } from '@elastic/eui';
 import { ResultListComparisonForm } from './form/result_list_comparison_form';
 import { PointwiseExperimentForm } from './form/pointwise_experiment_form';
 import { HybridOptimizerExperimentForm } from './form/hybrid_optimizer_experiment_form';
-import { LLMForm } from './form/llm_form';
 import {
   ConfigurationFormProps,
   ConfigurationFormData,
@@ -14,6 +13,7 @@ import {
   TemplateType,
 } from './types';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { GetStartedAccordion } from '../../resource_management_home/get_started_accordion';
 
 const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseData = {
@@ -78,24 +78,40 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
     switch (templateType) {
       case TemplateType.QuerySetComparison:
         return (
-          <ResultListComparisonForm
-            formData={formData as ResultListComparisonFormData}
-            onChange={handleChange}
-            http={http}
-          />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <ResultListComparisonForm
+              formData={formData as ResultListComparisonFormData}
+              onChange={handleChange}
+              http={http}
+            />
+          </>
         );
       case TemplateType.SearchEvaluation:
         return (
-          <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
+          </>
         );
       case TemplateType.HybridSearchOptimizer:
         return (
-          <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
+          </>
         );
       default:
         return null;
     }
   };
 
-  return <>{renderForm()}</>;
+  return (
+    <>
+      {renderForm()}
+    </>
+  );
 };

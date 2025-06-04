@@ -13,6 +13,7 @@ import {
   EuiPageHeader,
   EuiButtonIcon,
   EuiButton,
+  EuiSpacer,
 } from '@elastic/eui';
 import {
   reactRouterNavigate,
@@ -20,11 +21,12 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import moment from 'moment';
 import { combineResults, printType, toExperiment } from '../../types/index';
+import { TemplateCards } from '../experiment_create/template_card/template_cards';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -80,7 +82,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/experiment/view/${experiment.id}`)}
+            {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
           >
             {id}
           </EuiButtonEmpty>
@@ -177,22 +179,17 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Experiments"
-        description="View and manage your existing experiments. Click on a experiment id to view details."
-        rightSideItems={[
-          <EuiButton
-            onClick={() => history.push('/experiment/create')}
-            fill
-            size="s"
-            iconType="plus"
-            data-test-subj="createExperimentButton"
-            color="primary"
-          >
-            Create Experiment
-          </EuiButton>
-        ]}
+        description="Manage your existing experiments and create new ones. Click on a card to create an experiment."
       />
 
+      <EuiSpacer size="m" />
+
+      <TemplateCards history={history} onClose={() => {}} />
+
+      <EuiSpacer size="m" />
+
       <EuiFlexItem>
+        <EuiText>Click on an experiment id to view details.</EuiText>
         {error ? (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>
