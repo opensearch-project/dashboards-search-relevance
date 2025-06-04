@@ -15,6 +15,7 @@ import {
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { GetStartedAccordion } from '../../resource_management_home/get_started_accordion';
 
+
 const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseData = {
     querySetId: '',
@@ -79,7 +80,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
       case TemplateType.QuerySetComparison:
         return (
           <>
-            <GetStartedAccordion isOpen={true} />
+            <GetStartedAccordion isOpen={true} templateType={templateType} />
             <EuiSpacer size="l" />
             <ResultListComparisonForm
               formData={formData as ResultListComparisonFormData}
@@ -91,7 +92,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
       case TemplateType.SearchEvaluation:
         return (
           <>
-            <GetStartedAccordion isOpen={true} />
+            <GetStartedAccordion isOpen={true} templateType={templateType} />
             <EuiSpacer size="l" />
             <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
           </>
@@ -99,7 +100,7 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
       case TemplateType.HybridSearchOptimizer:
         return (
           <>
-            <GetStartedAccordion isOpen={true} />
+            <GetStartedAccordion isOpen={true} templateType={templateType} />
             <EuiSpacer size="l" />
             <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
           </>
