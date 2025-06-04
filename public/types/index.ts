@@ -80,30 +80,33 @@ export const enum ExperimentStatus {
   COMPLETED = 'COMPLETED',
   FAILED = 'FAILED',
 }
+
 export const enum ExperimentType {
   PAIRWISE_COMPARISON = 'PAIRWISE_COMPARISON',
   POINTWISE_EVALUATION = 'POINTWISE_EVALUATION',
 }
 
-export interface ExperimentBase {
+export type ExperimentBase = {
   status: ExperimentStatus;
   id: string;
   timestamp: string;
   querySetId: string;
   k: number;
   size: number;
-}
+};
 
-export interface PairwiseComparisonExperiment extends ExperimentBase {
+export type Experiment = PairwiseComparisonExperiment | EvaluationExperiment;
+
+export type PairwiseComparisonExperiment = ExperimentBase & {
   type: ExperimentType.PAIRWISE_COMPARISON;
   searchConfigurationList: string[];
-}
+};
 
-export interface EvaluationExperiment extends ExperimentBase {
+export type EvaluationExperiment = ExperimentBase & {
   type: ExperimentType.POINTWISE_EVALUATION;
   searchConfigurationId: string;
   judgmentId: string;
-}
+};
 
 export const printType = (type: string) => {
   switch (type) {
@@ -116,22 +119,22 @@ export const printType = (type: string) => {
   }
 };
 
-export interface Metrics {
+export type Metrics = {
   [key: string]: number;
-}
+};
 
 export type MetricsCollection = Metrics[];
 
 // Evaluation (multiple metric results for a single query)
-export interface QueryEvaluation {
+export type QueryEvaluation = {
   queryText: string;
   metrics: Metrics;
-}
+};
 
-export interface QuerySnapshot {
+export type QuerySnapshot = {
   queryText: string;
   documentIds: string[];
-}
+};
 
 export type ParseResult<T> = { success: true; data: T } | { success: false; errors: string[] };
 
@@ -139,7 +142,7 @@ export const parseError = (error: string): ParseResult<any> => {
   return { success: false, errors: [error] };
 };
 
-export function combineResults(...results: Array<ParseResult<any>>): ParseResult<any[]> {
+export function combineResults(...results: ParseResult<any>[]): ParseResult<any[]> {
   const errors: string[] = [];
   const values: any[] = [];
 
@@ -162,7 +165,7 @@ export const parseMetrics = (textualMetrics: { [key: string]: number }): Metrics
 
 // Currently this function consumes the response of a pairwise comparison experiment
 // In the future this will be applied to an endpoint dedicated to evaluations
-export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> => {
+export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluation>> => {
   if (source.status === ExperimentStatus.COMPLETED && !source.results) {
     return parseError('Missing results for completed experiment');
   }
