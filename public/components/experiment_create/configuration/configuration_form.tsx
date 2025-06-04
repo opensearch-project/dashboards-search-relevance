@@ -73,19 +73,31 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
     switch (templateType) {
       case TemplateType.QuerySetComparison:
         return (
-          <ResultListComparisonForm
-            formData={formData as ResultListComparisonFormData}
-            onChange={handleChange}
-            http={http}
-          />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <ResultListComparisonForm
+              formData={formData as ResultListComparisonFormData}
+              onChange={handleChange}
+              http={http}
+            />
+          </>
         );
       case TemplateType.SearchEvaluation:
         return (
-          <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <PointwiseExperimentForm formData={formData as PointwiseExperimentFormData} onChange={handleChange} http={http} />
+          </>
         );
       case TemplateType.HybridSearchOptimizer:
         return (
-          <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
+          <>
+            <GetStartedAccordion isOpen={true} />
+            <EuiSpacer size="l" />
+            <HybridOptimizerExperimentForm formData={formData as HybridOptimizerExperimentFormData} onChange={handleChange} http={http} />
+          </>
         );
       default:
         return null;
@@ -94,8 +106,6 @@ export const ConfigurationForm = ({ templateType, onSave }: ConfigurationFormPro
 
   return (
     <>
-      <GetStartedAccordion isOpen={true} />
-      <EuiSpacer size="l" />
       {renderForm()}
     </>
   );
