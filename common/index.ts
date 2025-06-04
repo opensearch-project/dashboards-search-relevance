@@ -24,10 +24,10 @@ export enum ServiceEndpoints {
 }
 
 export enum BackendEndpoints {
-  QuerySets = '/_plugins/search_relevance/query_sets',
-  SearchConfigurations = '/_plugins/search_relevance/search_configurations',
-  Judgments = '/_plugins/search_relevance/judgments',
-  Experiments = '/_plugins/search_relevance/experiments',
+  QuerySets = '/_plugins/_search_relevance/query_sets',
+  SearchConfigurations = '/_plugins/_search_relevance/search_configurations',
+  Judgments = '/_plugins/_search_relevance/judgments',
+  Experiments = '/_plugins/_search_relevance/experiments',
 }
 
 export const SEARCH_API = '/_search';
