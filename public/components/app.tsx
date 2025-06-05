@@ -19,7 +19,11 @@ import {
 import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
-import { PLUGIN_NAME, COMPARE_SEARCH_RESULTS_TITLE, ServiceEndpoints } from '../../common';
+import {
+  PLUGIN_NAME,
+  COMPARE_SEARCH_RESULTS_TITLE,
+  SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED,
+} from '../../common';
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
@@ -61,7 +65,7 @@ interface SearchRelevanceAppDeps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
-  isNewExperienceEnabled?: boolean;
+  uiSettings: CoreStart['uiSettings'];
 }
 
 const SearchRelevancePage = ({ history }) => {
@@ -355,45 +359,11 @@ export const SearchRelevanceApp = ({
   setActionMenu,
   dataSourceManagement,
   application,
+  uiSettings,
 }: SearchRelevanceAppDeps) => {
   // Move all useState declarations to the top
-  const [isNewExperienceEnabled, setIsNewExperienceEnabled] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [toastRightSide, setToastRightSide] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchClusterSettings = async () => {
-      try {
-        const response = await http.get(ServiceEndpoints.GetClusterSettings);
-
-        // Check both persistent and defaults settings
-        const persistentEnabled =
-          response?.persistent?.plugins?.search_relevance?.workbench_enabled === 'true';
-        const defaultsEnabled =
-          response?.defaults?.plugins?.search_relevance?.workbench_enabled === 'true';
-
-        // Use persistent setting if available, otherwise use defaults
-        const enabled = persistentEnabled || defaultsEnabled;
-        setIsNewExperienceEnabled(enabled);
-      } catch (error) {
-        console.error('Error fetching cluster settings:', error);
-        notifications.toasts.addError(error as Error, {
-          title: 'Error fetching cluster settings',
-          toastLifeTimeMs: 5000,
-        });
-        setIsNewExperienceEnabled(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchClusterSettings();
-  }, [http, notifications]);
-
-  if (isLoading) {
-    return <EuiLoadingSpinner size="xl" />;
-  }
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
@@ -407,9 +377,10 @@ export const SearchRelevanceApp = ({
     setToasts([...toasts, { id: new Date().toISOString(), title, text, color } as Toast]);
   };
 
-  if (isLoading) {
-    return <EuiLoadingSpinner size="xl" />;
-  }
+  // UI Experience are controlled by ui settings
+  const isNewExperienceEnabled = Boolean(
+    uiSettings?.get(SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED)
+  );
 
   const renderNewExperience = () => (
     <HashRouter>
