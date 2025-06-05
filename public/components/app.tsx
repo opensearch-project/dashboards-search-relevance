@@ -187,7 +187,7 @@ const SearchRelevancePage = ({
           }} />
           <Route path={Routes.ExperimentView} exact render={(props) => {
             const { entityId } = props.match.params;
-            return <ExperimentViewWithRouter http={http} id={entityId} />;
+            return <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />;
           }} />
           <Route path={Routes.QuerySetView} exact render={(props) => {
             const { entityId } = props.match.params;

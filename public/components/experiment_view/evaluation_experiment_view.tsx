@@ -19,7 +19,7 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart } from '../../../../../src/core/public';
+import { CoreStart, ToastsStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import {
   Experiment,
@@ -37,10 +37,11 @@ import { MetricsSummaryPanel } from './metrics_summary';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  notifications: CoreStart['notifications'];
   inputExperiment: EvaluationExperiment;
 }
 
-export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> = ({ http, inputExperiment, history }) => {
+export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> = ({ http, notifications, inputExperiment, history }) => {
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [querySet, setQuerySet] = useState<any | null>(null);
@@ -64,6 +65,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         const _judgmentSet = _experiment && await http.get(ServiceEndpoints.Judgments + "/" + inputExperiment.judgmentId).then(sanitizeResponse);
 
         const resultIds = Object.entries(_experiment.results).map(([key, value]) => value[inputExperiment.searchConfigurationId]).filter(Boolean);
+        
         const query = {
             index: "search-relevance-evaluation-result",
             query: {
@@ -84,6 +86,16 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           setJudgmentSet(_judgmentSet);
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
+            // Check if there are ZSR queries by comparing resultIds count with query set count
+            if (_querySet && _querySet.querySetQueries && Object.keys(_querySet.querySetQueries).length > resultIds.length) {
+              const zsrCount = Object.keys(_querySet.querySetQueries).length - resultIds.length;
+              notifications.toasts.addWarning({
+                title: 'You have some ZSR queries',
+                text: `${zsrCount} queries returned Zero Search Results`,
+                'data-test-subj': 'zsrQueriesWarningToast',
+                toastLifeTimeMs: 10000
+              });
+            }
           } else {
             setError('Error parsing experiment');
             console.error('Error parsing query evaluations:', parseResults.errors);
