@@ -7,6 +7,9 @@ export const PLUGIN_ID = 'searchRelevance';
 export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
 
+export const SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED =
+  'search-relevance:experimental_workbench_ui_enabled';
+
 const SEARCH_RELEVANCE_WORKBENCH_BASE_PATH = '/api/relevancy';
 export const ServiceEndpoints = Object.freeze({
   // OpenSearch node APIs

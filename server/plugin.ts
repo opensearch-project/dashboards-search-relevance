@@ -6,6 +6,7 @@
 import { Observable } from 'rxjs';
 import { first } from 'rxjs/operators';
 
+import { schema } from '@osd/config-schema';
 import {
   CoreSetup,
   CoreStart,
@@ -14,16 +15,14 @@ import {
   Plugin,
   PluginInitializerContext,
 } from '../../../src/core/server';
-import {
-  defineRoutes,
-  registerSearchRelevanceRoutes,
-} from './routes';
+import { defineRoutes, registerSearchRelevanceRoutes } from './routes';
 
 import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
 import { DataSourceManagementPlugin } from '../../../src/plugins/data_source_management/public/plugin';
 import { SearchRelevancePluginConfigType } from '../config';
 import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
 import { SearchRelevancePluginSetup, SearchRelevancePluginStart } from './types';
+import { SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED } from '../common';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSourceManagement: ReturnType<DataSourceManagementPlugin['setup']>;
@@ -46,6 +45,16 @@ export class SearchRelevancePlugin
     const dataSourceEnabled = !!dataSource;
     this.logger.debug('SearchRelevance: Setup');
 
+    core.uiSettings.register({
+      [SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED]: {
+        name: 'Experimental Search Relevance Workbench',
+        value: false,
+        description: 'Whether to opt-in the experimental search relevance workbench feature',
+        schema: schema.boolean(),
+        category: ['search relevance'],
+      },
+    });
+
     const config: SearchRelevancePluginConfigType = await this.config$.pipe(first()).toPromise();
 
     const metricsService: MetricsServiceSetup = this.metricsService.setup(
@@ -57,8 +66,8 @@ export class SearchRelevancePlugin
 
     let opensearchSearchRelevanceClient: ILegacyClusterClient | undefined = undefined;
     opensearchSearchRelevanceClient = core.opensearch.legacy.createClient(
-      'opensearch_search_relevance',
-    )
+      'opensearch_search_relevance'
+    );
 
     // @ts-ignore
     core.http.registerRouteHandlerContext('searchRelevance', (context, request) => {
