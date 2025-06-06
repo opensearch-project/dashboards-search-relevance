@@ -22,7 +22,7 @@ const searchRelevance_category: Record<string, AppCategory & { group?: AppCatego
 const titleForSearchRelevance = i18n.translate(
   'plugins.dashboards_search_relevance.nav.title.label',
   {
-    defaultMessage: 'Compare search results',
+    defaultMessage: 'Search relevance',
   }
 );
 
