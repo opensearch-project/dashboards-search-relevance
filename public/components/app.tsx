@@ -115,7 +115,9 @@ const SearchRelevancePage = ({
           onClick: () => {
             history.push(Routes.Home);
           },
-          isSelected: location.pathname === Routes.Home || location.pathname.startsWith(Routes.ExperimentViewPrefix),
+          isSelected:
+            location.pathname === Routes.Home ||
+            location.pathname.startsWith(Routes.ExperimentViewPrefix),
           forceOpen: true,
           items: [
             {
@@ -124,7 +126,9 @@ const SearchRelevancePage = ({
               onClick: () => {
                 history.push(Routes.ExperimentCreateSingleQueryComparison);
               },
-              isSelected: location.pathname.startsWith(Routes.ExperimentCreateSingleQueryComparison),
+              isSelected: location.pathname.startsWith(
+                Routes.ExperimentCreateSingleQueryComparison
+              ),
             },
             {
               name: Navigation.ExperimentsQuerySetComparison,
@@ -187,81 +191,142 @@ const SearchRelevancePage = ({
       </EuiPageSideBar>
       <EuiPageBody>
         <Switch>
-          <Route path={Routes.Home} exact render={() => {
-            return <ExperimentListingWithRoute http={http} />;
-          }} />
-          <Route path={Routes.QuerySetListing} exact render={() => {
-            return <QuerySetListingWithRoute http={http} />;
-          }} />
-          <Route path={Routes.SearchConfigurationListing} exact render={() => {
-            return <SearchConfigurationListingWithRoute http={http} />;
-          }} />
-          <Route path={Routes.JudgmentListing} exact render={() => {
-            return <JudgmentListingWithRoute http={http} />;
-          }} />
-          <Route path={Routes.ExperimentView} exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />;
-          }} />
-          <Route path={Routes.QuerySetView} exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <QuerySetView http={http} id={entityId} />;
-          }} />
-          <Route path={Routes.SearchConfigurationView} exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <SearchConfigurationView http={http} id={entityId} />;
-          }} />
-          <Route path={Routes.JudgmentView} exact render={(props) => {
-            const { entityId } = props.match.params;
-            return <JudgmentView http={http} id={entityId} />;
-          }} />
+          <Route
+            path={Routes.Home}
+            exact
+            render={() => {
+              return <ExperimentListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.QuerySetListing}
+            exact
+            render={() => {
+              return <QuerySetListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationListing}
+            exact
+            render={() => {
+              return <SearchConfigurationListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.JudgmentListing}
+            exact
+            render={() => {
+              return <JudgmentListingWithRoute http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.ExperimentView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return (
+                <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />
+              );
+            }}
+          />
+          <Route
+            path={Routes.QuerySetView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <QuerySetView http={http} id={entityId} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <SearchConfigurationView http={http} id={entityId} />;
+            }}
+          />
+          <Route
+            path={Routes.JudgmentView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <JudgmentView http={http} id={entityId} />;
+            }}
+          />
           <Route
             path={Routes.ExperimentCreateTemplate}
             exact
             render={(props) => {
-              const templateId = routeToTemplateType(props.match.params.templateId)
+              const templateId = routeToTemplateType(props.match.params.templateId);
               if (templateId === TemplateType.SingleQueryComparison) {
-                return <QueryCompareHome
-                  application={application}
-                  parentBreadCrumbs={parentBreadCrumbs}
-                  notifications={notifications}
-                  http={http}
-                  navigation={navigation}
-                  setBreadcrumbs={chrome.setBreadcrumbs}
-                  chrome={chrome}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
-                  setActionMenu={setActionMenu}
-                  setToast={(title: string, color = 'success', text?: React.ReactNode) => {
-                    if (color === 'success') {
-                      notifications.toasts.addSuccess({ title, text });
-                    } else if (color === 'warning') {
-                      notifications.toasts.addWarning({ title, text });
-                    } else if (color === 'danger') {
-                      notifications.toasts.addDanger({ title, text });
-                    } else {
-                      notifications.toasts.add({ title, text });
-                    }
-                  }}
-                />                        
+                return (
+                  <QueryCompareHome
+                    application={application}
+                    parentBreadCrumbs={parentBreadCrumbs}
+                    notifications={notifications}
+                    http={http}
+                    navigation={navigation}
+                    setBreadcrumbs={chrome.setBreadcrumbs}
+                    chrome={chrome}
+                    savedObjects={savedObjects}
+                    dataSourceEnabled={dataSourceEnabled}
+                    dataSourceManagement={dataSourceManagement}
+                    setActionMenu={setActionMenu}
+                    setToast={(title: string, color = 'success', text?: React.ReactNode) => {
+                      if (color === 'success') {
+                        notifications.toasts.addSuccess({ title, text });
+                      } else if (color === 'warning') {
+                        notifications.toasts.addWarning({ title, text });
+                      } else if (color === 'danger') {
+                        notifications.toasts.addDanger({ title, text });
+                      } else {
+                        notifications.toasts.add({ title, text });
+                      }
+                    }}
+                  />
+                );
               } else {
-                return <TemplateConfigurationWithRouter
-                  templateType={templateId}
-                  onBack={() => { history.goBack(); }}
-                  onClose={() => {}}
-                />;
+                return (
+                  <TemplateConfigurationWithRouter
+                    templateType={templateId}
+                    onBack={() => {
+                      history.goBack();
+                    }}
+                    onClose={() => {}}
+                  />
+                );
               }
-            }} />
-          <Route path={Routes.QuerySetCreate} exact render={() => {
-            return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
-          }} />
-          <Route path={Routes.SearchConfigurationCreate} exact render={() => {
-            return <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />;
-          }} />
-          <Route path={Routes.JudgmentCreate} exact render={() => {
-            return <JudgmentCreateWithRouter http={http} notifications={notifications} history={history}/>;
-          }} />
+            }}
+          />
+          <Route
+            path={Routes.QuerySetCreate}
+            exact
+            render={() => {
+              return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
+            }}
+          />
+          <Route
+            path={Routes.SearchConfigurationCreate}
+            exact
+            render={() => {
+              return (
+                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
+              );
+            }}
+          />
+          <Route
+            path={Routes.JudgmentCreate}
+            exact
+            render={() => {
+              return (
+                <JudgmentCreateWithRouter
+                  http={http}
+                  notifications={notifications}
+                  history={history}
+                />
+              );
+            }}
+          />
         </Switch>
       </EuiPageBody>
     </EuiPage>

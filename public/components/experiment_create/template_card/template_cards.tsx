@@ -60,7 +60,7 @@ const RouteMap = {
   [TemplateType.QuerySetComparison]: Routes.ExperimentCreateQuerySetComparison,
   [TemplateType.SearchEvaluation]: Routes.ExperimentCreateSearchEvaluation,
   [TemplateType.HybridSearchOptimizer]: Routes.ExperimentCreateHybridOptimizer,
-}
+};
 
 export const TemplateCards = ({ history }: TemplateCardsProps) => {
   const handleCardClick = (templateId: TemplateType) => {

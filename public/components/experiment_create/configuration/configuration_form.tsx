@@ -5,9 +5,18 @@
 
 import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { EuiSpacer, EuiCallOut } from '@elastic/eui';
-import { ResultListComparisonForm, ResultListComparisonFormRef } from './form/result_list_comparison_form';
-import { PointwiseExperimentForm, PointwiseExperimentFormRef } from './form/pointwise_experiment_form';
-import { HybridOptimizerExperimentForm, HybridOptimizerExperimentFormRef } from './form/hybrid_optimizer_experiment_form';
+import {
+  ResultListComparisonForm,
+  ResultListComparisonFormRef,
+} from './form/result_list_comparison_form';
+import {
+  PointwiseExperimentForm,
+  PointwiseExperimentFormRef,
+} from './form/pointwise_experiment_form';
+import {
+  HybridOptimizerExperimentForm,
+  HybridOptimizerExperimentFormRef,
+} from './form/hybrid_optimizer_experiment_form';
 import {
   ConfigurationFormProps,
   ConfigurationFormData,
@@ -39,10 +48,17 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
     // `formData` in ConfigurationForm should primarily reflect the *initial* state
     // and then be updated by `handleChange` which gets called by children.
     // However, the true source of "current" validated data will now be the child's ref.
-    const [formData, setFormData] = useState<ConfigurationFormData>(getInitialFormData(templateType));
+    const [formData, setFormData] = useState<ConfigurationFormData>(
+      getInitialFormData(templateType)
+    );
     const [showFormError, setShowFormError] = useState<boolean>(false);
 
-    const activeFormRef = useRef<PointwiseExperimentFormRef | ResultListComparisonFormRef | HybridOptimizerExperimentFormRef | null>(null);
+    const activeFormRef = useRef<
+      | PointwiseExperimentFormRef
+      | ResultListComparisonFormRef
+      | HybridOptimizerExperimentFormRef
+      | null
+    >(null);
 
     useImperativeHandle(ref, () => ({
       validateAndGetData: () => {
@@ -63,7 +79,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
         if (activeFormRef.current) {
           activeFormRef.current.clearAllErrors();
         }
-      }
+      },
     }));
 
     useEffect(() => {
@@ -73,7 +89,6 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
       // The individual forms will clear their errors when their formData prop changes
       // or when `clearFormErrors` is called via the main ref.
     }, [templateType]);
-
 
     const handleChange = (field: string, value: any) => {
       setFormData((prev) => ({
@@ -144,8 +159,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
             color="danger"
             iconType="cross"
             size="s"
-          >
-          </EuiCallOut>
+          />
         )}
         <EuiSpacer size="s" />
         {renderForm()}
@@ -153,7 +167,6 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
     );
   }
 );
-
 
 const getInitialFormData = (templateType: TemplateType): ConfigurationFormData => {
   const baseCommonData = {
@@ -181,10 +194,12 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
         type: ExperimentType.HYBRID_OPTIMIZER,
       } as HybridOptimizerExperimentFormData;
     default:
-        console.warn(`Attempted to get initial form data for unhandled TemplateType: ${templateType}. Returning a minimal base configuration.`);
-        return {
-            ...baseCommonData,
-            type: "UNKNOWN_TYPE" as any,
-        } as ConfigurationFormData;
+      console.warn(
+        `Attempted to get initial form data for unhandled TemplateType: ${templateType}. Returning a minimal base configuration.`
+      );
+      return {
+        ...baseCommonData,
+        type: 'UNKNOWN_TYPE' as any,
+      } as ConfigurationFormData;
   }
 };

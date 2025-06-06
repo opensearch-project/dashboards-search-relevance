@@ -5,7 +5,14 @@
 
 import React, { useState, useRef } from 'react';
 
-import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner, EuiCallOut } from '@elastic/eui';
+import {
+  EuiFlexItem,
+  EuiFlexGroup,
+  EuiTitle,
+  EuiSpacer,
+  EuiLoadingSpinner,
+  EuiCallOut,
+} from '@elastic/eui';
 import { withRouter } from 'react-router-dom';
 import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm, ConfigurationFormRef } from './configuration_form';
@@ -51,7 +58,9 @@ export const TemplateConfiguration = ({
 
         if (response.experiment_id) {
           setExperimentId(response.experiment_id);
-          notifications.toasts.addSuccess(`Experiment ${response.experiment_id} created successfully`);
+          notifications.toasts.addSuccess(
+            `Experiment ${response.experiment_id} created successfully`
+          );
           history.push(Routes.Home);
           if (configurationFormRef.current) {
             configurationFormRef.current.clearFormErrors();
@@ -74,7 +83,6 @@ export const TemplateConfiguration = ({
     }
   };
 
-
   const handleBackToConfig = () => {
     setShowEvaluation(false);
   };
@@ -87,10 +95,7 @@ export const TemplateConfiguration = ({
             <h2>{templateType} Experiment</h2>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <ConfigurationForm
-            templateType={templateType}
-            ref={configurationFormRef}
-          />
+          <ConfigurationForm templateType={templateType} ref={configurationFormRef} />
         </EuiFlexItem>
 
         <EuiFlexItem>

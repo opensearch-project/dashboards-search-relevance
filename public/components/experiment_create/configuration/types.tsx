@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { RouteTemplateType } from '../../../../common';
 import { RouteComponentProps } from 'react-router-dom';
+import { RouteTemplateType } from '../../../../common';
 
 export enum TemplateType {
   SingleQueryComparison = 'Single Query Comparison',
@@ -24,7 +24,7 @@ export const routeToTemplateType = (templateId: string) => {
     case RouteTemplateType.HybridOptimizer:
       return TemplateType.HybridSearchOptimizer;
   }
-}
+};
 
 export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;

@@ -23,7 +23,7 @@ interface GetStartedAccordionProps {
 
 export function GetStartedAccordion(props: GetStartedAccordionProps) {
   const { isOpen, templateType = TemplateType.QuerySetComparison } = props;
-  
+
   const renderContent = () => {
     switch (templateType) {
       case TemplateType.QuerySetComparison:
@@ -39,7 +39,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Select query set that are created either by sampling real live queries or upload the queries that you're interested in.
+                  Select query set that are created either by sampling real live queries or upload
+                  the queries that you're interested in.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -53,7 +54,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  You need to have TWO Search Configurations that you want to compare against each other already defined.
+                  You need to have TWO Search Configurations that you want to compare against each
+                  other already defined.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -67,7 +69,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  You can select to evaluate your experiment either by customized calculator or user behavior or LLM.
+                  You can select to evaluate your experiment either by customized calculator or user
+                  behavior or LLM.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -81,13 +84,14 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Set based metrics like Jaccard and RBO will be calculated to compare the Search Configurations.
+                  Set based metrics like Jaccard and RBO will be calculated to compare the Search
+                  Configurations.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
           </EuiFlexGroup>
         );
-      
+
       case TemplateType.SearchEvaluation:
         return (
           <EuiFlexGroup direction="row">
@@ -129,7 +133,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Pick the judgment list to use in evaluating search results.  You need judgment lists that overlap with your Query Set.
+                  Pick the judgment list to use in evaluating search results. You need judgment
+                  lists that overlap with your Query Set.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -143,13 +148,14 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Execute the evaluation to generate metrics about your search configuration's performance.
+                  Execute the evaluation to generate metrics about your search configuration's
+                  performance.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
           </EuiFlexGroup>
         );
-      
+
       case TemplateType.HybridSearchOptimizer:
         return (
           <EuiFlexGroup direction="row">
@@ -163,8 +169,9 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Select the query set containing queries you want to use to optimize lexical versus vector weighting for optimal search results in your Hybrid query.
-                  They should be representative of your overall user query distributions.
+                  Select the query set containing queries you want to use to optimize lexical versus
+                  vector weighting for optimal search results in your Hybrid query. They should be
+                  representative of your overall user query distributions.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -178,7 +185,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Set up the hybrid search parameters in a Search Configuraiton you want to optimize.
+                  Set up the hybrid search parameters in a Search Configuraiton you want to
+                  optimize.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -192,7 +200,12 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Pick the judgment list to use in evaluating search results. Typically you want implicit judgments sourced from <a href="https://docs.opensearch.org/docs/latest/search-plugins/ubi/index/">actual user behavior</a>.
+                  Pick the judgment list to use in evaluating search results. Typically you want
+                  implicit judgments sourced from{' '}
+                  <a href="https://docs.opensearch.org/docs/latest/search-plugins/ubi/index/">
+                    actual user behavior
+                  </a>
+                  .
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -206,7 +219,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Execute the optimizer to find the best weights and configurations for your hybrid search.
+                  Execute the optimizer to find the best weights and configurations for your hybrid
+                  search.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -220,13 +234,14 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Download and install a OpenSearch Dashboard that lets you evaluate the results of the Optimizer run.
+                  Download and install a OpenSearch Dashboard that lets you evaluate the results of
+                  the Optimizer run.
                 </EuiText>
               </EuiCard>
-            </EuiFlexItem>            
+            </EuiFlexItem>
           </EuiFlexGroup>
         );
-      
+
       case TemplateType.SingleQueryComparison:
         return (
           <EuiFlexGroup direction="row">
@@ -239,9 +254,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                   </EuiTitle>
                 }
               >
-                <EuiText>
-                  Specify a single query that you want to compare results for.
-                </EuiText>
+                <EuiText>Specify a single query that you want to compare results for.</EuiText>
               </EuiCard>
             </EuiFlexItem>
             <EuiFlexItem>
@@ -268,7 +281,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Choose the metrics that will be used to compare the different search configurations.
+                  Choose the metrics that will be used to compare the different search
+                  configurations.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -288,7 +302,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
             </EuiFlexItem>
           </EuiFlexGroup>
         );
-      
+
       default:
         return (
           <EuiFlexGroup direction="row">
@@ -302,7 +316,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Select query sets that created either by sampling real live queries or upload the queries that you're interested in.
+                  Select query sets that created either by sampling real live queries or upload the
+                  queries that you're interested in.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -330,7 +345,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  You can select to evaluate your experiment either by customized calculator or user behavior or LLM.
+                  You can select to evaluate your experiment either by customized calculator or user
+                  behavior or LLM.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -344,7 +360,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Document-based judgement scores will be collect and aggregated into evaluation metrics.
+                  Document-based judgement scores will be collect and aggregated into evaluation
+                  metrics.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -367,9 +384,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
       }
     >
       <EuiSpacer size="s" />
-      <EuiFlexItem>
-        {renderContent()}
-      </EuiFlexItem>
+      <EuiFlexItem>{renderContent()}</EuiFlexItem>
     </EuiAccordion>
   );
 }

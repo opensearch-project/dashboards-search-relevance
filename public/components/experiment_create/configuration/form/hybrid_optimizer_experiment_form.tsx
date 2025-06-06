@@ -12,7 +12,7 @@ import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
 
 export interface HybridOptimizerExperimentFormRef {
-  validateAndSetErrors: () => { isValid: boolean; data: HybridOptimizerExperimentFormData; };
+  validateAndSetErrors: () => { isValid: boolean; data: HybridOptimizerExperimentFormData };
   clearAllErrors: () => void;
 }
 
@@ -45,9 +45,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
 
   useEffect(() => {
     setQuerySetOptions(
-      formData?.querySetId
-        ? [{ label: formData.querySetId, value: formData.querySetId }]
-        : []
+      formData?.querySetId ? [{ label: formData.querySetId, value: formData.querySetId }] : []
     );
     setSelectedSearchConfigs(
       Array.isArray(formData?.searchConfigurationList)
@@ -63,15 +61,18 @@ export const HybridOptimizerExperimentForm = forwardRef<
     clearAllErrors(); // Clear errors on formData prop change
   }, [formData]);
 
-  const validateAndSetErrors = (): { isValid: boolean; data: HybridOptimizerExperimentFormData; } => {
+  const validateAndSetErrors = (): {
+    isValid: boolean;
+    data: HybridOptimizerExperimentFormData;
+  } => {
     let isValid = true;
 
     // Construct the current data object from internal states for validation
     const currentData: HybridOptimizerExperimentFormData = {
       querySetId: querySetOptions[0]?.value || '',
       size: k,
-      searchConfigurationList: selectedSearchConfigs.map(c => c.value),
-      judgmentList: judgmentOptions.map(j => j.value),
+      searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
+      judgmentList: judgmentOptions.map((j) => j.value),
       type: formData.type, // Preserve the 'type' from the initial formData
     };
 
@@ -214,11 +215,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
         </EuiFormRow>
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiFormRow
-          label="Judgments"
-          isInvalid={judgmentError.length > 0}
-          error={judgmentError}
-        >
+        <EuiFormRow label="Judgments" isInvalid={judgmentError.length > 0} error={judgmentError}>
           <JudgmentsComboBox
             selectedOptions={judgmentOptions}
             onChange={handleJudgmentsChange}

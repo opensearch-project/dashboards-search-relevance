@@ -65,7 +65,9 @@ export const QuerySetsComboBox = ({
     return comboBoxComponent; // If hideLabel is true, just return the EuiComboBox
   } else {
     return (
-      <EuiFormRow label="Query Sets"> {/* If hideLabel is false or undefined, render with EuiFormRow */}
+      <EuiFormRow label="Query Sets">
+        {' '}
+        {/* If hideLabel is false or undefined, render with EuiFormRow */}
         {comboBoxComponent}
       </EuiFormRow>
     );

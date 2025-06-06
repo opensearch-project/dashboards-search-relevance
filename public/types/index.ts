@@ -87,19 +87,19 @@ export const enum ExperimentType {
   HYBRID_OPTIMIZER = 'HYBRID_OPTIMIZER',
 }
 
-export type ExperimentBase = {
+export interface ExperimentBase {
   status: ExperimentStatus;
   id: string;
   timestamp: string;
   querySetId: string;
   k: number;
   size: number;
-};
+}
 
 export type Experiment =
   | PairwiseComparisonExperiment
   | EvaluationExperiment
-  | HybridOptimizerExperiment
+  | HybridOptimizerExperiment;
 
 export type PairwiseComparisonExperiment = ExperimentBase & {
   type: ExperimentType.PAIRWISE_COMPARISON;
@@ -125,28 +125,28 @@ export const printType = (type: string) => {
     case ExperimentType.POINTWISE_EVALUATION:
       return 'Evaluation';
     case ExperimentType.HYBRID_OPTIMIZER:
-      return "Hybrid Optimizer";
+      return 'Hybrid Optimizer';
     default:
       return 'Unknown';
   }
 };
 
-export type Metrics = {
+export interface Metrics {
   [key: string]: number;
-};
+}
 
 export type MetricsCollection = Metrics[];
 
 // Evaluation (multiple metric results for a single query)
-export type QueryEvaluation = {
+export interface QueryEvaluation {
   queryText: string;
   metrics: Metrics;
-};
+}
 
-export type QuerySnapshot = {
+export interface QuerySnapshot {
   queryText: string;
   documentIds: string[];
-};
+}
 
 export type ParseResult<T> = { success: true; data: T } | { success: false; errors: string[] };
 
@@ -154,7 +154,7 @@ export const parseError = (error: string): ParseResult<any> => {
   return { success: false, errors: [error] };
 };
 
-export function combineResults(...results: ParseResult<any>[]): ParseResult<any[]> {
+export function combineResults(...results: Array<ParseResult<any>>): ParseResult<any[]> {
   const errors: string[] = [];
   const values: any[] = [];
 
@@ -177,7 +177,7 @@ export const parseMetrics = (textualMetrics: { [key: string]: number }): Metrics
 
 // Currently this function consumes the response of a pairwise comparison experiment
 // In the future this will be applied to an endpoint dedicated to evaluations
-export const toQueryEvaluations = (source: any): ParseResult<Array<QueryEvaluation>> => {
+export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> => {
   if (source.status === ExperimentStatus.COMPLETED && !source.results) {
     return parseError('Missing results for completed experiment');
   }
@@ -295,27 +295,29 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
         },
       };
 
-  case 'HYBRID_OPTIMIZER':
-    if (source.searchConfigurationList.length < 1) {
-      return parseError("Missing search configuration for hybrid optimizer (searchConfigurationList).");
-    }
-    if (!source.judgmentList || source.judgmentList.length < 1) {
-      return parseError("Missing judgment for hybrid optimizer (judgmentList).");
-    }
-    return {
-      success: true,
-      data: {
-        type: "HYBRID_OPTIMIZER",
-        status: source.status,
-        id: source.id,
-        k: source.size,
-        querySetId: source.querySetId,
-        timestamp: source.timestamp,
-        searchConfigurationId: source.searchConfigurationList[0],
-        judgmentId: source.judgmentList[0],
-        size
+    case 'HYBRID_OPTIMIZER':
+      if (source.searchConfigurationList.length < 1) {
+        return parseError(
+          'Missing search configuration for hybrid optimizer (searchConfigurationList).'
+        );
       }
-    };
+      if (!source.judgmentList || source.judgmentList.length < 1) {
+        return parseError('Missing judgment for hybrid optimizer (judgmentList).');
+      }
+      return {
+        success: true,
+        data: {
+          type: 'HYBRID_OPTIMIZER',
+          status: source.status,
+          id: source.id,
+          k: source.size,
+          querySetId: source.querySetId,
+          timestamp: source.timestamp,
+          searchConfigurationId: source.searchConfigurationList[0],
+          judgmentId: source.judgmentList[0],
+          size,
+        },
+      };
 
     default:
       return parseError(`Unknown experiment type: ${source.type}`);

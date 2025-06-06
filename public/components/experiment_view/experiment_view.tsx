@@ -17,7 +17,12 @@ interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   notifications: CoreStart['notifications'];
 }
 
-export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, notifications, id, history }) => {
+export const ExperimentView: React.FC<ExperimentViewProps> = ({
+  http,
+  notifications,
+  id,
+  history,
+}) => {
   const [experiment, setExperiment] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
 

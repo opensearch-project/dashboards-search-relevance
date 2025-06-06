@@ -152,6 +152,5 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
         isClearable={!disabled}
       />
     </EuiFormRow>
-
   </EuiForm>
 );

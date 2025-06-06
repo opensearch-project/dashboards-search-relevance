@@ -86,10 +86,10 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .then(sanitizeResponse));
 
         // the .filter(Boolean) is used to filter out undefineds which show up for queries that are ZSR.
-        const resultIds = Object.entries(_experiment.results).map(
-          ([key, value]) => value[inputExperiment.searchConfigurationId]
-        ).filter(Boolean);
-        
+        const resultIds = Object.entries(_experiment.results)
+          .map(([key, value]) => value[inputExperiment.searchConfigurationId])
+          .filter(Boolean);
+
         const query = {
           index: 'search-relevance-evaluation-result',
           query: {
@@ -114,13 +114,17 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
             // Check if there are ZSR queries by comparing resultIds count with query set count
-            if (_querySet && _querySet.querySetQueries && Object.keys(_querySet.querySetQueries).length > resultIds.length) {
+            if (
+              _querySet &&
+              _querySet.querySetQueries &&
+              Object.keys(_querySet.querySetQueries).length > resultIds.length
+            ) {
               const zsrCount = Object.keys(_querySet.querySetQueries).length - resultIds.length;
               notifications.toasts.addWarning({
                 title: 'You have some ZSR queries',
                 text: `${zsrCount} queries returned Zero Search Results`,
                 'data-test-subj': 'zsrQueriesWarningToast',
-                toastLifeTimeMs: 10000
+                toastLifeTimeMs: 10000,
               });
             }
           } else {

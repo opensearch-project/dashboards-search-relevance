@@ -9,7 +9,7 @@ import { OptionLabel } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../../common';
 
-interface JudgmentOption extends OptionLabel {}
+type JudgmentOption = OptionLabel;
 
 interface JudgmentsComboBoxProps {
   selectedOptions: JudgmentOption[];
@@ -67,7 +67,9 @@ export const JudgmentsComboBox = ({
     return comboBoxComponent; // If hideLabel is true, just return the EuiComboBox
   } else {
     return (
-      <EuiFormRow label="Judgments"> {/* If hideLabel is false or undefined, render with EuiFormRow */}
+      <EuiFormRow label="Judgments">
+        {' '}
+        {/* If hideLabel is false or undefined, render with EuiFormRow */}
         {comboBoxComponent}
       </EuiFormRow>
     );
