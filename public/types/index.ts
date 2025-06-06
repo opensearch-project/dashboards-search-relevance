@@ -84,6 +84,7 @@ export const enum ExperimentStatus {
 export const enum ExperimentType {
   PAIRWISE_COMPARISON = 'PAIRWISE_COMPARISON',
   POINTWISE_EVALUATION = 'POINTWISE_EVALUATION',
+  HYBRID_OPTIMIZER = 'HYBRID_OPTIMIZER',
 }
 
 export type ExperimentBase = {
@@ -95,7 +96,10 @@ export type ExperimentBase = {
   size: number;
 };
 
-export type Experiment = PairwiseComparisonExperiment | EvaluationExperiment;
+export type Experiment =
+  | PairwiseComparisonExperiment
+  | EvaluationExperiment
+  | HybridOptimizerExperiment
 
 export type PairwiseComparisonExperiment = ExperimentBase & {
   type: ExperimentType.PAIRWISE_COMPARISON;
@@ -108,12 +112,20 @@ export type EvaluationExperiment = ExperimentBase & {
   judgmentId: string;
 };
 
+export type HybridOptimizerExperiment = ExperimentBase & {
+  type: ExperimentType.HYBRID_OPTIMIZER;
+  searchConfigurationId: string;
+  judgmentId: string;
+};
+
 export const printType = (type: string) => {
   switch (type) {
     case ExperimentType.PAIRWISE_COMPARISON:
       return 'Comparison';
     case ExperimentType.POINTWISE_EVALUATION:
       return 'Evaluation';
+    case ExperimentType.HYBRID_OPTIMIZER:
+      return "Hybrid Optimizer";
     default:
       return 'Unknown';
   }
@@ -282,6 +294,28 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           size,
         },
       };
+
+  case 'HYBRID_OPTIMIZER':
+    if (source.searchConfigurationList.length < 1) {
+      return parseError("Missing search configuration for hybrid optimizer (searchConfigurationList).");
+    }
+    if (!source.judgmentList || source.judgmentList.length < 1) {
+      return parseError("Missing judgment for hybrid optimizer (judgmentList).");
+    }
+    return {
+      success: true,
+      data: {
+        type: "HYBRID_OPTIMIZER",
+        status: source.status,
+        id: source.id,
+        k: source.size,
+        querySetId: source.querySetId,
+        timestamp: source.timestamp,
+        searchConfigurationId: source.searchConfigurationList[0],
+        judgmentId: source.judgmentList[0],
+        size
+      }
+    };
 
     default:
       return parseError(`Unknown experiment type: ${source.type}`);

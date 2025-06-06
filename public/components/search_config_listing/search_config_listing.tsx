@@ -21,7 +21,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -60,7 +60,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/searchConfiguration/view/${searchConfiguration.id}`)}
+            {...reactRouterNavigate(history, `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -174,7 +174,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
                 to view details."
         rightSideItems={[
           <EuiButton
-            onClick={() => history.push('/searchConfiguration/create')}
+            onClick={() => history.push(Routes.SearchConfigurationCreate)}
             fill
             size="s"
             iconType="plus"

@@ -109,6 +109,8 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           searchConfigurationList: schema.arrayOf(schema.string()),
           size: schema.number(),
           type: schema.string(),
+          // TODO: make mandatory conditional on experiment type
+          judgmentList: schema.maybe(schema.arrayOf(schema.string())),
         }),
       },
     },

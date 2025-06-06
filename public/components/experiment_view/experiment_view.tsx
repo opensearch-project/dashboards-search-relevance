@@ -6,7 +6,7 @@
 import { EuiPageHeader, EuiPageTemplate } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart } from '../../../../../src/core/public';
+import { CoreStart, ToastsStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { ExperimentType, toExperiment } from '../../types/index';
 import { PairwiseExperimentViewWithRouter } from './pairwise_experiment_view';
@@ -14,9 +14,10 @@ import { EvaluationExperimentViewWithRouter } from './evaluation_experiment_view
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  notifications: CoreStart['notifications'];
 }
 
-export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, history }) => {
+export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, notifications, id, history }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,6 +53,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
       {experiment && experiment.type === ExperimentType.PAIRWISE_COMPARISON && (
         <PairwiseExperimentViewWithRouter
           http={http}
+          notifications={notifications}
           inputExperiment={experiment}
           history={history}
         />
@@ -59,6 +61,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({ http, id, histor
       {experiment && experiment.type === ExperimentType.POINTWISE_EVALUATION && (
         <EvaluationExperimentViewWithRouter
           http={http}
+          notifications={notifications}
           inputExperiment={experiment}
           history={history}
         />

@@ -153,22 +153,5 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = (
       />
     </EuiFormRow>
 
-    <EuiFormRow
-      label={
-        <p>
-          Search Template <i> - optional </i>
-        </p>
-      }
-      helpText="Define the search template."
-      fullWidth
-    >
-      <EuiFieldText
-        placeholder="Enter search template"
-        value={searchTemplate}
-        onChange={(e) => setSearchTemplate(e.target.value)}
-        fullWidth
-        disabled={disabled}
-      />
-    </EuiFormRow>
   </EuiForm>
 );

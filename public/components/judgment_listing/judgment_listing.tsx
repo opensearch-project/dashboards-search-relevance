@@ -23,7 +23,7 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import { ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints } from '../../../common';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -77,7 +77,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/judgment/view/${judgment.id}`)}
+            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -159,7 +159,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         description="View and manage your existing judgments. Click on a judgment list name to view details."
         rightSideItems={[
           <EuiButton
-            onClick={() => history.push('/judgment/create')}
+            onClick={() => history.push(Routes.JudgmentCreate)}
             fill
             size="s"
             iconType="plus"

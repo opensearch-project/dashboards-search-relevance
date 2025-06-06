@@ -14,6 +14,7 @@ interface SearchConfigFormProps {
   onChange: (selectedOptions: OptionLabel[]) => void;
   http: CoreStart['http'];
   maxNumberOfOptions: number;
+  hideLabel?: boolean;
 }
 
 export const SearchConfigForm = ({
@@ -21,6 +22,7 @@ export const SearchConfigForm = ({
   onChange,
   http,
   maxNumberOfOptions,
+  hideLabel,
 }: SearchConfigFormProps) => {
   const [searchConfigOptions, setSearchConfigOptions] = useState<OptionLabel[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
@@ -45,29 +47,38 @@ export const SearchConfigForm = ({
     fetchSearchConfigurations();
   }, [http]);
 
-  return (
-    <EuiFormRow
-      label="Search Configurations"
-      helpText={`Select ${maxNumberOfOptions} search configuration${
-        maxNumberOfOptions > 1 ? 's' : ''
-      }${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
-    >
-      <EuiComboBox
-        placeholder="Select search configuration"
-        options={searchConfigOptions}
-        selectedOptions={selectedOptions}
-        onChange={(selected) => {
-          if (selected.length > maxNumberOfOptions) {
-            return;
-          }
-          onChange(selected);
-        }}
-        isClearable={true}
-        isInvalid={selectedOptions.length === 0}
-        isLoading={isLoadingConfigs}
-        multi={true}
-        fullWidth
-      />
-    </EuiFormRow>
+  const comboBoxComponent = (
+    <EuiComboBox
+      placeholder="Select search configuration"
+      options={searchConfigOptions}
+      selectedOptions={selectedOptions}
+      onChange={(selected) => {
+        if (selected.length > maxNumberOfOptions) {
+          return;
+        }
+        onChange(selected);
+      }}
+      isClearable={true}
+      isInvalid={selectedOptions.length === 0}
+      isLoading={isLoadingConfigs}
+      multi={true}
+      fullWidth
+    />
   );
+
+  // Conditionally render EuiFormRow based on the hideLabel prop
+  if (hideLabel) {
+    return comboBoxComponent; // If hideLabel is true, just return the EuiComboBox
+  } else {
+    return (
+      <EuiFormRow
+        label="Search Configurations"
+        helpText={`Select ${maxNumberOfOptions} search configuration${
+          maxNumberOfOptions > 1 ? 's' : ''
+        }${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
+      >
+        {comboBoxComponent}
+      </EuiFormRow>
+    );
+  }
 };

@@ -104,11 +104,7 @@ export const ResourceManagementTabs = ({
               ) : (
                 <></>
               )}
-              {entityAction === 'view' ? (
-                <ExperimentViewWithRouter http={http} id={entityId} />
-              ) : (
-                <></>
-              )}
+              {entityAction === 'view' ? <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? <TemplateCards onClose={() => {}} /> : <></>}
             </EuiPanel>
           </>
