@@ -3,7 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiLink, EuiPageContentBody, EuiText, EuiSpacer, EuiPanel} from '@elastic/eui';
+import {
+  EuiLink,
+  EuiPageContentBody,
+  EuiText,
+  EuiSpacer,
+  EuiPanel,
+  EuiHorizontalRule,
+  EuiSplitPanel,
+} from '@elastic/eui';
 import React, { useState } from 'react';
 
 import { CoreStart, MountPoint } from '../../../../../../src/core/public';
@@ -18,28 +26,38 @@ import {
   SelectIndexError,
   initialQueryErrorState,
 } from '../../../types/index';
-import { Header } from '../../common/header';
-import { ResultComponents } from './result_components/result_components';
+import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { SEARCH_NODE_API_PATH } from '../../../../common';
+import { ServiceEndpoints } from '../../../../common';
 
 const DEFAULT_QUERY = '{}';
 
 interface SearchResultProps {
   http: CoreStart['http'];
   savedObjects: CoreStart['savedObjects'];
-  dataSourceEnabled: boolean
+  dataSourceEnabled: boolean;
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   dataSourceManagement: DataSourceManagementPluginSetup;
-  dataSourceOptions: DataSourceOption[]
-  notifications: NotificationsStart
+  dataSourceOptions: DataSourceOption[];
+  notifications: NotificationsStart;
   chrome: CoreStart['chrome'];
   application: CoreStart['application'];
 }
 
-export const SearchResult = ({ application, chrome, http, savedObjects, dataSourceEnabled, dataSourceManagement, setActionMenu, navigation, dataSourceOptions, notifications}: SearchResultProps) => {
+export const SearchResult = ({
+  application,
+  chrome,
+  http,
+  savedObjects,
+  dataSourceEnabled,
+  dataSourceManagement,
+  setActionMenu,
+  navigation,
+  dataSourceOptions,
+  notifications,
+}: SearchResultProps) => {
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -55,7 +73,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     pipeline1,
     pipeline2,
     datasource1,
-    datasource2
+    datasource2,
   } = useSearchRelevanceContext();
 
   const HeaderControlledPopoverWrapper = ({ children }: { children: React.ReactElement }) => {
@@ -123,7 +141,7 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
     jsonQuery: any,
     updateComparedResult: (result: SearchResults) => void,
     setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
-    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
   ) => {
     if (queryError.queryString.length || queryError.selectIndex.length) {
       setQueryError(queryError);
@@ -137,74 +155,97 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
 
   const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
     const requestBody1 = handleQuery(
-        queryErrors[0],
-        selectedIndex1,
-        pipeline1,
-        jsonQueries[0],
-        updateComparedResult1,
-        setQueryResult1,
-        setQueryError1,
+      queryErrors[0],
+      selectedIndex1,
+      pipeline1,
+      jsonQueries[0],
+      updateComparedResult1,
+      setQueryResult1,
+      setQueryError1
     );
 
     const requestBody2 = handleQuery(
-        queryErrors[1],
-        selectedIndex2,
-        pipeline2,
-        jsonQueries[1],
-        updateComparedResult2,
-        setQueryResult2,
-        setQueryError2,
+      queryErrors[1],
+      selectedIndex2,
+      pipeline2,
+      jsonQueries[1],
+      updateComparedResult2,
+      setQueryResult2,
+      setQueryError2
     );
     if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
-        // First Query
-        if (Object.keys(requestBody1).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
-                body: JSON.stringify({ query1: requestBody1, dataSourceId1: datasource1? datasource1: '' }),
-            })
-            .then((res) => {
-                if (res.result1) {
-                    setQueryResult1(res.result1);
-                    updateComparedResult1(res.result1);
-                }
+      // First Query
+      if (Object.keys(requestBody1).length !== 0) {
+        http
+          .post(ServiceEndpoints.GetSearchResults, {
+            body: JSON.stringify({
+              query1: requestBody1,
+              dataSourceId1: datasource1 ? datasource1 : '',
+            }),
+          })
+          .then((res) => {
+            if (res.result1) {
+              setQueryResult1(res.result1);
+              updateComparedResult1(res.result1);
+            }
 
-                if (res.errorMessage1) {
-                    setQueryError1((error: QueryError) => ({
-                        ...error,
-                        queryString: res.errorMessage1,
-                        errorResponse: res.errorMessage1,
-                    }));
-                }
-            })
-            .catch((error: Error) => {
-                console.error(error);
-            });
-        }
+            if (res.errorMessage1) {
+              setQueryError1((error: QueryError) => ({
+                ...error,
+                queryString: res.errorMessage1,
+                errorResponse: res.errorMessage1,
+              }));
+              setQueryResult1({} as any);
+              updateComparedResult1({} as any);
+            }
+          })
+          .catch((error: Error) => {
+            console.error(error);
+          });
+      }
 
-        // Second Query
-        if (Object.keys(requestBody2).length !== 0) {
-            http.post(SEARCH_NODE_API_PATH, {
-                body: JSON.stringify({ query2: requestBody2, dataSourceId2: datasource2? datasource2: '' }),
-            })
-            .then((res) => {
-                if (res.result2) {
-                    setQueryResult2(res.result2);
-                    updateComparedResult2(res.result2);
-                }
+      // Second Query
+      if (Object.keys(requestBody2).length !== 0) {
+        http
+          .post(ServiceEndpoints.GetSearchResults, {
+            body: JSON.stringify({
+              query2: requestBody2,
+              dataSourceId2: datasource2 ? datasource2 : '',
+            }),
+          })
+          .then((res) => {
+            if (res.result2) {
+              setQueryResult2(res.result2);
+              updateComparedResult2(res.result2);
+            }
 
-                if (res.errorMessage2) {
-                    setQueryError2((error: QueryError) => ({
-                        ...error,
-                        queryString: res.errorMessage2,
-                        errorResponse: res.errorMessage2,
-                    }));
-                }
-            })
-            .catch((error: Error) => {
-                console.error(error);
-            });
-        }
+            if (res.errorMessage2) {
+              setQueryError2((error: QueryError) => ({
+                ...error,
+                queryString: res.errorMessage2,
+                errorResponse: res.errorMessage2,
+              }));
+              setQueryResult2({} as any);
+              updateComparedResult2({} as any);
+            }
+          })
+          .catch((error: Error) => {
+            console.error(error);
+          });
+      }
     }
-};
+  };
+
+  const ErrorMessage = ({ queryError }: { queryError: QueryError }) => (
+    <>
+      <EuiText color="danger">
+        {queryError.errorResponse.statusCode >= 500 ? 'Internal' : 'Query'} Error
+      </EuiText>
+      <EuiText color="danger">{queryError.errorResponse.body}</EuiText>
+      <EuiText color="danger">Status Code: {queryError.errorResponse.statusCode}</EuiText>
+      <EuiHorizontalRule margin="s" />
+    </>
+  );
 
   return (
     <>
@@ -240,14 +281,20 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
           </EuiPanel>
         </>
       ) : (
-        <Header>
+        <EuiPanel
+          hasBorder={false}
+          hasShadow={false}
+          color="transparent"
+          grow={false}
+          borderRadius="none"
+        >
           <SearchInputBar
             searchBarValue={searchBarValue}
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
             getNavGroupEnabled={getNavGroupEnabled}
           />
-        </Header>
+        </EuiPanel>
       )}
       <EuiPageContentBody className="search-relevance-flex">
         <SearchConfigsPanel
@@ -267,11 +314,25 @@ export const SearchResult = ({ application, chrome, http, savedObjects, dataSour
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        <ResultComponents
-          queryResult1={queryResult1}
-          queryResult2={queryResult2}
-          queryError1={queryError1}
-          queryError2={queryError2}
+
+        <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError1.errorResponse.statusCode !== 200 ||
+              queryError1.queryString.length > 0) && <ErrorMessage queryError={queryError1} />}
+          </EuiSplitPanel.Inner>
+
+          <EuiSplitPanel.Inner className="search-relevance-result-panel">
+            {(queryError2.errorResponse.statusCode !== 200 ||
+              queryError2.queryString.length > 0) && <ErrorMessage queryError={queryError2} />}
+          </EuiSplitPanel.Inner>
+        </EuiSplitPanel.Outer>
+
+        <VisualComparison
+          queryResult1={convertFromSearchResult(queryResult1)}
+          queryResult2={convertFromSearchResult(queryResult2)}
+          queryText={searchBarValue}
+          resultText1="Result 1"
+          resultText2="Result 2"
         />
       </EuiPageContentBody>
     </>

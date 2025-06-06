@@ -11,88 +11,251 @@ import {
   OpenSearchDashboardsResponseFactory,
   RequestHandlerContext,
 } from '../../../../src/core/server';
-import { BASE_QUERYSET_NODE_API_PATH } from '../../common';
-import { getClientBasedOnDataSource } from '../common/helper';
+import { ServiceEndpoints, BackendEndpoints } from '../../common';
 
-export function registerSearchRelevanceRoutes(
-  router: IRouter,
-  searchRelevanceRoutesService: SearchRelevanceRoutesService
-): void {
+export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.post(
     {
-      path: BASE_QUERYSET_NODE_API_PATH,
+      path: ServiceEndpoints.QuerySets,
       validate: {
-        body: schema.any(),
-      },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
+        body: schema.object({
+          name: schema.string(),
+          description: schema.string(),
+          sampling: schema.string(),
+        }),
       },
     },
-    searchRelevanceRoutesService.createQuerySet
+    backendAction('POST', BackendEndpoints.QuerySets)
+  );
+  router.put(
+    {
+      path: ServiceEndpoints.QuerySets,
+      validate: {
+        body: schema.object({
+          name: schema.string(),
+          description: schema.string(),
+          sampling: schema.string(),
+          querySetQueries: schema.oneOf([
+            schema.arrayOf(
+              schema.object({
+                queryText: schema.string(),
+                referenceAnswer: schema.maybe(schema.string()),
+              }),
+              { minSize: 1 }
+            ),
+            schema.string(),
+          ]),
+        }),
+      },
+    },
+    backendAction('PUT', BackendEndpoints.QuerySets)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.QuerySets,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.QuerySets)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.QuerySets}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.QuerySets)
+  );
+  router.put(
+    {
+      path: ServiceEndpoints.SearchConfigurations,
+      validate: {
+        body: schema.object({
+          name: schema.string(),
+          index: schema.string(),
+          query: schema.string(),
+          searchPipeline: schema.maybe(schema.string()),
+        }),
+      },
+    },
+    backendAction('PUT', BackendEndpoints.SearchConfigurations)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.SearchConfigurations,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.SearchConfigurations)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.SearchConfigurations}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.SearchConfigurations)
   );
   router.post(
     {
-      path: `${BASE_QUERYSET_NODE_API_PATH}/{data_source_id}/queryset`,
+      path: ServiceEndpoints.Experiments,
       validate: {
-        params: schema.object({
-          data_source_id: schema.string(),
+        body: schema.object({
+          querySetId: schema.string(),
+          searchConfigurationList: schema.arrayOf(schema.string()),
+          size: schema.number(),
+          type: schema.string(),
         }),
-        body: schema.any(),
-      },
-      options: {
-        body: {
-          accepts: 'application/json',
-        },
       },
     },
-    searchRelevanceRoutesService.createQuerySet
+    backendAction('PUT', BackendEndpoints.Experiments)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.Experiments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Experiments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.SearchConfigurations}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.SearchConfigurations)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.QuerySets}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.QuerySets)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Experiments)
+  );
+  router.put(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: {
+        body: schema.object({
+          name: schema.string(),
+          type: schema.string(),
+        }),
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: ServiceEndpoints.Judgments,
+      validate: false,
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.Judgments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.Judgments)
   );
 }
 
-export class SearchRelevanceRoutesService {
-  private client: any;
-  dataSourceEnabled: boolean;
-
-  constructor(client: any, dataSourceEnabled: boolean) {
-    this.client = client;
-    this.dataSourceEnabled = dataSourceEnabled;
-  }
-
-  createQuerySet = async (
+const backendAction = (method, path) => {
+  return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const body = req.body;
-    const { data_source_id = '' } = req.params as { data_source_id?: string };
+    const dataSourceId = req.query.data_source;
+    const caller = dataSourceId
+      ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
+      : context.core.opensearch.legacy.client.callAsCurrentUser;
+
     try {
-      const callWithRequest = getClientBasedOnDataSource(
-        context,
-        this.dataSourceEnabled,
-        req,
-        data_source_id,
-        this.client
-      );
+      let response;
+      if (method === 'DELETE') {
+        const { id } = req.params;
+        const deletePath = `${path}/${id}`;
+        response = await caller('transport.request', {
+          method,
+          path: deletePath,
+        });
+      } else if (method === 'GET' && req.params.id) {
+        // Handle GET request for individual experiment
+        const getPath = `${path}/${req.params.id}`;
+        response = await caller('transport.request', {
+          method,
+          path: getPath,
+        });
+      } else {
+        // Handle PUT, POST, GET as before
+        response = await caller('transport.request', {
+          method,
+          path,
+          ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
+        });
+      }
 
-      const querysetResponse = await callWithRequest('searchRelevance.createQuerySet', {
-        body,
-      });
-
-      return res.ok({
-        body: {
-          ok: true,
-          resp: querysetResponse,
-        },
-      });
+      return res.ok({ body: response });
     } catch (err) {
-      return res.ok({
+      console.error('Failed to call search-relevance APIs', err);
+      return res.customError({
+        statusCode: err.statusCode || 500,
         body: {
-          ok: false,
-          resp: err.message,
+          message: err.message,
+          attributes: {
+            error: err.body?.error || err.message,
+          },
         },
       });
     }
   };
-}
+};

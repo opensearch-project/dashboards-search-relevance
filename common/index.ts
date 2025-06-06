@@ -6,39 +6,36 @@
 export const PLUGIN_ID = 'searchRelevance';
 export const PLUGIN_NAME = 'Search Relevance';
 export const COMPARE_SEARCH_RESULTS_TITLE = 'Compare Search Results';
-export const SEARCH_RELEVANCE_WORKBENCH = 'Search Relevance Workbench';
 
-/**
- * BACKEND SEARCH RELEVANCE APIs
- */
-export const SEARCH_RELEVANCE_BASE_API = '/_plugins/search_relevance';
-export const SEARCH_RELEVANCE_QUERY_SET_API = `${SEARCH_RELEVANCE_BASE_API}/queryset`;
+export const SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED =
+  'search-relevance:experimental_workbench_ui_enabled';
 
-/**
- * OPEN SEARCH CORE APIs
- */
+const SEARCH_RELEVANCE_WORKBENCH_BASE_PATH = '/api/relevancy';
+export const ServiceEndpoints = Object.freeze({
+  // OpenSearch node APIs
+  GetIndexes: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/indexes`,
+  GetPipelines: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/pipelines`,
+  GetSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search`,
+  GetSingleSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/single_search`,
+  GetStats: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/stats`,
+  GetClusterSettings: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/cluster_settings`,
+
+  // Search Relevance node APIs
+  QuerySets: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/query_sets`,
+  SearchConfigurations: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search_configurations`,
+  Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
+  Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
+} as const);
+
+const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/search_relevance';
+export const BackendEndpoints = Object.freeze({
+  QuerySets: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/query_sets`,
+  SearchConfigurations: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/search_configurations`,
+  Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
+  Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
+} as const);
+
 export const SEARCH_API = '/_search';
-
-/**
- * Node APIs
- */
-export const BASE_NODE_API_PATH = '/api/relevancy';
-
-// OpenSearch node APIs
-export const INDEX_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/indexes`;
-export const SEARCH_PIPELINE_NODE_API_PATH = `${BASE_NODE_API_PATH}/search/pipelines`;
-export const SEARCH_NODE_API_PATH = `${BASE_NODE_API_PATH}/search`;
-export const STATS_NODE_API_PATH = `${BASE_NODE_API_PATH}/stats`;
-
-// Search Relevance node APIs
-export const BASE_QUERYSET_NODE_API_PATH = `${BASE_NODE_API_PATH}/queryset`;
-
-export const DEFAULT_HEADERS = {
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-  'User-Agent': 'OpenSearch-Dashboards',
-  'osd-xsrf': true,
-};
 
 // Query1 for the left search and Query2 for the right search page
 export const QUERY_NUMBER_ONE = '1';

@@ -11,9 +11,9 @@ import { DEFAULT_NAV_GROUPS, AppCategory } from '../../../src/core/public';
 
 const searchRelevance_category: Record<string, AppCategory & { group?: AppCategory }> = {
   evaluateSearch: {
-    id: "evaluateSearch",
-    label: i18n.translate("core.ui.indexesNavList.label", {
-      defaultMessage: "Evaluate search",
+    id: 'evaluateSearch',
+    label: i18n.translate('core.ui.indexesNavList.label', {
+      defaultMessage: 'Evaluate search',
     }),
     order: 3000,
   },
@@ -30,9 +30,9 @@ export function registerAllPluginNavGroups(core: CoreSetup<SearchRelevancePlugin
   core.chrome.navGroup.addNavLinksToGroup(DEFAULT_NAV_GROUPS.search, [
     {
       id: PLUGIN_ID,
-      category: searchRelevance_category.evaluateSearch,//change to Evaluate Search
+      category: searchRelevance_category.evaluateSearch, // change to Evaluate Search
       title: titleForSearchRelevance,
-      showInAllNavGroup: true
+      showInAllNavGroup: true,
     },
   ]);
 }
