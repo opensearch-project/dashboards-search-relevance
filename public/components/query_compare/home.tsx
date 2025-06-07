@@ -16,7 +16,7 @@ import {
   DataSourceManagementPluginSetup,
 } from '../../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../../src/plugins/navigation/public';
-import { QUERY_NUMBER_ONE, QUERY_NUMBER_TWO, ServiceEndpoints } from '../../../common';
+import { ServiceEndpoints, QUERY_NUMBER_ONE, QUERY_NUMBER_TWO } from '../../../common';
 import '../../ace-themes/sql_console';
 import { useSearchRelevanceContext } from '../../contexts';
 import { DocumentsIndex } from '../../types/index';
@@ -84,7 +84,7 @@ export const Home = ({
     http
       .get(`${ServiceEndpoints.GetIndexes}/${dataConnectionId}`)
       .then((res: DocumentsIndex[]) => {
-        if (queryNumber == QUERY_NUMBER_ONE) {
+        if (queryNumber === QUERY_NUMBER_ONE) {
           setDocumentsIndexes1(res);
         } else {
           setDocumentsIndexes2(res);
@@ -96,7 +96,7 @@ export const Home = ({
         } else {
           setDocumentsIndexes2([]);
         }
-        console.log(err);
+        console.error(err);
       });
   };
   const fetchPipelines = (dataConnectionId: string, queryNumber: string) => {
@@ -115,7 +115,7 @@ export const Home = ({
         } else {
           setFetchedPipelines2('');
         }
-        console.log(err);
+        console.error(err);
       });
   };
 
