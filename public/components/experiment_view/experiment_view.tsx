@@ -11,6 +11,7 @@ import { ServiceEndpoints } from '../../../common';
 import { ExperimentType, toExperiment } from '../../types/index';
 import { PairwiseExperimentViewWithRouter } from './pairwise_experiment_view';
 import { EvaluationExperimentViewWithRouter } from './evaluation_experiment_view';
+import { HybridOptimizerExperimentViewWithRouter } from './hybrid_optimizer_experiment_view';
 
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -65,6 +66,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
       )}
       {experiment && experiment.type === ExperimentType.POINTWISE_EVALUATION && (
         <EvaluationExperimentViewWithRouter
+          http={http}
+          notifications={notifications}
+          inputExperiment={experiment}
+          history={history}
+        />
+      )}
+      {experiment && experiment.type === ExperimentType.HYBRID_OPTIMIZER && (
+        <HybridOptimizerExperimentViewWithRouter
           http={http}
           notifications={notifications}
           inputExperiment={experiment}

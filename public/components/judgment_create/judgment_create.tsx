@@ -163,11 +163,15 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
       return;
     }
 
+    const basePayload = {
+      name: name.trim(),
+      type: type as JudgmentType,
+    };
+
     const payload =
       type === JudgmentType.LLM
         ? {
-            name,
-            type,
+            ...basePayload,
             querySetId: selectedQuerySet[0]?.value,
             searchConfigurationList: selectedSearchConfigs.map((config) => config.value),
             size,
@@ -175,22 +179,30 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             contextFields,
             ...(tokenLimit !== 4000 && { tokenLimit: tokenLimit.toString() }),
             ...(ignoreFailure && { ignoreFailure }),
+            ...(contextFields?.length > 0 && { contextFields }),
           }
         : {
-            name,
-            type,
+            ...basePayload,
             clickModel,
             maxRank,
           };
 
+    console.log('Sending judgment request:', {
+      url: ServiceEndpoints.Judgments,
+      payload: JSON.stringify(payload, null, 2),
+    });
     http
-      .put(ServiceEndpoints.Judgments, { body: JSON.stringify(payload) })
+      .put(ServiceEndpoints.Judgments, {
+        body: JSON.stringify(payload),
+      })
       .then(() => {
         notifications.toasts.addSuccess('Judgment created successfully');
         history.push('/judgment');
       })
-      .catch((error: any) => {
-        notifications.toasts.addDanger(`Failed to create judgment: ${error.message}`);
+      .catch((err) => {
+        notifications.toasts.addError(err, {
+          title: 'Failed to create judgment',
+        });
       });
   }, [
     validateForm,

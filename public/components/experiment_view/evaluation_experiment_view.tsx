@@ -34,6 +34,7 @@ import {
   printType,
 } from '../../types/index';
 import { MetricsSummaryPanel } from './metrics_summary';
+import { DocumentScoresTable } from './document_score_table';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -58,7 +59,53 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
+  const [selectedQuery, setSelectedQuery] = useState<string | null>(null);
+  const [selectedQueryScores, setSelectedQueryScores] = useState<
+    Array<{ docId: string; rating: string }>
+  >([]);
+
   const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
+
+  const handleQueryClick = useCallback(
+    (queryText: string) => {
+      try {
+        // Find the evaluation from already fetched queryEvaluations
+        const evaluation = queryEvaluations.find((q) => q.queryText === queryText);
+
+        if (!evaluation?.documentIds?.length) {
+          notifications.toasts.addWarning({
+            title: 'No documents',
+            text: 'No documents found in evaluation results',
+          });
+          return;
+        }
+
+        // Get ratings from the already fetched judgment set
+        const judgmentEntry = judgmentSet?.judgmentRatings?.find(
+          (entry) => entry.query === queryText
+        );
+        const judgments = judgmentEntry?.ratings || [];
+
+        // Create document scores by matching evaluation documentIds with judgments
+        const documentScores = evaluation.documentIds.map((docId) => {
+          const judgment = judgments.find((j) => j.docId === docId);
+          return {
+            docId,
+            rating: judgment ? judgment.rating : 'N/A',
+          };
+        });
+
+        setSelectedQuery(queryText);
+        setSelectedQueryScores(documentScores);
+      } catch (error) {
+        console.error('Error handling query click:', error);
+        notifications.toasts.addError(error, {
+          title: 'Error processing document scores',
+        });
+      }
+    },
+    [queryEvaluations, judgmentSet, notifications]
+  );
 
   useEffect(() => {
     const fetchExperiment = async () => {
@@ -97,6 +144,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
               _id: resultIds,
             },
           },
+          size: resultIds.length,
         };
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
           body: JSON.stringify({ query1: query }),
@@ -164,6 +212,11 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           name: 'Query',
           dataType: 'string',
           sortable: true,
+          render: (queryText: string) => (
+            <EuiButtonEmpty onClick={() => handleQueryClick(queryText)} size="xs">
+              {queryText}
+            </EuiButtonEmpty>
+          ),
         },
       ];
       metricNames.forEach((metricName) => {
@@ -187,7 +240,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
       setTableColumns(columns);
       setLoading(false);
     }
-  }, [experiment, queryEvaluations]);
+  }, [experiment, queryEvaluations, handleQueryClick]);
 
   const findQueries = useCallback(
     async (search: any) => {
@@ -240,31 +293,50 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
   const resultsPane = (
     <EuiPanel hasBorder paddingSize="l">
-      {error ? (
-        <EuiCallOut title="Error" color="danger">
-          <p>{error}</p>
-        </EuiCallOut>
-      ) : (
-        <TableListView
-          key={`table-${queryEvaluations.length}`}
-          entityName="Query"
-          entityNamePlural="Queries"
-          tableColumns={tableColumns}
-          findItems={findQueries}
-          loading={loading}
-          pagination={{
-            initialPageSize: 10,
-            pageSizeOptions: [5, 10, 20, 50],
-          }}
-          search={{
-            box: {
-              incremental: true,
-              placeholder: 'Query...',
-              schema: true,
-            },
-          }}
-        />
-      )}
+      <EuiResizableContainer>
+        {(EuiResizablePanel, EuiResizableButton) => (
+          <>
+            <EuiResizablePanel initialSize={50} minSize="15%">
+              {error ? (
+                <EuiCallOut title="Error" color="danger">
+                  <p>{error}</p>
+                </EuiCallOut>
+              ) : (
+                <TableListView
+                  key={`table-${queryEvaluations.length}`}
+                  entityName="Query"
+                  entityNamePlural="Queries"
+                  tableColumns={tableColumns}
+                  findItems={findQueries}
+                  loading={loading}
+                  pagination={{
+                    initialPageSize: 10,
+                    pageSizeOptions: [5, 10, 20, 50],
+                  }}
+                  search={{
+                    box: {
+                      incremental: true,
+                      placeholder: 'Query...',
+                      schema: true,
+                    },
+                  }}
+                />
+              )}
+            </EuiResizablePanel>
+
+            <EuiResizableButton />
+
+            <EuiResizablePanel initialSize={50} minSize="30%">
+              {selectedQuery && selectedQueryScores && (
+                <DocumentScoresTable
+                  queryText={selectedQuery}
+                  documentScores={selectedQueryScores}
+                />
+              )}
+            </EuiResizablePanel>
+          </>
+        )}
+      </EuiResizableContainer>
     </EuiPanel>
   );
 

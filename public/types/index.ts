@@ -112,11 +112,37 @@ export type EvaluationExperiment = ExperimentBase & {
   judgmentId: string;
 };
 
+interface HybridOptimizerResults {
+  [queryText: string]: {
+    [searchConfigId: string]: {
+      [variantId: string]: string; // evaluationResultId
+    };
+  };
+}
+
 export type HybridOptimizerExperiment = ExperimentBase & {
   type: ExperimentType.HYBRID_OPTIMIZER;
   searchConfigurationId: string;
   judgmentId: string;
+  results: HybridOptimizerResults;
 };
+
+export interface JudgmentRating {
+  docId: string;
+  rating: string;
+}
+
+export interface QueryJudgment {
+  query: string;
+  ratings: JudgmentRating[];
+}
+
+export interface JudgmentSet {
+  name: string;
+  description: string;
+  type: string;
+  judgmentRatings: QueryJudgment[];
+}
 
 export const printType = (type: string) => {
   switch (type) {
@@ -141,6 +167,7 @@ export type MetricsCollection = Metrics[];
 export interface QueryEvaluation {
   queryText: string;
   metrics: Metrics;
+  documentIds: string[];
 }
 
 export interface QuerySnapshot {
@@ -214,6 +241,7 @@ export const toQueryEvaluation = (source: any): ParseResult<QueryEvaluation[]> =
     data: {
       queryText: source.searchText,
       metrics: parseMetrics(source.metrics),
+      documentIds: source.documentIds,
     },
   };
 };
