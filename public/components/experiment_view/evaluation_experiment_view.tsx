@@ -133,8 +133,8 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .then(sanitizeResponse));
 
         // the .filter(Boolean) is used to filter out undefineds which show up for queries that are ZSR.
-        const resultIds = Object.entries(_experiment.results)
-          .map(([key, value]) => value[inputExperiment.searchConfigurationId])
+        const resultIds = _experiment.results
+          .map(({evaluationId}) => evaluationId)
           .filter(Boolean);
 
         const query = {

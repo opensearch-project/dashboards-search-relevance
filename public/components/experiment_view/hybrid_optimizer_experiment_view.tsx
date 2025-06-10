@@ -88,10 +88,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           // Get all evaluation result IDs
-          const evaluationResultIds = Object.entries(_experiment.results)
-            .flatMap(([_, configMap]) => {
-              const variantMap = configMap[inputExperiment.searchConfigurationId];
-              return variantMap ? Object.values(variantMap) : [];
+          const evaluationResultIds = _experiment.results
+            .flatMap((res) => {
+              return res.evaluationResults.map(({evaluationId}) => evaluationId);
             })
             .filter(Boolean);
 
@@ -123,21 +122,28 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           // Process results and organize by query and variant
           const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
 
-          Object.entries(_experiment.results || {}).forEach(([queryText, configMap]) => {
-            const variantMap = configMap?.[inputExperiment.searchConfigurationId];
+          (_experiment.results || []).forEach((res) => {
+            const queryText = res.queryText;
+            const variantMap = res.evaluationResults;
             if (!variantMap) return;
             evaluationsByQueryAndVariant[queryText] = {};
 
             // Process all variants for this query
-            Object.entries(variantMap).forEach(([variantId, evalId]) => {
-              if (!evalId) return;
+            variantMap.forEach((varEntry) => {
+              const variantId = varEntry.experimentVariantId;
+              const evalId = varEntry.evaluationId;
+              if (!varEntry) return;
 
               const evaluation = result.result1?.hits?.hits?.find((hit) => hit._id === evalId)
                 ?._source;
 
-              if (evaluation?.metrics) {
+              let nMetrics = {}
+              evaluation?.metrics?.forEach((metric) => {
+                nMetrics[metric.metric] = metric.value;
+              });
+              if (nMetrics) {
                 evaluationsByQueryAndVariant[queryText][variantId] = {
-                  metrics: evaluation.metrics,
+                  metrics: nMetrics,
                 };
               }
             });
