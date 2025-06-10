@@ -22,6 +22,10 @@ interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
+interface QueryItem {
+  queryText: string;
+}
+
 export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
   const [querySet, setQuerySet] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,63 +57,79 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
   }, [http, id]);
 
   const QuerySetQueriesView: React.FC = () => {
-    const findQueries = async (search: any) => {
-      const queryEntries = Object.entries(querySet.querySetQueries).map((entry) => ({
-        query: entry[0],
-        count: entry[1],
-      }));
-      const filteredQueryEntries = search
-        ? queryEntries.filter((q) => q.query.includes(search))
-        : queryEntries;
-      return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
+    const findQueries = async (searchTerm: string) => {
+      if (!querySet?.querySetQueries || !Array.isArray(querySet.querySetQueries)) {
+        return {
+          total: 0,
+          hits: [],
+        };
+      }
+
+      const queries = querySet.querySetQueries as QueryItem[];
+      const filteredQueries = searchTerm
+        ? queries.filter((query) =>
+            query.queryText.toLowerCase().includes(searchTerm.toLowerCase())
+          )
+        : queries;
+      return {
+        total: filteredQueries.length,
+        hits: filteredQueries,
+      };
     };
 
     return (
       <TableListView
+        tableColumns={[
+          {
+            field: 'queryText',
+            name: 'Query',
+            sortable: true,
+            width: '100%',
+          },
+        ]}
+        tableProps={{
+          itemId: 'queryText',
+          noItemsMessage: 'No queries found',
+        }}
+        findItems={findQueries}
         entityName="Query"
         entityNamePlural="Queries"
-        tableColumns={[
-          { field: 'query', name: 'Query', dataType: 'string', sortable: true },
-          { field: 'count', name: 'Count', dataType: 'number', sortable: true },
-        ]}
-        findItems={findQueries}
-        loading={loading}
-        pagination={{
-          initialPageSize: 10,
-          pageSizeOptions: [5, 10, 20, 50],
-        }}
-        search={{
-          box: {
-            incremental: true,
-            placeholder: 'Query...',
-            schema: true,
-          },
-        }}
+        initialPageSize={10}
+        listingLimit={1000}
+        initialFilter=""
+        headingId="queriesListingHeading"
+        noItemsFragment={
+          <EuiText>
+            <p>No queries available</p>
+          </EuiText>
+        }
       />
     );
   };
 
-  const QuerySetViewPane: React.FC = () => (
-    <EuiForm>
-      <EuiFormRow label="Query Set Name" fullWidth>
-        <EuiText>{querySet.name}</EuiText>
-      </EuiFormRow>
+  const QuerySetViewPane: React.FC = () => {
+    return (
+      <EuiForm>
+        <EuiFormRow label="Query Set Name" fullWidth>
+          <EuiText>{querySet.name}</EuiText>
+        </EuiFormRow>
 
-      <EuiFormRow label="Description" fullWidth>
-        <EuiText>{querySet.description}</EuiText>
-      </EuiFormRow>
+        <EuiFormRow label="Description" fullWidth>
+          <EuiText>{querySet.description}</EuiText>
+        </EuiFormRow>
 
-      <EuiFormRow label="Sampling Method" fullWidth>
-        <EuiText>{querySet.sampling}</EuiText>
-      </EuiFormRow>
+        <EuiFormRow label="Sampling Method" fullWidth>
+          <EuiText>{querySet.sampling}</EuiText>
+        </EuiFormRow>
 
-      <EuiSpacer size="l" />
+        <EuiSpacer size="l" />
 
-      <EuiFormRow label="Queries" fullWidth>
-        <QuerySetQueriesView />
-      </EuiFormRow>
-    </EuiForm>
-  );
+        <EuiFormRow label="Queries" fullWidth>
+          <QuerySetQueriesView />
+        </EuiFormRow>
+      </EuiForm>
+    );
+  };
 
   if (loading) {
     return <div>Loading query set data...</div>;
