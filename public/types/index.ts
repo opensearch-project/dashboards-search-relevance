@@ -196,9 +196,9 @@ export function combineResults(...results: Array<ParseResult<any>>): ParseResult
   return errors.length > 0 ? { success: false, errors } : { success: true, data: values };
 }
 
-export const parseMetrics = (textualMetrics: { [key: string]: number }): Metrics => {
+export const parseMetrics = (metricsArray: Array<{ metric: string; value: number }>): Metrics => {
   return Object.fromEntries(
-    Object.entries(textualMetrics).map(([key, value]) => [key, parseFloat(value)])
+    metricsArray.map(({ metric, value }) => [metric, value])
   ) as Metrics;
 };
 
@@ -209,20 +209,20 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
     return parseError('Missing results for completed experiment');
   }
 
-  let hasPairwiseComparison = true;
-  const res = Object.entries(source.results).map(([queryText, value]) => {
-    const metrics = value as { pairwiseComparison?: { [key: string]: number[] } };
-    if (!metrics?.pairwiseComparison) {
-      hasPairwiseComparison = false;
+  let hasMetrics = true;
+  const res = source.results.map((result: any) => {
+    if (!result.metrics) {
+      hasMetrics = false;
     }
     return {
-      queryText,
-      metrics: parseMetrics(metrics.pairwiseComparison),
+      queryText: result.queryText,
+      metrics: parseMetrics(result.metrics),
+      documentIds: [],
     };
   });
 
-  if (!hasPairwiseComparison) {
-    return parseError('Missing pairwise comparison metrics');
+  if (!hasMetrics) {
+    return parseError('Missing metrics');
   }
 
   return { success: true, data: res };
@@ -252,11 +252,12 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
   }
 
   const data: QuerySnapshot[] = [];
-  Object.entries(source.results).forEach(([queryText, value]) => {
-    if (value[queryName]) {
+  source.results.forEach((result: any) => {
+    const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
+    if (snapshot) {
       data.push({
-        queryText,
-        documentIds: value[queryName],
+        queryText: result.queryText,
+        documentIds: snapshot.docIds,
       });
     }
   });
