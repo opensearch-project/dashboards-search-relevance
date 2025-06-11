@@ -22,6 +22,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           name: schema.string(),
           description: schema.string(),
           sampling: schema.string(),
+          querySetSize: schema.number(),
         }),
       },
     },
