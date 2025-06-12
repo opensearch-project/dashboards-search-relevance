@@ -5,7 +5,8 @@
   "server": true,
   "ui": true,
   "requiredPlugins": [
-    "navigation", "opensearchDashboardsReact"
+    "navigation",
+    "opensearchDashboardsReact"
   ],
   "optionalPlugins": [
     "dataSource",
