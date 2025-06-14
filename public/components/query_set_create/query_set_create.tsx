@@ -387,7 +387,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                     label="Upload Queries"
                     error={manualQueriesError}
                     isInvalid={Boolean(manualQueriesError)}
-                    helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+                    helpText={`Upload an NDJSON file with queries (one JSON object per line). Example: {"queryText": "what is opensearch?", "referenceAnswer": "optional reference"}`}
                     fullWidth
                   >
                     <EuiFlexGroup>
@@ -402,7 +402,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                           accept=".txt"
                           data-test-subj="manualQueriesFilePicker"
                           compressed
-                          helpText="Upload a text file containing JSON objects (one per line) with queryText and referenceAnswer fields"
+                          helpText={`Each line should be a JSON object with queryText and optionally referenceAnswer. Example: {"queryText": "what is opensearch?"}`}
                         />
                       </EuiFlexItem>
                     </EuiFlexGroup>
