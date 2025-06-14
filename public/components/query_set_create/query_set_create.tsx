@@ -49,6 +49,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const [isManualInput, setIsManualInput] = useState(false);
   const [manualQueries, setManualQueries] = useState('');
   const [manualQueriesError, setManualQueriesError] = useState('');
+  const [isTextInput, setIsTextInput] = useState(false);
 
   // file picker
   const [files, setFiles] = useState<File[]>([]);
@@ -62,38 +63,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       try {
         const file = files[0];
         const text = await file.text();
-        const lines = text.trim().split('\n');
-        const queryList: Array<{ queryText: string; referenceAnswer: string }> = [];
-
-        for (const line of lines) {
-          try {
-            const parsed = JSON.parse(line.trim());
-            if (parsed.queryText) {
-              queryList.push({
-                queryText: String(parsed.queryText).trim(),
-                referenceAnswer: parsed.referenceAnswer
-                  ? String(parsed.referenceAnswer).trim()
-                  : '',
-              });
-            }
-          } catch (e) {
-            console.error('Error parsing line:', line, e);
-          }
-        }
-
-        if (queryList.length === 0) {
-          setManualQueriesError('No valid queries found in file');
-          setFiles([]);
-          setManualQueries('');
-          setParsedQueries([]);
-          return;
-        }
-
-        // Store the raw query objects instead of converting to string
-        setManualQueries(JSON.stringify(queryList));
-        setParsedQueries(queryList.map((q) => JSON.stringify(q)));
+        parseQueriesText(text, false); // Force JSON parsing for file uploads
         setFiles([file]);
-        setManualQueriesError('');
       } catch (error) {
         console.error('Error processing file:', error);
         setManualQueriesError('Error reading file content');
@@ -103,6 +74,67 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       }
     } else {
       setFiles([]);
+      setManualQueries('');
+      setParsedQueries([]);
+    }
+  };
+
+  const parseQueriesText = (text: string, isPlainText = isTextInput) => {
+    try {
+      const lines = text.trim().split('\n');
+      const queryList: Array<{ queryText: string; referenceAnswer: string }> = [];
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        
+        try {
+          // If it's plain text input, treat each line as a query
+          if (isPlainText) {
+            queryList.push({
+              queryText: line.trim(),
+              referenceAnswer: '',
+            });
+          } else {
+            // Try to parse as JSON for file upload mode
+            const parsed = JSON.parse(line.trim());
+            if (parsed.queryText) {
+              queryList.push({
+                queryText: String(parsed.queryText).trim(),
+                referenceAnswer: parsed.referenceAnswer
+                  ? String(parsed.referenceAnswer).trim()
+                  : '',
+              });
+            }
+          }
+        } catch (e) {
+          // For plain text, this shouldn't happen
+          // For JSON mode, log the error
+          if (!isPlainText) {
+            console.error('Error parsing line:', line, e);
+          } else {
+            // Even if JSON parsing fails, still add it as a plain query
+            queryList.push({
+              queryText: line.trim(),
+              referenceAnswer: '',
+            });
+          }
+        }
+      }
+
+      if (queryList.length === 0) {
+        setManualQueriesError('No valid queries found');
+        setManualQueries('');
+        setParsedQueries([]);
+        return;
+      }
+
+      // Store the raw query objects instead of converting to string
+      setManualQueries(JSON.stringify(queryList));
+      setParsedQueries(queryList.map((q) => JSON.stringify(q)));
+      setManualQueriesError('');
+    } catch (error) {
+      console.error('Error processing queries:', error);
+      setManualQueriesError('Error parsing queries');
       setManualQueries('');
       setParsedQueries([]);
     }
@@ -138,6 +170,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     if (isManualInput) {
       if (!manualQueries.trim()) {
         setManualQueriesError('Manual queries are required.');
+        isValid = false;
+      } else if (isTextInput && parsedQueries.length === 0) {
+        setManualQueriesError('No valid queries found. Please check the format.');
         isValid = false;
       } else {
         setManualQueriesError('');
@@ -311,30 +346,69 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
               />
             </EuiCompressedFormRow>
             {isManualInput ? (
-              <EuiFormRow
-                label="Manual Queries"
-                error={manualQueriesError}
-                isInvalid={Boolean(manualQueriesError)}
-                helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
-                fullWidth
-              >
-                <EuiFlexGroup>
-                  <EuiFlexItem>
-                    <EuiFilePicker
-                      ref={filePickerRef}
-                      id={filePickerId}
-                      initialPromptText="Select or drag and drop a query file"
-                      onChange={(files) => handleFileContent(files)}
-                      display="large"
-                      aria-label="Upload query file"
-                      accept=".txt"
-                      data-test-subj="manualQueriesFilePicker"
-                      compressed
-                      helpText="Upload a text file containing JSON objects (one per line) with queryText and referenceAnswer fields"
+              <>
+                <EuiFormRow fullWidth>
+                  <EuiButton
+                    onClick={() => setIsTextInput(!isTextInput)}
+                    size="s"
+                    iconType={isTextInput ? 'document' : 'editorAlignLeft'}
+                    data-test-subj="toggleQueryInputMethod"
+                  >
+                    Switch to {isTextInput ? 'file upload' : 'simple text input'}
+                  </EuiButton>
+                </EuiFormRow>
+                
+                {isTextInput ? (
+                  <EuiFormRow
+                    label="Enter Queries"
+                    error={manualQueriesError}
+                    isInvalid={Boolean(manualQueriesError)}
+                    helpText="Enter one query per line. Each line will be treated as a separate query."
+                    fullWidth
+                  >
+                    <EuiTextArea
+                      placeholder={`what is opensearch?\nhow to create a dashboard\nquery language syntax`}
+                      onChange={(e) => {
+                        setManualQueries(e.target.value);
+                        if (e.target.value.trim()) {
+                          parseQueriesText(e.target.value, true);
+                        } else {
+                          setParsedQueries([]);
+                        }
+                      }}
+                      isInvalid={Boolean(manualQueriesError)}
+                      fullWidth
+                      rows={10}
+                      data-test-subj="manualQueriesTextArea"
                     />
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiFormRow>
+                  </EuiFormRow>
+                ) : (
+                  <EuiFormRow
+                    label="Upload Queries"
+                    error={manualQueriesError}
+                    isInvalid={Boolean(manualQueriesError)}
+                    helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+                    fullWidth
+                  >
+                    <EuiFlexGroup>
+                      <EuiFlexItem>
+                        <EuiFilePicker
+                          ref={filePickerRef}
+                          id={filePickerId}
+                          initialPromptText="Select or drag and drop a query file"
+                          onChange={(files) => handleFileContent(files)}
+                          display="large"
+                          aria-label="Upload query file"
+                          accept=".txt"
+                          data-test-subj="manualQueriesFilePicker"
+                          compressed
+                          helpText="Upload a text file containing JSON objects (one per line) with queryText and referenceAnswer fields"
+                        />
+                      </EuiFlexItem>
+                    </EuiFlexGroup>
+                  </EuiFormRow>
+                )}
+              </>
             ) : (
               <>
                 {/* Sampling method field */}
@@ -388,7 +462,11 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                         <li key={idx}>
                           <strong>Query:</strong> {parsed.queryText}
                           <br />
-                          <strong>Reference:</strong> {parsed.referenceAnswer}
+                          {parsed.referenceAnswer && (
+                            <>
+                              <strong>Reference:</strong> {parsed.referenceAnswer}
+                            </>
+                          )}
                         </li>
                       );
                     })}
