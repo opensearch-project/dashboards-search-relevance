@@ -72,3 +72,9 @@ export enum Routes {
   JudgmentViewPrefix = '/judgment/view',
   JudgmentCreate = '/judgment/create',
 }
+
+export enum SavedObjectIds {
+  ExperimentDeepDive = '75b6ca00-58af-11f0-a87e-4d769b1dbd6c',
+  ExperimentVariantComparison = 'fbf11670-58c8-11f0-a340-41deff9f2f7f',
+  SearchEvaluationIndexPattern = '1f5d2be0-57f1-11f0-8f39-7b4ad0195873',
+}
