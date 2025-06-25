@@ -22,7 +22,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints, SavedObjectIds } from '../../../common';
+import { Routes, ServiceEndpoints, SavedObjectIds, extractUserMessageFromError } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { DashboardInstallModal } from '../common/dashboard_install_modal';
 import { useConfig } from '../../contexts/date_format_context';
@@ -239,8 +239,9 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load experiment', err);
-      setError('Failed to load experiments');
+      console.error('Failed to load experiments', err);
+      const errorMessage = extractUserMessageFromError(err);
+      setError(errorMessage ? errorMessage : 'Failed to load experiments due to an unknown error.');
       return {
         total: 0,
         hits: [],
