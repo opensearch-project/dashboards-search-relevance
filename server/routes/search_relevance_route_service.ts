@@ -266,7 +266,6 @@ const backendAction = (method, path) => {
       let clientAttributesError = err.body?.error || err.message; // Default attributes error
 
       // Check if the backend error body contains the specific message
-      // This is the crucial part that extracts the "Search Relevance Workbench is disabled"
       if (err.body && typeof err.body === 'string' && err.body.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
           clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
           clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
