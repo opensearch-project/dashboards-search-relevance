@@ -23,7 +23,7 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../../common';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -37,8 +37,6 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [judgmentToDelete, setJudgmentToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-
-  const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
 
   // Handle delete function
   const handleDelete = async () => {

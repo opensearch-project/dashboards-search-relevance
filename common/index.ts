@@ -72,3 +72,5 @@ export enum Routes {
   JudgmentViewPrefix = '/judgment/view',
   JudgmentCreate = '/judgment/create',
 }
+
+export const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';

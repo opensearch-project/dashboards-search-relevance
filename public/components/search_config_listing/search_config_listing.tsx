@@ -21,7 +21,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -42,7 +42,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
 
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
 
   // Column definitions
   // TODO: extend the table columns by adding search_pipeline & search_template once they
