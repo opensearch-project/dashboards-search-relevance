@@ -89,6 +89,14 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
           return;
         }
 
+        if (queryList.length > 1000000) {
+          setManualQueriesError('Too many queries found (> 1.000.000)');
+          setFiles([]);
+          setManualQueries('');
+          setParsedQueries([]);
+          return;
+        }
+
         // Store the raw query objects instead of converting to string
         setManualQueries(JSON.stringify(queryList));
         setParsedQueries(queryList.map((q) => JSON.stringify(q)));
@@ -232,7 +240,15 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
-        description="Configure a new query set."
+        description={
+                <span>
+                  Create a new query set by{' '}
+                  <a href="https://docs.opensearch.org/docs/latest/search-plugins/search-relevance/query-sets/" target="_blank" rel="noopener noreferrer">
+                    either sampling from UBI data stored in the ubi_queries index or manually uploading a file
+                  </a>
+                  .
+                </span>
+              }
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -340,7 +356,16 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 {/* Sampling method field */}
                 <EuiFormRow
                   label="Sampling Method"
-                  helpText="Select the sampling method for this query set."
+                  helpText={
+                    <span>
+                    Select the sampling method for this query set. Requires ubi_queries index and query events adhering to the{' '}
+                    <a href="https://docs.opensearch.org/docs/latest/search-plugins/ubi/schemas/#ubi-queries-index" target="_blank" rel="noopener noreferrer">
+                      UBI schema
+                    </a>
+                    .<br />
+                    "Random" picks a random sample, "Probability-Proportional-to-Size Sampling" picks a frequency-weighted sample, "Top N" picks the N most frequent queries.
+                    </span>
+                    }
                   fullWidth
                 >
                   <EuiSelect
