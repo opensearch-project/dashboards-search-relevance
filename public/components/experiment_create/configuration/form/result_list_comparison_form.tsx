@@ -41,13 +41,16 @@ export const ResultListComparisonForm = forwardRef<
 
   useEffect(() => {
     setQuerySetOptions(
-      formData?.querySetId ? [{ label: formData.querySetId, value: formData.querySetId }] : []
+      formData?.querySetId ? [{ label: formData.querySetName, value: formData.querySetId }] : []
     );
     setSelectedSearchConfigs(
       Array.isArray(formData?.searchConfigurationList)
-        ? formData.searchConfigurationList.map((config) => ({ label: config, value: config }))
-        : []
-    );
+        ? formData.searchConfigurationList.map((config) => ({
+          label: config.name || config.id,
+          value: config.id,
+          }))
+       : []
+   );
     setK(formData?.size !== undefined && formData?.size !== null ? formData.size : 10);
     clearAllErrors();
   }, [formData]);
@@ -58,7 +61,7 @@ export const ResultListComparisonForm = forwardRef<
     const currentData: ResultListComparisonFormData = {
       querySetId: querySetOptions[0]?.value || '',
       size: k,
-      searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
+      searchConfigurationList: selectedSearchConfigs.map((c) => ({ id: c.value, name: c.label })),
       type: formData.type,
     };
 
@@ -96,10 +99,14 @@ export const ResultListComparisonForm = forwardRef<
 
   const handleQuerySetsChange = (selectedOptions: OptionLabel[]) => {
     setQuerySetOptions(selectedOptions || []);
-    const newValue = selectedOptions?.[0]?.value || '';
-    // Optimize onChange call
-    if (formData.querySetId !== newValue) {
-      onChange('querySetId', newValue);
+    const newQuerySetId = selectedOptions?.[0]?.label || '';
+    const newQuerySetName = selectedOptions?.[0]?.label || '';
+
+    if (formData.querySetId !== newQuerySetId) {
+      onChange('querySetId', newQuerySetId);
+    }
+    if (formData.querySetName !== newQuerySetName) {
+      onChange('querySetName', newQuerySetName);
     }
     if (selectedOptions.length > 0 && querySetError.length > 0) {
       setQuerySetError([]);
@@ -120,7 +127,7 @@ export const ResultListComparisonForm = forwardRef<
 
   const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
     setSelectedSearchConfigs(selectedOptions);
-    const newValues = selectedOptions.map((o) => o.value);
+    const newValues = selectedOptions.map((o) => ({ id: o.value, name: o.label }));
     // Optimize onChange call
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
       onChange('searchConfigurationList', newValues);
