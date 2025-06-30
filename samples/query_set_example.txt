@@ -1,0 +1,5 @@
+{"queryText": "t towels kitchen"}
+{"queryText": "table top bandsaw for metal"}
+{"queryText": "tan strappy heels for women"}
+{"queryText": "tank top plus size women"}
+{"queryText": "tape and mudding tools"}
