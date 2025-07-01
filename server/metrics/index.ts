@@ -22,4 +22,5 @@ export enum METRIC_ACTION {
   FETCH_INDEX = 'fetch_index',
   FETCH_PIPELINE = 'fetch_pipeline',
   FETCH_CLUSTER_SETTINGS = 'fetch_cluster_settings',
+  FETCH_MODEL = 'fetch_model',
 }
