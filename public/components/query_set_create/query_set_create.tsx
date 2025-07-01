@@ -57,6 +57,18 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const filePickerId = generateId('filePicker');
   const [parsedQueries, setParsedQueries] = useState<string[]>([]);
 
+  const isValidInputString = (input: string): boolean => {
+      // Regex to detect characters that might break JSON parsing or cause XSS:
+      // - Double quotes (")
+      // - Backslashes (\)
+      // - HTML tags (<, >)
+      // - Control characters (U+0000 to U+001F) and other problematic unicode characters
+      //   that could interfere with JSON or string parsing.
+      // This regex primarily focuses on characters that would require escaping in JSON or are HTML-specific.
+      const forbiddenCharsRegex = /[<>"\\\x00-\x1F]/;
+      return !forbiddenCharsRegex.test(input);
+    };
+
   const handleFileContent = async (files: FileList) => {
     if (files && files.length > 0) {
       try {
@@ -132,6 +144,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       isValid = false;
     } else if (name.length > 50) {
       setNameError('Name is too long (> 50 characters).');
+    } else if (!isValidInputString(name)) {
+      setNameError('Name contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
+      isValid = false;
     } else {
       setNameError('');
     }
@@ -142,6 +157,9 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       isValid = false;
     } else if (description.length > 250) {
       setDescriptionError('Description is too long (> 250 characters).');
+    } else if (!isValidInputString(description)) {
+      setDescriptionError('Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
+      isValid = false;
     } else {
       setDescriptionError('');
     }
@@ -225,6 +243,10 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     const value = e.target.value;
     if (!value.trim()) {
       setNameError('Name is a required parameter.');
+    } else if (value.length > 50) {
+      setNameError('Name is too long (> 50 characters).');
+    } else if (!isValidInputString(value)) {
+      setNameError('Name contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
     } else {
       setNameError('');
     }
@@ -235,6 +257,10 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     const value = e.target.value;
     if (!value.trim()) {
       setDescriptionError('Description is a required parameter.');
+    } else if (value.length > 250) {
+      setDescriptionError('Description is too long (> 250 characters).');
+    } else if (!isValidInputString(value)) {
+      setDescriptionError('Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
     } else {
       setDescriptionError('');
     }
@@ -307,8 +333,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onBlur={validateName}
-                isInvalid={descriptionError.length > 0}
-                data-test-subj="querySetDescriptionInput"
+                isInvalid={nameError.length > 0}
+                data-test-subj="querySetNameInput"
                 fullWidth
               />
             </EuiCompressedFormRow>
