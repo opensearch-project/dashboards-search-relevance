@@ -130,6 +130,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     if (!name.trim()) {
       setNameError('Name is a required parameter.');
       isValid = false;
+    } else if (name.length > 50) {
+      setNameError('Name is too long (> 50 characters).');
     } else {
       setNameError('');
     }
@@ -138,6 +140,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     if (!description.trim()) {
       setDescriptionError('Description is a required parameter.');
       isValid = false;
+    } else if (description.length > 250) {
+      setDescriptionError('Description is too long (> 250 characters).');
     } else {
       setDescriptionError('');
     }
