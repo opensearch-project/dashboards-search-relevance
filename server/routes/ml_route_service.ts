@@ -52,6 +52,7 @@ const backendAction = (method, path, dataSourceEnabled) => {
           query: {
             match_all: {},
           },
+          size: 1000,
         },
       });
       return response.ok({
