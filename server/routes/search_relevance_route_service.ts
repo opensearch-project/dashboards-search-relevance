@@ -13,8 +13,6 @@ import {
 } from '../../../../src/core/server';
 import { ServiceEndpoints, BackendEndpoints } from '../../common';
 
-const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
-
 export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.post(
     {
@@ -260,44 +258,14 @@ const backendAction = (method, path) => {
 
       return res.ok({ body: response });
     } catch (err) {
-      console.error('Failed to call search-relevance APIs', err); // Keep for full server-side logging
-
-      let clientMessage = err.message; // Default to the err.message from transport.request
-      let clientAttributesError = err.body?.error || err.message; // Default attributes error
-
-      // Check if the backend error body contains the specific message
-      // This is the crucial part that extracts the "Search Relevance Workbench is disabled"
-      if (err.body && typeof err.body === 'string' && err.body.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
-          clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
-          clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
-      }
-      // If the backend error body is a JSON object with a message/reason
-      else if (err.body && typeof err.body === 'object') {
-          // Check for common backend error formats
-          if (err.body.message && typeof err.body.message === 'string' && err.body.message.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
-              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
-              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
-          } else if (err.body.reason && typeof err.body.reason === 'string' && err.body.reason.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
-              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
-              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
-          } else if (err.body.error && typeof err.body.error === 'object' && err.body.error.reason && typeof err.body.error.reason === 'string' && err.body.error.reason.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
-              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
-              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
-          }
-          // Fallback if specific message not found in complex body, but body has a message
-          else if (err.body.message && typeof err.body.message === 'string') {
-              clientMessage = err.body.message;
-              clientAttributesError = err.body.message;
-          }
-      }
-
+      console.error('Failed to call search-relevance APIs', err);
 
       return res.customError({
         statusCode: err.statusCode || 500,
         body: {
-          message: clientMessage, // Use the determined message
+          message: err.message,
           attributes: {
-            error: clientAttributesError, // Use the determined attributes error
+            error: err.body?.error || err.message,
           },
         },
       });

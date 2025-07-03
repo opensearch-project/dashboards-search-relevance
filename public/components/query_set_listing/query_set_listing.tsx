@@ -40,8 +40,6 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
   const [querySetToDelete, setQuerySetToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
-
   // Handle delete function
   const handleDelete = async () => {
     setIsLoading(true);
@@ -161,15 +159,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       };
     } catch (err) {
       console.error('Failed to load query sets', err);
-      if (err.body && err.body.message === DISABLED_BACKEND_PLUGIN_MESSAGE) {
-        setError(DISABLED_BACKEND_PLUGIN_MESSAGE + '. Please activate the backend plugin.');
-      } else if (err.body && err.body.message) {
-        setError(err.body.message);
-      } else if (err.message) {
-        setError(err.message);
-      } else {
-        setError('Failed to load query sets due to an unknown error.');
-      }
+      setError('Failed to load query sets.');
       return {
         total: 0,
         hits: [],

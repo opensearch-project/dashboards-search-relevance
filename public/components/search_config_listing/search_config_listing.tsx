@@ -42,8 +42,6 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
 
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
-
   // Column definitions
   // TODO: extend the table columns by adding search_pipeline & search_template once they
   // are available
@@ -180,15 +178,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       };
     } catch (err) {
       console.error('Failed to load search configurations', err);
-      if (err.body && err.body.message === DISABLED_BACKEND_PLUGIN_MESSAGE) {
-        setError(DISABLED_BACKEND_PLUGIN_MESSAGE + '. Please activate the backend plugin.');
-      } else if (err.body && err.body.message) {
-        setError(err.body.message);
-      } else if (err.message) {
-        setError(err.message);
-      } else {
-        setError('Failed to load search configurations due to an unknown error.');
-      }
+      setError('Failed to load search configurations.');
       return {
         total: 0,
         hits: [],
