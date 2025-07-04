@@ -18,7 +18,7 @@ interface PointwiseExperimentFormProps {
 }
 
 export interface PointwiseExperimentFormRef {
-  validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData }; // Corrected type
+  validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
   clearAllErrors: () => void;
 }
 
