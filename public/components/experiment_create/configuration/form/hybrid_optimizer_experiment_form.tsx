@@ -106,10 +106,9 @@ export const HybridOptimizerExperimentForm = forwardRef<
     let isValid = true;
     const currentData: HybridOptimizerExperimentFormData = {
       querySetId: querySetOptions[0]?.value || '',
-      querySetName: querySetOptions[0]?.label || '',
       size: k,
-      searchConfigurationList: selectedSearchConfigs.map((c) => ({ id: c.value, name: c.label })),
-      judgmentList: judgmentOptions.map((j) => ({ id: j.value, name: j.label })),
+      searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
+      judgmentList: judgmentOptions.map((j) => j.value),
       type: formData.type, // Preserve the 'type' from the initial formData
     };
 

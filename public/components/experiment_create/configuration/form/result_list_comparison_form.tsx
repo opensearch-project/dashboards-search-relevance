@@ -81,9 +81,8 @@ export const ResultListComparisonForm = forwardRef<
 
     const currentData: ResultListComparisonFormData = {
       querySetId: querySetOptions[0]?.value || '',
-      querySetName: querySetOptions[0]?.label || '',
       size: k,
-      searchConfigurationList: selectedSearchConfigs.map((c) => ({ id: c.value, name: c.label })),
+      searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
       type: formData.type,
     };
 
@@ -151,6 +150,8 @@ export const ResultListComparisonForm = forwardRef<
   const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
     const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
     setSelectedSearchConfigs(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions?.[0]?.value || ''; // Use value for ID
+    const newQuerySetName = safeSelectedOptions?.[0]?.label || ''; // Use label for name
     const newValues = safeSelectedOptions.map((o) => ({ id: o.value, name: o.label }));
     // Optimize onChange call
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
