@@ -72,3 +72,9 @@ export enum Routes {
   JudgmentViewPrefix = '/judgment/view',
   JudgmentCreate = '/judgment/create',
 }
+
+// tool tip texts
+export const JACCARD_TOOL_TIP = 'Jaccard index measures the similarity between two sets of documents, defined as the size of the intersection divided by the size of the union of the sets. A higher value indicates greater overlap.';
+export const RBO50_TOOL_TIP = 'Rank-Biased Overlap (RBO) measures the similarity of two ranked lists. A higher value indicates more similar rankings, especially at the top. rbo90 stands for a 90% chance a hypothetical user continues to the next rank. The lower the number the stronger the top ranks are weighted.';
+export const RBO90_TOOL_TIP = 'Rank-Biased Overlap (RBO) measures the similarity of two ranked lists. A higher value indicates more similar rankings, especially at the top. rbo50 stands for a 50% chance a hypothetical user continues to the next rank. The lower the number the stronger the top ranks are weighted.';
+export const FREQUENCY_WEIGHTED_TOOL_TIP = 'frequencyWeighted measures the similarity of two sets of documents without duplicates. It gives higher weights to documents occurring in both result lists.';

@@ -10,9 +10,16 @@ import {
   EuiStat,
   EuiTitle,
   EuiHorizontalRule,
+  EuiToolTip,
 } from '@elastic/eui';
 import React from 'react';
 import { MetricsCollection } from '../../types/index';
+import {
+  JACCARD_TOOL_TIP,
+  RBO50_TOOL_TIP,
+  RBO90_TOOL_TIP,
+  FREQUENCY_WEIGHTED_TOOL_TIP
+} from '../../../common/index';
 
 interface MetricsSummaryPanelProps {
   metrics: MetricsCollection;
@@ -24,6 +31,13 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metric
     // Calculate average of the values
     const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
     return avg.toFixed(2).replace(/\.00$/, '');
+  };
+  // tool tip texts
+  const metricDescriptions: { [key: string]: string } = {
+    jaccard: JACCARD_TOOL_TIP,
+    rbo50: RBO50_TOOL_TIP,
+    rbo90: RBO90_TOOL_TIP,
+    frequencyWeighted: FREQUENCY_WEIGHTED_TOOL_TIP,
   };
 
   // Get metric keys from the first element if available
@@ -40,7 +54,16 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metric
           <EuiFlexItem grow={2} key={metricKey}>
             <EuiStat
               title={formatValue(metrics.map((m) => m[metricKey]))}
-              description={metricKey}
+              description={
+                <EuiToolTip
+                  content={
+                    metricDescriptions[metricKey] ||
+                    `No description available for ${metricKey}`
+                  }
+                >
+                  <span>{metricKey}</span>
+                </EuiToolTip>
+              }
               titleSize="l"
             />
           </EuiFlexItem>
