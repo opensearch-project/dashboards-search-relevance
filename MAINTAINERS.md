@@ -12,3 +12,5 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Louis Chu    | [noCharger](https://github.com/noCharger) | Amazon  |
 | Sean Li      | [sejli](https://github.com/sejli)     | Amazon |
 | Sumukh Swamy | [sumukhswamy](https://github.com/sumukhswamy) | Amazon |
+| Fen Qin      | [fen-qin](https://github.com/fen-qin) | Amazon      |
+| Eric Pugh    | [epugh](https://github.com/epugh)     | OpenSource Connections |
