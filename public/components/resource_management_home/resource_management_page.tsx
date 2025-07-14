@@ -5,7 +5,6 @@
 
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiPageTemplate, EuiSpacer, EuiTitle } from '@elastic/eui';
-import { GetStartedAccordion } from './get_started_accordion';
 import { Header } from '../common/header';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import { ResourceManagementTabsWithRoute } from './resource_management_tabs';
@@ -38,7 +37,6 @@ export const ResourceManagementPage = ({
                 <h2>Resources Management</h2>
               </EuiTitle>
               <EuiSpacer size="s" />
-              <GetStartedAccordion />
             </div>
           </EuiFlexItem>
 
