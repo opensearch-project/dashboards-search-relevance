@@ -21,7 +21,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -41,6 +41,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   const [configToDelete, setConfigToDelete] = useState<any>(null);
 
   const [refreshKey, setRefreshKey] = useState(0);
+
 
   // Column definitions
   // TODO: extend the table columns by adding search_pipeline & search_template once they
@@ -177,8 +178,16 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load search config', err);
-      setError('Failed to load search configurations');
+      console.error('Failed to load search configurations', err);
+      if (err.body && err.body.message === DISABLED_BACKEND_PLUGIN_MESSAGE) {
+        setError(DISABLED_BACKEND_PLUGIN_MESSAGE + '. Please activate the backend plugin.');
+      } else if (err.body && err.body.message) {
+        setError(err.body.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Failed to load search configurations due to an unknown error.');
+      }
       return {
         total: 0,
         hits: [],

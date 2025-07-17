@@ -23,7 +23,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -158,8 +158,16 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load query set', err);
-      setError('Failed to load query sets');
+      console.error('Failed to load query sets', err);
+      if (err.body && err.body.message === DISABLED_BACKEND_PLUGIN_MESSAGE) {
+        setError(DISABLED_BACKEND_PLUGIN_MESSAGE + '. Please activate the backend plugin.');
+      } else if (err.body && err.body.message) {
+        setError(err.body.message);
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Failed to load query sets due to an unknown error.');
+      }
       return {
         total: 0,
         hits: [],
