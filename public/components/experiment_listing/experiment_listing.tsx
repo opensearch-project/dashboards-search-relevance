@@ -155,8 +155,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load experiment', err);
-      setError('Failed to load experiments');
+      console.error('Failed to load experiments', err);
+      setError('Failed to load experiments.');
       return {
         total: 0,
         hits: [],

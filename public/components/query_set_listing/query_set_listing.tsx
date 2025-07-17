@@ -158,8 +158,8 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load query set', err);
-      setError('Failed to load query sets');
+      console.error('Failed to load query sets', err);
+      setError('Failed to load query sets.');
       return {
         total: 0,
         hits: [],

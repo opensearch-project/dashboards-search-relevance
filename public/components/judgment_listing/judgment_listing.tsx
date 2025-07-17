@@ -142,8 +142,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to list judgment', err);
-      setError('Failed to load judgments');
+      console.error('Failed to load judgment lists', err);
+      setError('Failed to load judgment lists.');
       return {
         total: 0,
         hits: [],

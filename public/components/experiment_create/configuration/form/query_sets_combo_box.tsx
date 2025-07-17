@@ -26,6 +26,7 @@ export const QuerySetsComboBox = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchQuerySets = async () => {
       try {
         const data = await http.get(ServiceEndpoints.QuerySets);
@@ -33,16 +34,26 @@ export const QuerySetsComboBox = ({
           label: qs._source.name,
           value: qs._source.id,
         }));
-        setQuerySetOptions(options);
+       if (isMounted) {
+         setQuerySetOptions(options);
+       }
       } catch (error) {
         console.error('Failed to fetch query sets', error);
-        setQuerySetOptions([]);
+        if (isMounted) {
+          setQuerySetOptions([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchQuerySets();
+
+    return () => {
+      isMounted = false;
+    }
   }, [http]);
 
   const comboBoxComponent = (

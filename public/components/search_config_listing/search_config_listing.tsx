@@ -177,8 +177,8 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load search config', err);
-      setError('Failed to load search configurations');
+      console.error('Failed to load search configurations', err);
+      setError('Failed to load search configurations.');
       return {
         total: 0,
         hits: [],

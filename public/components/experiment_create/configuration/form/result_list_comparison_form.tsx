@@ -40,15 +40,39 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   useEffect(() => {
-    setQuerySetOptions(
-      formData?.querySetId ? [{ label: formData.querySetId, value: formData.querySetId }] : []
-    );
-    setSelectedSearchConfigs(
-      Array.isArray(formData?.searchConfigurationList)
-        ? formData.searchConfigurationList.map((config) => ({ label: config, value: config }))
-        : []
-    );
+    let newQuerySetOptions: OptionLabel[] = [];
+    // Ensure both querySetId and querySetName are strings and not empty
+    if (
+      typeof formData?.querySetId === 'string' &&
+      formData.querySetId !== '' &&
+      typeof formData?.querySetName === 'string' && // Check querySetName too, as it's the label
+      formData.querySetName !== ''
+    ) {
+      newQuerySetOptions = [{ label: formData.querySetName, value: formData.querySetId }];
+    }
+    setQuerySetOptions(newQuerySetOptions);
+
+    let newSelectedSearchConfigs: OptionLabel[] = [];
+    if (Array.isArray(formData?.searchConfigurationList)) {
+      newSelectedSearchConfigs = formData.searchConfigurationList
+        .map((config: any) => { // Using 'any' for config to handle potential structural variations
+          const label = (typeof config.name === 'string' && config.name !== '')
+            ? config.name
+            : (typeof config.id === 'string' && config.id !== '')
+                ? config.id
+                : ''; // Fallback to empty string if neither name nor id are valid strings
+          const value = (typeof config.id === 'string' && config.id !== '')
+            ? config.id
+            : ''; // Ensure value is also a valid string
+
+          return { label, value };
+        })
+        .filter((option) => option.label !== ''); // Filter out options with empty labels
+    }
+    setSelectedSearchConfigs(newSelectedSearchConfigs);
+
     setK(formData?.size !== undefined && formData?.size !== null ? formData.size : 10);
+
     clearAllErrors();
   }, [formData]);
 
@@ -95,13 +119,18 @@ export const ResultListComparisonForm = forwardRef<
   }));
 
   const handleQuerySetsChange = (selectedOptions: OptionLabel[]) => {
-    setQuerySetOptions(selectedOptions || []);
-    const newValue = selectedOptions?.[0]?.value || '';
-    // Optimize onChange call
-    if (formData.querySetId !== newValue) {
-      onChange('querySetId', newValue);
+    const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
+    setQuerySetOptions(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions?.[0]?.value || ''; // Use value for ID
+    const newQuerySetName = safeSelectedOptions?.[0]?.label || ''; // Use label for name
+
+    if (formData.querySetId !== newQuerySetId) {
+      onChange('querySetId', newQuerySetId);
     }
-    if (selectedOptions.length > 0 && querySetError.length > 0) {
+    if (formData.querySetName !== newQuerySetName) { // Ensure querySetName is also updated
+      onChange('querySetName', newQuerySetName);
+    }
+    if (safeSelectedOptions.length > 0 && querySetError.length > 0) {
       setQuerySetError([]);
     }
   };
@@ -119,13 +148,16 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
-    setSelectedSearchConfigs(selectedOptions);
-    const newValues = selectedOptions.map((o) => o.value);
+    const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
+    setSelectedSearchConfigs(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions?.[0]?.value || ''; // Use value for ID
+    const newQuerySetName = safeSelectedOptions?.[0]?.label || ''; // Use label for name
+    const newValues = safeSelectedOptions.map((o) => ({ id: o.value, name: o.label }));
     // Optimize onChange call
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
       onChange('searchConfigurationList', newValues);
     }
-    if (selectedOptions.length >= 2 && searchConfigError.length > 0) {
+    if (safeSelectedOptions.length >= 2 && searchConfigError.length > 0) {
       setSearchConfigError([]);
     }
   };
