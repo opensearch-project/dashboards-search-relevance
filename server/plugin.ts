@@ -19,6 +19,7 @@ import { defineRoutes, registerSearchRelevanceRoutes } from './routes';
 
 import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
 import { DataSourceManagementPlugin } from '../../../src/plugins/data_source_management/public/plugin';
+import { SharePluginStart } from '../../../src/plugins/share/public';
 import { SearchRelevancePluginConfigType } from '../config';
 import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
 import { SearchRelevancePluginSetup, SearchRelevancePluginStart } from './types';
@@ -28,6 +29,7 @@ import { registerMLRoutes } from './routes/ml_route_service';
 export interface SearchRelevancePluginSetupDependencies {
   dataSourceManagement: ReturnType<DataSourceManagementPlugin['setup']>;
   dataSource: DataSourcePluginSetup;
+  share: SharePluginStart;
 }
 
 export class SearchRelevancePlugin
