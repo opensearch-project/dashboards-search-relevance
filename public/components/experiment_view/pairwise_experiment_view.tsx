@@ -12,6 +12,7 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
   EuiSpacer,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -35,6 +36,12 @@ import {
   combineResults,
 } from '../../types/index';
 import { MetricsSummaryPanel } from './metrics_summary';
+import {
+  JACCARD_TOOL_TIP,
+  RBO50_TOOL_TIP,
+  RBO90_TOOL_TIP,
+  FREQUENCY_WEIGHTED_TOOL_TIP
+} from '../../../common/index';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -134,10 +141,12 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
   useEffect(() => {
     if (experiment) {
       const metricNames = extractMetricNames(queryEvaluations);
-
-      const cheatColNames = {
-        rbo90: 'RBO@' + experiment.k,
-        jaccard: 'Jaccard@' + experiment.k,
+      // metric tool tip texts
+      const metricDescriptions: { [key: string]: string } = {
+        jaccard: JACCARD_TOOL_TIP,
+        rbo50: RBO50_TOOL_TIP,
+        rbo90: RBO90_TOOL_TIP,
+        frequencyWeighted: FREQUENCY_WEIGHTED_TOOL_TIP,
       };
 
       const columns = [
@@ -163,7 +172,14 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       metricNames.forEach((metricName) => {
         columns.push({
           field: 'metrics.' + metricName,
-          name: metricName + '@' + experiment.size,
+          name: (
+            <EuiToolTip
+              content={
+                metricDescriptions[metricName] ||
+                `No description available for ${metricName}`}>
+              <span>{metricName + '@' + experiment.size}</span>
+            </EuiToolTip>
+          ),
           dataType: 'number',
           sortable: true,
           render: (value) => {
