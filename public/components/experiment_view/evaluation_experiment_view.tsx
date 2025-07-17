@@ -139,19 +139,15 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
             .then(sanitizeResponse));
 
-        // the .filter(Boolean) is used to filter out undefineds which show up for queries that are ZSR.
-        const resultIds = _experiment.results
-          .map(({evaluationId}) => evaluationId)
-          .filter(Boolean);
-
+        const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
         const query = {
           index: 'search-relevance-evaluation-result',
           query: {
-            terms: {
-              _id: resultIds,
-            },
+            match: {
+              experimentId: _experiment.id,
+            }
           },
-          size: resultIds.length,
+          size: querySetSize,
         };
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
           body: JSON.stringify({ query1: query }),
@@ -172,9 +168,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             if (
               _querySet &&
               _querySet.querySetQueries &&
-              Object.keys(_querySet.querySetQueries).length > resultIds.length
+              querySetSize > parseResults.data.length
             ) {
-              const zsrCount = Object.keys(_querySet.querySetQueries).length - resultIds.length;
+              const zsrCount = querySetSize - parseResults.data.length;
               notifications.toasts.addWarning({
                 title: 'You have some ZSR queries',
                 text: `${zsrCount} queries returned Zero Search Results`,
