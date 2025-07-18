@@ -46,6 +46,7 @@ interface QueryExplorerProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
+  uiSettings: CoreStart['uiSettings'];
 }
 export const Home = ({
   parentBreadCrumbs,
@@ -60,6 +61,7 @@ export const Home = ({
   dataSourceManagement,
   setActionMenu,
   application,
+  uiSettings,
 }: QueryExplorerProps) => {
   const {
     showFlyout,
@@ -167,6 +169,7 @@ export const Home = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            uiSettings={uiSettings}
           />
         )}
       </div>
