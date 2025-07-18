@@ -85,6 +85,7 @@ const SearchRelevancePage = ({
   dataSourceEnabled,
   dataSourceManagement,
   setActionMenu,
+  uiSettings,
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
@@ -192,6 +193,33 @@ const SearchRelevancePage = ({
       <EuiPageBody>
         <Switch>
           <Route
+            path="/"
+            exact
+            render={() => {
+              // Check if there's a config parameter in the URL hash
+              // Hash format: #/?config=base64string
+              let hashString = window.location.hash.slice(1); // Remove #
+              if (hashString.startsWith('/')) {
+                hashString = hashString.slice(1); // Remove leading /
+              }
+              if (hashString.startsWith('?')) {
+                hashString = hashString.slice(1); // Remove leading ?
+              }
+              
+              const urlParams = new URLSearchParams(hashString);
+              const configParam = urlParams.get('config');
+              
+              if (configParam) {
+                // Redirect to single query comparison with the config parameter as search param
+                history.push(`${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`);
+                return null;
+              } else {
+                // No config parameter, show experiment listing
+                return <ExperimentListingWithRoute http={http} />;
+              }
+            }}
+          />
+          <Route
             path={Routes.Home}
             exact
             render={() => {
@@ -272,6 +300,7 @@ const SearchRelevancePage = ({
                     dataSourceEnabled={dataSourceEnabled}
                     dataSourceManagement={dataSourceManagement}
                     setActionMenu={setActionMenu}
+                    uiSettings={uiSettings}
                     setToast={(title: string, color = 'success', text?: React.ReactNode) => {
                       if (color === 'success') {
                         notifications.toasts.addSuccess({ title, text });
@@ -383,6 +412,7 @@ export const SearchRelevanceApp = ({
             dataSourceEnabled={dataSourceEnabled}
             dataSourceManagement={dataSourceManagement}
             setActionMenu={setActionMenu}
+            uiSettings={uiSettings}
           />
         </SearchRelevanceContextProvider>
       </I18nProvider>
@@ -420,6 +450,7 @@ export const SearchRelevanceApp = ({
                       dataSourceEnabled={dataSourceEnabled}
                       dataSourceManagement={dataSourceManagement}
                       setActionMenu={setActionMenu}
+                      uiSettings={uiSettings}
                     />
                   );
                 }}
