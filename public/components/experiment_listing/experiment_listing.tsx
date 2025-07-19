@@ -69,34 +69,23 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   // Column definitions
   const tableColumns = [
     {
-      field: 'id',
-      name: 'ID',
-      dataType: 'string',
-      sortable: true,
-      render: (
-        id: string,
-        experiment: {
-          id: string;
-        }
-      ) => (
-        <>
-          <EuiButtonEmpty
-            size="xs"
-            {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
-          >
-            {id}
-          </EuiButtonEmpty>
-        </>
-      ),
-    },
-    {
       field: 'type',
       name: 'Experiment Type',
       dataType: 'string',
       sortable: true,
-      render: (type: string) => {
-        return <EuiText size="s">{printType(type)}</EuiText>;
-      },
+      render: (
+        type: string,
+        experiment: {
+          id: string;
+        }
+      ) => (
+        <EuiButtonEmpty
+          size="xs"
+          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
+        >
+          {printType(type)}
+        </EuiButtonEmpty>
+      ),
     },
     {
       field: 'status',

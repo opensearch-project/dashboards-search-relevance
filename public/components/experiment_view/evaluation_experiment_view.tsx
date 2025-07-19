@@ -12,6 +12,7 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
   EuiSpacer,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -35,6 +36,12 @@ import {
 } from '../../types/index';
 import { MetricsSummaryPanel } from './metrics_summary';
 import { DocumentScoresTable } from './document_score_table';
+import {
+  NDCG_TOOL_TIP,
+  PRECISION_TOOL_TIP,
+  MAP_TOOL_TIP,
+  COVERAGE_TOOL_TIP,
+} from '../../../common/index';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -202,9 +209,21 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     return [];
   }
 
+ const getBaseMetricName = (fullMetricName: string): string => {
+    const parts = fullMetricName.split('@');
+    return parts[0].toLowerCase();
+  };
+
   useEffect(() => {
     if (experiment) {
       const metricNames = extractMetricNames(queryEvaluations);
+      // metric tool tip texts
+      const metricDescriptions: { [key: string]: string } = {
+        ndcg: NDCG_TOOL_TIP,
+        precision: PRECISION_TOOL_TIP,
+        map: MAP_TOOL_TIP,
+        coverage: COVERAGE_TOOL_TIP,
+      };
 
       const columns = [
         {
@@ -220,9 +239,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         },
       ];
       metricNames.forEach((metricName) => {
+        // Extract base name for tooltip lookup
+        const baseMetricName = getBaseMetricName(metricName);
+        const tooltipContent =
+          metricDescriptions[baseMetricName] || `No description available for ${metricName}`;
+
         columns.push({
           field: 'metrics.' + metricName,
-          name: metricName,
+          name: (
+            <EuiToolTip content={tooltipContent}>
+              {/* The actual text that triggers the tooltip */}
+              <span>{metricName}</span>
+            </EuiToolTip>
+          ),
           dataType: 'number',
           sortable: true,
           render: (value) => {

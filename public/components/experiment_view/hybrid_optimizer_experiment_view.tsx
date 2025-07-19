@@ -11,6 +11,7 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
   EuiSpacer,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -22,6 +23,12 @@ import { CoreStart, ToastsStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { printType, HybridOptimizerExperiment } from '../../types/index';
 import { VariantDetailsModal } from './variant_details';
+import {
+  NDCG_TOOL_TIP,
+  PRECISION_TOOL_TIP,
+  MAP_TOOL_TIP,
+  COVERAGE_TOOL_TIP,
+} from '../../../common/index';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
@@ -200,6 +207,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     }
   };
 
+  const getBaseMetricName = (fullMetricName: string): string => {
+    const parts = fullMetricName.split('@');
+    return parts[0].toLowerCase();
+  };
+
   useEffect(() => {
     if (experiment && queryEvaluations) {
       // Add null checks and default values
@@ -224,6 +236,14 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
       const metricNames = Object.keys(firstVariant.metrics);
 
+      // metric tool tip texts
+      const metricDescriptions: { [key: string]: string } = {
+        ndcg: NDCG_TOOL_TIP,
+        precision: PRECISION_TOOL_TIP,
+        map: MAP_TOOL_TIP,
+        coverage: COVERAGE_TOOL_TIP,
+      };
+
       if (metricNames.length === 0) {
         console.warn('No metric names found');
         return;
@@ -247,21 +267,31 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             </EuiButtonEmpty>
           ),
         },
-        ...metricNames.map((metricName) => ({
-          field: `metrics.${metricName}`,
-          name: metricName,
-          dataType: 'number',
-          sortable: true,
-          render: (value) => {
-            if (value !== undefined && value !== null) {
-              return new Intl.NumberFormat(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(value);
-            }
-            return '-';
-          },
-        })),
+        ...metricNames.map((metricName) => {
+          const baseMetricName = getBaseMetricName(metricName);
+          const tooltipContent =
+            metricDescriptions[baseMetricName] || `No description available for ${metricName}`;
+
+          return {
+            field: `metrics.${metricName}`,
+            name: (
+              <EuiToolTip content={tooltipContent}>
+                <span>{metricName}</span>
+              </EuiToolTip>
+            ),
+            dataType: 'number',
+            sortable: true,
+            render: (value) => {
+              if (value !== undefined && value !== null) {
+                return new Intl.NumberFormat(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(value);
+              }
+              return '-';
+            },
+          };
+        }),
       ];
 
       setTableColumns(columns);

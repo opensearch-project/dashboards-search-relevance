@@ -57,6 +57,18 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const filePickerId = generateId('filePicker');
   const [parsedQueries, setParsedQueries] = useState<string[]>([]);
 
+  const isValidInputString = (input: string): boolean => {
+      // Regex to detect characters that might break JSON parsing or cause XSS:
+      // - Double quotes (")
+      // - Backslashes (\)
+      // - HTML tags (<, >)
+      // - Control characters (U+0000 to U+001F) and other problematic unicode characters
+      //   that could interfere with JSON or string parsing.
+      // This regex primarily focuses on characters that would require escaping in JSON or are HTML-specific.
+      const forbiddenCharsRegex = /[<>"\\\x00-\x1F]/;
+      return !forbiddenCharsRegex.test(input);
+    };
+
   const handleFileContent = async (files: FileList) => {
     if (files && files.length > 0) {
       try {
@@ -83,6 +95,14 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
         if (queryList.length === 0) {
           setManualQueriesError('No valid queries found in file');
+          setFiles([]);
+          setManualQueries('');
+          setParsedQueries([]);
+          return;
+        }
+
+        if (queryList.length > 1000000) {
+          setManualQueriesError('Too many queries found (> 1.000.000)');
           setFiles([]);
           setManualQueries('');
           setParsedQueries([]);
@@ -122,6 +142,11 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     if (!name.trim()) {
       setNameError('Name is a required parameter.');
       isValid = false;
+    } else if (name.length > 50) {
+      setNameError('Name is too long (> 50 characters).');
+    } else if (!isValidInputString(name)) {
+      setNameError('Name contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
+      isValid = false;
     } else {
       setNameError('');
     }
@@ -129,6 +154,11 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     // Validate description
     if (!description.trim()) {
       setDescriptionError('Description is a required parameter.');
+      isValid = false;
+    } else if (description.length > 250) {
+      setDescriptionError('Description is too long (> 250 characters).');
+    } else if (!isValidInputString(description)) {
+      setDescriptionError('Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
       isValid = false;
     } else {
       setDescriptionError('');
@@ -213,6 +243,10 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     const value = e.target.value;
     if (!value.trim()) {
       setNameError('Name is a required parameter.');
+    } else if (value.length > 50) {
+      setNameError('Name is too long (> 50 characters).');
+    } else if (!isValidInputString(value)) {
+      setNameError('Name contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
     } else {
       setNameError('');
     }
@@ -223,6 +257,10 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     const value = e.target.value;
     if (!value.trim()) {
       setDescriptionError('Description is a required parameter.');
+    } else if (value.length > 250) {
+      setDescriptionError('Description is too long (> 250 characters).');
+    } else if (!isValidInputString(value)) {
+      setDescriptionError('Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).');
     } else {
       setDescriptionError('');
     }
@@ -232,7 +270,15 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Query Set"
-        description="Configure a new query set."
+        description={
+                <span>
+                  Create a new query set by{' '}
+                  <a href="https://docs.opensearch.org/docs/latest/search-plugins/search-relevance/query-sets/" target="_blank" rel="noopener noreferrer">
+                    either sampling from UBI data stored in the ubi_queries index or manually uploading a file
+                  </a>
+                  .
+                </span>
+              }
         rightSideItems={[
           <EuiButtonEmpty
             onClick={handleCancel}
@@ -287,8 +333,8 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 onBlur={validateName}
-                isInvalid={descriptionError.length > 0}
-                data-test-subj="querySetDescriptionInput"
+                isInvalid={nameError.length > 0}
+                data-test-subj="querySetNameInput"
                 fullWidth
               />
             </EuiCompressedFormRow>
@@ -340,7 +386,16 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
                 {/* Sampling method field */}
                 <EuiFormRow
                   label="Sampling Method"
-                  helpText="Select the sampling method for this query set."
+                  helpText={
+                    <span>
+                    Select the sampling method for this query set. Requires ubi_queries index and query events adhering to the{' '}
+                    <a href="https://docs.opensearch.org/docs/latest/search-plugins/ubi/schemas/#ubi-queries-index" target="_blank" rel="noopener noreferrer">
+                      UBI schema
+                    </a>
+                    .<br />
+                    "Random" picks a random sample, "Probability-Proportional-to-Size Sampling" picks a frequency-weighted sample, "Top N" picks the N most frequent queries.
+                    </span>
+                    }
                   fullWidth
                 >
                   <EuiSelect
