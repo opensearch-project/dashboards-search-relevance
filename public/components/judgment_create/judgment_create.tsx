@@ -56,7 +56,13 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     Array<{ label: string; value: string }>
   >([]);
   const [size, setSize] = useState(5);
-  const [modelId, setModelId] = useState('');
+  const [modelOptions, setModelOptions] = useState<
+    Array<{ label: string; value: string; state: string; algorithm: string }>
+  >([]);
+  const [selectedModel, setSelectedModel] = useState<
+    Array<{ label: string; value: string; state: string; algorithm: string }>
+  >([]);
+
   // Optional LLM states
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
   const [contextFields, setContextFields] = useState<string[]>([]);
@@ -71,6 +77,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
   // Loading states
   const [isLoadingQuerySets, setIsLoadingQuerySets] = useState(false);
   const [isLoadingSearchConfigs, setIsLoadingSearchConfigs] = useState(false);
+  const [isLoadingModels, setIsLoadingModels] = useState(false);
 
   // Fetch query sets
   const fetchQuerySets = async () => {
@@ -106,11 +113,35 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     }
   };
 
+  const fetchModels = async () => {
+    setIsLoadingModels(true);
+    try {
+      const response = await http.post(ServiceEndpoints.GetModels);
+      const options = response.hits.hits
+        .filter(
+          (model: any) =>
+            model._source.algorithm === 'REMOTE' && model._source.model_state === 'DEPLOYED'
+        )
+        .map((model: any) => ({
+          label: model._source.name,
+          value: model._id,
+          state: model._source.model_state,
+          algorithm: model._source.algorithm,
+        }));
+      setModelOptions(options);
+    } catch (error) {
+      notifications.toasts.addDanger('Failed to fetch models');
+    } finally {
+      setIsLoadingModels(false);
+    }
+  };
+
   // Load data on component mount
   useEffect(() => {
     if (type === JudgmentType.LLM) {
       fetchQuerySets();
       fetchSearchConfigs();
+      fetchModels();
     }
   }, [type]);
 
@@ -134,8 +165,8 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
         notifications.toasts.addDanger('Please select at least one search configuration');
         isValid = false;
       }
-      if (!modelId) {
-        notifications.toasts.addDanger('Model ID is required');
+      if (selectedModel.length === 0) {
+        notifications.toasts.addDanger('Please select a model id');
         isValid = false;
       }
     }
@@ -175,7 +206,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             querySetId: selectedQuerySet[0]?.value,
             searchConfigurationList: selectedSearchConfigs.map((config) => config.value),
             size,
-            modelId,
+            modelId: selectedModel[0]?.value,
             contextFields,
             ...(tokenLimit !== 4000 && { tokenLimit: tokenLimit.toString() }),
             ...(ignoreFailure && { ignoreFailure }),
@@ -211,7 +242,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     selectedQuerySet,
     selectedSearchConfigs,
     size,
-    modelId,
+    selectedModel,
     clickModel,
     maxRank,
     http,
@@ -343,9 +374,16 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
                   helpText="The ID of the LLM model that is used for the judging process."
                   fullWidth
                 >
-                  <EuiFieldText
-                    value={modelId}
-                    onChange={(e) => setModelId(e.target.value)}
+                  <EuiComboBox
+                    placeholder="Select a model"
+                    options={modelOptions}
+                    selectedOptions={selectedModel}
+                    onChange={(selected) => {
+                      console.log('Selected model:', selected);
+                      setSelectedModel(selected);
+                    }}
+                    singleSelection={{ asPlainText: true }}
+                    isLoading={isLoadingModels}
                     fullWidth
                   />
                 </EuiCompressedFormRow>
