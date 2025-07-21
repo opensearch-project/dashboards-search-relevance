@@ -5,20 +5,20 @@
 
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiFormRow, EuiFieldNumber } from '@elastic/eui';
-import { ResultListComparisonFormData, OptionLabel } from '../types';
+import { PointwiseExperimentFormData, OptionLabel } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
 
 interface PointwiseExperimentFormProps {
-  formData: ResultListComparisonFormData;
-  onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
+  formData: PointwiseExperimentFormData;
+  onChange: (field: keyof PointwiseExperimentFormData, value: any) => void;
   http: CoreStart['http'];
 }
 
 export interface PointwiseExperimentFormRef {
-  validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
+  validateAndSetErrors: () => { isValid: boolean; data: PointwiseExperimentFormData };
   clearAllErrors: () => void;
 }
 
@@ -99,9 +99,9 @@ export const PointwiseExperimentForm = forwardRef<
     clearAllErrors();
   }, [formData]); // Dependency on formData ensures re-initialization when parent's formData changes
 
-  const validateAndSetErrors = (): { isValid: boolean; data: ResultListComparisonFormData } => {
+  const validateAndSetErrors = (): { isValid: boolean; data: PointwiseExperimentFormData } => {
     let isValid = true;
-    const currentData: ResultListComparisonFormData = {
+    const currentData: PointwiseExperimentFormData = {
       querySetId: querySetOptions[0]?.value || '',
       size: k,
       searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
