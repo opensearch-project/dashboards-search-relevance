@@ -10,6 +10,7 @@ import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
+import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
 
 export interface HybridOptimizerExperimentFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: HybridOptimizerExperimentFormData };
@@ -44,57 +45,14 @@ export const HybridOptimizerExperimentForm = forwardRef<
   };
 
   useEffect(() => {
-    let newQuerySetOptions: OptionLabel[] = [];
-    // Ensure both querySetId and querySetName are strings and not empty
-    if (
-      typeof formData.querySetId === 'string' &&
-      formData.querySetId !== '' &&
-      typeof formData.querySetName === 'string' &&
-      formData.querySetName !== ''
-    ) {
-      newQuerySetOptions = [{ label: formData.querySetName, value: formData.querySetId }];
-    }
-    setQuerySetOptions(newQuerySetOptions);
 
-    let newSelectedSearchConfigs: OptionLabel[] = [];
-    if (Array.isArray(formData?.searchConfigurationList)) {
-      newSelectedSearchConfigs = formData.searchConfigurationList
-        .map((config: any) => { // Use 'any' to safely access name/id if type isn't strict object
-          const label = (typeof config.name === 'string' && config.name !== '')
-            ? config.name
-            : (typeof config.id === 'string' && config.id !== '')
-                ? config.id
-                : ''; // Default to empty string
-          const value = (typeof config.id === 'string' && config.id !== '')
-            ? config.id
-            : ''; // Ensure value is a valid string
-
-          return { label, value };
-        })
-        .filter((option) => option.label !== ''); // Filter out any options where label ended up empty
-    }
-    setSelectedSearchConfigs(newSelectedSearchConfigs);
+    setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
 
     setK(formData.size ?? 10);
 
-    let newJudgmentOptions: OptionLabel[] = [];
-    if (Array.isArray(formData?.judgmentList)) {
-      newJudgmentOptions = formData.judgmentList
-        .map((judgment: any) => { // Use 'any' to safely access name/id if type isn't strict object
-          const label = (typeof judgment.name === 'string' && judgment.name !== '')
-            ? judgment.name
-            : (typeof judgment.id === 'string' && judgment.id !== '')
-                ? judgment.id // Fallback to ID if name is missing/invalid
-                : ''; // Default to empty string
-          const value = (typeof judgment.id === 'string' && judgment.id !== '')
-            ? judgment.id
-            : ''; // Ensure value is a valid string
+    setSelectedSearchConfigs(mapToOptionLabels(formData.searchConfigurationList));
 
-          return { label, value };
-        })
-        .filter((option) => option.label !== ''); // Filter out any options where label ended up empty
-    }
-    setJudgmentOptions(newJudgmentOptions);
+    setJudgmentOptions(mapToOptionLabels(formData.judgmentList));
 
     clearAllErrors(); // Clear errors on formData prop change
   }, [formData]); // Dependency array: re-run effect if 'formData' changes

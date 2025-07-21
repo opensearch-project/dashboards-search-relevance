@@ -9,6 +9,7 @@ import { OptionLabel, ResultListComparisonFormData } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
+import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
 
 export interface ResultListComparisonFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
@@ -40,36 +41,12 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   useEffect(() => {
-    let newQuerySetOptions: OptionLabel[] = [];
-    // Ensure both querySetId and querySetName are strings and not empty
-    if (
-      typeof formData?.querySetId === 'string' &&
-      formData.querySetId !== '' &&
-      typeof formData?.querySetName === 'string' && // Check querySetName too, as it's the label
-      formData.querySetName !== ''
-    ) {
-      newQuerySetOptions = [{ label: formData.querySetName, value: formData.querySetId }];
-    }
-    setQuerySetOptions(newQuerySetOptions);
+
+    setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
 
     let newSelectedSearchConfigs: OptionLabel[] = [];
-    if (Array.isArray(formData?.searchConfigurationList)) {
-      newSelectedSearchConfigs = formData.searchConfigurationList
-        .map((config: any) => { // Using 'any' for config to handle potential structural variations
-          const label = (typeof config.name === 'string' && config.name !== '')
-            ? config.name
-            : (typeof config.id === 'string' && config.id !== '')
-                ? config.id
-                : ''; // Fallback to empty string if neither name nor id are valid strings
-          const value = (typeof config.id === 'string' && config.id !== '')
-            ? config.id
-            : ''; // Ensure value is also a valid string
 
-          return { label, value };
-        })
-        .filter((option) => option.label !== ''); // Filter out options with empty labels
-    }
-    setSelectedSearchConfigs(newSelectedSearchConfigs);
+    setSelectedSearchConfigs(mapToOptionLabels(formData.searchConfigurationList));
 
     setK(formData?.size !== undefined && formData?.size !== null ? formData.size : 10);
 
