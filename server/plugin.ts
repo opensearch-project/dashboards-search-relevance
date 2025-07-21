@@ -24,6 +24,7 @@ import { SearchRelevancePluginConfigType } from '../config';
 import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
 import { SearchRelevancePluginSetup, SearchRelevancePluginStart } from './types';
 import { SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED } from '../common';
+import { registerMLRoutes } from './routes/ml_route_service';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSourceManagement: ReturnType<DataSourceManagementPlugin['setup']>;
@@ -83,6 +84,7 @@ export class SearchRelevancePlugin
     // Register server side APIs
     defineRoutes(router, core.opensearch, dataSourceEnabled);
     registerSearchRelevanceRoutes(router);
+    registerMLRoutes(router, dataSourceEnabled);
 
     return {};
   }

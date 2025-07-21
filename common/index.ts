@@ -19,6 +19,7 @@ export const ServiceEndpoints = Object.freeze({
   GetSingleSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/single_search`,
   GetStats: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/stats`,
   GetClusterSettings: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/cluster_settings`,
+  GetModels: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/models`,
 
   // Search Relevance node APIs
   QuerySets: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/query_sets`,
@@ -34,6 +35,9 @@ export const BackendEndpoints = Object.freeze({
   Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
 } as const);
+
+const ML_COMMON_PLUGIN_BASE_PATH = '_plugins/_ml';
+export const ML_MODEL_ROUTE_PREFIX = `${ML_COMMON_PLUGIN_BASE_PATH}/models`;
 
 export const SEARCH_API = '/_search';
 
@@ -58,7 +62,9 @@ export enum Routes {
   ExperimentCreateQuerySetComparison = `/experiment/create/${RouteTemplateType.QuerySetComparison}`,
   ExperimentCreateSearchEvaluation = `/experiment/create/${RouteTemplateType.SearchEvaluation}`,
   ExperimentCreateHybridOptimizer = `/experiment/create/${RouteTemplateType.HybridOptimizer}`,
-  ExperimentCreateTemplate = `/experiment/create/:templateId(${Object.values(RouteTemplateType).join('|')})`,
+  ExperimentCreateTemplate = `/experiment/create/:templateId(${Object.values(
+    RouteTemplateType
+  ).join('|')})`,
   QuerySetListing = '/querySet',
   QuerySetView = '/querySet/view/:entityId',
   QuerySetViewPrefix = '/querySet/view',
