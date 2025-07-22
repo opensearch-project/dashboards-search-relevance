@@ -108,7 +108,7 @@ jobs:
 
       - name: Health check
         run: |
-          timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
+          timeout 1200 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
         shell: bash
 
       - name: Check OpenSearch Dashboards Running on Linux
