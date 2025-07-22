@@ -109,7 +109,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
         case TemplateType.QuerySetComparison:
           return (
             <>
-              <GetStartedAccordion isOpen={true} />
+              <GetStartedAccordion isOpen={true} templateType={templateType} />
               <EuiSpacer size="l" />
               <ResultListComparisonForm
                 formData={formData as ResultListComparisonFormData}
@@ -122,7 +122,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
         case TemplateType.SearchEvaluation:
           return (
             <>
-              <GetStartedAccordion isOpen={true} />
+              <GetStartedAccordion isOpen={true} templateType={templateType} />
               <EuiSpacer size="l" />
               <PointwiseExperimentForm
                 formData={formData as PointwiseExperimentFormData}
@@ -135,7 +135,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
         case TemplateType.HybridSearchOptimizer:
           return (
             <>
-              <GetStartedAccordion isOpen={true} />
+              <GetStartedAccordion isOpen={true} templateType={templateType} />
               <EuiSpacer size="l" />
               <HybridOptimizerExperimentForm
                 formData={formData as HybridOptimizerExperimentFormData}
