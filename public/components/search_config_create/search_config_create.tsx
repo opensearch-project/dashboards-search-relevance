@@ -153,7 +153,11 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       }));
       setPipelineOptions(options);
     } catch (error) {
-      notifications.toasts.addDanger('Failed to fetch search pipelines');
+      // only log error if it's not a 404, see: https://github.com/opensearch-project/OpenSearch/issues/15917
+      if (error.body.statusCode !== 404) {
+        notifications.toasts.addDanger('Failed to fetch search pipelines');
+        console.error(error);
+      }
     } finally {
       setIsLoadingPipelines(false);
     }

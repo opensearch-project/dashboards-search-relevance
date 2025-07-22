@@ -314,7 +314,7 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         );
         if (error.statusCode !== 404) console.error(error);
         return response.customError({
-          statusCode: 404,
+          statusCode: error.statusCode || 400,
           body: error,
         });
       }

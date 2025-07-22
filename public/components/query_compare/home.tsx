@@ -117,7 +117,10 @@ export const Home = ({
         } else {
           setFetchedPipelines2('');
         }
-        console.error(err);
+        // only log error if it's not a 404, see: https://github.com/opensearch-project/OpenSearch/issues/15917
+        if (err.body.statusCode !== 404) {
+          console.error(err);
+        }
       });
   };
 
