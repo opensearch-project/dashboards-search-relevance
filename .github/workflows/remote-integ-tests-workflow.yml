@@ -93,10 +93,10 @@ jobs:
 
       - name: Wait OpenSearch Dashboards Compiled Completed
         run: |
-          if timeout 900 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
+          if timeout 1800 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
             echo "OpenSearch Dashboards compiled successfully."
           else
-            echo "Timeout for 900 seconds reached. OpenSearch Dashboards did not finish compiling."
+            echo "Timeout for 1800 seconds reached. OpenSearch Dashboards did not finish compiling."
             exit 1
           fi
         working-directory: OpenSearch-Dashboards
