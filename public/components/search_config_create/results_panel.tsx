@@ -6,6 +6,7 @@
 import React from 'react';
 import { EuiLoadingSpinner, EuiPanel, EuiSpacer } from '@elastic/eui';
 import { uniqueId } from 'lodash';
+import './results_panel.scss';
 
 interface ResultsPanelProps {
   isValidating: boolean;
@@ -38,9 +39,13 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ isValidating, search
     ];
 
     Object.entries(document._source).forEach(([key, value]) => {
+      let displayValue = String(value);
+      if (displayValue.length > 50) {
+        displayValue = displayValue.slice(0, 50) + '…';
+      }
       cells.push(
         <td key={key} className="osdDocTable__cell">
-          {String(value)}
+          {displayValue}
         </td>
       );
     });
@@ -85,7 +90,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ isValidating, search
     <EuiPanel>
       <h3>Search Results ({hits.length} hits)</h3>
       <EuiSpacer size="s" />
-      <div className="dscTable dscTableFixedScroll">
+      <div className="resultsPanel__scrollContainer dscTable dscTableFixedScroll">
         <table className="osd-table table" data-test-subj="docTable">
           <thead>
             <tr className="osdDocTable__headerRow">{getHeaders()}</tr>

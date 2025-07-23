@@ -21,7 +21,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { extractUserMessageFromError, Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -178,7 +178,8 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       };
     } catch (err) {
       console.error('Failed to load search configurations', err);
-      setError('Failed to load search configurations.');
+      const errorMessage = extractUserMessageFromError(err);
+      setError(errorMessage ? errorMessage : 'Failed to load search configurations due to an unknown error.');
       return {
         total: 0,
         hits: [],

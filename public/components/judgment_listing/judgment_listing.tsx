@@ -23,7 +23,7 @@ import {
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, extractUserMessageFromError } from '../../../common';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -142,8 +142,9 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load judgment lists', err);
-      setError('Failed to load judgment lists.');
+      console.error('Failed to load judgment lists.', err);
+      const errorMessage = extractUserMessageFromError(err);
+      setError(errorMessage ? errorMessage : 'Failed to load judgment lists due to an unknown error.');
       return {
         total: 0,
         hits: [],

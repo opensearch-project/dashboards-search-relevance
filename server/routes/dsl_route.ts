@@ -7,10 +7,7 @@ import { RequestParams } from '@opensearch-project/opensearch';
 import { schema } from '@osd/config-schema';
 
 import { ILegacyScopedClusterClient, IRouter } from '../../../../src/core/server';
-import {
-  ServiceEndpoints,
-  SEARCH_API,
-} from '../../common';
+import { ServiceEndpoints, SEARCH_API } from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
 
 interface SearchResultsResponse {
@@ -136,8 +133,13 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         try {
           let resp;
           const invalidCharactersPattern = /[\s,\"*+\/\\|?#><]/;
-          if (index !== index.toLowerCase() || index.startsWith('_') || index.startsWith('-') || invalidCharactersPattern.test(index)) {
-            throw new Error("Index invalid or missing.");
+          if (
+            index !== index.toLowerCase() ||
+            index.startsWith('_') ||
+            index.startsWith('-') ||
+            invalidCharactersPattern.test(index)
+          ) {
+            throw new Error('Index invalid or missing.');
           }
           if (
             pipeline !== '*' &&
@@ -214,21 +216,22 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
           callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
         }
         let resp = await callApi('cat.indices', params);
-        const remoteConnections = await callApi('transport.request',{
+        const remoteConnections = await callApi('transport.request', {
           method: 'GET',
-          path: "/_remote/info",
+          path: '/_remote/info',
         });
-        if (Object.keys(remoteConnections).length > 0) { // fetch remote indices if remote clusters exist
+        if (Object.keys(remoteConnections).length > 0) {
+          // fetch remote indices if remote clusters exist
           const remoteClusters = Object.keys(remoteConnections)
             .map((key) => `${key}:*`)
             .join(',');
-          const resolveResponse = await callApi('transport.request',{
+          const resolveResponse = await callApi('transport.request', {
             method: 'GET',
             path: `/_resolve/index/${remoteClusters}`,
           });
           let remoteIndices = resolveResponse.indices.map((item: { name: string }) => ({
             index: item.name,
-            format: 'json'
+            format: 'json',
           }));
           resp = resp.concat(remoteIndices);
         }
@@ -311,7 +314,7 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         );
         if (error.statusCode !== 404) console.error(error);
         return response.customError({
-          statusCode: 404,
+          statusCode: error.statusCode || 400,
           body: error,
         });
       }
@@ -368,8 +371,12 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
 
   router.get(
     {
-      path: ServiceEndpoints.GetClusterSettings,
-      validate: {},
+      path: `${ServiceEndpoints.GetClusterSettings}/{dataSourceId?}`,
+      validate: {
+        params: schema.object({
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
+        }),
+      },
     },
     async (context, request, response) => {
       const params = {
@@ -379,7 +386,8 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       try {
         let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
         if (dataSourceEnabled && request.params.dataSourceId) {
-          callApi = context.dataSource.opensearch.legacy.getClient(request.params.dataSourceId).callAPI;
+          callApi = context.dataSource.opensearch.legacy.getClient(request.params.dataSourceId)
+            .callAPI;
         } else {
           callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
         }

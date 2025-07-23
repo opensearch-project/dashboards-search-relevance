@@ -39,3 +39,10 @@ with an appropriate label `backport <backport-branch-name>` is merged to main wi
 PR. For example, if a PR on main needs to be backported to `1.x` branch, add a label `backport 1.x` to the PR and make sure the
 backport workflow runs on the PR along with other checks. Once this PR is merged to main, the workflow will create a backport PR
 to the `1.x` branch.
+
+### Updating Default Dashboards
+
+This plugin comes with some dashboards that are installed into OpenSearch Dashboards as Saved Objects. 
+To update the default dashboards that ship with the plugin, you need to export the raw dashboard JSON and update the file `./public/components/common_utils/dashboards_data.ts` that holds the data.
+
+TIP: To escape the export JSON data for embedding in the TypeScript you can escape the quotes using: `sed 's/\\/\\\\/g' input.txt > output.txt`.

@@ -23,7 +23,7 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { extractUserMessageFromError, Routes, ServiceEndpoints } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 
@@ -159,7 +159,8 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
       };
     } catch (err) {
       console.error('Failed to load query sets', err);
-      setError('Failed to load query sets.');
+      const errorMessage = extractUserMessageFromError(err);
+      setError(errorMessage ? errorMessage : 'Failed to load query sets due to an unknown error.');
       return {
         total: 0,
         hits: [],
