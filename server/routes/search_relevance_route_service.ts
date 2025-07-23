@@ -258,6 +258,7 @@ const backendAction = (method, path) => {
 
       return res.ok({ body: response });
     } catch (err) {
+
       console.error('Failed to call search-relevance APIs', err); // Keep for full server-side logging
 
       let clientMessage = err.message; // Default to the err.message from transport.request
@@ -287,7 +288,6 @@ const backendAction = (method, path) => {
               clientAttributesError = err.body.message;
           }
       }
-
 
       return res.customError({
         statusCode: err.statusCode || 500,

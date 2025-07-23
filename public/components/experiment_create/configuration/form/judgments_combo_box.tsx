@@ -28,6 +28,7 @@ export const JudgmentsComboBox = ({
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchJudgments = async () => {
       try {
         const data = await http.get(ServiceEndpoints.Judgments);
@@ -35,16 +36,26 @@ export const JudgmentsComboBox = ({
           label: judgment._source.name,
           value: judgment._source.id,
         }));
-        setJudgmentOptions(options);
+        if (isMounted) {
+          setJudgmentOptions(options);
+        }
       } catch (error) {
         console.error('Failed to fetch judgments', error);
-        setJudgmentOptions([]);
+        if (isMounted) {
+          setJudgmentOptions([]);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchJudgments();
+
+    return () => {
+      isMounted = false;
+    }
   }, [http]);
 
   const comboBoxComponent = (
