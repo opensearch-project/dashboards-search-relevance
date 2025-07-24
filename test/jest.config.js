@@ -29,4 +29,24 @@ module.exports = {
     '^!!raw-loader!.*': 'jest-raw-loader',
   },
   testEnvironment: 'jsdom',
+  collectCoverage: false, // Set to true to always collect coverage
+  collectCoverageFrom: [
+    'public/components/**/*.{js,jsx,ts,tsx}',
+    '!public/**/*.d.ts',
+    '!public/**/*.test.{js,jsx,ts,tsx}',
+    '!public/**/__tests__/**',
+    '!public/**/node_modules/**',
+    '!public/**/build/**',
+    '!public/**/target/**',
+    '!public/**/index.ts',
+    '!public/**/types.ts',
+    '!public/**/types/**',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      lines: 80,
+    },
+  },
+  coverageReporters: ['text', 'lcov', 'html'],
 };
