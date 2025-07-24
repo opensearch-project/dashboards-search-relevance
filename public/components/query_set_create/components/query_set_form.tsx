@@ -71,7 +71,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
           onChange={(e) => setName(e.target.value)}
           onBlur={(e) => validateField('name', e.target.value)}
           isInvalid={errors.nameError.length > 0}
-          data-test-subj="querySetNameInput"
+          data-test-subj="querySetDescriptionInput"
           fullWidth
         />
       </EuiCompressedFormRow>

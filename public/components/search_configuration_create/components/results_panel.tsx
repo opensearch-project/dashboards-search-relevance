@@ -3,17 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { EuiLoadingSpinner, EuiPanel, EuiSpacer } from '@elastic/eui';
 import { uniqueId } from 'lodash';
-import './results_panel.scss';
+import '../results_panel.scss';
 
 interface ResultsPanelProps {
   isValidating: boolean;
   searchResults: any;
 }
 
-export const ResultsPanel: React.FC<ResultsPanelProps> = ({ isValidating, searchResults }) => {
+export const ResultsPanel: React.FC<ResultsPanelProps> = memo(({ isValidating, searchResults }) => {
   if (isValidating) {
     return (
       <EuiPanel>
@@ -100,4 +100,4 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ isValidating, search
       </div>
     </EuiPanel>
   );
-};
+});

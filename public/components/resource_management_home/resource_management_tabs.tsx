@@ -11,7 +11,7 @@ import { SearchConfigurationListingWithRoute } from '../search_config_listing';
 import { QuerySetListingWithRoute } from '../query_set_listing';
 import { QuerySetCreateWithRouter } from '../query_set_create/query_set_create';
 import { QuerySetView } from '../query_set_view/query_set_view';
-import { SearchConfigurationCreateWithRouter } from '../search_config_create/search_config_create';
+import { SearchConfigurationCreateWithRouter } from '../search_configuration_create';
 import { SearchConfigurationView } from '../search_config_view/search_config_view';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import ExperimentViewWithRouter from '../experiment_view/experiment_view';
