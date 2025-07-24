@@ -39,8 +39,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Select query set that are created either by sampling real live queries or upload
-                  the queries that you're interested in.
+                  Select the query set containing queries you want to use for comparison.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -58,28 +57,13 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                   other already defined.
                 </EuiText>
               </EuiCard>
-            </EuiFlexItem>
+            </EuiFlexItem>            
             <EuiFlexItem>
               <EuiCard
                 layout="horizontal"
                 title={
                   <EuiTitle size="s">
-                    <h3>3. Select your Evaluation Configuration</h3>
-                  </EuiTitle>
-                }
-              >
-                <EuiText>
-                  You can select to evaluate your experiment either by customized calculator or user
-                  behavior or LLM.
-                </EuiText>
-              </EuiCard>
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiCard
-                layout="horizontal"
-                title={
-                  <EuiTitle size="s">
-                    <h3>4. Evaluate your Experiment</h3>
+                    <h3>3. Evaluate your Experiment</h3>
                   </EuiTitle>
                 }
               >
@@ -170,8 +154,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
               >
                 <EuiText>
                   Select the query set containing queries you want to use to optimize lexical versus
-                  vector weighting for optimal search results in your Hybrid query. They should be
-                  representative of your overall user query distributions.
+                  vector weighting for optimal search results in your Hybrid query.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
@@ -234,8 +217,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Download and install a OpenSearch Dashboard that lets you evaluate the results of
-                  the Optimizer run.
+                  Look at the tabular result data to understand which variant performed best.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>
