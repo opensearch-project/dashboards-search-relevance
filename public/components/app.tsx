@@ -38,7 +38,7 @@ import QuerySetView from './query_set_view/query_set_view';
 import SearchConfigurationView from './search_config_view/search_config_view';
 import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
-import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
+import { SearchConfigurationCreateWithRouter } from './search_configuration_create';
 import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
 import { GetStartedAccordion } from './experiment_create/get_started_accordion';
 import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';

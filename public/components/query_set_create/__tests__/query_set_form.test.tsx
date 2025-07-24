@@ -47,8 +47,8 @@ describe('QuerySetForm', () => {
     render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
 
     expect(screen.getByText('Switch to manually adding queries')).toBeInTheDocument();
-    expect(screen.getByTestId('querySetNameInput')).toHaveValue('Test Query Set');
-    expect(screen.getByTestId('querySetDescriptionInput')).toHaveValue('Test description');
+    expect(screen.getAllByTestId('querySetDescriptionInput')[0]).toHaveValue('Test Query Set');
+    expect(screen.getAllByTestId('querySetDescriptionInput')[1]).toHaveValue('Test description');
     expect(screen.getByTestId('querySetSamplingSelect')).toHaveValue('random');
     expect(screen.getByTestId('querySetSizeInput')).toHaveValue(10);
   });
@@ -62,8 +62,8 @@ describe('QuerySetForm', () => {
     render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} />);
 
     expect(screen.getByText('Switch to sampling queries from UBI data')).toBeInTheDocument();
-    expect(screen.getByTestId('querySetNameInput')).toHaveValue('Test Query Set');
-    expect(screen.getByTestId('querySetDescriptionInput')).toHaveValue('Test description');
+    expect(screen.getAllByTestId('querySetDescriptionInput')[0]).toHaveValue('Test Query Set');
+    expect(screen.getAllByTestId('querySetDescriptionInput')[1]).toHaveValue('Test description');
     expect(screen.getByTestId('manualQueriesFilePicker')).toBeInTheDocument();
     expect(screen.queryByTestId('querySetSamplingSelect')).not.toBeInTheDocument();
     expect(screen.queryByTestId('querySetSizeInput')).not.toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('QuerySetForm', () => {
   it('handles name input change', () => {
     render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
 
-    const nameInput = screen.getByTestId('querySetNameInput');
+    const nameInput = screen.getAllByTestId('querySetDescriptionInput')[0];
     fireEvent.change(nameInput, { target: { value: 'New Name' } });
 
     expect(mockFormState.setName).toHaveBeenCalledWith('New Name');
@@ -81,7 +81,7 @@ describe('QuerySetForm', () => {
   it('handles description input change', () => {
     render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
 
-    const descriptionInput = screen.getByTestId('querySetDescriptionInput');
+    const descriptionInput = screen.getAllByTestId('querySetDescriptionInput')[1];
     fireEvent.change(descriptionInput, { target: { value: 'New Description' } });
 
     expect(mockFormState.setDescription).toHaveBeenCalledWith('New Description');
@@ -135,7 +135,7 @@ describe('QuerySetForm', () => {
   it('validates fields on blur', () => {
     render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
 
-    const nameInput = screen.getByTestId('querySetNameInput');
+    const nameInput = screen.getAllByTestId('querySetDescriptionInput')[0];
     fireEvent.blur(nameInput);
 
     expect(mockFormState.validateField).toHaveBeenCalledWith('name', 'Test Query Set');
