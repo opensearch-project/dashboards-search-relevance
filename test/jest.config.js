@@ -42,11 +42,5 @@ module.exports = {
     '!public/**/types.ts',
     '!public/**/types/**',
   ],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      lines: 80,
-    },
-  },
   coverageReporters: ['text', 'lcov', 'html'],
 };

@@ -46,10 +46,7 @@ describe('SearchConfigurationService', () => {
 
       const result = await service.fetchPipelines();
 
-      expect(result).toEqual([
-        { label: 'pipeline-1' },
-        { label: 'pipeline-2' },
-      ]);
+      expect(result).toEqual([{ label: 'pipeline-1' }, { label: 'pipeline-2' }]);
     });
   });
 
