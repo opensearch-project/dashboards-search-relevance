@@ -203,3 +203,76 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
       } as ConfigurationFormData;
   }
 };
+
+/**
+ * Utils to ensure valid labels for input form components like search configurations or query sets
+ */
+export interface OptionLabel {
+  label: string;
+  value: string;
+}
+
+/**
+ * Transforms an array of objects (e.g., from API response) into an array of OptionLabel objects
+ * suitable for EUI combo boxes. It handles cases where either 'name' or 'id' can serve as label/value.
+ *
+ * @param dataList The input array of objects.
+ * @returns An array of OptionLabel objects.
+ */
+export const mapToOptionLabels = (dataList: any[]): OptionLabel[] => {
+  if (!Array.isArray(dataList)) {
+    return [];
+  }
+
+  return dataList
+    .map((item: any) => {
+      const label =
+        typeof item.name === 'string' && item.name !== ''
+          ? item.name
+          : typeof item.id === 'string' && item.id !== ''
+          ? item.id
+          : '';
+      const value = typeof item.id === 'string' && item.id !== '' ? item.id : '';
+
+      return { label, value };
+    })
+    .filter((option) => option.label !== ''); // Ensure only valid options are returned
+};
+
+/**
+ * Transforms an array of OptionLabel objects back into a format expected by the backend
+ * (e.g., an array of objects with 'id' and 'name' properties).
+ *
+ * @param optionLabels The input array of OptionLabel objects.
+ * @returns An array of objects with 'id' and 'name' properties.
+ */
+export const mapOptionLabelsToFormData = (
+  optionLabels: OptionLabel[]
+): Array<{ id: string; name: string }> => {
+  if (!Array.isArray(optionLabels)) {
+    return [];
+  }
+  return optionLabels.map((o) => ({ id: o.value, name: o.label }));
+};
+
+/**
+ * Transforms a single query set ID and name into an array of OptionLabel objects.
+ *
+ * @param querySetId The ID of the query set.
+ * @param querySetName The name of the query set.
+ * @returns An array containing a single OptionLabel object, or an empty array if invalid.
+ */
+export const mapQuerySetToOptionLabels = (
+  querySetId: string | undefined,
+  querySetName: string | undefined
+): OptionLabel[] => {
+  if (
+    typeof querySetId === 'string' &&
+    querySetId !== '' &&
+    typeof querySetName === 'string' &&
+    querySetName !== ''
+  ) {
+    return [{ label: querySetName, value: querySetId }];
+  }
+  return [];
+};

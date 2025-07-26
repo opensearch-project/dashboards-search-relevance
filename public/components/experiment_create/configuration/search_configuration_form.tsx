@@ -28,6 +28,7 @@ export const SearchConfigForm = ({
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchSearchConfigurations = async () => {
       try {
         const data = await http.get(ServiceEndpoints.SearchConfigurations);
@@ -35,16 +36,26 @@ export const SearchConfigForm = ({
           label: search_config._source.name,
           value: search_config._source.id,
         }));
-        setSearchConfigOptions(options);
+        if (isMounted) {
+          setSearchConfigOptions(options);
+        }
       } catch (error) {
         console.error('Failed to fetch search configurations', error);
-        setSearchConfigOptions([]);
+        if (isMounted) {
+          setSearchConfigOptions([]);
+        }
       } finally {
-        setIsLoadingConfigs(false);
+        if (isMounted) {
+          setIsLoadingConfigs(false);
+        }
       }
     };
 
     fetchSearchConfigurations();
+
+    return () => {
+      isMounted = false;
+    }
   }, [http]);
 
   const comboBoxComponent = (

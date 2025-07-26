@@ -11,6 +11,7 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
   EuiSpacer,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -22,6 +23,12 @@ import { CoreStart, ToastsStart } from '../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../common';
 import { printType, HybridOptimizerExperiment } from '../../types/index';
 import { VariantDetailsModal } from './variant_details';
+import {
+  NDCG_TOOL_TIP,
+  PRECISION_TOOL_TIP,
+  MAP_TOOL_TIP,
+  COVERAGE_TOOL_TIP,
+} from '../../../common/index';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
@@ -87,22 +94,15 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             .then(sanitizeResponse));
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
-          // Get all evaluation result IDs
-          const evaluationResultIds = _experiment.results
-            .flatMap((res) => {
-              return res.evaluationResults.map(({evaluationId}) => evaluationId);
-            })
-            .filter(Boolean);
-
-          // Fetch all evaluation results in one query
+          const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
           const query = {
             index: 'search-relevance-evaluation-result',
             query: {
-              terms: {
-                _id: evaluationResultIds,
-              },
+              match: {
+                experimentId: _experiment.id,
+              }
             },
-            size: evaluationResultIds.length,
+            size: querySetSize * 66,
           };
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
@@ -121,32 +121,15 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
           // Process results and organize by query and variant
           const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
-
-          (_experiment.results || []).forEach((res) => {
-            const queryText = res.queryText;
-            const variantMap = res.evaluationResults;
-            if (!variantMap) return;
-            evaluationsByQueryAndVariant[queryText] = {};
-
-            // Process all variants for this query
-            variantMap.forEach((varEntry) => {
-              const variantId = varEntry.experimentVariantId;
-              const evalId = varEntry.evaluationId;
-              if (!varEntry) return;
-
-              const evaluation = result.result1?.hits?.hits?.find((hit) => hit._id === evalId)
-                ?._source;
-
-              let nMetrics = {}
-              evaluation?.metrics?.forEach((metric) => {
-                nMetrics[metric.metric] = metric.value;
-              });
-              if (nMetrics) {
-                evaluationsByQueryAndVariant[queryText][variantId] = {
-                  metrics: nMetrics,
-                };
-              }
+          result.result1?.hits?.hits?.forEach((hit) => {
+            let nMetrics = {}
+            hit._source.metrics?.forEach((metric) => {
+              nMetrics[metric.metric] = metric.value;
             });
+            evaluationsByQueryAndVariant[hit._source.searchText] = evaluationsByQueryAndVariant[hit._source.searchText] || {};
+            evaluationsByQueryAndVariant[hit._source.searchText][hit._source.experimentVariantId] = {
+              metrics: nMetrics,
+            };
           });
 
           setExperiment(_experiment as HybridOptimizerExperiment);
@@ -200,6 +183,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     }
   };
 
+  const getBaseMetricName = (fullMetricName: string): string => {
+    const parts = fullMetricName.split('@');
+    return parts[0].toLowerCase();
+  };
+
   useEffect(() => {
     if (experiment && queryEvaluations) {
       // Add null checks and default values
@@ -224,6 +212,14 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
       const metricNames = Object.keys(firstVariant.metrics);
 
+      // metric tool tip texts
+      const metricDescriptions: { [key: string]: string } = {
+        ndcg: NDCG_TOOL_TIP,
+        precision: PRECISION_TOOL_TIP,
+        map: MAP_TOOL_TIP,
+        coverage: COVERAGE_TOOL_TIP,
+      };
+
       if (metricNames.length === 0) {
         console.warn('No metric names found');
         return;
@@ -247,21 +243,31 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             </EuiButtonEmpty>
           ),
         },
-        ...metricNames.map((metricName) => ({
-          field: `metrics.${metricName}`,
-          name: metricName,
-          dataType: 'number',
-          sortable: true,
-          render: (value) => {
-            if (value !== undefined && value !== null) {
-              return new Intl.NumberFormat(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              }).format(value);
-            }
-            return '-';
-          },
-        })),
+        ...metricNames.map((metricName) => {
+          const baseMetricName = getBaseMetricName(metricName);
+          const tooltipContent =
+            metricDescriptions[baseMetricName] || `No description available for ${metricName}`;
+
+          return {
+            field: `metrics.${metricName}`,
+            name: (
+              <EuiToolTip content={tooltipContent}>
+                <span>{metricName}</span>
+              </EuiToolTip>
+            ),
+            dataType: 'number',
+            sortable: true,
+            render: (value) => {
+              if (value !== undefined && value !== null) {
+                return new Intl.NumberFormat(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }).format(value);
+              }
+              return '-';
+            },
+          };
+        }),
       ];
 
       setTableColumns(columns);

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import {
   EuiPanel,
   EuiEmptyPrompt,
@@ -124,6 +124,70 @@ export const vennDiagramStyleConfig = {
   hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
 };
 
+// Utility function to determine display fields and image field
+const getDisplayFieldsAndImageField = (sampleItem) => {
+  const fields = Object.keys(sampleItem)
+    .filter((key) => !key.startsWith('_')) // Exclude hidden fields
+    .filter((key) => typeof sampleItem[key] === 'string')
+    .map((key) => ({ value: key, label: key.charAt(0).toUpperCase() + key.slice(1) }));
+
+  // Find a field that might contain image names or URLs
+  let imageField = null;
+  if (sampleItem) {
+    // Look for fields with common image-related names
+    const possibleImageFields = ['image', 'img', 'thumbnail', 'picture', 'photo', 'avatar'];
+    imageField = Object.keys(sampleItem).find((key) =>
+      possibleImageFields.some((imgField) => key.toLowerCase().includes(imgField))
+    );
+
+    // If no obvious image field found, look for fields with URL patterns that might be images
+    if (!imageField) {
+      imageField = Object.keys(sampleItem).find((key) => {
+        const value = String(sampleItem[key] || '');
+        return (
+          value.match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ||
+          value.match(/(\/images\/|\/img\/|\/photos\/)/i) ||
+          value.match(/\b(amazon|cloudfront|cloudinary|unsplash|media).*(\.com|net|org)/i)
+        );
+      });
+    }
+  }
+
+  // Always include _id at the beginning
+  return {
+    displayFields: [{ value: '_id', label: 'ID' }, ...fields],
+    imageFieldName: imageField || null,
+  };
+};
+
+// Utility function to calculate statistics for the Venn diagram and rank changes
+const calculateStatistics = (result1, result2) => {
+  const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id)).length;
+  const onlyInResult1 = result1.length - inBoth;
+  const onlyInResult2 = result2.length - inBoth;
+  const unchanged = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank === item2.rank;
+  }).length;
+  const improved = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank > item2.rank;
+  }).length;
+  const worsened = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank < item2.rank;
+  }).length;
+
+  return {
+    inBoth,
+    onlyInResult1,
+    onlyInResult2,
+    unchanged,
+    improved,
+    worsened,
+  };
+};
+
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
@@ -173,7 +237,6 @@ export const VisualComparison = ({
   // Process the results into the format we need
   const [result1, setResult1] = useState([]);
   const [result2, setResult2] = useState([]);
-  const [combinedData, setCombinedData] = useState([]);
 
   // Summary statistics
   const [statistics, setStatistics] = useState({
@@ -216,10 +279,12 @@ export const VisualComparison = ({
     }
   }, [queryResult1, queryResult2, initialState]);
 
-  // Process results when they change
+  // Remove the useEffect that depends on result1/result2
+  // Instead, use a single useEffect for all derived state
   useEffect(() => {
     if (!queryResult1 || !queryResult2) return;
 
+    // Set result1 and result2
     setResult1(queryResult1);
     setResult2(queryResult2);
 
@@ -227,95 +292,21 @@ export const VisualComparison = ({
     if (queryResult1.length > 0 || queryResult2.length > 0) {
       const sampleItem = queryResult1[0] || queryResult2[0];
       if (sampleItem) {
-        const fields = Object.keys(sampleItem)
-          .filter((key) => !key.startsWith('_')) // Exclude hidden fields
-          .filter((key) => typeof sampleItem[key] === 'string')
-          .map((key) => ({ value: key, label: key.charAt(0).toUpperCase() + key.slice(1) }));
-
-        // Find a field that might contain image names or URLs
-        let imageField = null;
-        if (sampleItem) {
-          // Look for fields with common image-related names
-          const possibleImageFields = ['image', 'img', 'thumbnail', 'picture', 'photo', 'avatar'];
-          imageField = Object.keys(sampleItem).find((key) =>
-            possibleImageFields.some((imgField) => key.toLowerCase().includes(imgField))
-          );
-
-          // If no obvious image field found, look for fields with URL patterns that might be images
-          if (!imageField) {
-            imageField = Object.keys(sampleItem).find((key) => {
-              const value = String(sampleItem[key] || '');
-              return (
-                value.match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ||
-                value.match(/(\/images\/|\/img\/|\/photos\/)/i) ||
-                value.match(/\b(amazon|cloudfront|cloudinary|unsplash|media).*\.(com|net|org)/i)
-              );
-            });
-          }
-
-          // Store the image field in state if found
-          if (imageField) {
-            // Add this outside the component or in a new state variable
-            // This will be used in the component where images need to be displayed
-            console.debug('Found potential image field:', imageField);
-          }
-        }
-
-        // Always include _id at the beginning
-        setDisplayFields([{ value: '_id', label: 'ID' }, ...fields]);
-
-        // Optionally set a preferred display field if an image field was found
-        if (imageField) {
-          setImageFieldName(imageField);
+        const { displayFields, imageFieldName } = getDisplayFieldsAndImageField(sampleItem);
+        setDisplayFields(displayFields);
+        if (imageFieldName) {
+          setImageFieldName(imageFieldName);
+        } else {
+          setImageFieldName(null);
         }
       }
+    } else {
+      setDisplayFields([{ value: '_id', label: 'ID' }]);
+      setImageFieldName(null);
     }
+
+    setStatistics(calculateStatistics(queryResult1, queryResult2));
   }, [queryResult1, queryResult2]);
-
-  // Create combined dataset when results change
-  useEffect(() => {
-    if (!result1.length && !result2.length) return;
-
-    // Create combined dataset
-    const combined = [...result1];
-
-    // Add items that are only in result2
-    result2.forEach((item2) => {
-      const exists = combined.some((item) => item._id === item2._id);
-      if (!exists) {
-        combined.push(item2);
-      }
-    });
-
-    setCombinedData(combined);
-
-    // Calculate summary statistics
-    const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id))
-      .length;
-    const onlyInResult1 = result1.length - inBoth;
-    const onlyInResult2 = result2.length - inBoth;
-    const unchanged = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank === item2.rank;
-    }).length;
-    const improved = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank > item2.rank;
-    }).length;
-    const worsened = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank < item2.rank;
-    }).length;
-
-    setStatistics({
-      inBoth,
-      onlyInResult1,
-      onlyInResult2,
-      unchanged,
-      improved,
-      worsened,
-    });
-  }, [result1, result2]);
 
   // Update lines on window resize and after mounting
   useEffect(() => {
@@ -332,15 +323,11 @@ export const VisualComparison = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update lines after component mounts to ensure all refs are loaded
-  useEffect(() => {
-    // Small delay to ensure DOM is fully rendered
-    const timer = setTimeout(() => {
-      setDisplayField((curr) => curr); // Force re-render
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [mounted]);
+  // Force re-render after result items are rendered and refs are set
+  const [, forceRerender] = useState(0);
+  useLayoutEffect(() => {
+    forceRerender((v) => v + 1);
+  }, [result1, result2, displayField, imageFieldName]);
 
   // Color function for item status
   const getStatusColor = (item, resultNum) => {

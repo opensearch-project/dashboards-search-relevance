@@ -10,6 +10,7 @@ import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
+import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
 
 export interface HybridOptimizerExperimentFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: HybridOptimizerExperimentFormData };
@@ -44,30 +45,23 @@ export const HybridOptimizerExperimentForm = forwardRef<
   };
 
   useEffect(() => {
-    setQuerySetOptions(
-      formData?.querySetId ? [{ label: formData.querySetId, value: formData.querySetId }] : []
-    );
-    setSelectedSearchConfigs(
-      Array.isArray(formData?.searchConfigurationList)
-        ? formData.searchConfigurationList.map((config) => ({ label: config, value: config }))
-        : []
-    );
-    setK(formData?.size !== undefined && formData?.size !== null ? formData.size : 10);
-    setJudgmentOptions(
-      Array.isArray(formData?.judgmentList)
-        ? formData.judgmentList.map((judgment) => ({ label: judgment, value: judgment }))
-        : []
-    );
+
+    setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
+
+    setK(formData.size ?? 10);
+
+    setSelectedSearchConfigs(mapToOptionLabels(formData.searchConfigurationList));
+
+    setJudgmentOptions(mapToOptionLabels(formData.judgmentList));
+
     clearAllErrors(); // Clear errors on formData prop change
-  }, [formData]);
+  }, [formData]); // Dependency array: re-run effect if 'formData' changes
 
   const validateAndSetErrors = (): {
     isValid: boolean;
     data: HybridOptimizerExperimentFormData;
   } => {
     let isValid = true;
-
-    // Construct the current data object from internal states for validation
     const currentData: HybridOptimizerExperimentFormData = {
       querySetId: querySetOptions[0]?.value || '',
       size: k,
@@ -117,23 +111,31 @@ export const HybridOptimizerExperimentForm = forwardRef<
   }));
 
   const handleQuerySetsChange = (selectedOptions: OptionLabel[]) => {
-    setQuerySetOptions(selectedOptions || []);
-    const newValue = selectedOptions?.[0]?.value || '';
-    if (formData.querySetId !== newValue) {
-      onChange('querySetId', newValue);
+    const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
+    setQuerySetOptions(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions.length > 0 ? safeSelectedOptions[0].value : '';
+    const newQuerySetName = safeSelectedOptions.length > 0 ? safeSelectedOptions[0].label : ''; // Get the name/label
+
+    if (formData.querySetId !== newQuerySetId) {
+      onChange('querySetId', newQuerySetId);
     }
-    if (selectedOptions.length > 0 && querySetError.length > 0) {
+    if ((formData as any).querySetName !== newQuerySetName) {
+        onChange('querySetName' as keyof HybridOptimizerExperimentFormData, newQuerySetName);
+    }
+
+    if (safeSelectedOptions.length > 0 && querySetError.length > 0) {
       setQuerySetError([]);
     }
   };
 
   const handleJudgmentsChange = (selectedOptions: OptionLabel[]) => {
-    setJudgmentOptions(selectedOptions || []);
-    const newValues = selectedOptions.map((o) => o.value);
+    const safeSelectedOptions = selectedOptions || [];
+    setJudgmentOptions(safeSelectedOptions);
+    const newValues = safeSelectedOptions.map((o) => ({ id: o.value, name: o.label }));
     if (JSON.stringify(formData.judgmentList) !== JSON.stringify(newValues)) {
       onChange('judgmentList', newValues);
     }
-    if (selectedOptions.length > 0 && judgmentError.length > 0) {
+    if (safeSelectedOptions.length > 0 && judgmentError.length > 0) {
       setJudgmentError([]);
     }
   };
@@ -150,13 +152,14 @@ export const HybridOptimizerExperimentForm = forwardRef<
   };
 
   const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
-    setSelectedSearchConfigs(selectedOptions);
-    const newValues = selectedOptions.map((o) => o.value);
+    const safeSelectedOptions = selectedOptions || [];
+    setSelectedSearchConfigs(safeSelectedOptions);
+    const newValues = safeSelectedOptions.map((o) => ({ id: o.value, name: o.label }));
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
       onChange('searchConfigurationList', newValues);
     }
     // Clear error immediately on valid change (assuming exactly 1 is needed)
-    if (selectedOptions.length === 1 && searchConfigError.length > 0) {
+    if (safeSelectedOptions.length === 1 && searchConfigError.length > 0) {
       setSearchConfigError([]);
     }
   };

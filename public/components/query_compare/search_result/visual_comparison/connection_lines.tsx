@@ -11,7 +11,7 @@ interface ConnectionLinesProps {
   result2: any[];
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
-  lineColors: { [key: string]: string };
+  lineColors: { [key: string]: { stroke: string; strokeWidth: number } };
 }
 
 export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
