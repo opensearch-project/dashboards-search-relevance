@@ -62,7 +62,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
         label="Name"
         isInvalid={errors.nameError.length > 0}
         error={errors.nameError}
-        helpText="A unique name for this query set."
+        helpText="Choose an expressive name for this query set (< 50 characters)."
         fullWidth
       >
         <EuiCompressedTextArea
@@ -80,7 +80,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
         label="Description"
         isInvalid={errors.descriptionError.length > 0}
         error={errors.descriptionError}
-        helpText="Detailed description of the query set purpose."
+        helpText="Describe the query set (< 250 characters)."
         fullWidth
       >
         <EuiCompressedTextArea
@@ -137,7 +137,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
             label="Query Set Size"
             error={errors.querySizeError}
             isInvalid={Boolean(errors.querySizeError)}
-            helpText="Number of queries in the set (must be positive)."
+            helpText="Pick the amount of queries for this query set (must be positive)."
             fullWidth
           >
             <EuiFieldNumber
