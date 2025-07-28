@@ -104,7 +104,7 @@ describe('useQuerySetForm', () => {
       querySizeError: '',
       manualQueriesError: '',
     });
-    
+
     const { result } = renderHook(() => useQuerySetForm());
 
     act(() => {
