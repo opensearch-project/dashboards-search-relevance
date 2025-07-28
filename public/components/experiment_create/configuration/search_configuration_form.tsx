@@ -72,7 +72,7 @@ export const SearchConfigForm = ({
       isClearable={true}
       isInvalid={selectedOptions.length === 0}
       isLoading={isLoadingConfigs}
-      multi={true}
+      singleSelection={maxNumberOfOptions === 1 ? { asPlainText: true } : false}
       fullWidth
     />
   );
@@ -84,7 +84,7 @@ export const SearchConfigForm = ({
     return (
       <EuiFormRow
         label="Search Configurations"
-        helpText={`Select ${maxNumberOfOptions} search configuration${
+        helpText={`Select ${maxNumberOfOptions === 1 ? '1' : 'up to ' + maxNumberOfOptions} search configuration${
           maxNumberOfOptions > 1 ? 's' : ''
         }${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
       >

@@ -30,7 +30,7 @@ export const LLMForm = ({ formData, onChange }: LLMFormProps) => {
               onChange={handleQuerySetsChange}
               isClearable={true}
               isInvalid={formData.querySets.length === 0}
-              multi={true}
+              singleSelection={false}
             />
           </EuiFormRow>
         </EuiFlexItem>

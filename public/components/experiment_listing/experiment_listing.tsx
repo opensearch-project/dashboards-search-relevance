@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   EuiFlexItem,
   EuiButtonEmpty,
@@ -14,6 +14,8 @@ import {
   EuiButtonIcon,
   EuiButton,
   EuiSpacer,
+  EuiBadge,
+  EuiHealth,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
@@ -22,14 +24,24 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints, SavedObjectIds, extractUserMessageFromError } from '../../../common';
+import {
+  Routes,
+  ServiceEndpoints,
+  SavedObjectIds,
+  extractUserMessageFromError,
+} from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
 import { DashboardInstallModal } from '../common/dashboard_install_modal';
 import { useConfig } from '../../contexts/date_format_context';
 import { combineResults, printType, toExperiment } from '../../types/index';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { dashboardUrl, createPhraseFilter, addDaysToTimestamp, checkDashboardsInstalled } from '../common_utils/dashboards';
+import {
+  dashboardUrl,
+  createPhraseFilter,
+  addDaysToTimestamp,
+  checkDashboardsInstalled,
+} from '../common_utils/dashboards';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -43,40 +55,139 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-
+  const [tableData, setTableData] = useState<any[]>([]);
   // Dashboard installation modal state
   const [showDashboardInstallModal, setShowDashboardInstallModal] = useState(false);
-  const [pendingDashboardAction, setPendingDashboardAction] = useState<(() => Promise<void>) | null>(null);
+  const [pendingDashboardAction, setPendingDashboardAction] = useState<
+    (() => Promise<void>) | null
+  >(null);
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
 
+  // Custom hook for experiment polling
+  const useExperimentPolling = () => {
+    const [experiments, setExperiments] = useState<any[]>([]);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+    const previousExperiments = useRef<any[]>([]);
+    const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
+    const pollingStartTime = useRef<number>(0);
+    const errorCount = useRef<number>(0);
+
+    const MAX_POLLING_DURATION = 10 * 60 * 1000;
+    const MAX_ERRORS = 3;
+
+    const startPolling = () => {
+      if (intervalRef.current) return;
+
+      pollingStartTime.current = Date.now();
+      intervalRef.current = setInterval(async () => {
+        if (
+          Date.now() - pollingStartTime.current > MAX_POLLING_DURATION ||
+          errorCount.current >= MAX_ERRORS
+        ) {
+          clearInterval(intervalRef.current!);
+          intervalRef.current = null;
+          setIsBackgroundRefreshing(false);
+          return;
+        }
+
+        if (isBackgroundRefreshing) return;
+
+        setIsBackgroundRefreshing(true);
+        try {
+          const response = await http.get(ServiceEndpoints.Experiments);
+          const parseResults = combineResults(
+            ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
+          );
+
+          if (parseResults.success) {
+            const updatedList = parseResults.data;
+            errorCount.current = 0;
+
+            if (previousExperiments.current.length > 0) {
+              const completions = updatedList.filter((curr) => {
+                const prev = previousExperiments.current.find((p) => p.id === curr.id);
+                return prev?.status === 'PROCESSING' && curr.status === 'COMPLETED';
+              });
+
+              completions.forEach((exp) => {
+                services.notifications?.toasts.addSuccess({
+                  title: 'Experiment Completed',
+                  text: `Experiment ${exp.id} has completed successfully.`,
+                });
+              });
+            }
+
+            if (JSON.stringify(previousExperiments.current) !== JSON.stringify(updatedList)) {
+              previousExperiments.current = updatedList;
+              setExperiments(updatedList);
+              setTableData(updatedList);
+              setRefreshKey(prev => prev + 1);
+            }
+
+            if (!updatedList.some((exp) => exp.status === 'PROCESSING')) {
+              clearInterval(intervalRef.current!);
+              intervalRef.current = null;
+            }
+          }
+        } catch (err) {
+          console.error('Background refresh failed:', err);
+          errorCount.current++;
+        } finally {
+          setIsBackgroundRefreshing(false);
+        }
+      }, 15000);
+    };
+
+    const hasProcessing = experiments.some((exp) => exp.status === 'PROCESSING');
+
+    useEffect(() => {
+      if (hasProcessing && !intervalRef.current) {
+        startPolling();
+      }
+      return () => {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      };
+    }, [hasProcessing]);
+
+    return { experiments, setExperiments, isBackgroundRefreshing, hasProcessing };
+  };
+
+  const {
+    experiments,
+    setExperiments,
+    isBackgroundRefreshing,
+    hasProcessing,
+  } = useExperimentPolling();
+
   const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
-    const filters = [
-      createPhraseFilter('experimentId', experiment.id, indexPatternId),
-    ];
-    
+    const filters = [createPhraseFilter('experimentId', experiment.id, indexPatternId)];
+
     // Create timeRange from experiment timestamp
     const timeRange = {
       from: addDaysToTimestamp(experiment.timestamp, -1),
       to: addDaysToTimestamp(experiment.timestamp, 1),
     };
 
-    const url = await dashboardUrl(
-      share,
-      dashboardId,
-      indexPatternId,
-      filters,
-      timeRange
-    );
+    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
     window.open(url, '_blank');
   };
 
-  const handleVisualizationClick = async (experiment: any, dashboardId: string, indexPatternId: string) => {
+  const handleVisualizationClick = async (
+    experiment: any,
+    dashboardId: string,
+    indexPatternId: string
+  ) => {
     try {
       const dashboardsAreInstalled = await checkDashboardsInstalled(http);
       if (!dashboardsAreInstalled) {
-        setPendingDashboardAction(() => () => openDashboard(experiment, dashboardId, indexPatternId));
+        setPendingDashboardAction(() => () =>
+          openDashboard(experiment, dashboardId, indexPatternId)
+        );
         setShowDashboardInstallModal(true);
         return;
       }
@@ -109,18 +220,23 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   // Handle delete function
   const handleDelete = async () => {
+    if (!experimentToDelete) return;
+    
     setIsLoading(true);
     try {
-      const response = await http.delete(
+      await http.delete(
         `${ServiceEndpoints.Experiments}/${experimentToDelete.id}`
       );
 
-      // Close modal and clear state
+      // Close modal and clear state first
       setShowDeleteModal(false);
       setExperimentToDelete(null);
       setError(null);
 
-      // Force table refresh
+      // Clear tableData to force fresh fetch
+      setTableData([]);
+      
+      // Force table refresh after deletion
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
       console.error('Failed to delete experiment', err);
@@ -158,6 +274,22 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       name: 'Status',
       dataType: 'string',
       sortable: true,
+      render: (status: string) => {
+        const getStatusColor = (status: string) => {
+          switch (status) {
+            case 'COMPLETED':
+              return 'success';
+            case 'PROCESSING':
+              return 'warning';
+            case 'ERROR':
+              return 'danger';
+            default:
+              return 'subdued';
+          }
+        };
+
+        return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
+      },
     },
     {
       field: 'size',
@@ -212,6 +344,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   // Data fetching function
   const findExperiments = async (search: any) => {
+    // Use tableData if available (from polling or previous fetch)
+    if (tableData.length > 0) {
+      const filteredList = search
+        ? tableData.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
+        : tableData;
+      return {
+        total: filteredList.length,
+        hits: filteredList,
+      };
+    }
+
+    // Initial fetch only
     setIsLoading(true);
     setError(null);
     try {
@@ -230,10 +374,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       }
 
       const list = parseResults.data;
-      // TODO: too many reissued requests on search
       const filteredList = search
         ? list.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
         : list;
+
+      setExperiments(filteredList);
+      setTableData(filteredList);
+
       return {
         total: filteredList.length,
         hits: filteredList,
@@ -255,8 +402,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Experiments"
-        description="Manage your existing experiments and create new ones. Click on a card to create an experiment."
+        description={`Manage your existing experiments and create new ones. Click on a card to create an experiment.${
+          hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
+        }`}
         rightSideItems={[
+          <EuiButton
+            onClick={() => setRefreshKey((prev) => prev + 1)}
+            size="s"
+            iconType="refresh"
+            isLoading={isLoading}
+          >
+            Refresh
+          </EuiButton>,
           <EuiButton
             onClick={handleManualDashboardInstall}
             size="s"
@@ -290,10 +447,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
             tableColumns={tableColumns}
             findItems={findExperiments}
             loading={isLoading}
-            pagination={{
-              initialPageSize: 10,
-              pageSizeOptions: [5, 10, 20, 50],
-            }}
+            initialPageSize={10}
             search={{
               box: {
                 incremental: true,

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 import {
   EuiFlexItem,
@@ -33,6 +33,13 @@ export const TemplateConfiguration = ({
   const [showTemplateConfigError, setShowTemplateConfigError] = useState<boolean>(false);
 
   const configurationFormRef = useRef<ConfigurationFormRef>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const {
     services: { http, notifications },
@@ -57,7 +64,9 @@ export const TemplateConfiguration = ({
         });
 
         if (response.experiment_id) {
-          setExperimentId(response.experiment_id);
+          if (isMountedRef.current) {
+            setExperimentId(response.experiment_id);
+          }
           notifications.toasts.addSuccess(
             `Experiment ${response.experiment_id} created successfully`
           );
@@ -73,7 +82,9 @@ export const TemplateConfiguration = ({
           title: 'Failed to create experiment',
         });
       } finally {
-        setIsCreating(false);
+        if (isMountedRef.current) {
+          setIsCreating(false);
+        }
       }
     } else {
       // This case should ideally not happen if the form is rendered,
