@@ -4,7 +4,7 @@
  */
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   EuiButtonEmpty,
   EuiButton,
@@ -14,6 +14,7 @@ import {
   EuiPageHeader,
   EuiPageTemplate,
   EuiText,
+  EuiHealth,
 } from '@elastic/eui';
 import moment from 'moment';
 import { CoreStart } from '../../../../../src/core/public';
@@ -24,6 +25,7 @@ import {
 import { DeleteModal } from '../common/DeleteModal';
 import { useConfig } from '../../contexts/date_format_context';
 import { Routes, ServiceEndpoints, extractUserMessageFromError } from '../../../common';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -37,6 +39,87 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [judgmentToDelete, setJudgmentToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [tableData, setTableData] = useState<any[]>([]);
+
+  const { services } = useOpenSearchDashboards();
+
+  // Polling state
+  const [judgments, setJudgments] = useState<any[]>([]);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const previousJudgments = useRef<any[]>([]);
+  const [isBackgroundRefreshing, setIsBackgroundRefreshing] = useState(false);
+  const pollingStartTime = useRef<number>(0);
+  const errorCount = useRef<number>(0);
+  const MAX_POLLING_DURATION = 10 * 60 * 1000;
+  const MAX_ERRORS = 3;
+
+  const hasProcessing = judgments.some((judgment) => judgment.status === 'PROCESSING');
+
+  const startPolling = () => {
+    if (intervalRef.current) return;
+    pollingStartTime.current = Date.now();
+
+    intervalRef.current = setInterval(async () => {
+      if (Date.now() - pollingStartTime.current > MAX_POLLING_DURATION || errorCount.current >= MAX_ERRORS) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+        setIsBackgroundRefreshing(false);
+        return;
+      }
+
+      if (isBackgroundRefreshing) return;
+
+      setIsBackgroundRefreshing(true);
+      try {
+        const response = await http.get(ServiceEndpoints.Judgments);
+        const updatedList = response ? response.hits.hits.map(mapJudgmentFields) : [];
+        errorCount.current = 0;
+
+        if (previousJudgments.current.length > 0) {
+          const completions = updatedList.filter((curr) => {
+            const prev = previousJudgments.current.find((p) => p.id === curr.id);
+            return prev?.status === 'PROCESSING' && curr.status === 'COMPLETED';
+          });
+
+          completions.forEach((judgment) => {
+            services.notifications?.toasts.addSuccess({
+              title: 'Judgment Completed',
+              text: `Judgment ${judgment.name} has completed successfully.`,
+            });
+          });
+        }
+
+        if (JSON.stringify(previousJudgments.current) !== JSON.stringify(updatedList)) {
+          previousJudgments.current = updatedList;
+          setJudgments(updatedList);
+          setTableData(updatedList);
+          setRefreshKey(prev => prev + 1);
+        }
+
+        if (!updatedList.some((judgment) => judgment.status === 'PROCESSING')) {
+          clearInterval(intervalRef.current!);
+          intervalRef.current = null;
+        }
+      } catch (err) {
+        console.error('Background refresh failed:', err);
+        errorCount.current++;
+      } finally {
+        setIsBackgroundRefreshing(false);
+      }
+    }, 15000);
+  };
+
+  useEffect(() => {
+    if (hasProcessing && !intervalRef.current) {
+      startPolling();
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [hasProcessing]);
 
   // Handle delete function
   const handleDelete = async () => {
@@ -85,6 +168,27 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       ),
     },
     {
+      field: 'status',
+      name: 'Status',
+      dataType: 'string',
+      sortable: true,
+      render: (status: string) => {
+        const getStatusColor = (status: string) => {
+          switch (status) {
+            case 'COMPLETED':
+              return 'success';
+            case 'PROCESSING':
+              return 'warning';
+            case 'ERROR':
+              return 'danger';
+            default:
+              return 'subdued';
+          }
+        };
+        return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
+      },
+    },
+    {
       field: 'type',
       name: 'Judgment Type',
       dataType: 'string',
@@ -122,21 +226,36 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       id: obj._source.id,
       name: obj._source.name,
       type: obj._source.type,
+      status: obj._source.status,
       timestamp: obj._source.timestamp,
     };
   };
 
   // Data fetching function
   const findJudgments = async (search: any) => {
+    // Use tableData if available (from polling or previous fetch)
+    if (tableData.length > 0) {
+      const filteredList = search
+        ? tableData.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+        : tableData;
+      return {
+        total: filteredList.length,
+        hits: filteredList,
+      };
+    }
+
     setIsLoading(true);
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.Judgments);
       const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
-      // TODO: too many reissued requests on search
       const filteredList = search
         ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
         : list;
+      
+      setJudgments(filteredList);
+      setTableData(filteredList);
+      
       return {
         total: filteredList.length,
         hits: filteredList,
@@ -157,7 +276,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Judgments"
-        description="View and manage your existing judgments. Click on a judgment list name to view details."
+        description={`View and manage your existing judgments. Click on a judgment list name to view details.${hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''}`}
         rightSideItems={[
           <EuiButton
             onClick={() => history.push(Routes.JudgmentCreate)}
