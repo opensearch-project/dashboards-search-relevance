@@ -31,13 +31,13 @@ import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
 import { ExperimentListingWithRoute } from './experiment_listing';
 import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
-import { QuerySetListingWithRoute } from './query_set_listing';
+import { QuerySetListing } from './query_set';
 import { SearchConfigurationListingWithRoute } from './search_config_listing';
 import { JudgmentListingWithRoute } from './judgment_listing';
 import QuerySetView from './query_set_view/query_set_view';
 import SearchConfigurationView from './search_config_view/search_config_view';
 import JudgmentView from './judgment_view/judgment_view';
-import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
+import { QuerySetCreate } from './query_set';
 import { SearchConfigurationCreateWithRouter } from './search_configuration_create';
 import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
 import { GetStartedAccordion } from './experiment_create/get_started_accordion';
@@ -230,7 +230,7 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListingWithRoute http={http} />;
+              return <QuerySetListing http={http} />;
             }}
           />
           <Route
@@ -331,7 +331,7 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetCreate}
             exact
             render={() => {
-              return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
+              return <QuerySetCreate http={http} notifications={notifications} />;
             }}
           />
           <Route

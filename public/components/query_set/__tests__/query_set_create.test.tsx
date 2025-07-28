@@ -7,7 +7,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { QuerySetCreate } from '../query_set_create';
+import { QuerySetCreate } from '../views/query_set_create';
 
 // Mock the service and hooks
 jest.mock('../services/query_set_service');

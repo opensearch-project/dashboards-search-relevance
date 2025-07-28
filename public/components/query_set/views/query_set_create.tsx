@@ -13,11 +13,11 @@ import {
 } from '@elastic/eui';
 import React, { useCallback, useMemo } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart, NotificationsStart } from '../../../../../core/public';
-import { QuerySetService } from './services/query_set_service';
-import { useQuerySetForm } from './hooks/use_query_set_form';
-import { QuerySetForm } from './components/query_set_form';
-import { QueryPreview } from './components/query_preview';
+import { CoreStart, NotificationsStart } from '../../../../../../core/public';
+import { QuerySetService } from '../services/query_set_service';
+import { useQuerySetForm } from '../hooks/use_query_set_form';
+import { QuerySetForm } from '../components/query_set_form';
+import { QueryPreview } from '../components/query_preview';
 
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
