@@ -9,7 +9,7 @@ import { EuiTabs, EuiTab, EuiSpacer, EuiPanel } from '@elastic/eui';
 import { ResourceManagementTabsProps } from './types';
 import { SearchConfigurationListingWithRoute } from '../search_config_listing';
 import { QuerySetListing, QuerySetCreate } from '../query_set';
-import { QuerySetView } from '../query_set_view/query_set_view';
+import { QuerySetView } from '../query_set';
 import { SearchConfigurationCreateWithRouter } from '../search_configuration_create';
 import { SearchConfigurationView } from '../search_config_view/search_config_view';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';

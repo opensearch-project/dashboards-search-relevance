@@ -34,7 +34,7 @@ import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
 import { QuerySetListing } from './query_set';
 import { SearchConfigurationListingWithRoute } from './search_config_listing';
 import { JudgmentListingWithRoute } from './judgment_listing';
-import QuerySetView from './query_set_view/query_set_view';
+import { QuerySetView } from './query_set';
 import SearchConfigurationView from './search_config_view/search_config_view';
 import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreate } from './query_set';
