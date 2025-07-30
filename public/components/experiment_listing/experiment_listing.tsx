@@ -22,11 +22,14 @@ import {
   TableListView,
 } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../src/core/public';
-import { Routes, ServiceEndpoints } from '../../../common';
+import { Routes, ServiceEndpoints, SavedObjectIds, extractUserMessageFromError } from '../../../common';
 import { DeleteModal } from '../common/DeleteModal';
+import { DashboardInstallModal } from '../common/dashboard_install_modal';
 import { useConfig } from '../../contexts/date_format_context';
 import { combineResults, printType, toExperiment } from '../../types/index';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
+import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+import { dashboardUrl, createPhraseFilter, addDaysToTimestamp, checkDashboardsInstalled } from '../common_utils/dashboards';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -40,6 +43,69 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Dashboard installation modal state
+  const [showDashboardInstallModal, setShowDashboardInstallModal] = useState(false);
+  const [pendingDashboardAction, setPendingDashboardAction] = useState<(() => Promise<void>) | null>(null);
+
+  const { services } = useOpenSearchDashboards();
+  const share = services.share;
+
+  const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
+    const filters = [
+      createPhraseFilter('experimentId', experiment.id, indexPatternId),
+    ];
+    
+    // Create timeRange from experiment timestamp
+    const timeRange = {
+      from: addDaysToTimestamp(experiment.timestamp, -1),
+      to: addDaysToTimestamp(experiment.timestamp, 1),
+    };
+
+    const url = await dashboardUrl(
+      share,
+      dashboardId,
+      indexPatternId,
+      filters,
+      timeRange
+    );
+    window.open(url, '_blank');
+  };
+
+  const handleVisualizationClick = async (experiment: any, dashboardId: string, indexPatternId: string) => {
+    try {
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http);
+      if (!dashboardsAreInstalled) {
+        setPendingDashboardAction(() => () => openDashboard(experiment, dashboardId, indexPatternId));
+        setShowDashboardInstallModal(true);
+        return;
+      }
+
+      // If dashboards are already installed, open directly
+      await openDashboard(experiment, dashboardId, indexPatternId);
+    } catch (error) {
+      console.error('Failed to open dashboard:', error);
+      setError('Failed to open dashboard visualization');
+    }
+  };
+
+  const handleEvaluationVisualizationClick = async (experiment: any) => {
+    const dashboardId = SavedObjectIds.ExperimentDeepDive;
+    const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
+    await handleVisualizationClick(experiment, dashboardId, indexPatternId);
+  };
+
+  const handleHybridVisualizationClick = async (experiment: any) => {
+    const dashboardId = SavedObjectIds.ExperimentVariantComparison;
+    const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
+    await handleVisualizationClick(experiment, dashboardId, indexPatternId);
+  };
+
+  // Handle manual dashboard installation
+  const handleManualDashboardInstall = async () => {
+    setPendingDashboardAction(null); // Clear any existing pending action
+    setShowDashboardInstallModal(true);
+  };
 
   // Handle delete function
   const handleDelete = async () => {
@@ -113,15 +179,33 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => {
-            setExperimentToDelete(item);
-            setShowDeleteModal(true);
-          }}
-        />
+        <>
+          {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
+            <EuiButtonIcon
+              aria-label="Visualization"
+              iconType="dashboardApp"
+              color="primary"
+              onClick={() => handleEvaluationVisualizationClick(item)}
+            />
+          )}
+          {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
+            <EuiButtonIcon
+              aria-label="Visualization"
+              iconType="dashboardApp"
+              color="primary"
+              onClick={() => handleHybridVisualizationClick(item)}
+            />
+          )}
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => {
+              setExperimentToDelete(item);
+              setShowDeleteModal(true);
+            }}
+          />
+        </>
       ),
     },
   ];
@@ -155,8 +239,9 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         hits: filteredList,
       };
     } catch (err) {
-      console.error('Failed to load experiment', err);
-      setError('Failed to load experiments');
+      console.error('Failed to load experiments', err);
+      const errorMessage = extractUserMessageFromError(err);
+      setError(errorMessage ? errorMessage : 'Failed to load experiments due to an unknown error.');
       return {
         total: 0,
         hits: [],
@@ -171,6 +256,16 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       <EuiPageHeader
         pageTitle="Experiments"
         description="Manage your existing experiments and create new ones. Click on a card to create an experiment."
+        rightSideItems={[
+          <EuiButton
+            onClick={handleManualDashboardInstall}
+            size="s"
+            iconType="dashboardApp"
+            color="primary"
+          >
+            Install Dashboards
+          </EuiButton>,
+        ]}
       />
 
       <EuiSpacer size="m" />
@@ -181,11 +276,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       <EuiFlexItem>
         <EuiText>Click on an experiment id to view details.</EuiText>
-        {error ? (
+        {error && (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>
           </EuiCallOut>
-        ) : (
+        )}
+        {!error && (
           <TableListView
             key={refreshKey}
             headingId="experimentListingHeading"
@@ -224,6 +320,16 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           }}
           onConfirm={handleDelete}
           itemName={experimentToDelete.id}
+        />
+      )}
+
+      {/* Dashboard Installation Modal */}
+      {showDashboardInstallModal && (
+        <DashboardInstallModal
+          onClose={() => setShowDashboardInstallModal(false)}
+          onSuccess={pendingDashboardAction}
+          http={http}
+          setError={setError}
         />
       )}
     </EuiPageTemplate>

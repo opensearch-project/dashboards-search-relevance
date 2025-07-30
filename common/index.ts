@@ -79,6 +79,12 @@ export enum Routes {
   JudgmentCreate = '/judgment/create',
 }
 
+export enum SavedObjectIds {
+  ExperimentDeepDive = '75b6ca00-58af-11f0-a87e-4d769b1dbd6c',
+  ExperimentVariantComparison = 'fbf11670-58c8-11f0-a340-41deff9f2f7f',
+  SearchEvaluationIndexPattern = '1f5d2be0-57f1-11f0-8f39-7b4ad0195873',
+}
+
 // tool tip texts
 export const JACCARD_TOOL_TIP = 'Jaccard index measures the similarity between two sets of documents, defined as the size of the intersection divided by the size of the union of the sets. A higher value indicates greater overlap.';
 export const RBO50_TOOL_TIP = 'Rank-Biased Overlap (RBO) measures the similarity of two ranked lists. A higher value indicates more similar rankings, especially at the top. rbo50 stands for a 50% chance a hypothetical user continues to the next rank. The lower the number the stronger the top ranks are weighted.';
@@ -88,3 +94,5 @@ export const NDCG_TOOL_TIP = 'Normalized Discounted Cumulative Gain (NDCG) measu
 export const PRECISION_TOOL_TIP = 'Precision measures the proportion of retrieved documents that are relevant. For a given rank K, Precision@K is the number of relevant documents among the top K retrieved documents, divided by K.';
 export const MAP_TOOL_TIP = 'Mean Average Precision (MAP) is a single-figure measure of quality across recall levels. For a single query, Average Precision (AP) is the average of the Precision values calculated at the rank of each relevant document. MAP is the mean of these Average Precision scores across multiple queries.';
 export const COVERAGE_TOOL_TIP = 'Coverage represents the ratio of query-document pairs in the search results for which a relevance judgment exists. It indicates how much of the returned data has been evaluated for relevance.';
+
+export { DISABLED_BACKEND_PLUGIN_MESSAGE, extractUserMessageFromError } from './error_handling';

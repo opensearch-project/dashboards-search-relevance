@@ -8,10 +8,9 @@ import { withRouter } from 'react-router-dom';
 import { EuiTabs, EuiTab, EuiSpacer, EuiPanel } from '@elastic/eui';
 import { ResourceManagementTabsProps } from './types';
 import { SearchConfigurationListingWithRoute } from '../search_config_listing';
-import { QuerySetListingWithRoute } from '../query_set_listing';
-import { QuerySetCreateWithRouter } from '../query_set_create/query_set_create';
-import { QuerySetView } from '../query_set_view/query_set_view';
-import { SearchConfigurationCreateWithRouter } from '../search_config_create/search_config_create';
+import { QuerySetListing, QuerySetCreate } from '../query_set';
+import { QuerySetView } from '../query_set';
+import { SearchConfigurationCreateWithRouter } from '../search_configuration_create';
 import { SearchConfigurationView } from '../search_config_view/search_config_view';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import ExperimentViewWithRouter from '../experiment_view/experiment_view';
@@ -124,13 +123,13 @@ export const ResourceManagementTabs = ({
             <EuiSpacer size="m" />
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
-                <QuerySetListingWithRoute http={http} />
+                <QuerySetListing http={http} />
               ) : (
                 <></>
               )}
               {entityAction === 'view' ? <QuerySetView http={http} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? (
-                <QuerySetCreateWithRouter http={http} notifications={notifications} />
+                <QuerySetCreate http={http} notifications={notifications} />
               ) : (
                 <></>
               )}

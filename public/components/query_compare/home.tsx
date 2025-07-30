@@ -46,6 +46,7 @@ interface QueryExplorerProps {
   dataSourceManagement: DataSourceManagementPluginSetup;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
+  uiSettings: CoreStart['uiSettings'];
 }
 export const Home = ({
   parentBreadCrumbs,
@@ -60,6 +61,7 @@ export const Home = ({
   dataSourceManagement,
   setActionMenu,
   application,
+  uiSettings,
 }: QueryExplorerProps) => {
   const {
     showFlyout,
@@ -115,7 +117,10 @@ export const Home = ({
         } else {
           setFetchedPipelines2('');
         }
-        console.error(err);
+        // only log error if it's not a 404, see: https://github.com/opensearch-project/OpenSearch/issues/15917
+        if (err.body.statusCode !== 404) {
+          console.error(err);
+        }
       });
   };
 
@@ -167,6 +172,7 @@ export const Home = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            uiSettings={uiSettings}
           />
         )}
       </div>

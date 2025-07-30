@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// import '@testing-library/jest-dom/extend-expect';
-// import { configure } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import { configure } from '@testing-library/react';
 
-// configure({ testIdAttribute: 'data-test-subj' });
+configure({ testIdAttribute: 'data-test-subj' });
 
 window.URL.createObjectURL = () => '';
 HTMLCanvasElement.prototype.getContext = () => '';
