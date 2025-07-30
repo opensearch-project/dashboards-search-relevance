@@ -167,7 +167,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
             data-test-subj="createJudgmentButton"
             color="primary"
           >
-            Create Judgment
+            Create Judgment List
           </EuiButton>,
         ]}
       />
