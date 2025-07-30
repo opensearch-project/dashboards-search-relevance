@@ -16,6 +16,7 @@ export interface FormData {
   querySetSize: number;
   manualQueries: string;
   isManualInput: boolean;
+  isTextInput?: boolean;
 }
 
 /**
@@ -62,7 +63,9 @@ export const validateForm = (data: FormData): ValidationErrors => {
 
   if (data.isManualInput) {
     if (!data.manualQueries.trim()) {
-      errors.manualQueriesError = 'Manual queries are required.';
+      errors.manualQueriesError = data.isTextInput 
+        ? 'Please enter at least one query.' 
+        : 'Manual queries are required.';
     }
   } else {
     if (data.querySetSize <= 0) {

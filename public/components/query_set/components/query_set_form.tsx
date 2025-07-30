@@ -17,6 +17,7 @@ import {
   EuiFilePicker,
 } from '@elastic/eui';
 import { UseQuerySetFormReturn } from '../hooks/use_query_set_form';
+import { EuiTextArea } from '@elastic/eui';
 
 interface QuerySetFormProps {
   formState: UseQuerySetFormReturn;
@@ -41,9 +42,16 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
     setQuerySetSize,
     isManualInput,
     setIsManualInput,
+    isTextInput,
+    setIsTextInput,
+    manualQueries,
+    setManualQueries,
+    parsedQueries,
+    setParsedQueries,
     errors,
     validateField,
     handleFileContent,
+    parseQueriesText,
   } = formState;
 
   return (
@@ -95,28 +103,68 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
       </EuiCompressedFormRow>
 
       {isManualInput ? (
-        <EuiFormRow
-          label="Manual Queries"
-          error={errors.manualQueriesError}
-          isInvalid={Boolean(errors.manualQueriesError)}
-          helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
-          fullWidth
-        >
-          <EuiFlexGroup>
-            <EuiFlexItem>
-              <EuiFilePicker
-                id={filePickerId}
-                initialPromptText="Select or drag and drop a query file"
-                onChange={(files) => handleFileContent(files)}
-                display="large"
-                aria-label="Upload query file"
-                accept=".txt"
-                data-test-subj="manualQueriesFilePicker"
-                compressed
+        <>
+          <EuiFormRow fullWidth>
+            <EuiButton
+              onClick={() => setIsTextInput(!isTextInput)}
+              size="s"
+              iconType={isTextInput ? 'document' : 'editorAlignLeft'}
+              data-test-subj="toggleQueryInputMethod"
+            >
+              Switch to {isTextInput ? 'file upload' : 'simple text input'}
+            </EuiButton>
+          </EuiFormRow>
+          
+          {isTextInput ? (
+            <EuiFormRow
+              label="Enter Queries"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText="Enter one query per line. Each line will be treated as a separate query."
+              fullWidth
+            >
+              <EuiTextArea
+                placeholder={`what is opensearch?\nhow to create a dashboard\nquery language syntax`}
+                onChange={(e) => {
+                  if (e.target.value.trim()) {
+                    parseQueriesText(e.target.value, true);
+                  } else {
+                    setParsedQueries([]);
+                    setManualQueries('');
+                  }
+                }}
+                isInvalid={Boolean(errors.manualQueriesError)}
+                fullWidth
+                rows={10}
+                data-test-subj="manualQueriesTextArea"
               />
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
+            </EuiFormRow>
+          ) : (
+            <EuiFormRow
+              label="Upload Queries"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+              fullWidth
+            >
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <EuiFilePicker
+                    id={filePickerId}
+                    initialPromptText="Select or drag and drop a query file"
+                    onChange={(files) => handleFileContent(files)}
+                    display="large"
+                    aria-label="Upload query file"
+                    accept=".txt"
+                    data-test-subj="manualQueriesFilePicker"
+                    compressed
+                    helpText={`Each line should be a JSON object with queryText and optionally referenceAnswer. Example: {"queryText": "what is opensearch?"}`}
+                  />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+          )}
+        </>
       ) : (
         <>
           <EuiFormRow
