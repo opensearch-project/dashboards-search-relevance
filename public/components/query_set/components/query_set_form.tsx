@@ -185,7 +185,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
             label="Query Set Size"
             error={errors.querySizeError}
             isInvalid={Boolean(errors.querySizeError)}
-            helpText="Pick the amount of queries for this query set (must be positive)."
+            helpText="Pick the number of queries making up this query set (must be positive)."
             fullWidth
           >
             <EuiFieldNumber
