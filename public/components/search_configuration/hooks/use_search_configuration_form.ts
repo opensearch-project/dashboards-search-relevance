@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { CoreStart, NotificationsStart } from '../../../../../../core/public';
+import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
 import { SearchConfigurationService } from '../services/search_configuration_service';
 import { validateName, validateQuery, validateForm } from '../utils/validation';
 import {

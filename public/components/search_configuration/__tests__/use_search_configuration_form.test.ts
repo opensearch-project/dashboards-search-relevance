@@ -6,6 +6,9 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
 
+// Mock console.error to avoid noise in tests
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+
 // Mock the service
 const mockService = {
   fetchIndexes: jest.fn(),
@@ -289,5 +292,94 @@ describe('useSearchConfigurationForm', () => {
     expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith(
       'Failed to fetch search pipelines'
     );
+  });
+
+  it('should handle validation error with body message', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    const errorWithBody = { body: { message: 'Custom body error' } };
+    mockService.validateSearchQuery.mockRejectedValue(errorWithBody);
+
+    act(() => {
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+      result.current.setQuery('{"query": {"match_all": {}}}');
+    });
+
+    await act(async () => {
+      await result.current.validateSearchQuery();
+    });
+
+    expect(mockNotifications.toasts.addWarning).toHaveBeenCalledWith({
+      title: 'Validation Warning',
+      text: 'Custom body error',
+      toastLifeTimeMs: 5000,
+    });
+  });
+
+  it('should handle validation with no results', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    mockService.validateSearchQuery.mockResolvedValue({ hits: { hits: [] } });
+
+    act(() => {
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+      result.current.setQuery('{"query": {"match_all": {}}}');
+    });
+
+    await act(async () => {
+      await result.current.validateSearchQuery();
+    });
+
+    expect(mockNotifications.toasts.addWarning).toHaveBeenCalledWith({
+      title: 'Validation Warning',
+      text: 'Search returned no results',
+      toastLifeTimeMs: 5000,
+    });
+  });
+
+  it('should work without onSuccess callback', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    act(() => {
+      result.current.setName('test config');
+      result.current.setQuery('{"query": {"match_all": {}}}');
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+    });
+
+    await act(async () => {
+      await result.current.createSearchConfiguration();
+    });
+
+    expect(mockNotifications.toasts.addSuccess).toHaveBeenCalled();
+  });
+
+  it('should include search pipeline when selected', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    act(() => {
+      result.current.setName('test config');
+      result.current.setQuery('{"query": {"match_all": {}}}');
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+      result.current.setSelectedPipeline([{ label: 'pipeline1' }]);
+    });
+
+    await act(async () => {
+      await result.current.createSearchConfiguration();
+    });
+
+    expect(mockService.createSearchConfiguration).toHaveBeenCalledWith({
+      name: 'test config',
+      index: 'index1',
+      query: '{"query": {"match_all": {}}}',
+      searchPipeline: 'pipeline1',
+    });
   });
 });

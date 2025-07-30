@@ -4,7 +4,7 @@
  */
 
 import { ServiceEndpoints } from '../../../../common';
-import { CoreStart } from '../../../../../../core/public';
+import { CoreStart } from '../../../../../../src/core/public';
 import { DocumentsIndex } from '../../../types';
 
 export interface SearchConfigurationData {

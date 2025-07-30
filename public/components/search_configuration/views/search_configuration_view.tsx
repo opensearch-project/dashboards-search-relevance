@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import {
   EuiPageTemplate,
@@ -18,27 +18,17 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
 } from '@elastic/eui';
-import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+import { CoreStart } from '../../../../../../src/core/public';
+import { useSearchConfigurationView } from '../hooks/use_search_configuration_view';
 
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
 export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id }) => {
-  const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { searchConfiguration, loading, error, formatJson } = useSearchConfigurationView(http, id);
 
   const SearchConfigurationViewPane: React.FC = () => {
-    const formatJson = (json: string) => {
-      try {
-        return JSON.stringify(JSON.parse(json), null, 2);
-      } catch {
-        return json;
-      }
-    };
-
     return (
       <EuiForm>
         <EuiFormRow label="Search Configuration Name" fullWidth>
@@ -84,32 +74,6 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
       </EuiForm>
     );
   };
-
-  useEffect(() => {
-    const fetchSearchConfiguration = async () => {
-      try {
-        setLoading(true);
-        const response = await http.get(ServiceEndpoints.SearchConfigurations);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item: any) => item.id === id);
-
-        if (filteredList.length > 0) {
-          setSearchConfiguration(filteredList[0]);
-        } else {
-          setError('No matching search configuration found');
-        }
-      } catch (err) {
-        console.error('Failed to load search config', err);
-        setError('Error loading search configuration data');
-        // eslint-disable-next-line no-console
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSearchConfiguration();
-  }, [http, id]);
 
   if (loading) {
     return <div>Loading search configuration data...</div>;

@@ -14,11 +14,11 @@ jest.mock('@elastic/eui', () => ({
     const handleChange = (e) => {
       if (onChange) onChange(e.target.value);
     };
-    
+
     const handleBlur = () => {
       if (onBlur) onBlur();
     };
-    
+
     return (
       <textarea
         data-test-subj="code-editor"
@@ -258,35 +258,35 @@ describe('SearchConfigurationForm', () => {
   // Logic tests for EuiCodeEditor handlers
   it('should handle valid JSON in onChange', () => {
     render(<SearchConfigurationForm {...mockProps} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     const validJson = '{"query": {"match_all": {}}}';
-    
+
     fireEvent.change(codeEditor, { target: { value: validJson } });
-    
+
     expect(mockProps.setQuery).toHaveBeenCalledWith(validJson);
     expect(mockProps.setQueryError).toHaveBeenCalledWith('');
   });
 
   it('should handle invalid JSON in onChange', () => {
     render(<SearchConfigurationForm {...mockProps} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     const invalidJson = '{"invalid": json}';
-    
+
     fireEvent.change(codeEditor, { target: { value: invalidJson } });
-    
+
     expect(mockProps.setQuery).toHaveBeenCalledWith(invalidJson);
   });
 
   it('should not call setQuery when disabled in onChange', () => {
     render(<SearchConfigurationForm {...mockProps} disabled={true} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     const validJson = '{"query": {"match_all": {}}}';
-    
+
     fireEvent.change(codeEditor, { target: { value: validJson } });
-    
+
     expect(mockProps.setQuery).not.toHaveBeenCalled();
   });
 
@@ -295,12 +295,12 @@ describe('SearchConfigurationForm', () => {
       ...mockProps,
       query: '',
     };
-    
+
     render(<SearchConfigurationForm {...propsWithEmptyQuery} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     fireEvent.blur(codeEditor);
-    
+
     expect(mockProps.setQueryError).toHaveBeenCalledWith('Query is required.');
   });
 
@@ -309,12 +309,12 @@ describe('SearchConfigurationForm', () => {
       ...mockProps,
       query: '{"query": {"match_all": {}}}',
     };
-    
+
     render(<SearchConfigurationForm {...propsWithValidQuery} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     fireEvent.blur(codeEditor);
-    
+
     expect(mockProps.setQueryError).toHaveBeenCalledWith('');
   });
 
@@ -323,12 +323,12 @@ describe('SearchConfigurationForm', () => {
       ...mockProps,
       query: '{"invalid": json}',
     };
-    
+
     render(<SearchConfigurationForm {...propsWithInvalidQuery} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     fireEvent.blur(codeEditor);
-    
+
     expect(mockProps.setQueryError).toHaveBeenCalledWith('Query must be valid JSON.');
   });
 
@@ -338,12 +338,12 @@ describe('SearchConfigurationForm', () => {
       query: '',
       disabled: true,
     };
-    
+
     render(<SearchConfigurationForm {...propsWithEmptyQuery} />);
-    
+
     const codeEditor = screen.getByTestId('code-editor');
     fireEvent.blur(codeEditor);
-    
+
     expect(mockProps.setQueryError).not.toHaveBeenCalled();
   });
 });

@@ -19,11 +19,12 @@ import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart } from '../../../../../src/core/public';
-import { extractUserMessageFromError, Routes, ServiceEndpoints } from '../../../common';
-import { DeleteModal } from '../common/DeleteModal';
-import { useConfig } from '../../contexts/date_format_context';
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart } from '../../../../../../src/core/public';
+import { Routes } from '../../../../common';
+import { DeleteModal } from '../../common/DeleteModal';
+import { useConfig } from '../../../contexts/date_format_context';
+import { useSearchConfigurationList } from '../hooks/use_search_configuration_list';
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -34,8 +35,12 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
   history,
 }) => {
   const { dateFormat } = useConfig();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    isLoading,
+    error,
+    findSearchConfigurations,
+    deleteSearchConfiguration,
+  } = useSearchConfigurationList(http);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [configToDelete, setConfigToDelete] = useState<any>(null);
@@ -124,69 +129,14 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
 
   // Add delete function
   const handleDelete = async () => {
-    setIsLoading(true);
-    try {
-      const response = await http.delete(
-        `${ServiceEndpoints.SearchConfigurations}/${configToDelete.id}`
-      );
-      // Close modal and clear state on success
-      setShowDeleteModal(false);
-      setConfigToDelete(null);
-      setError(null);
-
+    const success = await deleteSearchConfiguration(configToDelete.id);
+    if (success) {
       // Force table refresh
       setRefreshKey((prev) => prev + 1);
-    } catch (err) {
-      console.error('Failed to delete search config', err);
-      setError('Failed to delete search configuration');
-      // Close modal on error
-      setShowDeleteModal(false);
-      setConfigToDelete(null);
-    } finally {
-      setIsLoading(false);
     }
-  };
-
-  // TODO: extend mapping by adding search_pipeline & search_template once they
-  // are available
-  const mapSearchConfigurationFields = (obj: any) => {
-    return {
-      id: obj._source.id,
-      search_configuration_name: obj._source.name,
-      index: obj._source.index,
-      query: obj._source.query,
-      timestamp: obj._source.timestamp,
-    };
-  };
-
-  // Data fetching function
-  const findSearchConfigurations = async (search: any) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await http.get(ServiceEndpoints.SearchConfigurations);
-      const list = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
-      // TODO: too many reissued requests on search
-      const filteredList = search
-        ? list.filter((item) =>
-            item.search_configuration_name.toLowerCase().includes(search.toLowerCase())
-          )
-        : list;
-      return {
-        total: filteredList.length,
-        hits: filteredList,
-      };
-    } catch (err) {
-      console.error('Failed to load search configurations', err);
-      const errorMessage = extractUserMessageFromError(err);
-      setError(errorMessage ? errorMessage : 'Failed to load search configurations due to an unknown error.');
-      return {
-        total: 0,
-        hits: [],
-      };
-    } finally {
-      setIsLoading(false);
-    }
+    // Close modal regardless of success/failure
+    setShowDeleteModal(false);
+    setConfigToDelete(null);
   };
 
   return (

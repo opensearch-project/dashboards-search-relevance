@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { SearchConfigurationCreate } from '../search_configuration_create';
+import { SearchConfigurationCreate } from '../views/search_configuration_create';
 
 // Mock the hook
 const mockHookReturn = {

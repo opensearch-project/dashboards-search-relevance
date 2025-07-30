@@ -32,13 +32,11 @@ import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dash
 import { ExperimentListingWithRoute } from './experiment_listing';
 import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
 import { QuerySetListing } from './query_set';
-import { SearchConfigurationListingWithRoute } from './search_config_listing';
+import { SearchConfigurationListing, SearchConfigurationView, SearchConfigurationCreate } from './search_configuration';
 import { JudgmentListingWithRoute } from './judgment_listing';
 import { QuerySetView } from './query_set';
-import SearchConfigurationView from './search_config_view/search_config_view';
 import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreate } from './query_set';
-import { SearchConfigurationCreateWithRouter } from './search_configuration_create';
 import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
 import { GetStartedAccordion } from './experiment_create/get_started_accordion';
 import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
@@ -237,7 +235,7 @@ const SearchRelevancePage = ({
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListingWithRoute http={http} />;
+              return <SearchConfigurationListing http={http} />;
             }}
           />
           <Route
@@ -339,7 +337,7 @@ const SearchRelevancePage = ({
             exact
             render={() => {
               return (
-                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
+                <SearchConfigurationCreate http={http} notifications={notifications} />
               );
             }}
           />

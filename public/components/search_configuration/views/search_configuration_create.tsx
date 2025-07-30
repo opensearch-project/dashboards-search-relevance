@@ -14,10 +14,10 @@ import {
 } from '@elastic/eui';
 import React, { useCallback } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart, NotificationsStart } from '../../../../../core/public';
-import { SearchConfigurationForm } from './components/search_configuration_form';
-import { ValidationPanel } from './components/validation_panel';
-import { useSearchConfigurationForm } from './hooks/use_search_configuration_form';
+import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
+import { SearchConfigurationForm } from '../components/search_configuration_form';
+import { ValidationPanel } from '../components/validation_panel';
+import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
 
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
