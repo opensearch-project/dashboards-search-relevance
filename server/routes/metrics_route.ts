@@ -11,6 +11,9 @@ export function registerMetricsRoute(router: IRouter) {
     {
       path: ServiceEndpoints.GetStats,
       validate: false,
+      options: {
+        authRequired: false,
+      },
     },
     async (context, _, response) => {
       try {

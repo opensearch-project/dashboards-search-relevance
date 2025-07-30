@@ -4,8 +4,21 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 
 ## Current Maintainers
 
-| Maintainer   | GitHub ID                             | Affiliation |
-| ------------ | ------------------------------------- | ----------- |
+| Maintainer | GitHub ID                                     | Affiliation |
+|------------|-----------------------------------------------| ----------- |
+| Fen Qin    | [fen-qin](https://github.com/fen-qin)         | Amazon      |
+| Eric Pugh  | [epugh](https://github.com/epugh)             | OpenSource Connections |
+| Bo Zhang   | [bzhangam](https://github.com/bzhangam)       | Amazon      |
+| Junqiu Lei    | [junqiu-lei](https://github.com/junqiu-lei)   | Amazon      |
+| Heemin Kim | [heemin32](https://github.com/heemin32)       | Amazon      |
+| Martin Gaievski | [heemin32](https://github.com/martin-gaievski)               | Amazon      |
+
+
+
+## Emeritus
+
+| Maintainer              | GitHub ID                                   | Affiliation |
+|-------------------------|---------------------------------------------|-------------|
 | Mark Cohen   | [macohen](https://github.com/macohen) | Amazon      |
 | Michael Froh | [msfroh](https://github.com/msfroh)   | Amazon      |
 | Mingshi Liu  | [mingshl](https://github.com/mingshl) | Amazon      |

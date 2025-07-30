@@ -5,6 +5,7 @@
 
 import { DataSourcePluginStart } from '../../../src/plugins/data_source/public/types';
 import { NavigationPublicPluginStart } from '../../../src/plugins/navigation/public';
+import { SharePluginStart } from '../../../src/plugins/share/public';
 
 export interface SearchRelevancePluginSetup {
   getGreeting: () => string;
@@ -15,4 +16,5 @@ export interface SearchRelevancePluginStart {}
 export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
   dataSource: DataSourcePluginStart;
+  share: SharePluginStart;
 }

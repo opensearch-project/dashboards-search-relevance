@@ -9,6 +9,7 @@ import { OptionLabel, ResultListComparisonFormData } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
+import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
 
 export interface ResultListComparisonFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
@@ -40,15 +41,15 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   useEffect(() => {
-    setQuerySetOptions(
-      formData?.querySetId ? [{ label: formData.querySetId, value: formData.querySetId }] : []
-    );
-    setSelectedSearchConfigs(
-      Array.isArray(formData?.searchConfigurationList)
-        ? formData.searchConfigurationList.map((config) => ({ label: config, value: config }))
-        : []
-    );
+
+    setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
+
+    let newSelectedSearchConfigs: OptionLabel[] = [];
+
+    setSelectedSearchConfigs(mapToOptionLabels(formData.searchConfigurationList));
+
     setK(formData?.size !== undefined && formData?.size !== null ? formData.size : 10);
+
     clearAllErrors();
   }, [formData]);
 
@@ -95,13 +96,18 @@ export const ResultListComparisonForm = forwardRef<
   }));
 
   const handleQuerySetsChange = (selectedOptions: OptionLabel[]) => {
-    setQuerySetOptions(selectedOptions || []);
-    const newValue = selectedOptions?.[0]?.value || '';
-    // Optimize onChange call
-    if (formData.querySetId !== newValue) {
-      onChange('querySetId', newValue);
+    const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
+    setQuerySetOptions(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions?.[0]?.value || ''; // Use value for ID
+    const newQuerySetName = safeSelectedOptions?.[0]?.label || ''; // Use label for name
+
+    if (formData.querySetId !== newQuerySetId) {
+      onChange('querySetId', newQuerySetId);
     }
-    if (selectedOptions.length > 0 && querySetError.length > 0) {
+    if (formData.querySetName !== newQuerySetName) { // Ensure querySetName is also updated
+      onChange('querySetName', newQuerySetName);
+    }
+    if (safeSelectedOptions.length > 0 && querySetError.length > 0) {
       setQuerySetError([]);
     }
   };
@@ -119,13 +125,16 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   const handleSearchConfigChange = (selectedOptions: OptionLabel[]) => {
-    setSelectedSearchConfigs(selectedOptions);
-    const newValues = selectedOptions.map((o) => o.value);
+    const safeSelectedOptions = selectedOptions || []; // Ensure it's always an array
+    setSelectedSearchConfigs(safeSelectedOptions);
+    const newQuerySetId = safeSelectedOptions?.[0]?.value || ''; // Use value for ID
+    const newQuerySetName = safeSelectedOptions?.[0]?.label || ''; // Use label for name
+    const newValues = safeSelectedOptions.map((o) => ({ id: o.value, name: o.label }));
     // Optimize onChange call
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
       onChange('searchConfigurationList', newValues);
     }
-    if (selectedOptions.length >= 2 && searchConfigError.length > 0) {
+    if (safeSelectedOptions.length >= 2 && searchConfigError.length > 0) {
       setSearchConfigError([]);
     }
   };

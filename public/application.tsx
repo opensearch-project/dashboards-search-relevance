@@ -14,7 +14,7 @@ import { ConfigProvider } from './contexts/date_format_context';
 
 export const renderApp = (
   coreStart: CoreStart,
-  { navigation, dataSource }: AppPluginStartDependencies,
+  { navigation, dataSource, share }: AppPluginStartDependencies,
   { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
@@ -33,7 +33,7 @@ export const renderApp = (
   };
 
   ReactDOM.render(
-    <OpenSearchDashboardsContextProvider services={coreStart}>
+    <OpenSearchDashboardsContextProvider services={{ ...coreStart, share }}>
       <ConfigProvider
         uiSettings={uiSettings}
         dataSourceEnabled={!!dataSource}

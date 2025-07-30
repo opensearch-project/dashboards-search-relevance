@@ -12,6 +12,7 @@ import {
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
   EuiSpacer,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -35,6 +36,12 @@ import {
 } from '../../types/index';
 import { MetricsSummaryPanel } from './metrics_summary';
 import { DocumentScoresTable } from './document_score_table';
+import {
+  NDCG_TOOL_TIP,
+  PRECISION_TOOL_TIP,
+  MAP_TOOL_TIP,
+  COVERAGE_TOOL_TIP,
+} from '../../../common/index';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -132,19 +139,15 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
             .then(sanitizeResponse));
 
-        // the .filter(Boolean) is used to filter out undefineds which show up for queries that are ZSR.
-        const resultIds = _experiment.results
-          .map(({evaluationId}) => evaluationId)
-          .filter(Boolean);
-
+        const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
         const query = {
           index: 'search-relevance-evaluation-result',
           query: {
-            terms: {
-              _id: resultIds,
-            },
+            match: {
+              experimentId: _experiment.id,
+            }
           },
-          size: resultIds.length,
+          size: querySetSize,
         };
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
           body: JSON.stringify({ query1: query }),
@@ -165,9 +168,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             if (
               _querySet &&
               _querySet.querySetQueries &&
-              Object.keys(_querySet.querySetQueries).length > resultIds.length
+              querySetSize > parseResults.data.length
             ) {
-              const zsrCount = Object.keys(_querySet.querySetQueries).length - resultIds.length;
+              const zsrCount = querySetSize - parseResults.data.length;
               notifications.toasts.addWarning({
                 title: 'You have some ZSR queries',
                 text: `${zsrCount} queries returned Zero Search Results`,
@@ -202,9 +205,21 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     return [];
   }
 
+ const getBaseMetricName = (fullMetricName: string): string => {
+    const parts = fullMetricName.split('@');
+    return parts[0].toLowerCase();
+  };
+
   useEffect(() => {
     if (experiment) {
       const metricNames = extractMetricNames(queryEvaluations);
+      // metric tool tip texts
+      const metricDescriptions: { [key: string]: string } = {
+        ndcg: NDCG_TOOL_TIP,
+        precision: PRECISION_TOOL_TIP,
+        map: MAP_TOOL_TIP,
+        coverage: COVERAGE_TOOL_TIP,
+      };
 
       const columns = [
         {
@@ -220,9 +235,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         },
       ];
       metricNames.forEach((metricName) => {
+        // Extract base name for tooltip lookup
+        const baseMetricName = getBaseMetricName(metricName);
+        const tooltipContent =
+          metricDescriptions[baseMetricName] || `No description available for ${metricName}`;
+
         columns.push({
           field: 'metrics.' + metricName,
-          name: metricName,
+          name: (
+            <EuiToolTip content={tooltipContent}>
+              {/* The actual text that triggers the tooltip */}
+              <span>{metricName}</span>
+            </EuiToolTip>
+          ),
           dataType: 'number',
           sortable: true,
           render: (value) => {
