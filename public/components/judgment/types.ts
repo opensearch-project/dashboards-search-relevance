@@ -32,6 +32,8 @@ export interface JudgmentFormData {
   // UBI specific
   clickModel?: string;
   maxRank?: number;
+  startDate?: string;
+  endDate?: string;
 }
 
 export interface JudgmentCreateProps {
