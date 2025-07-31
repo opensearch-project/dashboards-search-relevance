@@ -26,12 +26,10 @@ export const useJudgmentView = (http: CoreStart['http'], id: string) => {
     const fetchJudgment = async () => {
       try {
         setLoading(true);
-        const response = await http.get(ServiceEndpoints.Judgments);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item: any) => item.id === id);
+        const response = await http.get(`${ServiceEndpoints.Judgments}/${id}`);
 
-        if (filteredList.length > 0) {
-          setJudgment(filteredList[0]);
+        if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
+          setJudgment(response.hits.hits[0]._source);
         } else {
           setError('No matching judgment found');
         }

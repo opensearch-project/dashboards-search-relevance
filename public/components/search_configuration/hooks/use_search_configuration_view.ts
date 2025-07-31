@@ -28,12 +28,10 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string) 
     const fetchSearchConfiguration = async () => {
       try {
         setLoading(true);
-        const response = await http.get(ServiceEndpoints.SearchConfigurations);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item: any) => item.id === id);
+        const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`);
 
-        if (filteredList.length > 0) {
-          setSearchConfiguration(filteredList[0]);
+        if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
+          setSearchConfiguration(response.hits.hits[0]._source);
         } else {
           setError('No matching search configuration found');
         }

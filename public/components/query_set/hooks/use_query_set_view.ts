@@ -17,12 +17,10 @@ export const useQuerySetView = (http: CoreStart['http'], id: string) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await http.get(ServiceEndpoints.QuerySets);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item) => item.id === id);
+        const response = await http.get(`${ServiceEndpoints.QuerySets}/${id}`);
 
-        if (filteredList.length > 0) {
-          setQuerySet(filteredList[0]);
+        if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
+          setQuerySet(response.hits.hits[0]._source);
         } else {
           setError('No matching query set found');
         }
