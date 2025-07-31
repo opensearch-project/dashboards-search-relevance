@@ -46,6 +46,8 @@ export const validateJudgmentForm = (
     }
   }
 
+  // Date validation: Only validate date range when both dates are provided
+  // Having either only startDate or only endDate is valid
   if (data.startDate && data.endDate) {
     const startDateMoment = moment(data.startDate);
     const endDateMoment = moment(data.endDate);
@@ -54,9 +56,6 @@ export const validateJudgmentForm = (
       errors.dateRange = 'End Date cannot be earlier than Start Date.';
       isValid = false;
     }
-  // Only one of the two should not throw an error.
-  } else if (!data.startDate && data.endDate) {
-  } else if (data.startDate && !data.endDate) {
   }
 
   return { isValid, errors };
