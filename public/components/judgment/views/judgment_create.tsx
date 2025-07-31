@@ -13,9 +13,9 @@ import {
   EuiPanel,
   EuiPageHeader,
 } from '@elastic/eui';
-import { JudgmentCreateProps } from './types';
-import { useJudgmentForm } from './hooks/use_judgment_form';
-import { JudgmentForm } from './components/judgment_form';
+import { JudgmentCreateProps } from '../types';
+import { useJudgmentForm } from '../hooks/use_judgment_form';
+import { JudgmentForm } from '../components/judgment_form';
 
 export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notifications, history }) => {
   const {

@@ -4,7 +4,7 @@
  */
 
 import { RouteComponentProps } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   EuiForm,
   EuiFormRow,
@@ -15,27 +15,17 @@ import {
   EuiText,
   EuiCodeBlock,
 } from '@elastic/eui';
-import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+import { CoreStart } from '../../../../../../src/core/public';
+import { useJudgmentView } from '../hooks/use_judgment_view';
 
 interface JudgmentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
 }
 
 export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
-  const [judgment, setJudgment] = useState<any | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { judgment, loading, error, formatJson } = useJudgmentView(http, id);
 
   const JudgmentViewPane: React.FC = () => {
-    const formatJson = (json: string) => {
-      try {
-        return JSON.stringify(JSON.parse(json), null, 2);
-      } catch {
-        return json;
-      }
-    };
-
     return (
       <EuiForm>
         <EuiFormRow label="Judgment Name" fullWidth>
@@ -70,32 +60,6 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
       </EuiForm>
     );
   };
-
-  useEffect(() => {
-    const fetchJudgment = async () => {
-      try {
-        setLoading(true);
-        const response = await http.get(ServiceEndpoints.Judgments);
-        const list = response ? response.hits.hits.map((hit: any) => ({ ...hit._source })) : [];
-        const filteredList = list.filter((item: any) => item.id === id);
-
-        if (filteredList.length > 0) {
-          setJudgment(filteredList[0]);
-        } else {
-          setError('No matching judgment found');
-        }
-      } catch (err) {
-        console.error('Failed to load judgment', err);
-        setError('Error loading judgment data');
-        // eslint-disable-next-line no-console
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchJudgment();
-  }, [http, id]);
 
   if (loading) {
     return <div>Loading judgment data...</div>;

@@ -8,7 +8,7 @@ process.env.TZ = 'UTC';
 module.exports = {
   rootDir: '../',
   setupFiles: ['<rootDir>/test/setupTests.ts'],
-  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.ts', '<rootDir>/test/suppress-console.js'],
   roots: ['<rootDir>'],
   testMatch: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx'],
   clearMocks: true,

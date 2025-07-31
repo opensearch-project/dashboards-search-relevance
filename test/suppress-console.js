@@ -13,7 +13,7 @@ beforeAll(() => {
     if (
       typeof args[0] === 'string' &&
       (args[0].includes('Warning: ') ||
-        args[0].includes('Failed to fetch') ||
+        args[0].includes('Failed to') ||
         args[0].includes('An update to TestComponent'))
     ) {
       return;

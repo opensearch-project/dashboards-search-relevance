@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { JudgmentCreate } from '../judgment_create';
+import { JudgmentCreate } from '../views/judgment_create';
 
 const mockHttp = {
   get: jest.fn(),

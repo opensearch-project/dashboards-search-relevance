@@ -32,12 +32,14 @@ import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dash
 import { ExperimentListingWithRoute } from './experiment_listing';
 import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
 import { QuerySetListing } from './query_set';
-import { SearchConfigurationListing, SearchConfigurationView, SearchConfigurationCreate } from './search_configuration';
-import { JudgmentListingWithRoute } from './judgment_listing';
+import {
+  SearchConfigurationListing,
+  SearchConfigurationView,
+  SearchConfigurationCreate,
+} from './search_configuration';
+import { JudgmentListing, JudgmentView, JudgmentCreate } from './judgment';
 import { QuerySetView } from './query_set';
-import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreate } from './query_set';
-import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
 import { GetStartedAccordion } from './experiment_create/get_started_accordion';
 import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment_create/configuration/template_configuration';
@@ -203,13 +205,15 @@ const SearchRelevancePage = ({
               if (hashString.startsWith('?')) {
                 hashString = hashString.slice(1); // Remove leading ?
               }
-              
+
               const urlParams = new URLSearchParams(hashString);
               const configParam = urlParams.get('config');
-              
+
               if (configParam) {
                 // Redirect to single query comparison with the config parameter as search param
-                history.push(`${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`);
+                history.push(
+                  `${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`
+                );
                 return null;
               } else {
                 // No config parameter, show experiment listing
@@ -242,7 +246,7 @@ const SearchRelevancePage = ({
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListingWithRoute http={http} />;
+              return <JudgmentListing http={http} />;
             }}
           />
           <Route
@@ -336,9 +340,7 @@ const SearchRelevancePage = ({
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return (
-                <SearchConfigurationCreate http={http} notifications={notifications} />
-              );
+              return <SearchConfigurationCreate http={http} notifications={notifications} />;
             }}
           />
           <Route
@@ -346,7 +348,7 @@ const SearchRelevancePage = ({
             exact
             render={() => {
               return (
-                <JudgmentCreateWithRouter
+                <JudgmentCreate
                   http={http}
                   notifications={notifications}
                   history={history}
