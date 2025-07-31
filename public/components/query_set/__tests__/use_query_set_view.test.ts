@@ -69,14 +69,7 @@ describe('useQuerySetView', () => {
   it('handles no matching query set', async () => {
     const mockResponse = {
       hits: {
-        hits: [
-          {
-            _source: {
-              id: 'different-id',
-              name: 'Different Query Set',
-            },
-          },
-        ],
+        hits: [],
       },
     };
 

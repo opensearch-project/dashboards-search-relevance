@@ -26,6 +26,7 @@ import { DeleteModal } from '../../common/DeleteModal';
 import { useConfig } from '../../../contexts/date_format_context';
 import { Routes } from '../../../../common';
 import { useJudgmentList } from '../hooks/use_judgment_list';
+import { getStatusColor } from '../utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -83,18 +84,6 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       dataType: 'string',
       sortable: true,
       render: (status: string) => {
-        const getStatusColor = (status: string) => {
-          switch (status) {
-            case 'COMPLETED':
-              return 'success';
-            case 'PROCESSING':
-              return 'warning';
-            case 'ERROR':
-              return 'danger';
-            default:
-              return 'subdued';
-          }
-        };
         return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
       },
     },
@@ -166,7 +155,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
             loading={isLoading}
             pagination={{
               initialPageSize: 10,
-              pageSizeOptions: [5, 10, 20, 50],
+              pageSizeOptions: [5, 10, 20],
             }}
             search={{
               box: {
