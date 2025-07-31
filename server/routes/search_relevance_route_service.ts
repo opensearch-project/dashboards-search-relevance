@@ -185,7 +185,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
-          endDate: schema.maybe(schema.string()),
+          endDate: schema.maybe(schema.string())
         }),
       },
     },
