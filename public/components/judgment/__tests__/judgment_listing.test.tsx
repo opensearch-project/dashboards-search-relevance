@@ -116,7 +116,9 @@ describe('JudgmentListing', () => {
     mockUseJudgmentList.mockReturnValue({
       isLoading: false,
       error: null,
-      judgments: [{ id: '1', name: 'Test', type: 'LLM', status: 'PROCESSING', timestamp: '2023-01-01' }],
+      judgments: [
+        { id: '1', name: 'Test', type: 'LLM', status: 'PROCESSING', timestamp: '2023-01-01' },
+      ],
       hasProcessing: true,
       isBackgroundRefreshing: false,
       refreshKey: 0,

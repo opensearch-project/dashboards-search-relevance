@@ -76,9 +76,9 @@ describe('QuerySetQueriesTable', () => {
 
   it('tests findQueries function with search term', async () => {
     render(<QuerySetQueriesTable queries={mockQueries} />);
-    
+
     expect(mockFindItems).toBeDefined();
-    
+
     // Test the findQueries function directly
     const result = await mockFindItems('search');
     expect(result.total).toBe(2); // Should filter to queries containing 'search'
@@ -87,9 +87,9 @@ describe('QuerySetQueriesTable', () => {
 
   it('tests findQueries function with empty search', async () => {
     render(<QuerySetQueriesTable queries={mockQueries} />);
-    
+
     expect(mockFindItems).toBeDefined();
-    
+
     const result = await mockFindItems('');
     expect(result.total).toBe(3);
     expect(result.hits).toHaveLength(3);

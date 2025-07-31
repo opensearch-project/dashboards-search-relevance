@@ -40,7 +40,7 @@ import {
   JACCARD_TOOL_TIP,
   RBO50_TOOL_TIP,
   RBO90_TOOL_TIP,
-  FREQUENCY_WEIGHTED_TOOL_TIP
+  FREQUENCY_WEIGHTED_TOOL_TIP,
 } from '../../../common/index';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
@@ -175,8 +175,9 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
           name: (
             <EuiToolTip
               content={
-                metricDescriptions[metricName] ||
-                `No description available for ${metricName}`}>
+                metricDescriptions[metricName] || `No description available for ${metricName}`
+              }
+            >
               <span>{metricName + '@' + experiment.size}</span>
             </EuiToolTip>
           ),

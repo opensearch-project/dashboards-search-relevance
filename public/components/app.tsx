@@ -347,13 +347,7 @@ const SearchRelevancePage = ({
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return (
-                <JudgmentCreate
-                  http={http}
-                  notifications={notifications}
-                  history={history}
-                />
-              );
+              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
             }}
           />
         </Switch>

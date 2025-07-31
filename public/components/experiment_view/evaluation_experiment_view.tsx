@@ -145,7 +145,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           query: {
             match: {
               experimentId: _experiment.id,
-            }
+            },
           },
           size: querySetSize,
         };
@@ -165,11 +165,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
             // Check if there are ZSR queries by comparing resultIds count with query set count
-            if (
-              _querySet &&
-              _querySet.querySetQueries &&
-              querySetSize > parseResults.data.length
-            ) {
+            if (_querySet && _querySet.querySetQueries && querySetSize > parseResults.data.length) {
               const zsrCount = querySetSize - parseResults.data.length;
               notifications.toasts.addWarning({
                 title: 'You have some ZSR queries',
@@ -205,7 +201,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     return [];
   }
 
- const getBaseMetricName = (fullMetricName: string): string => {
+  const getBaseMetricName = (fullMetricName: string): string => {
     const parts = fullMetricName.split('@');
     return parts[0].toLowerCase();
   };

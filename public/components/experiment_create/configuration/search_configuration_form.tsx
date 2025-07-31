@@ -55,7 +55,7 @@ export const SearchConfigForm = ({
 
     return () => {
       isMounted = false;
-    }
+    };
   }, [http]);
 
   const comboBoxComponent = (
@@ -84,9 +84,11 @@ export const SearchConfigForm = ({
     return (
       <EuiFormRow
         label="Search Configurations"
-        helpText={`Select ${maxNumberOfOptions === 1 ? '1' : 'up to ' + maxNumberOfOptions} search configuration${
-          maxNumberOfOptions > 1 ? 's' : ''
-        }${maxNumberOfOptions > 1 ? ' to compare against each other' : ''}.`}
+        helpText={`Select ${
+          maxNumberOfOptions === 1 ? '1' : 'up to ' + maxNumberOfOptions
+        } search configuration${maxNumberOfOptions > 1 ? 's' : ''}${
+          maxNumberOfOptions > 1 ? ' to compare against each other' : ''
+        }.`}
       >
         {comboBoxComponent}
       </EuiFormRow>

@@ -123,7 +123,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
               previousExperiments.current = updatedList;
               setExperiments(updatedList);
               setTableData(updatedList);
-              setRefreshKey(prev => prev + 1);
+              setRefreshKey((prev) => prev + 1);
             }
 
             if (!updatedList.some((exp) => exp.status === 'PROCESSING')) {
@@ -221,12 +221,10 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   // Handle delete function
   const handleDelete = async () => {
     if (!experimentToDelete) return;
-    
+
     setIsLoading(true);
     try {
-      await http.delete(
-        `${ServiceEndpoints.Experiments}/${experimentToDelete.id}`
-      );
+      await http.delete(`${ServiceEndpoints.Experiments}/${experimentToDelete.id}`);
 
       // Close modal and clear state first
       setShowDeleteModal(false);
@@ -235,7 +233,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       // Clear tableData to force fresh fetch
       setTableData([]);
-      
+
       // Force table refresh after deletion
       setRefreshKey((prev) => prev + 1);
     } catch (err) {

@@ -37,9 +37,7 @@ describe('useJudgmentView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useJudgmentView(mockHttp as any, '1')
-    );
+    const { result, waitForNextUpdate } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
 
     await waitForNextUpdate();
 
@@ -79,9 +77,7 @@ describe('useJudgmentView', () => {
   it('should handle fetch error', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 
-    const { result, waitForNextUpdate } = renderHook(() =>
-      useJudgmentView(mockHttp as any, '1')
-    );
+    const { result, waitForNextUpdate } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
 
     await waitForNextUpdate();
 

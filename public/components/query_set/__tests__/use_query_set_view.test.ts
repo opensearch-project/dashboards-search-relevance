@@ -11,7 +11,9 @@ jest.mock('../../../../common', () => ({
   ServiceEndpoints: {
     QuerySets: '/api/relevancy/querySets',
   },
-  extractUserMessageFromError: jest.fn((err) => 'Failed to load query set due to an unknown error.'),
+  extractUserMessageFromError: jest.fn(
+    (err) => 'Failed to load query set due to an unknown error.'
+  ),
 }));
 
 const mockHttp = {

@@ -55,7 +55,7 @@ export const JudgmentsComboBox = ({
 
     return () => {
       isMounted = false;
-    }
+    };
   }, [http]);
 
   const comboBoxComponent = (

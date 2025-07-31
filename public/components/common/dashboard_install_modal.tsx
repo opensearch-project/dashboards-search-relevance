@@ -21,18 +21,18 @@ import { escapedDashboardsData } from '../common_utils/dashboards_data';
 
 interface DashboardInstallModalProps {
   onClose: () => void;
-  onSuccess?: (() => void) | (() => (() => void));
+  onSuccess?: (() => void) | (() => () => void);
   title?: string;
   http: CoreStart['http'];
   setError: (error: string | null) => void;
 }
 
-export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({ 
-  onClose, 
+export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
+  onClose,
   onSuccess,
-  title = "Install Dashboards",
+  title = 'Install Dashboards',
   http,
-  setError
+  setError,
 }) => {
   const [isInstalling, setIsInstalling] = useState(false);
   const [dashboardsInstalled, setDashboardsInstalled] = useState<boolean | null>(null);
@@ -41,9 +41,11 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
   React.useEffect(() => {
     const checkInstallation = async () => {
       try {
-        const _ = await http.get(`/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}`);
+        const _ = await http.get(
+          `/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}`
+        );
         setDashboardsInstalled(true);
-      } catch(error) {
+      } catch (error) {
         setDashboardsInstalled(false);
       }
     };
@@ -55,7 +57,11 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
     setError(null);
     try {
       const formData = new FormData();
-      formData.append('file', new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }), 'dashboards.ndjson');
+      formData.append(
+        'file',
+        new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }),
+        'dashboards.ndjson'
+      );
       await http.post('/api/saved_objects/_import', {
         body: formData,
         headers: {
@@ -63,11 +69,11 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
         },
         query: {
           overwrite: true,
-        }
+        },
       });
       onSuccess?.();
       onClose();
-    } catch(error) {
+    } catch (error) {
       console.error('Failed to install dashboards:', error);
       setError('Failed to install dashboards');
     } finally {
@@ -99,12 +105,18 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
             </>
           ) : onSuccess ? ( // This is the message when the user clicks on the visualization button for an experiment
             <>
-              <p>In order to visualize the experiment, you need dashboards that are not currently installed.</p>
+              <p>
+                In order to visualize the experiment, you need dashboards that are not currently
+                installed.
+              </p>
               <p>Would you like to install them now?</p>
             </>
           ) : (
             <>
-              <p>This will install the necessary dashboard visualizations for viewing experiment results.</p>
+              <p>
+                This will install the necessary dashboard visualizations for viewing experiment
+                results.
+              </p>
               <p>Would you like to install them now?</p>
             </>
           )}
@@ -113,10 +125,10 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
 
       <EuiModalFooter>
         <EuiButtonEmpty onClick={handleCancel}>Cancel</EuiButtonEmpty>
-        <EuiButton 
-          onClick={handleConfirm} 
-          fill 
-          color="primary" 
+        <EuiButton
+          onClick={handleConfirm}
+          fill
+          color="primary"
           isLoading={isInstalling}
           disabled={dashboardsInstalled === null}
         >
@@ -125,4 +137,4 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
       </EuiModalFooter>
     </EuiModal>
   );
-}; 
+};

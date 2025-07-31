@@ -51,7 +51,10 @@ export const useJudgmentList = (http: CoreStart['http']) => {
     pollingStartTime.current = Date.now();
 
     intervalRef.current = setInterval(async () => {
-      if (Date.now() - pollingStartTime.current > MAX_POLLING_DURATION || errorCount.current >= MAX_ERRORS) {
+      if (
+        Date.now() - pollingStartTime.current > MAX_POLLING_DURATION ||
+        errorCount.current >= MAX_ERRORS
+      ) {
         clearInterval(intervalRef.current!);
         intervalRef.current = null;
         setIsBackgroundRefreshing(false);
@@ -84,7 +87,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
           previousJudgments.current = updatedList;
           setJudgments(updatedList);
           setTableData(updatedList);
-          setRefreshKey(prev => prev + 1);
+          setRefreshKey((prev) => prev + 1);
         }
 
         if (!updatedList.some((judgment) => judgment.status === 'PROCESSING')) {
@@ -112,62 +115,68 @@ export const useJudgmentList = (http: CoreStart['http']) => {
     };
   }, [hasProcessing, startPolling]);
 
-  const findJudgments = useCallback(async (search?: string) => {
-    // Use tableData if available (from polling or previous fetch)
-    if (tableData.length > 0) {
-      const filteredList = search
-        ? tableData.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-        : tableData;
-      return {
-        total: filteredList.length,
-        hits: filteredList,
-      };
-    }
+  const findJudgments = useCallback(
+    async (search?: string) => {
+      // Use tableData if available (from polling or previous fetch)
+      if (tableData.length > 0) {
+        const filteredList = search
+          ? tableData.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+          : tableData;
+        return {
+          total: filteredList.length,
+          hits: filteredList,
+        };
+      }
 
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await http.get(ServiceEndpoints.Judgments);
-      const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
-      const filteredList = search
-        ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
-        : list;
-      
-      setJudgments(filteredList);
-      setTableData(filteredList);
-      
-      return {
-        total: filteredList.length,
-        hits: filteredList,
-      };
-    } catch (err) {
-      console.error('Failed to load judgment lists.', err);
-      const errorMessage = extractUserMessageFromError(err);
-      setError(errorMessage || 'Failed to load judgment lists due to an unknown error.');
-      return {
-        total: 0,
-        hits: [],
-      };
-    } finally {
-      setIsLoading(false);
-    }
-  }, [http, tableData]);
-
-  const deleteJudgment = useCallback(async (id: string) => {
-    setIsLoading(true);
-    try {
-      await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
+      setIsLoading(true);
       setError(null);
-      setRefreshKey((prev) => prev + 1);
-      return true;
-    } catch (err) {
-      console.error('Failed to delete judgment', err);
-      setError('Failed to delete judgment');
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [http]);
+      try {
+        const response = await http.get(ServiceEndpoints.Judgments);
+        const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
+        const filteredList = search
+          ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+          : list;
+
+        setJudgments(filteredList);
+        setTableData(filteredList);
+
+        return {
+          total: filteredList.length,
+          hits: filteredList,
+        };
+      } catch (err) {
+        console.error('Failed to load judgment lists.', err);
+        const errorMessage = extractUserMessageFromError(err);
+        setError(errorMessage || 'Failed to load judgment lists due to an unknown error.');
+        return {
+          total: 0,
+          hits: [],
+        };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [http, tableData]
+  );
+
+  const deleteJudgment = useCallback(
+    async (id: string) => {
+      setIsLoading(true);
+      try {
+        await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
+        setError(null);
+        setRefreshKey((prev) => prev + 1);
+        return true;
+      } catch (err) {
+        console.error('Failed to delete judgment', err);
+        setError('Failed to delete judgment');
+        return false;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [http]
+  );
 
   return {
     isLoading,

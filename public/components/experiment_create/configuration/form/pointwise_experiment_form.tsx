@@ -10,7 +10,11 @@ import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
-import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
+import {
+  mapToOptionLabels,
+  mapOptionLabelsToFormData,
+  mapQuerySetToOptionLabels,
+} from '../configuration_form';
 
 interface PointwiseExperimentFormProps {
   formData: PointwiseExperimentFormData;
@@ -45,7 +49,6 @@ export const PointwiseExperimentForm = forwardRef<
   };
 
   useEffect(() => {
-
     setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
 
     setK(formData.size ?? 10);
@@ -117,7 +120,8 @@ export const PointwiseExperimentForm = forwardRef<
     if (formData.querySetId !== newQuerySetId) {
       onChange('querySetId', newQuerySetId);
     }
-    if (formData.querySetName !== newQuerySetName) { // Make sure this is also updated
+    if (formData.querySetName !== newQuerySetName) {
+      // Make sure this is also updated
       onChange('querySetName', newQuerySetName);
     }
     if (safeSelectedOptions.length > 0 && querySetError.length > 0) {
@@ -155,7 +159,8 @@ export const PointwiseExperimentForm = forwardRef<
     if (JSON.stringify(formData.searchConfigurationList) !== JSON.stringify(newValues)) {
       onChange('searchConfigurationList', newValues);
     }
-    if (safeSelectedOptions.length >= 2 && searchConfigError.length > 0) { // Changed condition for clearing error
+    if (safeSelectedOptions.length >= 2 && searchConfigError.length > 0) {
+      // Changed condition for clearing error
       setSearchConfigError([]);
     }
   };
@@ -213,11 +218,7 @@ export const PointwiseExperimentForm = forwardRef<
         </EuiFormRow>
       </EuiFlexItem>
       <EuiFlexItem>
-        <EuiFormRow
-          label="Judgments"
-          isInvalid={judgmentError.length > 0}
-          error={judgmentError}
-        >
+        <EuiFormRow label="Judgments" isInvalid={judgmentError.length > 0} error={judgmentError}>
           <JudgmentsComboBox
             selectedOptions={judgmentOptions}
             onChange={handleJudgmentsChange}

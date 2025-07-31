@@ -34,9 +34,9 @@ export const QuerySetsComboBox = ({
           label: qs._source.name,
           value: qs._source.id,
         }));
-       if (isMounted) {
-         setQuerySetOptions(options);
-       }
+        if (isMounted) {
+          setQuerySetOptions(options);
+        }
       } catch (error) {
         console.error('Failed to fetch query sets', error);
         if (isMounted) {
@@ -53,7 +53,7 @@ export const QuerySetsComboBox = ({
 
     return () => {
       isMounted = false;
-    }
+    };
   }, [http]);
 
   const comboBoxComponent = (

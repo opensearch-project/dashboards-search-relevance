@@ -13,7 +13,9 @@ jest.mock('../../../../common', () => ({
   extractUserMessageFromError: jest.fn(),
 }));
 
-const mockExtractUserMessageFromError = extractUserMessageFromError as jest.MockedFunction<typeof extractUserMessageFromError>;
+const mockExtractUserMessageFromError = extractUserMessageFromError as jest.MockedFunction<
+  typeof extractUserMessageFromError
+>;
 
 // Mock useOpenSearchDashboards
 const mockAddSuccess = jest.fn();

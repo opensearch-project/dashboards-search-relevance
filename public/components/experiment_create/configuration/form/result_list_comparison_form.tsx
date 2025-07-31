@@ -9,7 +9,11 @@ import { OptionLabel, ResultListComparisonFormData } from '../types';
 import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
-import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
+import {
+  mapToOptionLabels,
+  mapOptionLabelsToFormData,
+  mapQuerySetToOptionLabels,
+} from '../configuration_form';
 
 export interface ResultListComparisonFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
@@ -41,10 +45,9 @@ export const ResultListComparisonForm = forwardRef<
   };
 
   useEffect(() => {
-
     setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
 
-    let newSelectedSearchConfigs: OptionLabel[] = [];
+    const newSelectedSearchConfigs: OptionLabel[] = [];
 
     setSelectedSearchConfigs(mapToOptionLabels(formData.searchConfigurationList));
 
@@ -104,7 +107,8 @@ export const ResultListComparisonForm = forwardRef<
     if (formData.querySetId !== newQuerySetId) {
       onChange('querySetId', newQuerySetId);
     }
-    if (formData.querySetName !== newQuerySetName) { // Ensure querySetName is also updated
+    if (formData.querySetName !== newQuerySetName) {
+      // Ensure querySetName is also updated
       onChange('querySetName', newQuerySetName);
     }
     if (safeSelectedOptions.length > 0 && querySetError.length > 0) {

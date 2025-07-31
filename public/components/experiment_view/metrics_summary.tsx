@@ -68,8 +68,7 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metric
           // Get the base name for lookup
           const baseMetricName = getBaseMetricName(metricKey);
           const tooltipContent =
-            metricDescriptions[baseMetricName] ||
-            `No description available for ${baseMetricName}`;
+            metricDescriptions[baseMetricName] || `No description available for ${baseMetricName}`;
           return (
             <EuiFlexItem grow={2} key={metricKey}>
               <EuiStat
