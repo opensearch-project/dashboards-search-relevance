@@ -32,9 +32,7 @@ export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
         description="View the details of your query set"
       />
       <EuiSpacer size="l" />
-      <EuiPanel hasBorder={true}>
-        {querySet && <QuerySetDetails querySet={querySet} />}
-      </EuiPanel>
+      <EuiPanel hasBorder={true}>{querySet && <QuerySetDetails querySet={querySet} />}</EuiPanel>
     </EuiPageTemplate>
   );
 };

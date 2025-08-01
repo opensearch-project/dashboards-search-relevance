@@ -25,9 +25,7 @@ export const QuerySetQueriesTable: React.FC<QuerySetQueriesTableProps> = ({ quer
     }
 
     const filteredQueries = searchTerm
-      ? queries.filter((query) =>
-          query.queryText.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+      ? queries.filter((query) => query.queryText.toLowerCase().includes(searchTerm.toLowerCase()))
       : queries;
     return {
       total: filteredQueries.length,

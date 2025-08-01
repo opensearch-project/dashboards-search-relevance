@@ -17,8 +17,12 @@ jest.mock('../../common/DeleteModal', () => ({
   DeleteModal: ({ onClose, onConfirm, itemName }: any) => (
     <div data-testid="delete-modal">
       <span>Delete {itemName}?</span>
-      <button onClick={onClose} data-testid="cancel-button">Cancel</button>
-      <button onClick={onConfirm} data-testid="confirm-button">Confirm</button>
+      <button onClick={onClose} data-testid="cancel-button">
+        Cancel
+      </button>
+      <button onClick={onConfirm} data-testid="confirm-button">
+        Confirm
+      </button>
     </div>
   ),
 }));
@@ -27,7 +31,7 @@ jest.mock('../components/query_set_table', () => ({
   QuerySetTable: ({ onDelete, findItems, isLoading, refreshKey }: any) => {
     return (
       <div data-testid="query-set-table">
-        <button 
+        <button
           onClick={() => onDelete({ id: '1', name: 'Test Item' })}
           data-testid="delete-trigger"
         >
@@ -203,7 +207,7 @@ describe('QuerySetListing', () => {
     });
 
     render(<QuerySetListing {...defaultProps} />);
-    
+
     expect(mockFindQuerySets).toBeDefined();
     expect(mockDeleteQuerySet).toBeDefined();
   });
@@ -264,21 +268,21 @@ describe('QuerySetListing', () => {
     });
 
     const { container } = render(<QuerySetListing {...defaultProps} />);
-    
+
     // Initially no modal
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
-    
+
     // Trigger delete
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     // Modal should appear
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
   });
 
   it('handles delete confirmation', async () => {
     const mockDeleteQuerySet = jest.fn().mockResolvedValue(undefined);
-    
+
     mockUseQuerySetList.mockReturnValue({
       isLoading: false,
       error: null,
@@ -289,15 +293,15 @@ describe('QuerySetListing', () => {
     });
 
     const { container } = render(<QuerySetListing {...defaultProps} />);
-    
+
     // Trigger delete to show modal
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     // Confirm delete
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
     confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
   });
 
@@ -312,25 +316,25 @@ describe('QuerySetListing', () => {
     });
 
     const { container } = render(<QuerySetListing {...defaultProps} />);
-    
+
     // Trigger delete to show modal
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     // Modal should be visible
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
-    
+
     // Cancel delete
     const cancelButton = container.querySelector('[data-testid="cancel-button"]');
     cancelButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     // Modal should be hidden
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
   });
 
   it('handles delete error', async () => {
     const mockDeleteQuerySet = jest.fn().mockRejectedValue(new Error('Delete failed'));
-    
+
     mockUseQuerySetList.mockReturnValue({
       isLoading: false,
       error: null,
@@ -341,14 +345,14 @@ describe('QuerySetListing', () => {
     });
 
     const { container } = render(<QuerySetListing {...defaultProps} />);
-    
+
     // Trigger delete and confirm
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
     confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    
+
     // Should still call deleteQuerySet even if it fails
     expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
   });

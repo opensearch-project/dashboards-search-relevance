@@ -7,18 +7,19 @@ import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import { EuiTabs, EuiTab, EuiSpacer, EuiPanel } from '@elastic/eui';
 import { ResourceManagementTabsProps } from './types';
-import { SearchConfigurationListingWithRoute } from '../search_config_listing';
 import { QuerySetListing, QuerySetCreate } from '../query_set';
 import { QuerySetView } from '../query_set';
-import { SearchConfigurationCreateWithRouter } from '../search_configuration_create';
-import { SearchConfigurationView } from '../search_config_view/search_config_view';
+import {
+  SearchConfigurationListing,
+  SearchConfigurationView,
+  SearchConfigurationCreate,
+} from '../search_configuration';
 import { TemplateCards } from '../experiment_create/template_card/template_cards';
 import ExperimentViewWithRouter from '../experiment_view/experiment_view';
 import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { JudgmentCreateWithRouter } from '../judgment_create';
-import { JudgmentListingWithRoute } from '../judgment_listing';
-import { JudgmentView } from '../judgment_view';
+import { JudgmentCreateWithRouter } from '../judgment';
+import { JudgmentListing, JudgmentView } from '../judgment';
 
 const TAB_STYLES = {
   mainTabs: {
@@ -147,7 +148,7 @@ export const ResourceManagementTabs = ({
             <EuiSpacer size="m" />
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
-                <SearchConfigurationListingWithRoute http={http} />
+                <SearchConfigurationListing http={http} />
               ) : (
                 <></>
               )}
@@ -157,7 +158,7 @@ export const ResourceManagementTabs = ({
                 <></>
               )}
               {selectedSubTabs === 'create' ? (
-                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
+                <SearchConfigurationCreate http={http} notifications={notifications} />
               ) : (
                 <></>
               )}
@@ -175,7 +176,7 @@ export const ResourceManagementTabs = ({
             <EuiSpacer size="m" />
             <EuiPanel>
               {selectedSubTabs === 'list' && entityAction != 'view' ? (
-                <JudgmentListingWithRoute http={http} />
+                <JudgmentListing http={http} />
               ) : (
                 <></>
               )}

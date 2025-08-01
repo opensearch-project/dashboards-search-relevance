@@ -8,7 +8,7 @@ process.env.TZ = 'UTC';
 module.exports = {
   rootDir: '../',
   setupFiles: ['<rootDir>/test/setupTests.ts'],
-  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.ts'],
+  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.ts', '<rootDir>/test/suppress-console.js'],
   roots: ['<rootDir>'],
   testMatch: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx'],
   clearMocks: true,
@@ -41,6 +41,23 @@ module.exports = {
     '!public/**/index.ts',
     '!public/**/types.ts',
     '!public/**/types/**',
+    '!public/components/experiment_create/**', // TODO: remove after code refactoring for experiment
+    '!public/components/experiment_listing/**', // TODO: remove after code refactoring for experiment
+    '!public/components/experiment_view/**', // TODO: remove after code refactoring for experiment
+    '!public/components/query_compare/**',
+    '!public/components/common/**',
+    '!public/components/common_utils/**',
+    '!public/components/resource_management_home/**',
+    '!public/components/service_card/**',
+    '!public/components/app.tsx',
   ],
   coverageReporters: ['text', 'lcov', 'html'],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+  },
 };

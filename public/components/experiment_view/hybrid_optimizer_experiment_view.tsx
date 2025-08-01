@@ -100,7 +100,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             query: {
               match: {
                 experimentId: _experiment.id,
-              }
+              },
             },
             size: querySetSize * 66,
           };
@@ -122,12 +122,15 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           // Process results and organize by query and variant
           const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
           result.result1?.hits?.hits?.forEach((hit) => {
-            let nMetrics = {}
+            const nMetrics = {};
             hit._source.metrics?.forEach((metric) => {
               nMetrics[metric.metric] = metric.value;
             });
-            evaluationsByQueryAndVariant[hit._source.searchText] = evaluationsByQueryAndVariant[hit._source.searchText] || {};
-            evaluationsByQueryAndVariant[hit._source.searchText][hit._source.experimentVariantId] = {
+            evaluationsByQueryAndVariant[hit._source.searchText] =
+              evaluationsByQueryAndVariant[hit._source.searchText] || {};
+            evaluationsByQueryAndVariant[hit._source.searchText][
+              hit._source.experimentVariantId
+            ] = {
               metrics: nMetrics,
             };
           });

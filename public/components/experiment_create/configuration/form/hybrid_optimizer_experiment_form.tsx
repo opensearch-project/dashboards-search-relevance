@@ -10,7 +10,11 @@ import { CoreStart } from '../../../../../src/core/public';
 import { SearchConfigForm } from '../search_configuration_form';
 import { QuerySetsComboBox } from './query_sets_combo_box';
 import { JudgmentsComboBox } from './judgments_combo_box';
-import { mapToOptionLabels, mapOptionLabelsToFormData, mapQuerySetToOptionLabels } from '../configuration_form';
+import {
+  mapToOptionLabels,
+  mapOptionLabelsToFormData,
+  mapQuerySetToOptionLabels,
+} from '../configuration_form';
 
 export interface HybridOptimizerExperimentFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: HybridOptimizerExperimentFormData };
@@ -45,7 +49,6 @@ export const HybridOptimizerExperimentForm = forwardRef<
   };
 
   useEffect(() => {
-
     setQuerySetOptions(mapQuerySetToOptionLabels(formData.querySetId, formData.querySetName));
 
     setK(formData.size ?? 10);
@@ -120,7 +123,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
       onChange('querySetId', newQuerySetId);
     }
     if ((formData as any).querySetName !== newQuerySetName) {
-        onChange('querySetName' as keyof HybridOptimizerExperimentFormData, newQuerySetName);
+      onChange('querySetName' as keyof HybridOptimizerExperimentFormData, newQuerySetName);
     }
 
     if (safeSelectedOptions.length > 0 && querySetError.length > 0) {

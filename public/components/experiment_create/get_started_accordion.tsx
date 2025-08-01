@@ -57,7 +57,7 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                   other already defined.
                 </EuiText>
               </EuiCard>
-            </EuiFlexItem>            
+            </EuiFlexItem>
             <EuiFlexItem>
               <EuiCard
                 layout="horizontal"
@@ -342,7 +342,8 @@ export function GetStartedAccordion(props: GetStartedAccordionProps) {
                 }
               >
                 <EuiText>
-                  Document-based judgement ratings will be collect and aggregated into evaluation metrics.
+                  Document-based judgement ratings will be collect and aggregated into evaluation
+                  metrics.
                 </EuiText>
               </EuiCard>
             </EuiFlexItem>

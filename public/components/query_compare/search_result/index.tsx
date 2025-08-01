@@ -30,7 +30,11 @@ import {
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
-import { ServiceEndpoints, SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED, Routes } from '../../../../common';
+import {
+  ServiceEndpoints,
+  SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED,
+  Routes,
+} from '../../../../common';
 
 const DEFAULT_QUERY = '{}';
 
@@ -84,20 +88,20 @@ export const SearchResult = ({
   } = useSearchRelevanceContext();
 
   const location = useLocation();
-  
+
   // Check for configuration from URL parameters on component mount
   useEffect(() => {
     console.log('SearchResult useEffect - Current URL:', window.location.href);
     console.log('SearchResult useEffect - Hash:', window.location.hash);
     console.log('SearchResult useEffect - Search params:', location.search);
-    
+
     let encodedConfig = null;
-    
+
     // First check query parameters (for experimental workbench UI)
     const searchParams = new URLSearchParams(location.search);
     encodedConfig = searchParams.get('config');
     console.log('SearchResult useEffect - Config param from search:', encodedConfig);
-    
+
     // If not found in search params, check hash parameters (for old experience)
     if (!encodedConfig) {
       let hashString = window.location.hash.slice(1); // Remove #
@@ -108,12 +112,12 @@ export const SearchResult = ({
         hashString = hashString.slice(1); // Remove leading ?
       }
       console.log('SearchResult useEffect - Hash string to parse:', hashString);
-      
+
       const hashParams = new URLSearchParams(hashString);
       encodedConfig = hashParams.get('config');
       console.log('SearchResult useEffect - Config param from hash:', encodedConfig);
     }
-    
+
     if (encodedConfig) {
       try {
         // Decode base64 to JSON string
@@ -122,7 +126,7 @@ export const SearchResult = ({
         // Parse JSON string to object
         const config = JSON.parse(jsonString);
         console.log('SearchResult useEffect - Parsed config:', config);
-        
+
         // Set the values from config
         if (config.query1) {
           if (config.query1.index) {
@@ -135,7 +139,7 @@ export const SearchResult = ({
             setPipeline1(config.query1.search_pipeline);
           }
         }
-        
+
         if (config.query2) {
           if (config.query2.index) {
             setSelectedIndex2(config.query2.index);
@@ -147,18 +151,27 @@ export const SearchResult = ({
             setPipeline2(config.query2.search_pipeline);
           }
         }
-        
+
         if (config.search) {
           setSearchBarValue(config.search);
         }
-        
+
         // Don't clean URL - keep the config parameter for sharing
-        
       } catch (e) {
         console.error('Failed to decode base64 configuration:', e);
       }
     }
-  }, [setSelectedIndex1, setSelectedIndex2, setQueryString1, setQueryString2, setSearchBarValue, setPipeline1, setPipeline2, uiSettings, location.search]);
+  }, [
+    setSelectedIndex1,
+    setSelectedIndex2,
+    setQueryString1,
+    setQueryString2,
+    setSearchBarValue,
+    setPipeline1,
+    setPipeline2,
+    uiSettings,
+    location.search,
+  ]);
 
   const HeaderControlledPopoverWrapper = ({ children }: { children: React.ReactElement }) => {
     const HeaderControl = navigation.ui.HeaderControl;
@@ -203,14 +216,14 @@ export const SearchResult = ({
         query1: {
           index: selectedIndex1,
           dsl_query: queryString1,
-          search_pipeline: pipeline1 || undefined
+          search_pipeline: pipeline1 || undefined,
         },
         query2: {
-          index: selectedIndex2, 
+          index: selectedIndex2,
           dsl_query: queryString2,
-          search_pipeline: pipeline2 || undefined
+          search_pipeline: pipeline2 || undefined,
         },
-        search: searchBarValue
+        search: searchBarValue,
       };
 
       // Remove undefined values to keep the config clean
@@ -219,18 +232,20 @@ export const SearchResult = ({
 
       // Encode configuration to base64
       const base64Config = btoa(JSON.stringify(config));
-      
+
       // Create URL with configuration
       const newUrl = new URL(window.location);
       newUrl.hash = `#/?config=${base64Config}`;
-      
+
       // Check URL length limit (2000 characters is a safe limit for most browsers)
       const MAX_URL_LENGTH = 2000;
       const urlString = newUrl.toString();
-      
+
       if (urlString.length > MAX_URL_LENGTH) {
         // URL is too long, update without parameters
-        console.log('URL too long (' + urlString.length + ' characters), updating without config parameter');
+        console.log(
+          'URL too long (' + urlString.length + ' characters), updating without config parameter'
+        );
         newUrl.hash = '#/';
         window.history.replaceState({}, document.title, newUrl.toString());
         console.log('Updated URL without config (length limit exceeded):', newUrl.toString());
