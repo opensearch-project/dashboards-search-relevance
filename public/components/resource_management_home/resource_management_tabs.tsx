@@ -14,9 +14,9 @@ import {
   SearchConfigurationView,
   SearchConfigurationCreate,
 } from '../search_configuration';
-import { TemplateCards } from '../experiment_create/template_card/template_cards';
-import ExperimentViewWithRouter from '../experiment_view/experiment_view';
-import ExperimentListingWithRoute from '../experiment_listing/experiment_listing';
+import { TemplateCards } from '../experiment/template_card/template_cards';
+import ExperimentViewWithRouter from '../experiment/views/experiment_view';
+import ExperimentListingWithRoute from '../experiment/views/experiment_listing';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { JudgmentCreateWithRouter } from '../judgment';
 import { JudgmentListing, JudgmentView } from '../judgment';

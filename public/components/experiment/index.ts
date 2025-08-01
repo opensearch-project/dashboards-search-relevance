@@ -4,3 +4,5 @@
  */
 
 export { TemplateCards } from './template_card/template_cards';
+export { ExperimentListingWithRoute } from './views/experiment_listing';
+export { ExperimentViewWithRouter } from './views/experiment_view';

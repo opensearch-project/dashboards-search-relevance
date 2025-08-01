@@ -26,7 +26,7 @@ import { DeleteModal } from '../../common/DeleteModal';
 import { useConfig } from '../../../contexts/date_format_context';
 import { Routes } from '../../../../common';
 import { useJudgmentList } from '../hooks/use_judgment_list';
-import { getStatusColor } from '../utils/status';
+import { getStatusColor } from '../../common_utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];

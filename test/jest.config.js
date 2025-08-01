@@ -41,9 +41,10 @@ module.exports = {
     '!public/**/index.ts',
     '!public/**/types.ts',
     '!public/**/types/**',
-    '!public/components/experiment_create/**', // TODO: remove after code refactoring for experiment
-    '!public/components/experiment_listing/**', // TODO: remove after code refactoring for experiment
-    '!public/components/experiment_view/**', // TODO: remove after code refactoring for experiment
+    '!public/components/experiment/configuration/form/**',
+    '!public/components/experiment/configuration/template_configuration.tsx',
+    '!public/components/experiment/metrics/**',
+    '!public/components/experiment/views/**',
     '!public/components/query_compare/**',
     '!public/components/common/**',
     '!public/components/common_utils/**',
