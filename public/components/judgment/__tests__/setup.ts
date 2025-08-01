@@ -22,4 +22,17 @@ jest.mock('@elastic/eui', () => ({
       ))}
     </select>
   ),
+  EuiDatePicker: ({ selected, onChange, dateFormat = 'YYYY-MM-DD', ...rest }: any) => (
+    <input
+      data-testid="date-picker"
+      type="text"
+      value={selected ? selected.format(dateFormat) : ''}
+      onChange={(e) => {
+        // In a real implementation, this would convert the string to a moment object
+        // For testing, we just need to simulate the onChange event
+        onChange(e.target.value);
+      }}
+      {...rest}
+    />
+  ),
 }));

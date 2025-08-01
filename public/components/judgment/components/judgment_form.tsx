@@ -36,6 +36,7 @@ interface JudgmentFormProps {
   setNewContextField: (value: string) => void;
   addContextField: () => void;
   removeContextField: (field: string) => void;
+  dateRangeError?: string;
 }
 
 export const JudgmentForm: React.FC<JudgmentFormProps> = ({
@@ -58,6 +59,7 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
   setNewContextField,
   addContextField,
   removeContextField,
+  dateRangeError,
 }) => {
   return (
     <EuiForm component="form" isInvalid={Boolean(nameError)}>
@@ -122,7 +124,11 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           removeContextField={removeContextField}
         />
       ) : (
-        <UBIJudgmentFields formData={formData} updateFormData={updateFormData} />
+        <UBIJudgmentFields
+          formData={formData}
+          updateFormData={updateFormData}
+          dateRangeError={dateRangeError}
+        />
       )}
     </EuiForm>
   );

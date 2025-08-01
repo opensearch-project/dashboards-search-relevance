@@ -49,4 +49,70 @@ describe('validation', () => {
     expect(result.isValid).toBe(true);
     expect(result.errors).toEqual({});
   });
+
+  describe('date range validation', () => {
+    it('should fail validation when end date is before start date', () => {
+      const result = validateJudgmentForm(
+        { 
+          name: 'test', 
+          type: JudgmentType.UBI,
+          startDate: '2023-02-15',
+          endDate: '2023-02-01'
+        }, 
+        [], 
+        [], 
+        []
+      );
+      expect(result.isValid).toBe(false);
+      expect(result.errors.dateRange).toBe('End Date cannot be earlier than Start Date.');
+    });
+
+    it('should pass validation when end date is after start date', () => {
+      const result = validateJudgmentForm(
+        { 
+          name: 'test', 
+          type: JudgmentType.UBI,
+          startDate: '2023-02-01',
+          endDate: '2023-02-15'
+        }, 
+        [], 
+        [], 
+        []
+      );
+      expect(result.isValid).toBe(true);
+      expect(result.errors.dateRange).toBeUndefined();
+    });
+
+    it('should pass validation when only start date is provided', () => {
+      const result = validateJudgmentForm(
+        { 
+          name: 'test', 
+          type: JudgmentType.UBI,
+          startDate: '2023-02-01',
+          endDate: ''
+        }, 
+        [], 
+        [], 
+        []
+      );
+      expect(result.isValid).toBe(true);
+      expect(result.errors.dateRange).toBeUndefined();
+    });
+
+    it('should pass validation when only end date is provided', () => {
+      const result = validateJudgmentForm(
+        { 
+          name: 'test', 
+          type: JudgmentType.UBI,
+          startDate: '',
+          endDate: '2023-02-15'
+        }, 
+        [], 
+        [], 
+        []
+      );
+      expect(result.isValid).toBe(true);
+      expect(result.errors.dateRange).toBeUndefined();
+    });
+  });
 });

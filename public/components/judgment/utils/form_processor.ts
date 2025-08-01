@@ -33,5 +33,7 @@ export const buildJudgmentPayload = (
     ...basePayload,
     clickModel: formData.clickModel,
     maxRank: formData.maxRank,
+    startDate: formData.startDate,
+    endDate: formData.endDate,
   };
 };
