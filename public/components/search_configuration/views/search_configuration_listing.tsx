@@ -173,10 +173,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
             tableColumns={tableColumns}
             findItems={findSearchConfigurations}
             loading={isLoading}
-            pagination={{
-              initialPageSize: 10,
-              pageSizeOptions: [5, 10, 20],
-            }}
+            initialPageSize={10}
             search={{
               box: {
                 incremental: true,
