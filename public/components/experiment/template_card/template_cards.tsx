@@ -3,23 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { EuiPanel, EuiFlexItem, EuiCard, EuiIcon, EuiFlexGroup } from '@elastic/eui';
-
-import { Header } from '../../common/header';
-import { TemplateConfigurationWithRouter } from '../configuration/template_configuration';
-import { Home as QueryCompareHome } from '../../query_compare/home';
-import { useConfig } from '../../../contexts/date_format_context';
-import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { COMPARE_SEARCH_RESULTS_TITLE, PLUGIN_NAME, Routes } from '../../../../common';
+import React from 'react';
+import { EuiFlexItem, EuiCard, EuiIcon, EuiFlexGroup } from '@elastic/eui';
+import { Routes } from '../../../../common';
 import { TemplateType } from '../configuration/types';
 
 interface TemplateCardsProps {
-  inputSelectedTemplate?: TemplateType | null;
-  history: any;
+  history: { push: (route: string) => void };
 }
 
-const templates = [
+interface Template {
+  id: TemplateType;
+  name: string;
+  description: string;
+  isDisabled: boolean;
+}
+
+const TEMPLATES: Template[] = [
   {
     id: TemplateType.SingleQueryComparison,
     name: 'Single Query Comparison',
@@ -48,14 +48,9 @@ const templates = [
   },
 ];
 
-const iconMap = {
-  [TemplateType.SingleQueryComparison]: 'beaker',
-  [TemplateType.QuerySetComparison]: 'beaker',
-  [TemplateType.SearchEvaluation]: 'beaker',
-  [TemplateType.HybridSearchOptimizer]: 'beaker',
-};
+const TEMPLATE_ICON = 'beaker';
 
-const RouteMap = {
+const ROUTE_MAP: Record<TemplateType, string> = {
   [TemplateType.SingleQueryComparison]: Routes.ExperimentCreateSingleQueryComparison,
   [TemplateType.QuerySetComparison]: Routes.ExperimentCreateQuerySetComparison,
   [TemplateType.SearchEvaluation]: Routes.ExperimentCreateSearchEvaluation,
@@ -64,26 +59,24 @@ const RouteMap = {
 
 export const TemplateCards = ({ history }: TemplateCardsProps) => {
   const handleCardClick = (templateId: TemplateType) => {
-    history.push(RouteMap[templateId]);
+    history.push(ROUTE_MAP[templateId]);
   };
 
   return (
-    <>
-      <EuiFlexItem grow={false}>
-        <EuiFlexGroup gutterSize="l">
-          {templates.map((template, index) => (
-            <EuiFlexItem key={index}>
-              <EuiCard
-                icon={<EuiIcon size="xxl" type={iconMap[template.id]} />}
-                title={template.name}
-                isDisabled={template.isDisabled}
-                description={template.description}
-                onClick={() => handleCardClick(template.id)}
-              />
-            </EuiFlexItem>
-          ))}
-        </EuiFlexGroup>
-      </EuiFlexItem>
-    </>
+    <EuiFlexItem grow={false}>
+      <EuiFlexGroup gutterSize="l">
+        {TEMPLATES.map((template) => (
+          <EuiFlexItem key={template.id}>
+            <EuiCard
+              icon={<EuiIcon size="xxl" type={TEMPLATE_ICON} />}
+              title={template.name}
+              isDisabled={template.isDisabled}
+              description={template.description}
+              onClick={() => handleCardClick(template.id)}
+            />
+          </EuiFlexItem>
+        ))}
+      </EuiFlexGroup>
+    </EuiFlexItem>
   );
 };

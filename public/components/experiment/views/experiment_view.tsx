@@ -6,9 +6,9 @@
 import { EuiPageHeader, EuiPageTemplate } from '@elastic/eui';
 import React, { useCallback, useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart, ToastsStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
-import { ExperimentType, toExperiment } from '../../types/index';
+import { CoreStart, ToastsStart } from '../../../../../../src/core/public';
+import { ExperimentType, toExperiment } from '../../../types/index';
+import { ExperimentService } from '../services/experiment_service';
 import { PairwiseExperimentViewWithRouter } from './pairwise_experiment_view';
 import { EvaluationExperimentViewWithRouter } from './evaluation_experiment_view';
 import { HybridOptimizerExperimentViewWithRouter } from './hybrid_optimizer_experiment_view';
@@ -26,11 +26,12 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
 }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const experimentService = new ExperimentService(http);
 
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
-        const response = await http.get(ServiceEndpoints.Experiments + '/' + id);
+        const response = await experimentService.getExperiment(id);
         const source = response?.hits?.hits?.[0]?._source;
         if (source) {
           const parsedExperiment = toExperiment(source);

@@ -22,26 +22,23 @@ import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart } from '../../../../../src/core/public';
-import {
-  Routes,
-  ServiceEndpoints,
-  SavedObjectIds,
-  extractUserMessageFromError,
-} from '../../../common';
-import { DeleteModal } from '../common/DeleteModal';
-import { DashboardInstallModal } from '../common/dashboard_install_modal';
-import { useConfig } from '../../contexts/date_format_context';
-import { combineResults, printType, toExperiment } from '../../types/index';
-import { TemplateCards } from '../experiment_create/template_card/template_cards';
-import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
+  useOpenSearchDashboards,
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart } from '../../../../../../src/core/public';
+import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
+import { DeleteModal } from '../../common/DeleteModal';
+import { DashboardInstallModal } from '../../common/dashboard_install_modal';
+import { useConfig } from '../../../contexts/date_format_context';
+import { printType } from '../../../types/index';
+import { ExperimentService } from '../services/experiment_service';
+import { TemplateCards } from '../template_card/template_cards';
 import {
   dashboardUrl,
   createPhraseFilter,
   addDaysToTimestamp,
   checkDashboardsInstalled,
-} from '../common_utils/dashboards';
+} from '../../common_utils/dashboards';
+import { getStatusColor } from '../../common_utils/status';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -51,6 +48,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const experimentService = new ExperimentService(http);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
@@ -96,10 +94,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
         setIsBackgroundRefreshing(true);
         try {
-          const response = await http.get(ServiceEndpoints.Experiments);
-          const parseResults = combineResults(
-            ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
-          );
+          const parseResults = await experimentService.getExperiments();
 
           if (parseResults.success) {
             const updatedList = parseResults.data;
@@ -224,7 +219,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      await http.delete(`${ServiceEndpoints.Experiments}/${experimentToDelete.id}`);
+      await experimentService.deleteExperiment(experimentToDelete.id);
 
       // Close modal and clear state first
       setShowDeleteModal(false);
@@ -273,19 +268,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       dataType: 'string',
       sortable: true,
       render: (status: string) => {
-        const getStatusColor = (status: string) => {
-          switch (status) {
-            case 'COMPLETED':
-              return 'success';
-            case 'PROCESSING':
-              return 'warning';
-            case 'ERROR':
-              return 'danger';
-            default:
-              return 'subdued';
-          }
-        };
-
         return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
       },
     },
@@ -357,10 +339,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setIsLoading(true);
     setError(null);
     try {
-      const response = await http.get(ServiceEndpoints.Experiments);
-      const parseResults = combineResults(
-        ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
-      );
+      const parseResults = await experimentService.getExperiments();
 
       if (!parseResults.success) {
         console.error(parseResults.errors);

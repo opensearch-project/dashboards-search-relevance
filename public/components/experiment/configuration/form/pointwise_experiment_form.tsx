@@ -212,7 +212,7 @@ export const PointwiseExperimentForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
-            // maxNumberOfOptions={1} // Removed this if it's not a strict requirement for pointwise
+            maxNumberOfOptions={1}
             hideLabel={true}
           />
         </EuiFormRow>
