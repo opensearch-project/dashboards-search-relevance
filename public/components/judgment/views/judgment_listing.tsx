@@ -155,10 +155,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
             tableColumns={tableColumns}
             findItems={findJudgments}
             loading={isLoading}
-            pagination={{
-              initialPageSize: 10,
-              pageSizeOptions: [5, 10, 20],
-            }}
+            initialPageSize={10}
+            pageSizeOptions={[10, 20, 50]}
             search={{
               box: {
                 incremental: true,
