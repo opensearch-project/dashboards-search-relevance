@@ -24,6 +24,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Do not show Pipeline error if there are no pipelines yet ([#582](https://github.com/opensearch-project/dashboards-search-relevance/pull/582))
 * Avoid validation results overflow in the creation of Search Configuration ([#585](https://github.com/opensearch-project/dashboards-search-relevance/pull/585))
 * Fix wrong unique number of results in Venn diagram ([#586](https://github.com/opensearch-project/dashboards-search-relevance/pull/586))
+* Bug fixes for error messages not render correctly for toast notifications ([#612](https://github.com/opensearch-project/dashboards-search-relevance/pull/612))
 
 ### Infrastructure
 
