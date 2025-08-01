@@ -78,7 +78,7 @@ export const TemplateConfiguration = ({
           throw new Error('No experiment ID received');
         }
       } catch (err) {
-        notifications.toasts.addError(err, {
+        notifications.toasts.addError(err?.body || err, {
           title: 'Failed to create experiment',
         });
       } finally {

@@ -180,7 +180,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       }
     } catch (error) {
       console.error('Error fetching variant details:', error);
-      notifications.toasts.addError(error, {
+      notifications.toasts.addError(error?.body || error, {
         title: 'Error loading variant details',
       });
     }

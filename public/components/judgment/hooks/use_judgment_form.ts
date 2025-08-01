@@ -145,7 +145,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
         notifications.toasts.addSuccess('Judgment created successfully');
         onSuccess();
       } catch (err) {
-        notifications.toasts.addError(err, {
+        notifications.toasts.addError(err?.body || err, {
           title: 'Failed to create judgment',
         });
       }

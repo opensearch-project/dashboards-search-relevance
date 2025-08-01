@@ -106,7 +106,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         setSelectedQueryScores(documentScores);
       } catch (error) {
         console.error('Error handling query click:', error);
-        notifications.toasts.addError(error, {
+        notifications.toasts.addError(error?.body || error, {
           title: 'Error processing document scores',
         });
       }
