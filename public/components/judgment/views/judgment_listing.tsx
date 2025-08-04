@@ -26,7 +26,7 @@ import { DeleteModal } from '../../common/DeleteModal';
 import { useConfig } from '../../../contexts/date_format_context';
 import { Routes } from '../../../../common';
 import { useJudgmentList } from '../hooks/use_judgment_list';
-import { getStatusColor } from '../utils/status';
+import { getStatusColor } from '../../common_utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -155,10 +155,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
             tableColumns={tableColumns}
             findItems={findJudgments}
             loading={isLoading}
-            pagination={{
-              initialPageSize: 10,
-              pageSizeOptions: [5, 10, 20],
-            }}
+            initialPageSize={10}
             search={{
               box: {
                 incremental: true,

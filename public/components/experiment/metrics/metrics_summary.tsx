@@ -13,7 +13,7 @@ import {
   EuiToolTip,
 } from '@elastic/eui';
 import React from 'react';
-import { MetricsCollection } from '../../types/index';
+import { MetricsCollection } from '../../../types';
 import {
   JACCARD_TOOL_TIP,
   RBO50_TOOL_TIP,
@@ -23,7 +23,7 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
-} from '../../../common/index';
+} from '../../../../common';
 
 interface MetricsSummaryPanelProps {
   metrics: MetricsCollection;

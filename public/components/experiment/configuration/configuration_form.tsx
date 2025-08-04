@@ -23,7 +23,6 @@ import {
   ResultListComparisonFormData,
   PointwiseExperimentFormData,
   HybridOptimizerExperimentFormData,
-  LLMFormData,
   TemplateType,
 } from './types';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';

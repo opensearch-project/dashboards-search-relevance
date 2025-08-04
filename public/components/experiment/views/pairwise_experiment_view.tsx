@@ -19,13 +19,13 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   TableListView,
   reactRouterNavigate,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart } from '../../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../../common';
 import {
   VisualComparison,
   convertFromSearchResult,
-} from '../query_compare/search_result/visual_comparison/visual_comparison';
+} from '../../query_compare/search_result/visual_comparison/visual_comparison';
 import {
   Experiment,
   SearchResults,
@@ -34,14 +34,14 @@ import {
   toQueryEvaluations,
   toQuerySnapshots,
   combineResults,
-} from '../../types/index';
-import { MetricsSummaryPanel } from './metrics_summary';
+} from '../../../types/index';
+import { MetricsSummaryPanel } from '../metrics/metrics_summary';
 import {
   JACCARD_TOOL_TIP,
   RBO50_TOOL_TIP,
   RBO90_TOOL_TIP,
   FREQUENCY_WEIGHTED_TOOL_TIP,
-} from '../../../common/index';
+} from '../../../../common';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -299,10 +299,7 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
                     tableColumns={tableColumns}
                     findItems={findQueries}
                     loading={loading}
-                    pagination={{
-                      initialPageSize: 10,
-                      pageSizeOptions: [5, 10, 20, 50],
-                    }}
+                    initialPageSize={10}
                     search={{
                       box: {
                         incremental: true,

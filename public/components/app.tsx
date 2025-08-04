@@ -29,8 +29,7 @@ import {
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
-import { ExperimentListingWithRoute } from './experiment_listing';
-import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
+import { ExperimentListingWithRoute, ExperimentViewWithRouter } from './experiment';
 import { QuerySetListing } from './query_set';
 import {
   SearchConfigurationListing,
@@ -40,9 +39,8 @@ import {
 import { JudgmentListing, JudgmentView, JudgmentCreate } from './judgment';
 import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
-import { GetStartedAccordion } from './experiment_create/get_started_accordion';
-import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
-import { TemplateConfigurationWithRouter } from './experiment_create/configuration/template_configuration';
+import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
+import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
