@@ -18,17 +18,17 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   TableListView,
   reactRouterNavigate,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart, ToastsStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
-import { printType, HybridOptimizerExperiment } from '../../types/index';
-import { VariantDetailsModal } from './variant_details';
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart, ToastsStart } from '../../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../../common';
+import { printType, HybridOptimizerExperiment } from '../../../types/index';
+import { VariantDetailsModal } from '../metrics/variant_details';
 import {
   NDCG_TOOL_TIP,
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
-} from '../../../common/index';
+} from '../../../../common';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
@@ -180,7 +180,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       }
     } catch (error) {
       console.error('Error fetching variant details:', error);
-      notifications.toasts.addError(error, {
+      notifications.toasts.addError(error?.body || error, {
         title: 'Error loading variant details',
       });
     }

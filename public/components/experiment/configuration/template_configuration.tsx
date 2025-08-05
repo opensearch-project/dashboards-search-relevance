@@ -5,21 +5,15 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-import {
-  EuiFlexItem,
-  EuiFlexGroup,
-  EuiTitle,
-  EuiSpacer,
-  EuiLoadingSpinner,
-  EuiCallOut,
-} from '@elastic/eui';
+import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } from '@elastic/eui';
 import { withRouter } from 'react-router-dom';
 import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm, ConfigurationFormRef } from './configuration_form';
-import { TemplateConfigurationProps, ConfigurationFormData } from './types';
-import { ServiceEndpoints, Routes } from '../../../../common';
-import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { TemplateConfigurationProps } from './types';
+import { Routes } from '../../../../common';
 import { ConfigurationActions } from './configuration_action';
+import { ExperimentService } from '../services/experiment_service';
+import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
 export const TemplateConfiguration = ({
   templateType,
@@ -44,6 +38,7 @@ export const TemplateConfiguration = ({
   const {
     services: { http, notifications },
   } = useOpenSearchDashboards();
+  const experimentService = new ExperimentService(http);
 
   const handleNext = async () => {
     setShowTemplateConfigError(false); // Clear previous errors
@@ -59,9 +54,7 @@ export const TemplateConfiguration = ({
       // If we reach here, `data` is guaranteed to be valid and not null
       try {
         setIsCreating(true);
-        const response = await http.post(ServiceEndpoints.Experiments, {
-          body: JSON.stringify(data), // Use the validated data received from child
-        });
+        const response = await experimentService.createExperiment(data);
 
         if (response.experiment_id) {
           if (isMountedRef.current) {
@@ -78,7 +71,7 @@ export const TemplateConfiguration = ({
           throw new Error('No experiment ID received');
         }
       } catch (err) {
-        notifications.toasts.addError(err, {
+        notifications.toasts.addError(err?.body || err, {
           title: 'Failed to create experiment',
         });
       } finally {

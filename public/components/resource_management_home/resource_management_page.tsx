@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 import { EuiFlexGroup, EuiFlexItem, EuiPageTemplate, EuiSpacer, EuiTitle } from '@elastic/eui';
 import { Header } from '../common/header';
-import { TemplateCards } from '../experiment_create/template_card/template_cards';
+import { TemplateCards } from '../experiment/template_card/template_cards';
 import { ResourceManagementTabsWithRoute } from './resource_management_tabs';
 import { experiments, resultListComparisonExperiments } from './mockup_data';
 

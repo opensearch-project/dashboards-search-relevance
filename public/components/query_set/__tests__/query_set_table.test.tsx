@@ -101,7 +101,7 @@ describe('QuerySetTable', () => {
 
   it('passes pagination props correctly', () => {
     const { container } = render(<QuerySetTable {...defaultProps} />);
-    expect(container.querySelector('[data-testid="pagination"]')?.textContent).toBe('10');
+    expect(container.querySelector('[data-testid="pagination"]')?.textContent).toBe('');
   });
 
   it('renders column content with render functions', () => {

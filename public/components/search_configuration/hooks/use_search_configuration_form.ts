@@ -96,7 +96,7 @@ export const useSearchConfigurationForm = ({
         setIndexOptions(options);
       } catch (error) {
         console.error('Failed to fetch indexes', error);
-        notifications.toasts.addError(error, {
+        notifications.toasts.addError(error?.body || error, {
           title: 'Failed to fetch indexes',
         });
         setIndexOptions([]);
@@ -224,7 +224,7 @@ export const useSearchConfigurationForm = ({
         onSuccess();
       }
     } catch (err) {
-      notifications.toasts.addError(err, {
+      notifications.toasts.addError(err?.body || err, {
         title: 'Failed to create search configuration',
       });
     }

@@ -11,6 +11,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Enable AutoPopulated Fields in SearchRelevance Query Compare Plugin Page ([#577](https://github.com/opensearch-project/dashboards-search-relevance/pull/577))
 * Add polling mechanism to experiment_listing and judgment_listing view ([#594](https://github.com/opensearch-project/dashboards-search-relevance/pull/594))
 * Add startDate and endDate for implicit judgment form ([#604](https://github.com/opensearch-project/dashboards-search-relevance/pull/604/files))
+* Change default UI to the new SRW interface, preserve opt out option ([#614](https://github.com/opensearch-project/dashboards-search-relevance/pull/614))
 
 ### Enhancements
 * Fetch models from ml-commons and add validation ([#568](https://github.com/opensearch-project/dashboards-search-relevance/pull/568))
@@ -25,6 +26,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Do not show Pipeline error if there are no pipelines yet ([#582](https://github.com/opensearch-project/dashboards-search-relevance/pull/582))
 * Avoid validation results overflow in the creation of Search Configuration ([#585](https://github.com/opensearch-project/dashboards-search-relevance/pull/585))
 * Fix wrong unique number of results in Venn diagram ([#586](https://github.com/opensearch-project/dashboards-search-relevance/pull/586))
+* Bug fixes for error messages not render correctly for toast notifications ([#612](https://github.com/opensearch-project/dashboards-search-relevance/pull/612))
 
 ### Infrastructure
 
@@ -41,3 +43,4 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Code refactors + Unit tests for judgment_create ([#588](https://github.com/opensearch-project/dashboards-search-relevance/pull/588))
 * Code Refactor + Unit Tests for query_set_listing and query_set_view ([#595](https://github.com/opensearch-project/dashboards-search-relevance/pull/595))
 * Code Refactor + Unit Tests for search_configuration and judgment ([#602](https://github.com/opensearch-project/dashboards-search-relevance/pull/602))
+* Code Refactor + Unit Tests for experiment ([#613](https://github.com/opensearch-project/dashboards-search-relevance/pull/613))

@@ -19,9 +19,9 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   TableListView,
   reactRouterNavigate,
-} from '../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart, ToastsStart } from '../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../common';
+} from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart, ToastsStart } from '../../../../../../src/core/public';
+import { ServiceEndpoints } from '../../../../common';
 import {
   Experiment,
   SearchResults,
@@ -33,15 +33,15 @@ import {
   toQueryEvaluation,
   EvaluationExperiment,
   printType,
-} from '../../types/index';
-import { MetricsSummaryPanel } from './metrics_summary';
-import { DocumentScoresTable } from './document_score_table';
+} from '../../../types/index';
+import { MetricsSummaryPanel } from '../metrics/metrics_summary';
+import { DocumentScoresTable } from '../metrics/document_score_table';
 import {
   NDCG_TOOL_TIP,
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
-} from '../../../common/index';
+} from '../../../../common';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -106,7 +106,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         setSelectedQueryScores(documentScores);
       } catch (error) {
         console.error('Error handling query click:', error);
-        notifications.toasts.addError(error, {
+        notifications.toasts.addError(error?.body || error, {
           title: 'Error processing document scores',
         });
       }
@@ -330,10 +330,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
                   tableColumns={tableColumns}
                   findItems={findQueries}
                   loading={loading}
-                  pagination={{
-                    initialPageSize: 10,
-                    pageSizeOptions: [5, 10, 20, 50],
-                  }}
+                  initialPageSize={10}
                   search={{
                     box: {
                       incremental: true,
