@@ -21,7 +21,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     clickModel: 'coec',
     maxRank: 20,
     contextFields: [],
-    startDate: moment().format('YYYY-MM-DD'),
+    startDate: moment('2000-01-01').format('YYYY-MM-DD'),
     endDate: moment().format('YYYY-MM-DD'),
   });
 
