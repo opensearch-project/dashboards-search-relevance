@@ -4,6 +4,7 @@
  */
 
 import { JudgmentType, JudgmentFormData, ComboBoxOption } from '../types';
+import moment from 'moment';
 
 export interface ValidationResult {
   isValid: boolean;
@@ -12,6 +13,7 @@ export interface ValidationResult {
     querySet?: string;
     searchConfigs?: string;
     model?: string;
+    dateRange?: string;
   };
 }
 
@@ -40,6 +42,18 @@ export const validateJudgmentForm = (
     }
     if (selectedModel.length === 0) {
       errors.model = 'Please select a model id';
+      isValid = false;
+    }
+  }
+
+  // Date validation: Only validate date range when both dates are provided
+  // Having either only startDate or only endDate is valid
+  if (data.startDate && data.endDate) {
+    const startDateMoment = moment(data.startDate);
+    const endDateMoment = moment(data.endDate);
+
+    if (endDateMoment.isBefore(startDateMoment, 'day')) {
+      errors.dateRange = 'End Date cannot be earlier than Start Date.';
       isValid = false;
     }
   }

@@ -10,6 +10,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Use Dashboards to visualize results of Evaluation and Hybrid Experiments ([#570](https://github.com/opensearch-project/dashboards-search-relevance/pull/570))
 * Enable AutoPopulated Fields in SearchRelevance Query Compare Plugin Page ([#577](https://github.com/opensearch-project/dashboards-search-relevance/pull/577))
 * Add polling mechanism to experiment_listing and judgment_listing view ([#594](https://github.com/opensearch-project/dashboards-search-relevance/pull/594))
+* Add startDate and endDate for implicit judgment form ([#604](https://github.com/opensearch-project/dashboards-search-relevance/pull/604/files))
 * Change default UI to the new SRW interface, preserve opt out option ([#614](https://github.com/opensearch-project/dashboards-search-relevance/pull/614))
 
 ### Enhancements

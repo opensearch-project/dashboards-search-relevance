@@ -8,6 +8,7 @@ import { JudgmentType, ComboBoxOption, ModelOption, JudgmentFormData } from '../
 import { JudgmentService } from '../services/judgment_service';
 import { validateJudgmentForm } from '../utils/validation';
 import { buildJudgmentPayload } from '../utils/form_processor';
+import moment from 'moment';
 
 export const useJudgmentForm = (http: any, notifications: any) => {
   // Form data
@@ -20,6 +21,8 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     clickModel: 'coec',
     maxRank: 20,
     contextFields: [],
+    startDate: moment('2000-01-01').format('YYYY-MM-DD'),
+    endDate: moment().format('YYYY-MM-DD'),
   });
 
   // Selection states
@@ -40,6 +43,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   // UI states
   const [nameError, setNameError] = useState('');
   const [newContextField, setNewContextField] = useState('');
+  const [dateRangeError, setDateRangeError] = useState('');
 
   const service = new JudgmentService(http);
 
@@ -119,6 +123,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       );
 
       setNameError(validation.errors.name || '');
+      setDateRangeError(validation.errors.dateRange || '');
 
       if (validation.errors.querySet) {
         notifications.toasts.addDanger(validation.errors.querySet);
@@ -128,6 +133,9 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       }
       if (validation.errors.model) {
         notifications.toasts.addDanger(validation.errors.model);
+      }
+      if (validation.errors.dateRange) {
+        notifications.toasts.addDanger(validation.errors.dateRange);
       }
 
       if (!validation.isValid) {
@@ -181,5 +189,6 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     addContextField,
     removeContextField,
     validateAndSubmit,
+    dateRangeError,
   };
 };

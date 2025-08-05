@@ -39,6 +39,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     addContextField,
     removeContextField,
     validateAndSubmit,
+    dateRangeError,
   } = useJudgmentForm(http, notifications);
 
   const handleSubmit = useCallback(() => {
@@ -100,6 +101,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             setNewContextField={setNewContextField}
             addContextField={addContextField}
             removeContextField={removeContextField}
+            dateRangeError={dateRangeError}
           />
         </EuiFlexItem>
       </EuiPanel>
