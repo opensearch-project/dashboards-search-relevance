@@ -13,6 +13,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Bug Fixes
 
 ### Infrastructure
+- Update delete-backport-branch workflow permissions to use contents:write instead of pull-requests:write
 
 ### Documentation
 
