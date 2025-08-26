@@ -28,4 +28,36 @@ describe('Search bar component', () => {
       expect(wrapper).toMatchSnapshot();
     });
   });
+
+  it('handles input change', () => {
+    const setSearchBarValue = jest.fn();
+    const wrapper = mount(
+      <SearchInputBar
+        searchBarValue=""
+        setSearchBarValue={setSearchBarValue}
+        onClickSearch={jest.fn()}
+      />
+    );
+
+    const input = wrapper.find('EuiCompressedFieldSearch');
+    input.prop('onChange')({ target: { value: 'new search' } });
+    
+    expect(setSearchBarValue).toHaveBeenCalledWith('new search');
+  });
+
+  it('handles search button click', () => {
+    const onClickSearch = jest.fn();
+    const wrapper = mount(
+      <SearchInputBar
+        searchBarValue="test"
+        setSearchBarValue={jest.fn()}
+        onClickSearch={onClickSearch}
+      />
+    );
+
+    const input = wrapper.find('EuiCompressedFieldSearch');
+    input.prop('onSearch')();
+    
+    expect(onClickSearch).toHaveBeenCalled();
+  });
 });

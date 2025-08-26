@@ -13,6 +13,8 @@ import {
   EuiSuperSelect,
   EuiFormRow,
   EuiAccordion,
+  EuiFlexGroup,
+  EuiFlexItem,
 } from '@elastic/eui';
 
 import './visual_comparison.scss';
@@ -30,12 +32,13 @@ interface OpenSearchComparisonProps {
 }
 
 export const convertFromSearchResult = (searchResult) => {
-  if (!searchResult.hits?.hits) return undefined;
+  if (!searchResult?.hits?.hits) return undefined;
 
   return searchResult.hits.hits.map((x, index) => ({
     _id: x._id,
     _score: x._score,
     rank: index + 1,
+    highlight: x.highlight,
     ...x._source,
   }));
 };
@@ -217,6 +220,7 @@ export const VisualComparison = ({
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
   const [imageFieldName, setImageFieldName] = useState(null);
+  const [sizeMultiplier, setSizeMultiplier] = useState(2);
 
   // Available fields for display - will be updated based on actual data
   const [displayFields, setDisplayFields] = useState([{ value: '_id', label: 'ID' }]);
@@ -401,30 +405,52 @@ export const VisualComparison = ({
 
           {/* Field selector dropdown */}
           <div className="mb-4">
-            <EuiFormRow label="Display Field:" id="fieldSelectorForm">
-              <EuiSuperSelect
-                id="field-selector"
-                options={
-                  displayFields && displayFields.length > 0
-                    ? displayFields.map((field) => ({
-                        value: field.value,
-                        inputDisplay: field.label,
-                        dropdownDisplay: field.label,
-                      }))
-                    : [
-                        {
-                          value: '',
-                          inputDisplay: 'No fields available',
-                          dropdownDisplay: 'No fields available',
-                        },
-                      ]
-                }
-                valueOfSelected={displayField}
-                onChange={(value) => setDisplayField(value)}
-                fullWidth
-                hasDividers
-              />
-            </EuiFormRow>
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <EuiFormRow label="Display Field:" id="fieldSelectorForm">
+                  <EuiSuperSelect
+                    id="field-selector"
+                    options={
+                      displayFields && displayFields.length > 0
+                        ? displayFields.map((field) => ({
+                            value: field.value,
+                            inputDisplay: field.label,
+                            dropdownDisplay: field.label,
+                          }))
+                        : [
+                            {
+                              value: '',
+                              inputDisplay: 'No fields available',
+                              dropdownDisplay: 'No fields available',
+                            },
+                          ]
+                    }
+                    valueOfSelected={displayField}
+                    onChange={(value) => setDisplayField(value)}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false} style={{ minWidth: '150px' }}>
+                <EuiFormRow label="Size:" id="sizeSelectorForm">
+                  <EuiSuperSelect
+                    id="size-selector"
+                    options={[
+                      { value: 1, inputDisplay: '1 (32px)', dropdownDisplay: '1 (32px)' },
+                      { value: 2, inputDisplay: '2 (64px)', dropdownDisplay: '2 (64px)' },
+                      { value: 3, inputDisplay: '3 (96px)', dropdownDisplay: '3 (96px)' },
+                      { value: 4, inputDisplay: '4 (128px)', dropdownDisplay: '4 (128px)' },
+                      { value: 5, inputDisplay: '5 (160px)', dropdownDisplay: '5 (160px)' },
+                    ]}
+                    valueOfSelected={sizeMultiplier}
+                    onChange={(value) => setSizeMultiplier(Number(value))}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </div>
 
           {/* Summary section with Venn diagram style using CSS classes */}
@@ -445,7 +471,7 @@ export const VisualComparison = ({
 
             <div className="flex">
               {/* Result 1 ranks - with refs to capture positions */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result1}
                   resultNum={1}
@@ -455,11 +481,12 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
                 />
               </div>
 
               {/* Connection lines */}
-              <div className="w-1/3 relative">
+              <div className="w-1/5 relative">
                 <ConnectionLines
                   mounted={mounted}
                   result1={result1}
@@ -474,7 +501,7 @@ export const VisualComparison = ({
               </div>
 
               {/* Result 2 ranks */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result2}
                   resultNum={2}
@@ -484,6 +511,7 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
                 />
               </div>
             </div>

@@ -11,11 +11,15 @@ import {
   EuiPanel,
   EuiHorizontalRule,
   EuiSplitPanel,
+  EuiSelect,
+  EuiFormRow,
+  EuiFlexItem,
+  EuiFlexGroup,
 } from '@elastic/eui';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 
-import { CoreStart, MountPoint } from '../../../../../../src/core/public';
+import { CoreStart, MountPoint, NotificationsStart } from '../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { DataSourceOption } from '../../../../../../src/plugins/data_source_management/public/components/data_source_selector/data_source_selector';
 import { NavigationPublicPluginStart } from '../../../../../../src/plugins/navigation/public';
@@ -65,6 +69,13 @@ export const SearchResult = ({
   notifications,
   uiSettings,
 }: SearchResultProps) => {
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
   const [queryString1, setQueryString1] = useState(DEFAULT_QUERY);
   const [queryString2, setQueryString2] = useState(DEFAULT_QUERY);
   const [queryResult1, setQueryResult1] = useState<SearchResults>({} as any);
@@ -333,6 +344,8 @@ export const SearchResult = ({
             }),
           })
           .then((res) => {
+            if (!isMountedRef.current) return;
+            
             if (res.result1) {
               setQueryResult1(res.result1);
               updateComparedResult1(res.result1);
@@ -363,6 +376,8 @@ export const SearchResult = ({
             }),
           })
           .then((res) => {
+            if (!isMountedRef.current) return;
+            
             if (res.result2) {
               setQueryResult2(res.result2);
               updateComparedResult2(res.result2);
@@ -463,26 +478,27 @@ export const SearchResult = ({
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-
-        <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
-          <EuiSplitPanel.Inner className="search-relevance-result-panel">
-            {(queryError1.errorResponse.statusCode !== 200 ||
-              queryError1.queryString.length > 0) && <ErrorMessage queryError={queryError1} />}
-          </EuiSplitPanel.Inner>
-
-          <EuiSplitPanel.Inner className="search-relevance-result-panel">
-            {(queryError2.errorResponse.statusCode !== 200 ||
-              queryError2.queryString.length > 0) && <ErrorMessage queryError={queryError2} />}
-          </EuiSplitPanel.Inner>
-        </EuiSplitPanel.Outer>
-
-        <VisualComparison
-          queryResult1={convertFromSearchResult(queryResult1)}
-          queryResult2={convertFromSearchResult(queryResult2)}
-          queryText={searchBarValue}
-          resultText1="Result 1"
-          resultText2="Result 2"
-        />
+        {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) ||
+        (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
+          <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
+            <EuiSplitPanel.Inner className="search-relevance-result-panel">
+              {(queryError1.errorResponse.statusCode !== 200 ||
+                queryError1.queryString.length > 0) && <ErrorMessage queryError={queryError1} />}
+            </EuiSplitPanel.Inner>
+            <EuiSplitPanel.Inner className="search-relevance-result-panel">
+              {(queryError2.errorResponse.statusCode !== 200 ||
+                queryError2.queryString.length > 0) && <ErrorMessage queryError={queryError2} />}
+            </EuiSplitPanel.Inner>
+          </EuiSplitPanel.Outer>
+        ) : (
+          <VisualComparison
+            queryResult1={convertFromSearchResult(queryResult1)}
+            queryResult2={convertFromSearchResult(queryResult2)}
+            queryText={searchBarValue}
+            resultText1="Result 1"
+            resultText2="Result 2"
+          />
+        )}
       </EuiPageContentBody>
     </>
   );
