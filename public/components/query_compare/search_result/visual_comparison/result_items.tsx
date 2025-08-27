@@ -14,6 +14,7 @@ interface ResultItemsProps {
   handleItemClick: (item: any, event: React.MouseEvent) => void;
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
+  sizeMultiplier: number;
 }
 
 export const ResultItems: React.FC<ResultItemsProps> = ({
@@ -25,7 +26,11 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
   handleItemClick,
   result1ItemsRef,
   result2ItemsRef,
+  sizeMultiplier,
 }) => {
+  const imageSize = 32 * sizeMultiplier;
+  const imageSizeClass = `w-${Math.min(sizeMultiplier * 4, 64)} h-${Math.min(sizeMultiplier * 4, 64)}`;
+  const maxLines = sizeMultiplier;
   return (
     <div id={`result${resultNum}-items`}>
       {items.map((item, index) => (
@@ -52,22 +57,36 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
           >
             {item.rank}
           </div>
-          <div className={`w-8 h-8 ${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`}>
+          <div className={`${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`} style={{ width: `${imageSize}px`, height: `${imageSize}px` }}>
             {imageFieldName &&
             item[imageFieldName] &&
             item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
               <img
-                width="32"
-                height="32"
+                width={imageSize}
+                height={imageSize}
                 src={item[imageFieldName]}
-                className="w-8 h-8 object-cover rounded"
+                className="object-contain rounded"
+                style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
               />
             ) : (
-              <div className="w-8 h-8 object-cover rounded" />
+              <div className="rounded" style={{ width: `${imageSize}px`, height: `${imageSize}px` }} />
             )}
           </div>
-          <div className="font-mono text-sm truncate overflow-hidden">
-            {item[displayField] || item._id}
+          <div 
+            className="font-mono text-xs break-words overflow-hidden flex-grow"
+            style={{ 
+              display: '-webkit-box',
+              WebkitLineClamp: maxLines,
+              WebkitBoxOrient: 'vertical'
+            }}
+          >
+            {item.highlight && item.highlight[displayField] ? (
+              <span dangerouslySetInnerHTML={{ 
+                __html: item.highlight[displayField][0].replace(/<em>/g, '<mark style="background-color: yellow;">').replace(/<\/em>/g, '</mark>') 
+              }} />
+            ) : (
+              item[displayField] || item._id
+            )}
           </div>
         </div>
       ))}

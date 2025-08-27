@@ -98,4 +98,252 @@ describe('Flyout component', () => {
     expect(setPipeline).toHaveBeenCalledTimes(3);
     expect(setQueryError).toHaveBeenCalledTimes(3);
   });
+
+  it('handles index selection change', () => {
+    const setSelectedIndex = jest.fn();
+    const setQueryError = jest.fn();
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={setSelectedIndex}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={setQueryError}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const select = wrapper.find('EuiCompressedSelect');
+    select.prop('onChange')({ target: { value: 'test-index' } });
+    
+    expect(setSelectedIndex).toHaveBeenCalledWith('test-index');
+    expect(setQueryError).toHaveBeenCalled();
+  });
+
+  it('handles pipeline selection with empty array', () => {
+    const setPipeline = jest.fn();
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={setPipeline}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const comboBox = wrapper.find('EuiCompressedComboBox');
+    comboBox.prop('onChange')([]);
+    
+    expect(setPipeline).toHaveBeenCalledWith('');
+  });
+
+  it('handles code editor blur with empty query', () => {
+    const setQueryError = jest.fn();
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={''}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={setQueryError}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const codeEditor = wrapper.find('EuiCodeEditor');
+    codeEditor.prop('onBlur')();
+    
+    expect(setQueryError).toHaveBeenCalled();
+  });
+
+  it('handles index blur without selection', () => {
+    const setQueryError = jest.fn();
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={setQueryError}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const select = wrapper.find('EuiCompressedSelect');
+    select.prop('onBlur')();
+    
+    expect(setQueryError).toHaveBeenCalled();
+  });
+
+  it('handles data source selection for query 1', () => {
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={true}
+          notifications={{} as any}
+          savedObjects={{ client: {} } as any}
+          setDataSource={jest.fn()}
+          dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+          navigation={{} as any}
+          setActionMenu={jest.fn()}
+          dataSourceOptions={[]}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const instance = wrapper.find('SearchConfig').instance() as any;
+    if (instance && instance.onSelectedDataSource) {
+      instance.onSelectedDataSource([{ id: 'test-datasource' }]);
+    }
+  });
+
+  it('handles data source selection for query 2', () => {
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={2}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={true}
+          notifications={{} as any}
+          savedObjects={{ client: {} } as any}
+          setDataSource={jest.fn()}
+          dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+          navigation={{} as any}
+          setActionMenu={jest.fn()}
+          dataSourceOptions={[]}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const instance = wrapper.find('SearchConfig').instance() as any;
+    if (instance && instance.onSelectedDataSource) {
+      instance.onSelectedDataSource([{ id: 'test-datasource-2' }]);
+    }
+  });
+
+  it('handles data source selection with empty array', () => {
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={true}
+          notifications={{} as any}
+          savedObjects={{ client: {} } as any}
+          setDataSource={jest.fn()}
+          dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+          navigation={{} as any}
+          setActionMenu={jest.fn()}
+          dataSourceOptions={[]}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const instance = wrapper.find('SearchConfig').instance() as any;
+    if (instance && instance.onSelectedDataSource) {
+      instance.onSelectedDataSource([]);
+    }
+  });
+
+  it('renders with data source enabled', () => {
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={true}
+          notifications={{} as any}
+          savedObjects={{ client: {} } as any}
+          setDataSource={jest.fn()}
+          dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+          navigation={{} as any}
+          setActionMenu={jest.fn()}
+          dataSourceOptions={[]}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    expect(wrapper.text()).toContain('DataSourceSelector');
+  });
+
+  it('handles pipeline selection with valid pipeline', () => {
+    const setPipeline = jest.fn();
+    const wrapper = mount(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={setPipeline}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    const comboBox = wrapper.find('EuiCompressedComboBox');
+    comboBox.prop('onChange')([{ label: 'test-pipeline' }]);
+    
+    expect(setPipeline).toHaveBeenCalledWith('test-pipeline');
+  });
 });
