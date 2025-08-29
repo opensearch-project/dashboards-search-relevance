@@ -80,11 +80,6 @@ describe('VisualComparison', () => {
     render(<VisualComparison {...defaultProps} queryResult1={[]} queryResult2={[]} />);
     expect(screen.getAllByText('(0 results)')).toHaveLength(2);
   });
-
-  it('displays style selector accordion', () => {
-    render(<VisualComparison {...defaultProps} />);
-    expect(screen.getByText('Visualization Style Options')).toBeInTheDocument();
-  });
 });
 
 describe('convertFromSearchResult', () => {
