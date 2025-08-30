@@ -19,6 +19,8 @@ export interface UseQuerySetFormReturn {
   setQuerySetSize: (size: number) => void;
   isManualInput: boolean;
   setIsManualInput: (manual: boolean) => void;
+  isTextInput: boolean;
+  setIsTextInput: (isText: boolean) => void;
   manualQueries: string;
   setManualQueries: (queries: string) => void;
   files: File[];
@@ -31,8 +33,9 @@ export interface UseQuerySetFormReturn {
   validateField: (field: string, value: string) => void;
   isFormValid: () => boolean;
 
-  // File handling
+  // Input handling
   handleFileContent: (files: FileList) => Promise<void>;
+  parseQueriesText: (text: string, isPlainText?: boolean) => void;
   clearFileData: () => void;
 }
 
@@ -42,6 +45,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
   const [sampling, setSampling] = useState('random');
   const [querySetSize, setQuerySetSize] = useState<number>(10);
   const [isManualInput, setIsManualInput] = useState(false);
+  const [isTextInput, setIsTextInput] = useState(false);
   const [manualQueries, setManualQueries] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [parsedQueries, setParsedQueries] = useState<string[]>([]);
@@ -76,32 +80,117 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     [name, description, querySetSize, manualQueries, isManualInput]
   );
 
-  const isFormValid = useCallback(() => {
-    const formData = { name, description, querySetSize, manualQueries, isManualInput };
-    const validationErrors = validateForm(formData);
-    setErrors(validationErrors);
-    return !hasValidationErrors(validationErrors);
-  }, [name, description, querySetSize, manualQueries, isManualInput]);
-
-  const handleFileContent = useCallback(async (files: FileList) => {
-    if (files && files.length > 0) {
-      const file = files[0];
-      const result = await processQueryFile(file);
-
-      if (result.error) {
-        setErrors((prev) => ({ ...prev, manualQueriesError: result.error! }));
-        clearFileData();
+  const parseQueriesText = useCallback((text: string, isPlainText = isTextInput) => {
+    try {
+      if (!text.trim()) {
+        const errorMsg = isPlainText ? 'No valid queries found' : 'No valid queries found in file';
+        setErrors((prev) => ({ ...prev, manualQueriesError: errorMsg }));
+        setManualQueries('');
+        setParsedQueries([]);
         return;
       }
 
-      setManualQueries(JSON.stringify(result.queries));
-      setParsedQueries(result.queries.map((q) => JSON.stringify(q)));
-      setFiles([file]);
+      const lines = text.trim().split('\n');
+      const queryList: QueryItem[] = [];
+
+      for (const line of lines) {
+        if (!line.trim()) continue;
+
+        try {
+          // If it's plain text input, treat each line as a query
+          if (isPlainText) {
+            queryList.push({
+              queryText: line.trim(),
+              referenceAnswer: '',
+            });
+          } else {
+            // Try to parse as JSON for file upload mode
+            const parsed = JSON.parse(line.trim());
+            if (parsed.queryText) {
+              queryList.push({
+                queryText: String(parsed.queryText).trim(),
+                referenceAnswer: parsed.referenceAnswer
+                  ? String(parsed.referenceAnswer).trim()
+                  : '',
+              });
+            }
+          }
+        } catch (e) {
+          // For plain text, this shouldn't happen
+          // For JSON mode, skip invalid lines
+          if (!isPlainText) {
+            console.error('Error parsing line:', line, e);
+          } else {
+            // Even if JSON parsing fails, still add it as a plain query
+            queryList.push({
+              queryText: line.trim(),
+              referenceAnswer: '',
+            });
+          }
+        }
+      }
+
+      if (queryList.length === 0) {
+        const errorMsg = isPlainText ? 'No valid queries found' : 'No valid queries found in file';
+        setErrors((prev) => ({ ...prev, manualQueriesError: errorMsg }));
+        if (!isPlainText) setFiles([]);
+        setManualQueries('');
+        setParsedQueries([]);
+        return;
+      }
+
+      if (queryList.length > 1000000) {
+        setErrors((prev) => ({ ...prev, manualQueriesError: 'Too many queries found (> 1,000,000)' }));
+        if (!isPlainText) setFiles([]);
+        setManualQueries('');
+        setParsedQueries([]);
+        return;
+      }
+
+      // Store the raw query objects as JSON string
+      setManualQueries(JSON.stringify(queryList));
+      setParsedQueries(queryList.map((q) => JSON.stringify(q)));
       setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+    } catch (error) {
+      console.error('Error processing queries:', error);
+      setErrors((prev) => ({ ...prev, manualQueriesError: 'Error parsing queries' }));
+      setManualQueries('');
+      setParsedQueries([]);
+    }
+  }, [isTextInput]);
+
+  const isFormValid = useCallback(() => {
+    const formData = { 
+      name, 
+      description, 
+      querySetSize, 
+      manualQueries, 
+      isManualInput, 
+      isTextInput 
+    };
+    const validationErrors = validateForm(formData);
+    setErrors(validationErrors);
+    return !hasValidationErrors(validationErrors);
+  }, [name, description, querySetSize, manualQueries, isManualInput, isTextInput]);
+
+  const handleFileContent = useCallback(async (files: FileList) => {
+    if (files && files.length > 0) {
+      try {
+        const file = files[0];
+        const text = await file.text();
+        // First set the file so tests can check it
+        setFiles([file]);
+        // Then parse the text content - force JSON parsing for file uploads
+        parseQueriesText(text, false);
+      } catch (error) {
+        console.error('Error processing file:', error);
+        setErrors((prev) => ({ ...prev, manualQueriesError: 'Error reading file content' }));
+        clearFileData();
+      }
     } else {
       clearFileData();
     }
-  }, []);
+  }, [parseQueriesText]);
 
   const clearFileData = useCallback(() => {
     setFiles([]);
@@ -120,6 +209,8 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     setQuerySetSize,
     isManualInput,
     setIsManualInput,
+    isTextInput,
+    setIsTextInput,
     manualQueries,
     setManualQueries,
     files,
@@ -130,6 +221,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     validateField,
     isFormValid,
     handleFileContent,
+    parseQueriesText,
     clearFileData,
   };
 };
