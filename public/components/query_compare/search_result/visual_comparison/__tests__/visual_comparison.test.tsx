@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { VisualComparison, convertFromSearchResult } from '../visual_comparison';
 
 const mockQueryResult1 = [
@@ -156,5 +156,15 @@ describe('convertFromSearchResult', () => {
     // Assert that the element with class 'bg-unchanged' exists inside the specific item
     const commonElement = result2Item2.querySelector('.bg-result-set-2');
     expect(commonElement).toBeInTheDocument();
+  });
+
+  it('shows ItemDetailHoverPane on item click', () => {
+    render(<VisualComparison {...defaultProps} />);
+    // Text is not there without click
+    expect(screen.queryByText('Test Document 1')).not.toBeInTheDocument();
+    // Click the first item by its unique ID
+    fireEvent.click(document.getElementById('r1-item-1'));
+    // Assert that the title from the mock data appears in the document
+    expect(screen.getByText('Test Document 1')).toBeInTheDocument();
   });
 });
