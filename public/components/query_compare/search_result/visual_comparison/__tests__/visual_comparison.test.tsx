@@ -109,4 +109,52 @@ describe('convertFromSearchResult', () => {
     const result = convertFromSearchResult(undefined);
     expect(result).toBeUndefined();
   });
+
+  it('correctly applies status colors for elements in both results', () => {
+    const { container } = render(<VisualComparison {...defaultProps} />);
+
+    // Find the parent container by its ID
+    const result2ItemsContainer = container.querySelector('#result2-items');
+    expect(result2ItemsContainer).toBeInTheDocument();
+
+    // Find the specific result item within the container by its ID
+    const result2Item1 = result2ItemsContainer.querySelector('#r2-item-1');
+    expect(result2Item1).toBeInTheDocument();
+
+    // Assert that the element with class 'bg-unchanged' exists inside the specific item
+    const commonElement = result2Item1.querySelector('.bg-unchanged');
+    expect(commonElement).toBeInTheDocument();
+  });
+
+  it('correctly applies status colors for elements only in left result', () => {
+    const { container } = render(<VisualComparison {...defaultProps} />);
+
+    // Find the parent container by its ID
+    const result1ItemsContainer = container.querySelector('#result1-items');
+    expect(result1ItemsContainer).toBeInTheDocument();
+
+    // Find the specific result item within the container by its ID
+    const result1Item2 = result1ItemsContainer.querySelector('#r1-item-2');
+    expect(result1Item2).toBeInTheDocument();
+
+    // Assert that the element with class 'bg-unchanged' exists inside the specific item
+    const commonElement = result1Item2.querySelector('.bg-result-set-1');
+    expect(commonElement).toBeInTheDocument();
+  });
+
+  it('correctly applies status colors for elements only in right result', () => {
+    const { container } = render(<VisualComparison {...defaultProps} />);
+
+    // Find the parent container by its ID
+    const result2ItemsContainer = container.querySelector('#result2-items');
+    expect(result2ItemsContainer).toBeInTheDocument();
+
+    // Find the specific result item within the container by its ID
+    const result2Item2 = result2ItemsContainer.querySelector('#r2-item-3');
+    expect(result2Item2).toBeInTheDocument();
+
+    // Assert that the element with class 'bg-unchanged' exists inside the specific item
+    const commonElement = result2Item2.querySelector('.bg-result-set-2');
+    expect(commonElement).toBeInTheDocument();
+  });
 });
