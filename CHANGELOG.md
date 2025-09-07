@@ -1,11 +1,24 @@
-# Changelog
+# CHANGELOG
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
 
-[unreleased]: https://github.com/opensearch-project/dashboards-search-relevance/compare/2.x...HEAD
-[2.4.0]: https://github.com/opensearch-project/dashboards-search-relevance/compare/2.4...HEAD
+### Breaking Changes
+
+### Features
+- Support semantic highlighting and dynamic image sizing ([#627](https://github.com/opensearch-project/dashboards-search-relevance/pull/627))
+
+### Enhancements
+- Improve color coding ([#632](https://github.com/opensearch-project/dashboards-search-relevance/pull/632))
+
+### Bug Fixes
+
+### Infrastructure
+- Update delete-backport-branch workflow permissions to use contents:write instead of pull-requests:write
+
+### Documentation
+
+### Maintenance
+
+### Refactoring

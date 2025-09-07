@@ -1,6 +1,6 @@
 {
   "name": "searchRelevanceDashboards",
-  "version": "3.1.0.0",
+  "version": "3.2.0.0",
   "main": "./public/index.ts",
   "license": "Apache-2.0",
   "scripts": {
@@ -8,6 +8,7 @@
     "build": "yarn plugin-helpers build",
     "test": "../../node_modules/.bin/jest --config ./test/jest.config.js",
     "test:coverage": "../../node_modules/.bin/jest --config ./test/jest.config.js --coverage",
+    "test:coverage:diff": "../../node_modules/.bin/jest --config ./test/jest.config.js --coverage --changedSince=main --passWithNoTests",
     "cypress:run": "TZ=America/Los_Angeles cypress run",
     "cypress:open": "TZ=America/Los_Angeles cypress open",
     "plugin-helpers": "node ../../scripts/plugin_helpers"

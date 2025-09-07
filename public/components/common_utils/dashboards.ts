@@ -20,28 +20,33 @@ async function buildDashboardUrl(share: any, dashboardParams: any) {
   return url;
 }
 
-export function createPhraseFilter(field: string, value: string, indexPatternId: string, controlledBy: string | null = null) {
+export function createPhraseFilter(
+  field: string,
+  value: string,
+  indexPatternId: string,
+  controlledBy: string | null = null
+) {
   return {
     $state: {
-      store: 'appState'
+      store: 'appState',
     },
     meta: {
       alias: null,
-      controlledBy: controlledBy,
+      controlledBy,
       disabled: false,
       index: indexPatternId,
       key: field,
       negate: false,
       params: {
-        query: value
+        query: value,
       },
-      type: 'phrase'
+      type: 'phrase',
     },
     query: {
       match_phrase: {
-        [field]: value
-      }
-    }
+        [field]: value,
+      },
+    },
   };
 }
 
@@ -53,25 +58,25 @@ export const addDaysToTimestamp = (timestamp: string, days: number): string => {
 
 // Simplified version using the helper
 export async function dashboardUrl(
-  share: any, 
-  dashboardId: string, 
+  share: any,
+  dashboardId: string,
   indexPatternId: string,
   filters: any[] = [],
   timeRange: { from: string; to: string }
 ) {
   const dashboardParams = {
-    dashboardId: dashboardId,
-    timeRange: timeRange,
+    dashboardId,
+    timeRange,
     useHash: false,
-    preserveSavedFilters: false,  // This prevents saved filters from overriding
+    preserveSavedFilters: false, // This prevents saved filters from overriding
     query: {
       language: 'kuery',
-      query: ''
+      query: '',
     },
-    filters: filters,
-    viewMode: 'view'
+    filters,
+    viewMode: 'view',
   };
-  
+
   return await buildDashboardUrl(share, dashboardParams);
 }
 
@@ -82,7 +87,7 @@ export const checkDashboardsInstalled = async (http: CoreStart['http']): Promise
   try {
     const _ = await http.get(`/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}`);
     return true;
-  } catch(error) {
+  } catch (error) {
     return false;
   }
 };
@@ -93,7 +98,11 @@ export const checkDashboardsInstalled = async (http: CoreStart['http']): Promise
 export const installDashboards = async (http: CoreStart['http']): Promise<boolean> => {
   try {
     const formData = new FormData();
-    formData.append('file', new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }), 'dashboards.ndjson');
+    formData.append(
+      'file',
+      new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }),
+      'dashboards.ndjson'
+    );
     await http.post('/api/saved_objects/_import', {
       body: formData,
       headers: {
@@ -101,11 +110,11 @@ export const installDashboards = async (http: CoreStart['http']): Promise<boolea
       },
       query: {
         overwrite: true,
-      }
+      },
     });
     return true;
-  } catch(error) {
+  } catch (error) {
     console.error('Failed to install dashboards:', error);
     return false;
   }
-}; 
+};

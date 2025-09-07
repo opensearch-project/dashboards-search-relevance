@@ -51,7 +51,7 @@ export class SearchRelevancePlugin
     core.uiSettings.register({
       [SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED]: {
         name: 'Experimental Search Relevance Workbench',
-        value: false,
+        value: true,
         description: 'Whether to opt-in the experimental search relevance workbench feature',
         schema: schema.boolean(),
         category: ['search relevance'],

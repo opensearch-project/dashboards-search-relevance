@@ -29,20 +29,18 @@ import {
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
-import { ExperimentListingWithRoute } from './experiment_listing';
-import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
+import { ExperimentListingWithRoute, ExperimentViewWithRouter } from './experiment';
 import { QuerySetListing } from './query_set';
-import { SearchConfigurationListingWithRoute } from './search_config_listing';
-import { JudgmentListingWithRoute } from './judgment_listing';
+import {
+  SearchConfigurationListing,
+  SearchConfigurationView,
+  SearchConfigurationCreate,
+} from './search_configuration';
+import { JudgmentListing, JudgmentView, JudgmentCreate } from './judgment';
 import { QuerySetView } from './query_set';
-import SearchConfigurationView from './search_config_view/search_config_view';
-import JudgmentView from './judgment_view/judgment_view';
 import { QuerySetCreate } from './query_set';
-import { SearchConfigurationCreateWithRouter } from './search_configuration_create';
-import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
-import { GetStartedAccordion } from './experiment_create/get_started_accordion';
-import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
-import { TemplateConfigurationWithRouter } from './experiment_create/configuration/template_configuration';
+import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
+import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -205,13 +203,15 @@ const SearchRelevancePage = ({
               if (hashString.startsWith('?')) {
                 hashString = hashString.slice(1); // Remove leading ?
               }
-              
+
               const urlParams = new URLSearchParams(hashString);
               const configParam = urlParams.get('config');
-              
+
               if (configParam) {
                 // Redirect to single query comparison with the config parameter as search param
-                history.push(`${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`);
+                history.push(
+                  `${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`
+                );
                 return null;
               } else {
                 // No config parameter, show experiment listing
@@ -237,14 +237,14 @@ const SearchRelevancePage = ({
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListingWithRoute http={http} />;
+              return <SearchConfigurationListing http={http} />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListingWithRoute http={http} />;
+              return <JudgmentListing http={http} />;
             }}
           />
           <Route
@@ -338,22 +338,14 @@ const SearchRelevancePage = ({
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return (
-                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
-              );
+              return <SearchConfigurationCreate http={http} notifications={notifications} />;
             }}
           />
           <Route
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return (
-                <JudgmentCreateWithRouter
-                  http={http}
-                  notifications={notifications}
-                  history={history}
-                />
-              );
+              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
             }}
           />
         </Switch>

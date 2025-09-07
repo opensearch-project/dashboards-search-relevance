@@ -13,6 +13,8 @@ import {
   EuiSuperSelect,
   EuiFormRow,
   EuiAccordion,
+  EuiFlexGroup,
+  EuiFlexItem,
 } from '@elastic/eui';
 
 import './visual_comparison.scss';
@@ -30,98 +32,36 @@ interface OpenSearchComparisonProps {
 }
 
 export const convertFromSearchResult = (searchResult) => {
-  if (!searchResult.hits?.hits) return undefined;
+  if (!searchResult?.hits?.hits) return undefined;
 
   return searchResult.hits.hits.map((x, index) => ({
     _id: x._id,
     _score: x._score,
     rank: index + 1,
+    highlight: x.highlight,
     ...x._source,
   }));
 };
 
 export const defaultStyleConfig = {
   lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
+    unchanged: { stroke: '#d8f9d5', strokeWidth: 4 },
+    increased: { stroke: '#d8f9d5', strokeWidth: 4 },
+    decreased: { stroke: '#d8f9d5', strokeWidth: 4 },
   },
   statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'bg-yellow-custom',
-    inResult2: 'bg-purple-custom',
+    unchanged: 'bg-unchanged',
+    increased: 'bg-unchanged',
+    decreased: 'bg-unchanged',
+    inResult1: 'bg-result-set-1',
+    inResult2: 'bg-result-set-2',
   },
   vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--yellow-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
+    left: { backgroundColor: 'rgba(133, 159, 209, 1.0)' },
+    middle: { backgroundColor: 'rgba(216,249,213, 0.7)' },
+    right: { backgroundColor: 'rgba(170, 235, 20, 1.0)' },
   },
-  hideLegend: [],
-};
-
-export const rankingChangeStyleConfig = {
-  lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'bg-purple-custom',
-    inResult2: 'bg-purple-custom',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2'],
-};
-
-export const rankingChange2StyleConfig = {
-  lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'rank-no-change',
-    inResult2: 'rank-no-change',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--gray-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(var(--gray-custom), 0.7)' },
-    right: { backgroundColor: 'rgba(var(--gray-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2'],
-};
-
-export const vennDiagramStyleConfig = {
-  lineColors: {
-    unchanged: { stroke: 'black', strokeWidth: 2 },
-    increased: { stroke: 'black', strokeWidth: 2 },
-    decreased: { stroke: 'black', strokeWidth: 2 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-100',
-    increased: 'bg-blue-100',
-    decreased: 'bg-blue-100',
-    inResult1: 'bg-purple-custom',
-    inResult2: 'bg-purple-custom',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
+  hideLegend: ['unchanged', 'increased', 'decreased', 'inResult1', 'inResult2'],
 };
 
 // Utility function to determine display fields and image field
@@ -200,16 +140,8 @@ export const VisualComparison = ({
 
   // Get the style based on selection
   const getCurrentStyle = () => {
-    switch (selectedStyle) {
-      case 'simpler':
-        return rankingChangeStyleConfig;
-      case 'simpler2':
-        return rankingChange2StyleConfig;
-      case 'twoColor':
-        return vennDiagramStyleConfig;
-      default:
-        return defaultStyleConfig;
-    }
+    // Return the default style config. Keep this in case the need for additional styles turns up.
+    return defaultStyleConfig;
   };
 
   const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = getCurrentStyle();
@@ -217,6 +149,7 @@ export const VisualComparison = ({
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
   const [imageFieldName, setImageFieldName] = useState(null);
+  const [sizeMultiplier, setSizeMultiplier] = useState(2);
 
   // Available fields for display - will be updated based on actual data
   const [displayFields, setDisplayFields] = useState([{ value: '_id', label: 'ID' }]);
@@ -401,30 +334,52 @@ export const VisualComparison = ({
 
           {/* Field selector dropdown */}
           <div className="mb-4">
-            <EuiFormRow label="Display Field:" id="fieldSelectorForm">
-              <EuiSuperSelect
-                id="field-selector"
-                options={
-                  displayFields && displayFields.length > 0
-                    ? displayFields.map((field) => ({
-                        value: field.value,
-                        inputDisplay: field.label,
-                        dropdownDisplay: field.label,
-                      }))
-                    : [
-                        {
-                          value: '',
-                          inputDisplay: 'No fields available',
-                          dropdownDisplay: 'No fields available',
-                        },
-                      ]
-                }
-                valueOfSelected={displayField}
-                onChange={(value) => setDisplayField(value)}
-                fullWidth
-                hasDividers
-              />
-            </EuiFormRow>
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <EuiFormRow label="Display Field:" id="fieldSelectorForm">
+                  <EuiSuperSelect
+                    id="field-selector"
+                    options={
+                      displayFields && displayFields.length > 0
+                        ? displayFields.map((field) => ({
+                            value: field.value,
+                            inputDisplay: field.label,
+                            dropdownDisplay: field.label,
+                          }))
+                        : [
+                            {
+                              value: '',
+                              inputDisplay: 'No fields available',
+                              dropdownDisplay: 'No fields available',
+                            },
+                          ]
+                    }
+                    valueOfSelected={displayField}
+                    onChange={(value) => setDisplayField(value)}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false} style={{ minWidth: '150px' }}>
+                <EuiFormRow label="Size:" id="sizeSelectorForm">
+                  <EuiSuperSelect
+                    id="size-selector"
+                    options={[
+                      { value: 1, inputDisplay: '1 (32px)', dropdownDisplay: '1 (32px)' },
+                      { value: 2, inputDisplay: '2 (64px)', dropdownDisplay: '2 (64px)' },
+                      { value: 3, inputDisplay: '3 (96px)', dropdownDisplay: '3 (96px)' },
+                      { value: 4, inputDisplay: '4 (128px)', dropdownDisplay: '4 (128px)' },
+                      { value: 5, inputDisplay: '5 (160px)', dropdownDisplay: '5 (160px)' },
+                    ]}
+                    valueOfSelected={sizeMultiplier}
+                    onChange={(value) => setSizeMultiplier(Number(value))}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </div>
 
           {/* Summary section with Venn diagram style using CSS classes */}
@@ -445,7 +400,7 @@ export const VisualComparison = ({
 
             <div className="flex">
               {/* Result 1 ranks - with refs to capture positions */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result1}
                   resultNum={1}
@@ -455,11 +410,12 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
                 />
               </div>
 
               {/* Connection lines */}
-              <div className="w-1/3 relative">
+              <div className="w-1/5 relative">
                 <ConnectionLines
                   mounted={mounted}
                   result1={result1}
@@ -474,7 +430,7 @@ export const VisualComparison = ({
               </div>
 
               {/* Result 2 ranks */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result2}
                   resultNum={2}
@@ -484,6 +440,7 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
                 />
               </div>
             </div>
@@ -517,47 +474,6 @@ export const VisualComparison = ({
                 {resultText2}
               </div>
             )}
-          </div>
-
-          {/* Style selector dropdown */}
-          <div className="mt-4">
-            <EuiAccordion
-              id="styleSelectorAccordion"
-              buttonContent={<span className="text-xs">Visualization Style Options</span>}
-              paddingSize="m"
-            >
-              <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
-                <EuiSuperSelect
-                  id="style-selector"
-                  options={[
-                    {
-                      value: 'default',
-                      inputDisplay: 'Default Style',
-                      dropdownDisplay: 'Default Style',
-                    },
-                    {
-                      value: 'simpler',
-                      inputDisplay: 'Ranking Change Color Coding',
-                      dropdownDisplay: 'Ranking Change Color Coding',
-                    },
-                    {
-                      value: 'simpler2',
-                      inputDisplay: 'Ranking Change Color Coding 2',
-                      dropdownDisplay: 'Ranking Change Color Coding 2',
-                    },
-                    {
-                      value: 'twoColor',
-                      inputDisplay: 'Venn Diagram Color Coding',
-                      dropdownDisplay: 'Venn Diagram Color Coding',
-                    },
-                  ]}
-                  valueOfSelected={selectedStyle}
-                  onChange={(value) => setSelectedStyle(value)}
-                  fullWidth
-                  hasDividers
-                />
-              </EuiFormRow>
-            </EuiAccordion>
           </div>
 
           {/* Item Details Tooltip on Click */}

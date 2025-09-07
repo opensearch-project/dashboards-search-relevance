@@ -47,7 +47,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       notifications.toasts.addSuccess(`Query set "${formState.name}" created successfully`);
       history.push('/querySet');
     } catch (err) {
-      notifications.toasts.addError(err, {
+      notifications.toasts.addError(err?.body || err, {
         title: 'Failed to create query set',
       });
     }

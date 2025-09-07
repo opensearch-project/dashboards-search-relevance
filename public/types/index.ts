@@ -25,6 +25,7 @@ export interface Document {
   _score: number;
   _source: IDocType;
   fields: IDocType;
+  highlight?: { [key: string]: string[] };
 }
 
 export interface SearchResults {

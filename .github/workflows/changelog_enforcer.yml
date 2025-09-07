@@ -1,10 +1,17 @@
----
-name: "Search Relevance Tools Changelog Enforcer"
+name: Verify Changelog
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review, labeled, unlabeled]
+    types: [edited, labeled, opened, ready_for_review, reopened, review_requested, synchronize, unlabeled]
+
 jobs:
-  changelog:
+  verify-changelog:
     runs-on: ubuntu-latest
     steps:
-      - uses: dangoslen/changelog-enforcer@v3.2.0
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: dangoslen/changelog-enforcer@v3
+        with:
+          skipLabels: 'dependabot, skip-changelog'

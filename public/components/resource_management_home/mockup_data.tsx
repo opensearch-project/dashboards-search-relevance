@@ -4,7 +4,7 @@
  */
 
 import { TableContent } from './types';
-import { QuerySetOption, SearchConfigOption } from '../experiment_create/configuration/types';
+import { QuerySetOption, SearchConfigOption } from '../experiment/configuration/types';
 
 export const experiments: TableContent[] = [
   {
