@@ -6,7 +6,7 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useQuerySetForm } from '../hooks/use_query_set_form';
 import * as validation from '../utils/validation';
-import * as fileProcessor from '../utils/file_processor';
+import { processQueryFile, processPlainTextFile } from '../utils/file_processor';
 
 jest.mock('../utils/validation');
 jest.mock('../utils/file_processor');
@@ -21,11 +21,37 @@ describe('useQuerySetForm', () => {
       manualQueriesError: '',
     });
     (validation.hasValidationErrors as jest.Mock).mockReturnValue(false);
-    // We don't need this mock anymore since we're directly using parseQueriesText
-    // (fileProcessor.processQueryFile as jest.Mock).mockResolvedValue({
-    //   queries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
-    //   error: undefined,
-    // });
+    // Set up mocks for file processors
+    (processQueryFile as jest.Mock).mockReset().mockImplementation(async (file) => {
+      const text = await file.text();
+      if (text.includes('error')) {
+        return { queries: [], error: 'Error reading file content' };
+      }
+      try {
+        const parsed = JSON.parse(text);
+        return { 
+          queries: [{ 
+            queryText: parsed.queryText, 
+            referenceAnswer: parsed.referenceAnswer || '' 
+          }],
+          error: undefined
+        };
+      } catch (e) {
+        return { queries: [], error: 'No valid queries found in file' };
+      }
+    });
+    
+    (processPlainTextFile as jest.Mock).mockReset().mockImplementation(async (file) => {
+      const text = await file.text();
+      if (!text.trim()) {
+        return { queries: [], error: 'No valid queries found' };
+      }
+      const lines = text.trim().split('\n');
+      const queries = lines
+        .filter(line => line.trim())
+        .map(line => ({ queryText: line.trim(), referenceAnswer: '' }));
+      return { queries, error: undefined };
+    });
   });
 
   it('initializes with default values', () => {
@@ -159,6 +185,12 @@ describe('useQuerySetForm', () => {
     Object.defineProperty(mockFile, 'text', {
       value: jest.fn().mockResolvedValue('{"queryText": "test query", "referenceAnswer": "test answer"}'),
     });
+    
+    // Set up specific mock for this test
+    (processQueryFile as jest.Mock).mockResolvedValueOnce({
+      queries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
+      error: undefined
+    });
 
     const { result } = renderHook(() => useQuerySetForm());
 
@@ -287,6 +319,9 @@ describe('useQuerySetForm', () => {
     Object.defineProperty(mockFile, 'text', {
       value: jest.fn().mockRejectedValue(new Error('Failed to read file')),
     });
+    
+    // Set up specific mock for this test
+    (processQueryFile as jest.Mock).mockRejectedValueOnce(new Error('Failed to read file'));
 
     const { result } = renderHook(() => useQuerySetForm());
 

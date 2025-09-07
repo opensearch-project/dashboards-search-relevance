@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { processQueryFile } from '../utils/file_processor';
+import { processQueryFile, processPlainTextFile } from '../utils/file_processor';
 
 describe('file_processor', () => {
   describe('processQueryFile', () => {
@@ -84,6 +84,81 @@ describe('file_processor', () => {
       } as unknown) as File;
 
       const result = await processQueryFile(mockFile);
+
+      expect(result.error).toBe('Error reading file content');
+      expect(result.queries).toHaveLength(0);
+    });
+  });
+
+  describe('processPlainTextFile', () => {
+    it('should process plain text file correctly', async () => {
+      const fileContent = `query 1
+query 2
+query 3`;
+
+      const mockFile = ({
+        text: jest.fn().mockResolvedValue(fileContent),
+      } as unknown) as File;
+
+      const result = await processPlainTextFile(mockFile);
+
+      expect(result.error).toBeUndefined();
+      expect(result.queries).toHaveLength(3);
+      expect(result.queries[0]).toEqual({
+        queryText: 'query 1',
+        referenceAnswer: '',
+      });
+      expect(result.queries[1]).toEqual({
+        queryText: 'query 2',
+        referenceAnswer: '',
+      });
+      expect(result.queries[2]).toEqual({
+        queryText: 'query 3',
+        referenceAnswer: '',
+      });
+    });
+
+    it('should handle empty lines in plain text', async () => {
+      const fileContent = `query 1
+
+query 2
+  
+query 3`;
+
+      const mockFile = ({
+        text: jest.fn().mockResolvedValue(fileContent),
+      } as unknown) as File;
+
+      const result = await processPlainTextFile(mockFile);
+
+      expect(result.error).toBeUndefined();
+      expect(result.queries).toHaveLength(3);
+      expect(result.queries[0].queryText).toBe('query 1');
+      expect(result.queries[1].queryText).toBe('query 2');
+      expect(result.queries[2].queryText).toBe('query 3');
+    });
+
+    it('should return error when no valid queries found in plain text', async () => {
+      const fileContent = `   
+  
+`;
+
+      const mockFile = ({
+        text: jest.fn().mockResolvedValue(fileContent),
+      } as unknown) as File;
+
+      const result = await processPlainTextFile(mockFile);
+
+      expect(result.error).toBe('No valid queries found');
+      expect(result.queries).toHaveLength(0);
+    });
+
+    it('should handle file read errors for plain text', async () => {
+      const mockFile = ({
+        text: jest.fn().mockRejectedValue(new Error('File read error')),
+      } as unknown) as File;
+
+      const result = await processPlainTextFile(mockFile);
 
       expect(result.error).toBe('Error reading file content');
       expect(result.queries).toHaveLength(0);

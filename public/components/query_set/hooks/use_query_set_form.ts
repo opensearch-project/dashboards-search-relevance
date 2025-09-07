@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { validateForm, ValidationErrors, hasValidationErrors } from '../utils/validation';
-import { processQueryFile, QueryItem } from '../utils/file_processor';
+import { processQueryFile, processPlainTextFile, QueryItem } from '../utils/file_processor';
 
 export interface UseQuerySetFormReturn {
   // Form state
@@ -173,30 +173,52 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     return !hasValidationErrors(validationErrors);
   }, [name, description, querySetSize, manualQueries, isManualInput, isTextInput]);
 
+  const clearFileData = useCallback(() => {
+    setFiles([]);
+    setManualQueries('');
+    setParsedQueries([]);
+  }, []);
+
   const handleFileContent = useCallback(async (files: FileList) => {
     if (files && files.length > 0) {
       try {
         const file = files[0];
-        const text = await file.text();
         // First set the file so tests can check it
         setFiles([file]);
-        // Then parse the text content - force JSON parsing for file uploads
-        parseQueriesText(text, false);
+        
+        // Process the file content based on input type
+        let result;
+        try {
+          if (isTextInput) {
+            result = await processPlainTextFile(file);
+          } else {
+            result = await processQueryFile(file);
+          }
+          
+          if (result.error) {
+            setErrors((prev) => ({ ...prev, manualQueriesError: result.error }));
+            clearFileData();
+            return;
+          }
+          
+          // Store the raw query objects as JSON string
+          setManualQueries(JSON.stringify(result.queries));
+          setParsedQueries(result.queries.map((q) => JSON.stringify(q)));
+          setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+        } catch (processingError) {
+          console.error('Error processing file content:', processingError);
+          setErrors((prev) => ({ ...prev, manualQueriesError: 'Error reading file content' }));
+          clearFileData();
+        }
       } catch (error) {
-        console.error('Error processing file:', error);
+        console.error('Error handling file:', error);
         setErrors((prev) => ({ ...prev, manualQueriesError: 'Error reading file content' }));
         clearFileData();
       }
     } else {
       clearFileData();
     }
-  }, [parseQueriesText]);
-
-  const clearFileData = useCallback(() => {
-    setFiles([]);
-    setManualQueries('');
-    setParsedQueries([]);
-  }, []);
+  }, [isTextInput, clearFileData]);
 
   return {
     name,
