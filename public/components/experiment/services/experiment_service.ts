@@ -30,4 +30,25 @@ export class ExperimentService {
   async deleteExperiment(id: string) {
     return await this.http.delete(`${ServiceEndpoints.Experiments}/${id}`);
   }
+
+  async getScheduledExperiments() {
+    const response = await this.http.get(ServiceEndpoints.ScheduledExperiments);
+    return combineResults(
+      ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
+    );
+  }
+
+  async getScheduledExperiment(id: string) {
+    return await this.http.get(`${ServiceEndpoints.ScheduledExperiments}/${id}`);
+  }
+
+  async createScheduledExperiment(data: any) {
+    return await this.http.post(ServiceEndpoints.ScheduledExperiments, {
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteScheduledExperiment(id: string) {
+    return await this.http.delete(`${ServiceEndpoints.ScheduledExperiments}/${id}`);
+  }
 }

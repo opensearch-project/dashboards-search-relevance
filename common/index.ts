@@ -26,6 +26,7 @@ export const ServiceEndpoints = Object.freeze({
   SearchConfigurations: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search_configurations`,
   Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
+  ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';
@@ -34,6 +35,7 @@ export const BackendEndpoints = Object.freeze({
   SearchConfigurations: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/search_configurations`,
   Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
+  ScheduledExperiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments/schedule`,
 } as const);
 
 const ML_COMMON_PLUGIN_BASE_PATH = '_plugins/_ml';

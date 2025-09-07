@@ -39,6 +39,7 @@ import {
   checkDashboardsInstalled,
 } from '../../common_utils/dashboards';
 import { getStatusColor } from '../../common_utils/status';
+import { ScheduleModal } from '../../common/ScheduleModal';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -52,6 +53,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
+  const [experimentToSchedule, setExperimentToSchedule] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [tableData, setTableData] = useState<any[]>([]);
   // Dashboard installation modal state
@@ -59,6 +61,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [pendingDashboardAction, setPendingDashboardAction] = useState<
     (() => Promise<void>) | null
   >(null);
+  // Whether the modal to schedule an experiment is shown
+  const [showScheduleExperimentModal, setShowScheduleExperimentModal] = useState(false);
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
@@ -241,6 +245,29 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     }
   };
 
+  const handleCreateScheduledExperiment = async (cronExpression: String) => {
+    if (!experimentToSchedule) return;
+
+    setIsLoading(true);
+    try {
+      await experimentService.createScheduledExperiment(JSON.stringify({
+        experimentId: experimentToSchedule.id,
+        cronExpression: `${cronExpression.trim()}`
+      }));
+
+      setShowScheduleExperimentModal(false);
+      setExperimentToSchedule(null);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to schedule experiment', err);
+      setError('Failed to schedule experiment');
+      setShowScheduleExperimentModal(false);
+      setExperimentToSchedule(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   // Column definitions
   const tableColumns = [
     {
@@ -317,6 +344,28 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
               setShowDeleteModal(true);
             }}
           />
+          {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
+            <EuiButtonIcon
+              aria-label="Schedule"
+              iconType="clock"
+              color="primary"
+              onClick={() => {
+                setExperimentToSchedule(item);
+                setShowScheduleExperimentModal(true);
+              }}
+            />
+          )}
+          {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
+            <EuiButtonIcon
+              aria-label="Schedule"
+              iconType="clock"
+              color="primary"
+              onClick={() => {
+                setExperimentToSchedule(item);
+                setShowScheduleExperimentModal(true);
+              }}
+            />
+          )}
         </>
       ),
     },
@@ -461,6 +510,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           onSuccess={pendingDashboardAction}
           http={http}
           setError={setError}
+        />
+      )}
+
+      {/* Job Scheduling Modal */}
+      {showScheduleExperimentModal && experimentToSchedule && (
+        <ScheduleModal
+          onClose={() => {
+            setShowScheduleExperimentModal(false);
+            setExperimentToSchedule(null);
+          }}
+          onSubmit={handleCreateScheduledExperiment}
+          itemName={experimentToSchedule.id}
         />
       )}
     </EuiPageTemplate>
