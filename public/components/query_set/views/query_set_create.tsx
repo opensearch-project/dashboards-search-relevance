@@ -100,7 +100,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
           <QuerySetForm formState={formState} filePickerId={filePickerId} />
-          {formState.isManualInput && <QueryPreview parsedQueries={formState.parsedQueries} isTextInput={formState.isTextInput} />}
+          {formState.isManualInput && <QueryPreview parsedQueries={formState.parsedQueries} />}
         </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>

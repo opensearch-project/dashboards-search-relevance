@@ -8,10 +8,9 @@ import { EuiFormRow, EuiPanel, EuiText } from '@elastic/eui';
 
 interface QueryPreviewProps {
   parsedQueries: string[];
-  isTextInput?: boolean;
 }
 
-export const QueryPreview: React.FC<QueryPreviewProps> = ({ parsedQueries, isTextInput = false }) => {
+export const QueryPreview: React.FC<QueryPreviewProps> = ({ parsedQueries }) => {
   if (parsedQueries.length === 0) {
     return null;
   }
@@ -22,7 +21,6 @@ export const QueryPreview: React.FC<QueryPreviewProps> = ({ parsedQueries, isTex
         <EuiText size="s">
           <h4>
             Preview ({parsedQueries.length} {parsedQueries.length === 1 ? 'query' : 'queries'})
-            {isTextInput && <small> - from text input</small>}
           </h4>
           <ul>
             {parsedQueries.slice(0, 5).map((query, idx) => {
