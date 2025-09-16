@@ -408,6 +408,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             if (row.status !== 'success') {
               return '—';
             }
+            if (typeof value === 'string') {
+              return value; // Return string values directly
+            }
             if (typeof value === 'number') {
               return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: 2,
