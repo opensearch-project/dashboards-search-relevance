@@ -86,12 +86,13 @@ jobs:
           yarn osd bootstrap --single-version=loose
         working-directory: OpenSearch-Dashboards
 
-      - name: Run Opensearch Dashboards with SW Installed
+      - name: Run Opensearch Dashboards with SRW Installed
         run: |
           nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
         working-directory: OpenSearch-Dashboards
 
-      - name: Wait OpenSearch Dashboards Compiled Completed
+      - name: Check If OpenSearch Dashboards Is Ready
+        if: ${{ runner.os == 'Linux' }}
         run: |
           if timeout 1200 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
             echo "OpenSearch Dashboards compiled successfully."
@@ -101,10 +102,17 @@ jobs:
           fi
         working-directory: OpenSearch-Dashboards
 
-      - name: Show OpenSearch Dashboards Logs
-        if: always()
-        run: cat dashboard.log
-        working-directory: OpenSearch-Dashboards
+      # - name: Show OpenSearch Dashboards Logs
+      #   if: always()
+      #   run: cat dashboard.log
+      #   working-directory: OpenSearch-Dashboards
+      
+      - name: Upload Dashboards logs
+        uses: actions/upload-artifact@v4.4.0
+        if: failure()
+        with:
+          name: dashboard.logs
+          path: OpenSearch-Dashboards/dashboard.log      
 
       - name: Health check
         run: |
