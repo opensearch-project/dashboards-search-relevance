@@ -39,15 +39,10 @@ jobs:
           target: plugin-artifacts/
           filename: opensearch-search-relevance.zip     
      
-      - name: Remove security policy to support ML
+      - name: Remove security policy
         run: |
-          mkdir -p $(pwd)/plugin-artifacts/plugin-extract
-          cd $(pwd)/plugin-artifacts/plugin-extract
-          unzip ../opensearch-search-relevance.zip
-          rm -f plugin-security.policy
-          zip -r ../opensearch-search-relevance-modified.zip
-          cd ..
-          cd ..
+          zip -d $(pwd)/plugin-artifacts/opensearch-search-relevance.zip plugin-security.policy
+
           
         shell: bash
                         
@@ -64,7 +59,7 @@ jobs:
 
       - name: Install SRW plugin
         run: |
-          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance-modified.zip"
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance.zip"
         shell: bash        
         
       - name: Run OpenSearch
