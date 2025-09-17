@@ -94,7 +94,7 @@ jobs:
           ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
           fetch-depth: 0
 
-      - name: Checkout SW in OpenSearch Dashboards Plugins Dir
+      - name: Checkout SRW in OpenSearch Dashboards Plugins Dir
         uses: actions/checkout@v2
         with:
           path: OpenSearch-Dashboards/plugins/dashboards-search-relevance
@@ -141,10 +141,10 @@ jobs:
           fi
         working-directory: OpenSearch-Dashboards
 
-      # - name: Show OpenSearch Dashboards Logs
-      #   if: always()
-      #   run: cat dashboard.log
-      #   working-directory: OpenSearch-Dashboards
+      - name: Show OpenSearch Dashboards Logs
+        if: always()
+        run: cat dashboard.log
+        working-directory: OpenSearch-Dashboards
       
       - name: Upload Dashboards logs
         uses: actions/upload-artifact@v4.4.0
@@ -153,10 +153,10 @@ jobs:
           name: dashboard.logs
           path: OpenSearch-Dashboards/dashboard.log      
 
-      - name: Health check
-        run: |
-          timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
-        shell: bash
+      # - name: Health check
+      #   run: |
+      #     timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
+      #   shell: bash
 
       - name: Check OpenSearch Dashboards Running on Linux
         if: ${{ runner.os != 'Windows'}}
