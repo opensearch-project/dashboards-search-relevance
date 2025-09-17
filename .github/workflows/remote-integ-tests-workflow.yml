@@ -25,65 +25,23 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
 
-      # - name: Download search relevance artifact
-      #   uses: suisei-cn/actions-download-file@v1.4.0
-      #   with:
-      #     url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-search-relevance&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
-      #     target: plugin-artifacts/
-      #     filename: opensearch-search-relevance.zip
-          
-      - name: Download search relevance artifact
-        uses: suisei-cn/actions-download-file@v1.4.0
+      - name: Checkout Search-Relevance
+        uses: actions/checkout@v2
         with:
-          url: https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/${{ env.OPENSEARCH_PLUGIN_VERSION }}/opensearch-search-relevance-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip
-          target: plugin-artifacts/
-          filename: opensearch-search-relevance.zip     
-     
-      - name: Remove security policy
-        run: |
-          zip -d $(pwd)/plugin-artifacts/opensearch-search-relevance.zip plugin-security.policy
+          path: search-relevance
+          repository: opensearch-project/search-relevance
+          ref: '${{ github.base_ref }}'
 
-          
+      - name: Run OpenSearch with plugin
+        run: |
+          cd search-relevance
+          ./gradlew run &
+          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
         shell: bash
-                        
-      - name: Download OpenSearch
-        uses: peternied/download-file@v2
-        with:
-          url: https://artifacts.opensearch.org/snapshots/core/opensearch/${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/opensearch-min-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT-linux-x64-latest.tar.gz
-
-      - name: Extract OpenSearch
-        run: |
-          tar -xzf opensearch-*.tar.gz
-          rm -f opensearch-*.tar.gz
-        shell: bash
-
-      - name: Install SRW plugin
-        run: |
-          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance.zip"
-        shell: bash        
-        
-      - name: Run OpenSearch
-        run: /bin/bash -c "./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch &"
-        shell: bash        
-
-      # - name: Checkout Search-Relevance
-      #   uses: actions/checkout@v2
-      #   with:
-      #     path: search-relevance
-      #     repository: opensearch-project/search-relevance
-      #     ref: '${{ github.base_ref }}'
-
-      # - name: Run OpenSearch with plugin
-      #   run: |
-      #     cd search-relevance
-      #     ./gradlew run &
-      #     timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
-      #   shell: bash
 
       - name: Check OpenSearch Running on Linux
         if: ${{ runner.os != 'Windows'}}
-        #run: curl http://localhost:9200/
-        run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
+        run: curl http://localhost:9200/
         shell: bash
 
       - name: Checkout OpenSearch Dashboards
@@ -93,8 +51,11 @@ jobs:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
           fetch-depth: 0
+          filter: |
+            cypress
+            test
 
-      - name: Checkout SRW in OpenSearch Dashboards Plugins Dir
+      - name: Checkout SW in OpenSearch Dashboards Plugins Dir
         uses: actions/checkout@v2
         with:
           path: OpenSearch-Dashboards/plugins/dashboards-search-relevance
@@ -125,13 +86,12 @@ jobs:
           yarn osd bootstrap --single-version=loose
         working-directory: OpenSearch-Dashboards
 
-      - name: Run Opensearch Dashboards with SRW Installed
+      - name: Run Opensearch Dashboards with SW Installed
         run: |
           nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
         working-directory: OpenSearch-Dashboards
 
-      - name: Check If OpenSearch Dashboards Is Ready
-        if: ${{ runner.os == 'Linux' }}
+      - name: Wait OpenSearch Dashboards Compiled Completed
         run: |
           if timeout 1200 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
             echo "OpenSearch Dashboards compiled successfully."
@@ -145,18 +105,11 @@ jobs:
         if: always()
         run: cat dashboard.log
         working-directory: OpenSearch-Dashboards
-      
-      - name: Upload Dashboards logs
-        uses: actions/upload-artifact@v4.4.0
-        if: failure()
-        with:
-          name: dashboard.logs
-          path: OpenSearch-Dashboards/dashboard.log      
 
-      # - name: Health check
-      #   run: |
-      #     timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
-      #   shell: bash
+      - name: Health check
+        run: |
+          timeout 600 bash -c 'while [[ "$(curl -k http://localhost:5601/api/status | jq -r '.status.overall.state')" != "green" ]]; do sleep 5; done'
+        shell: bash
 
       - name: Check OpenSearch Dashboards Running on Linux
         if: ${{ runner.os != 'Windows'}}
@@ -183,24 +136,19 @@ jobs:
           echo "::set-output name=cypress_version::$(cat ./package.json | jq '.dependencies.cypress' | tr -d '"')"
         working-directory: opensearch-dashboards-functional-test
 
-      # - name: Finding spec files and store to output
-      #   id: finding-files
-      #   run: |
-      #     {
-      #       echo 'FILELIST<<EOF'
-      #       find cypress/integration/plugins/search-relevance-dashboards -name '*.js' -print
-      #       echo EOF
-      #     } >> "$GITHUB_ENV"
-      #   working-directory: opensearch-dashboards-functional-test
-
-      # - name: Run spec files from output
-      #   run: |
-      #     env CYPRESS_NO_COMMAND_LOG=1 yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*'
-      #   working-directory: opensearch-dashboards-functional-test
-      
-      - name: Run Cypress tests
+      - name: Finding spec files and store to output
+        id: finding-files
         run: |
-          yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*.js'
+          {
+            echo 'FILELIST<<EOF'
+            find cypress/integration/plugins/search-relevance-dashboards -name '*.js' -print
+            echo EOF
+          } >> "$GITHUB_ENV"
+        working-directory: opensearch-dashboards-functional-test
+
+      - name: Run spec files from output
+        run: |
+          env CYPRESS_NO_COMMAND_LOG=1 yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*'
         working-directory: opensearch-dashboards-functional-test
 
       - name: Capture failure screenshots
