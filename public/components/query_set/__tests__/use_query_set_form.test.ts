@@ -354,4 +354,133 @@ describe('useQuerySetForm', () => {
     expect(result.current.manualQueries).toBe('');
     expect(result.current.parsedQueries).toEqual([]);
   });
+
+  it('handles too many queries correctly', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+    
+    // Create a huge string with many lines to simulate exceeding the query limit
+    // We'll use a more reasonable approach by actually creating enough lines
+    // to trigger the limit check, but we'll mock the parsing to be more efficient
+    
+    // Mock the String.prototype.split to return a very large array
+    const originalSplit = String.prototype.split;
+    String.prototype.split = jest.fn().mockImplementation(function(separator) {
+      if (this.toString() === 'TRIGGER_QUERY_LIMIT_TEST' && separator === '\n') {
+        // Create an array with 1,000,001 entries to trigger the limit
+        return Array(1000001).fill('query line');
+      }
+      return originalSplit.call(this, separator);
+    });
+    
+    act(() => {
+      // Use our special test string to trigger the mock
+      result.current.parseQueriesText('TRIGGER_QUERY_LIMIT_TEST', true);
+    });
+    
+    // Restore the original split function
+    String.prototype.split = originalSplit;
+    
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+    expect(result.current.errors.manualQueriesError).toBe('Too many queries found (> 1,000,000)');
+  });
+
+  it('respects explicit isPlainText parameter regardless of component state', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+    
+    // First set the isTextInput to false (JSON mode)
+    act(() => {
+      result.current.setIsTextInput(false);
+    });
+    
+    // Even though we're in JSON mode, explicitly pass true for isPlainText
+    // This should override the component state and parse as plain text
+    const textWithJsonSyntax = '{"looks like": "json"}';
+    
+    act(() => {
+      result.current.parseQueriesText(textWithJsonSyntax, true); // explicitly true
+    });
+    
+    // Should be treated as plain text despite JSON-like format
+    expect(result.current.manualQueries).toBe(
+      JSON.stringify([
+        { queryText: '{"looks like": "json"}', referenceAnswer: '' }
+      ])
+    );
+    
+    // Confirm it was treated as plain text (single query) not JSON (would be error or empty)
+    expect(result.current.parsedQueries).toHaveLength(1);
+    expect(JSON.parse(result.current.parsedQueries[0])).toEqual(
+      { queryText: '{"looks like": "json"}', referenceAnswer: '' }
+    );
+    
+    // Now test the opposite case
+    const plainText = 'simple query text';
+    
+    // Set to text mode
+    act(() => {
+      result.current.setIsTextInput(true);
+    });
+    
+    // But explicitly parse as JSON
+    act(() => {
+      result.current.parseQueriesText(plainText, false); // explicitly false
+    });
+    
+    // Since it's not valid JSON and we forced JSON mode, it should fail to parse
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+    expect(result.current.errors.manualQueriesError).toBeTruthy();
+  });
+
+  it('handles file processing result errors', async () => {
+    // Mock the file processors to return errors
+    (processQueryFile as jest.Mock).mockResolvedValueOnce({
+      queries: [],
+      error: 'Error in query file format'
+    });
+
+    (processPlainTextFile as jest.Mock).mockResolvedValueOnce({
+      queries: [],
+      error: 'Error in plain text file format'
+    });
+
+    const mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' });
+    const mockFileList = ({
+      0: mockFile,
+      length: 1,
+      item: () => mockFile,
+    } as unknown) as FileList;
+
+    // Mock File.text() method
+    Object.defineProperty(mockFile, 'text', {
+      value: jest.fn().mockResolvedValue('test content'),
+    });
+
+    const { result } = renderHook(() => useQuerySetForm());
+
+    // Test JSON mode (isTextInput = false) error
+    await act(async () => {
+      await result.current.handleFileContent(mockFileList);
+    });
+
+    expect(result.current.errors.manualQueriesError).toBe('Error in query file format');
+    expect(result.current.files).toEqual([]);
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+
+    // Test plain text mode (isTextInput = true) error
+    act(() => {
+      result.current.setIsTextInput(true);
+    });
+
+    await act(async () => {
+      await result.current.handleFileContent(mockFileList);
+    });
+
+    expect(result.current.errors.manualQueriesError).toBe('Error in plain text file format');
+    expect(result.current.files).toEqual([]);
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+  });
 });
