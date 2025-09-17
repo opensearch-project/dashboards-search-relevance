@@ -25,19 +25,46 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
 
-      - name: Checkout Search-Relevance
-        uses: actions/checkout@v2
+      - name: Download search relevance artifact
+        uses: suisei-cn/actions-download-file@v1.4.0
         with:
-          path: search-relevance
-          repository: opensearch-project/search-relevance
-          ref: '${{ github.base_ref }}'
+          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-search-relevance&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          target: plugin-artifacts/
+          filename: opensearch-search-relevance.zip
+          
+      - name: Download OpenSearch
+        uses: peternied/download-file@v2
+        with:
+          url: https://artifacts.opensearch.org/snapshots/core/opensearch/${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/opensearch-min-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT-linux-x64-latest.tar.gz
 
-      - name: Run OpenSearch with plugin
+      - name: Extract OpenSearch
         run: |
-          cd search-relevance
-          ./gradlew run &
-          timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
+          tar -xzf opensearch-*.tar.gz
+          rm -f opensearch-*.tar.gz
         shell: bash
+
+      - name: Install SRW plugin
+        run: |
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance.zip"
+        shell: bash        
+        
+      - name: Run OpenSearch
+        run: /bin/bash -c "./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch &"
+        shell: bash        
+
+      # - name: Checkout Search-Relevance
+      #   uses: actions/checkout@v2
+      #   with:
+      #     path: search-relevance
+      #     repository: opensearch-project/search-relevance
+      #     ref: '${{ github.base_ref }}'
+
+      # - name: Run OpenSearch with plugin
+      #   run: |
+      #     cd search-relevance
+      #     ./gradlew run &
+      #     timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
+      #   shell: bash
 
       - name: Check OpenSearch Running on Linux
         if: ${{ runner.os != 'Windows'}}
