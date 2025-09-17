@@ -37,7 +37,18 @@ jobs:
         with:
           url: https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/${{ env.OPENSEARCH_PLUGIN_VERSION }}/opensearch-search-relevance-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip
           target: plugin-artifacts/
-          filename: opensearch-search-relevance.zip          
+          filename: opensearch-search-relevance.zip     
+     
+      - name: Remove security policy to support ML
+        run: |
+          mkdir -p $(pwd)/plugin-extract
+          cd $(pwd)/plugin-extract
+          unzip ../opensearch-search-relevance-3.2.0.0-SNAPSHOT.zip
+          rm -f plugin-security.policy
+          zip -r ../opensearch-search-relevance-modified.zip
+          cd ..
+          
+        shell: bash
                         
       - name: Download OpenSearch
         uses: peternied/download-file@v2
@@ -52,7 +63,7 @@ jobs:
 
       - name: Install SRW plugin
         run: |
-          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance.zip"
+          /bin/bash -c "yes | ./opensearch-${{ env.OPENSEARCH_VERSION }}-SNAPSHOT/bin/opensearch-plugin install file:$(pwd)/plugin-artifacts/opensearch-search-relevance-modified.zip"
         shell: bash        
         
       - name: Run OpenSearch
@@ -75,7 +86,8 @@ jobs:
 
       - name: Check OpenSearch Running on Linux
         if: ${{ runner.os != 'Windows'}}
-        run: curl http://localhost:9200/
+        #run: curl http://localhost:9200/
+        run: timeout 300 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do sleep 5; done'
         shell: bash
 
       - name: Checkout OpenSearch Dashboards
