@@ -93,9 +93,6 @@ jobs:
           repository: opensearch-project/OpenSearch-Dashboards
           ref: ${{ env.OPENSEARCH_DASHBOARDS_VERSION }}
           fetch-depth: 0
-          filter: |
-            cypress
-            test
 
       - name: Checkout SW in OpenSearch Dashboards Plugins Dir
         uses: actions/checkout@v2
