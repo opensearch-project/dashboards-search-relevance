@@ -25,12 +25,21 @@ jobs:
         with:
           java-version: ${{ matrix.jdk }}
 
+      # - name: Download search relevance artifact
+      #   uses: suisei-cn/actions-download-file@v1.4.0
+      #   with:
+      #     url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-search-relevance&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+      #     target: plugin-artifacts/
+      #     filename: opensearch-search-relevance.zip
+          
       - name: Download search relevance artifact
         uses: suisei-cn/actions-download-file@v1.4.0
         with:
-          url: https://aws.oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=org.opensearch.plugin&a=opensearch-search-relevance&v=${{ env.OPENSEARCH_PLUGIN_VERSION }}-SNAPSHOT&p=zip
+          url: https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/${{ env.OPENSEARCH_PLUGIN_VERSION }}/opensearch-search-relevance-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip
           target: plugin-artifacts/
-          filename: opensearch-search-relevance.zip
+          filename: opensearch-search-relevance.zip          
+              
+          https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/3.2.0.0/
           
       - name: Download OpenSearch
         uses: peternied/download-file@v2
