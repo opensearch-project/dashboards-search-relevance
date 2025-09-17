@@ -43,7 +43,7 @@ jobs:
         run: |
           mkdir -p $(pwd)/plugin-extract
           cd $(pwd)/plugin-extract
-          unzip ../opensearch-search-relevance-3.2.0.0-SNAPSHOT.zip
+          unzip ../opensearch-search-relevance.zip
           rm -f plugin-security.policy
           zip -r ../opensearch-search-relevance-modified.zip
           cd ..
