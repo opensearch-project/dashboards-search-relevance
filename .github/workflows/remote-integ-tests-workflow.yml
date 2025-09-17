@@ -38,9 +38,7 @@ jobs:
           url: https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/${{ env.OPENSEARCH_PLUGIN_VERSION }}/opensearch-search-relevance-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip
           target: plugin-artifacts/
           filename: opensearch-search-relevance.zip          
-              
-          https://repo.maven.apache.org/maven2/org/opensearch/plugin/opensearch-search-relevance/3.2.0.0/
-          
+                        
       - name: Download OpenSearch
         uses: peternied/download-file@v2
         with:
