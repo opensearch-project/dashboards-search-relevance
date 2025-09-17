@@ -41,11 +41,12 @@ jobs:
      
       - name: Remove security policy to support ML
         run: |
-          mkdir -p $(pwd)/plugin-extract
-          cd $(pwd)/plugin-extract
+          mkdir -p $(pwd)/plugin-artifacts/plugin-extract
+          cd $(pwd)/plugin-artifacts/plugin-extract
           unzip ../opensearch-search-relevance.zip
           rm -f plugin-security.policy
           zip -r ../opensearch-search-relevance-modified.zip
+          cd ..
           cd ..
           
         shell: bash
