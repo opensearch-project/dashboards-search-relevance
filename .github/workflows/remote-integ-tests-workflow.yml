@@ -183,19 +183,24 @@ jobs:
           echo "::set-output name=cypress_version::$(cat ./package.json | jq '.dependencies.cypress' | tr -d '"')"
         working-directory: opensearch-dashboards-functional-test
 
-      - name: Finding spec files and store to output
-        id: finding-files
-        run: |
-          {
-            echo 'FILELIST<<EOF'
-            find cypress/integration/plugins/search-relevance-dashboards -name '*.js' -print
-            echo EOF
-          } >> "$GITHUB_ENV"
-        working-directory: opensearch-dashboards-functional-test
+      # - name: Finding spec files and store to output
+      #   id: finding-files
+      #   run: |
+      #     {
+      #       echo 'FILELIST<<EOF'
+      #       find cypress/integration/plugins/search-relevance-dashboards -name '*.js' -print
+      #       echo EOF
+      #     } >> "$GITHUB_ENV"
+      #   working-directory: opensearch-dashboards-functional-test
 
-      - name: Run spec files from output
+      # - name: Run spec files from output
+      #   run: |
+      #     env CYPRESS_NO_COMMAND_LOG=1 yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*'
+      #   working-directory: opensearch-dashboards-functional-test
+      
+      - name: Run Cypress tests
         run: |
-          env CYPRESS_NO_COMMAND_LOG=1 yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*'
+          yarn cypress:run-without-security --browser chromium --spec 'cypress/integration/plugins/search-relevance-dashboards/*.js'
         working-directory: opensearch-dashboards-functional-test
 
       - name: Capture failure screenshots
