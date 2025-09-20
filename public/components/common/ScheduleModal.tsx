@@ -26,7 +26,9 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
 
       <EuiModalFooter>
         <EuiButtonEmpty onClick={onClose}>Cancel</EuiButtonEmpty>
-        <EuiButton onClick={() => {onSubmit(cronExpression /*"* * * * *  "*/)}} color="primary" fill>Create Scheduled Experiment</EuiButton>
+        <EuiButton onClick={() => {
+          onSubmit(cronExpression);
+        }} color="primary" fill>Create Scheduled Experiment</EuiButton>
       </EuiModalFooter>
     </EuiModal>
   )

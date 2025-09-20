@@ -265,6 +265,11 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       setExperimentToSchedule(null);
     } finally {
       setIsLoading(false);
+      // Clear tableData to force fresh fetch
+      setTableData([]);
+
+      // Force table refresh after deletion
+      setRefreshKey((prev) => prev + 1);
     }
   }
 
@@ -345,31 +350,37 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
             }}
           />
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="primary"
-              onClick={() => {
-                setExperimentToSchedule(item);
-                setShowScheduleExperimentModal(true);
-              }}
-            />
+            displayScheduleIcon(item)
           )}
           {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="primary"
-              onClick={() => {
-                setExperimentToSchedule(item);
-                setShowScheduleExperimentModal(true);
-              }}
-            />
+            displayScheduleIcon(item)
           )}
         </>
       ),
     },
   ];
+
+  const displayScheduleIcon = (item: any) => {
+    console.log(item)
+    if (item.isScheduled === true) {
+      return (<EuiButtonIcon
+              aria-label="Schedule"
+              iconType="clock"
+              color="text"
+              isDisabled={true}
+            />);
+    } else {
+      return (<EuiButtonIcon
+              aria-label="Schedule"
+              iconType="clock"
+              color="primary"
+              onClick={() => {
+                setExperimentToSchedule(item);
+                setShowScheduleExperimentModal(true);
+              }}
+            />);
+    }
+  }
 
   // Data fetching function
   const findExperiments = async (search: any) => {
