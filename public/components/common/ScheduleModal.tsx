@@ -13,14 +13,14 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
   return (
     <EuiModal onClose={onClose}>
       <EuiModalHeader>
-        <EuiModalHeaderTitle>Schedule Experiment</EuiModalHeaderTitle>
+        <EuiModalHeaderTitle>Schedule Experiment to Run Periodically</EuiModalHeaderTitle>
       </EuiModalHeader>
       <EuiModalBody>
-        <EuiFormRow label="Cron Job Schedule" helpText="Please submit a valid cron job such as (12 * * * *) with single space between parts">
+        <EuiFormRow label="Cron Job Schedule" helpText="Please submit a valid cron job such as '* 1 * * *' with single spaces between parts">
           <EuiFieldText value={cronExpression} onChange={(e) => setCronExpression(e.target.value)} name="cron job" placeholder="To run every morning at 1:00 AM use (* 1 * * *)" />
         </EuiFormRow>
         <EuiText>
-          <p>Do you want to create a schedule for running experiment with id: {itemName}?</p>
+          <p></p>
         </EuiText>
       </EuiModalBody>
 
@@ -28,7 +28,7 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
         <EuiButtonEmpty onClick={onClose}>Cancel</EuiButtonEmpty>
         <EuiButton onClick={() => {
           onSubmit(cronExpression);
-        }} color="primary" fill>Create Scheduled Experiment</EuiButton>
+        }} color="primary" fill>Schedule Experiment to Run</EuiButton>
       </EuiModalFooter>
     </EuiModal>
   )
