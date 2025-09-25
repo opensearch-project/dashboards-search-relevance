@@ -189,7 +189,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   );
   router.get(
     {
-      path: `${BackendEndpoints.ScheduledExperiments}/{id}`,
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
       validate: {
         params: schema.object({
           id: schema.string(),
@@ -200,7 +200,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   );
   router.delete(
     {
-      path: `${BackendEndpoints.ScheduledExperiments}/{id}`,
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
       validate: {
         params: schema.object({
           id: schema.string(),

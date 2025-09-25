@@ -51,7 +51,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [error, setError] = useState<string | null>(null);
   const experimentService = new ExperimentService(http);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showDeleteExperimentModal, setShowDeleteExperimentModal] = useState(false);
+  const [showDeleteScheduleModal, setShowDeleteScheduleModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
   const [experimentToSchedule, setExperimentToSchedule] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -218,7 +219,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   };
 
   // Handle delete function
-  const handleDelete = async () => {
+  const handleDeleteExperiment = async () => {
     if (!experimentToDelete) return;
 
     setIsLoading(true);
@@ -226,7 +227,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       await experimentService.deleteExperiment(experimentToDelete.id);
 
       // Close modal and clear state first
-      setShowDeleteModal(false);
+      setShowDeleteExperimentModal(false);
       setExperimentToDelete(null);
       setError(null);
 
@@ -238,8 +239,37 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     } catch (err) {
       console.error('Failed to delete experiment', err);
       setError('Failed to delete experiment');
-      setShowDeleteModal(false);
+      setShowDeleteExperimentModal(false);
       setExperimentToDelete(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle delete schedule function
+  const handleDeleteSchedule = async () => {
+    if (!experimentToSchedule) return;
+
+    setIsLoading(true);
+    try {
+      console.log("id to delete: " + experimentToSchedule.id)
+      await experimentService.deleteScheduledExperiment(experimentToSchedule.id);
+
+      // Close modal and clear state first
+      setShowDeleteScheduleModal(false);
+      setExperimentToSchedule(null);
+      setError(null);
+
+      // Clear tableData to force fresh fetch
+      setTableData([]);
+
+      // Force table refresh after deletion
+      setRefreshKey((prev) => prev + 1);
+    } catch (err) {
+      console.error('Failed to delete schedule', err);
+      setError('Failed to delete schedule');
+      setShowDeleteScheduleModal(false);
+      setExperimentToSchedule(null);
     } finally {
       setIsLoading(false);
     }
@@ -346,7 +376,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
             color="danger"
             onClick={() => {
               setExperimentToDelete(item);
-              setShowDeleteModal(true);
+              setShowDeleteExperimentModal(true);
             }}
           />
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
@@ -361,19 +391,21 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   ];
 
   const displayScheduleIcon = (item: any) => {
-    console.log(item)
     if (item.isScheduled === true) {
       return (<EuiButtonIcon
               aria-label="Schedule"
               iconType="clock"
-              color="text"
-              isDisabled={true}
+              color="primary"
+              onClick={() => {
+                setExperimentToSchedule(item);
+                setShowDeleteScheduleModal(true);
+              }}
             />);
     } else {
       return (<EuiButtonIcon
               aria-label="Schedule"
               iconType="clock"
-              color="primary"
+              color="text"
               onClick={() => {
                 setExperimentToSchedule(item);
                 setShowScheduleExperimentModal(true);
@@ -503,13 +535,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       </EuiFlexItem>
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && experimentToDelete && (
+      {showDeleteExperimentModal && experimentToDelete && (
         <DeleteModal
           onClose={() => {
-            setShowDeleteModal(false);
+            setShowDeleteExperimentModal(false);
             setExperimentToDelete(null);
           }}
-          onConfirm={handleDelete}
+          onConfirm={handleDeleteExperiment}
           itemName={experimentToDelete.id}
         />
       )}
@@ -533,6 +565,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           }}
           onSubmit={handleCreateScheduledExperiment}
           itemName={experimentToSchedule.id}
+        />
+      )}
+
+      {/* Delete Job Scheduling Modal */}
+      {showDeleteScheduleModal && experimentToSchedule && (
+        <DeleteModal
+          onClose={() => {
+            setShowDeleteScheduleModal(false);
+            setExperimentToSchedule(null);
+          }}
+          onConfirm={handleDeleteSchedule}
+          itemName={"Schedule id: " + experimentToSchedule.id}
         />
       )}
     </EuiPageTemplate>
