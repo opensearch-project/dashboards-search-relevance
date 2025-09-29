@@ -248,6 +248,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           sortable: true,
           render: (value) => {
             if (value !== undefined && value !== null) {
+              if (typeof value === 'string') {
+                return value; // Return string values directly
+              }
               return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,

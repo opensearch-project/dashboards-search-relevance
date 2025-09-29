@@ -1,0 +1,118 @@
+From 0af047adb9424d73c06090908bb6b4d019d6a71a Mon Sep 17 00:00:00 2001
+From: Eric Pugh <epugh@opensourceconnections.com>
+Date: Wed, 10 Sep 2025 08:54:02 -0700
+Subject: [PATCH] Support String values for metrics.   Sometimes you want a
+ label!
+
+---
+ .../experiment/metrics/metrics_summary.tsx       | 16 +++++++++++++---
+ .../views/evaluation_experiment_view.tsx         |  3 +++
+ .../views/hybrid_optimizer_experiment_view.tsx   |  5 ++++-
+ .../views/pairwise_experiment_view.tsx           |  3 +++
+ public/types/index.ts                            |  4 ++--
+ 5 files changed, 25 insertions(+), 6 deletions(-)
+
+diff --git a/public/components/experiment/metrics/metrics_summary.tsx b/public/components/experiment/metrics/metrics_summary.tsx
+index d36603f..348feda 100644
+--- a/public/components/experiment/metrics/metrics_summary.tsx
++++ b/public/components/experiment/metrics/metrics_summary.tsx
+@@ -30,10 +30,20 @@ interface MetricsSummaryPanelProps {
+ }
+ 
+ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metrics }) => {
+-  const formatValue = (values: number[] | undefined) => {
++  const formatValue = (values: (number | string)[] | undefined) => {
+     if (!values || values.length === 0) return '-';
+-    // Calculate average of the values
+-    const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
++    
++    // Check if any value is a string
++    const stringValues = values.filter(val => typeof val === 'string');
++    if (stringValues.length > 0) {
++      // If we have string values, return the first one
++      return stringValues[0];
++    }
++    
++    // For numeric values, calculate average as before
++    const numericValues = values.filter(val => typeof val === 'number') as number[];
++    if (numericValues.length === 0) return '-';
++    const avg = numericValues.reduce((sum, val) => sum + val, 0) / numericValues.length;
+     return avg.toFixed(2).replace(/\.00$/, '');
+   };
+   // tool tip texts
+diff --git a/public/components/experiment/views/evaluation_experiment_view.tsx b/public/components/experiment/views/evaluation_experiment_view.tsx
+index 3dac7c5..649e21f 100644
+--- a/public/components/experiment/views/evaluation_experiment_view.tsx
++++ b/public/components/experiment/views/evaluation_experiment_view.tsx
+@@ -248,6 +248,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
+           sortable: true,
+           render: (value) => {
+             if (value !== undefined && value !== null) {
++              if (typeof value === 'string') {
++                return value; // Return string values directly
++              }
+               return new Intl.NumberFormat(undefined, {
+                 minimumFractionDigits: 2,
+                 maximumFractionDigits: 2,
+diff --git a/public/components/experiment/views/hybrid_optimizer_experiment_view.tsx b/public/components/experiment/views/hybrid_optimizer_experiment_view.tsx
+index 36a5f6b..89eceed 100644
+--- a/public/components/experiment/views/hybrid_optimizer_experiment_view.tsx
++++ b/public/components/experiment/views/hybrid_optimizer_experiment_view.tsx
+@@ -31,7 +31,7 @@ import {
+ } from '../../../../common';
+ 
+ interface VariantEvaluation {
+-  metrics: Record<string, number>;
++  metrics: Record<string, number | string>;
+ }
+ 
+ interface QueryVariantEvaluations {
+@@ -262,6 +262,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
+             sortable: true,
+             render: (value) => {
+               if (value !== undefined && value !== null) {
++                if (typeof value === 'string') {
++                  return value; // Return string values directly
++                }
+                 return new Intl.NumberFormat(undefined, {
+                   minimumFractionDigits: 2,
+                   maximumFractionDigits: 2,
+diff --git a/public/components/experiment/views/pairwise_experiment_view.tsx b/public/components/experiment/views/pairwise_experiment_view.tsx
+index 0c81ac2..4537d54 100644
+--- a/public/components/experiment/views/pairwise_experiment_view.tsx
++++ b/public/components/experiment/views/pairwise_experiment_view.tsx
+@@ -185,6 +185,9 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
+           sortable: true,
+           render: (value) => {
+             if (value !== undefined && value !== null) {
++              if (typeof value === 'string') {
++                return value; // Return string values directly
++              }
+               return new Intl.NumberFormat(undefined, {
+                 minimumFractionDigits: 2,
+                 maximumFractionDigits: 2,
+diff --git a/public/types/index.ts b/public/types/index.ts
+index 97b7eef..8c6c5f7 100644
+--- a/public/types/index.ts
++++ b/public/types/index.ts
+@@ -159,7 +159,7 @@ export const printType = (type: string) => {
+ };
+ 
+ export interface Metrics {
+-  [key: string]: number;
++  [key: string]: number | string;
+ }
+ 
+ export type MetricsCollection = Metrics[];
+@@ -197,7 +197,7 @@ export function combineResults(...results: Array<ParseResult<any>>): ParseResult
+   return errors.length > 0 ? { success: false, errors } : { success: true, data: values };
+ }
+ 
+-export const parseMetrics = (metricsArray: Array<{ metric: string; value: number }>): Metrics => {
++export const parseMetrics = (metricsArray: Array<{ metric: string; value: number | string }>): Metrics => {
+   return Object.fromEntries(
+     metricsArray.map(({ metric, value }) => [metric, value])
+   ) as Metrics;
+-- 
+2.45.1
+
