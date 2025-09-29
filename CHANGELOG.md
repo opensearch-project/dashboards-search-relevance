@@ -9,6 +9,8 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 - Support semantic highlighting and dynamic image sizing ([#627](https://github.com/opensearch-project/dashboards-search-relevance/pull/627))
 
+- Introduce ability to enter queries directly in SRW when creating a new QuerySet ([#599](https://github.com/opensearch-project/dashboards-search-relevance/pull/599))
+
 ### Enhancements
 - Improve color coding ([#632](https://github.com/opensearch-project/dashboards-search-relevance/pull/632))
 
