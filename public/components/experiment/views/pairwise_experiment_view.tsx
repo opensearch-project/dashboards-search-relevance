@@ -212,6 +212,7 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       const snapshot2 = querySnapshots[1].find((s) => s.queryText === queryText).documentIds;
       const query1 = {
         index: searchConfigurations[0].index,
+        size: snapshot1.length,
         query: {
           terms: {
             _id: snapshot1,
@@ -220,6 +221,7 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       };
       const query2 = {
         index: searchConfigurations[1].index,
+        size: snapshot2.length,
         query: {
           terms: {
             _id: snapshot2,

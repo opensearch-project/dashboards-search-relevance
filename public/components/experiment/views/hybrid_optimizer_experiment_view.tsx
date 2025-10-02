@@ -66,7 +66,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
-  const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
+  const sanitizeResponse = (response: any) => response?.hits?.hits?.[0]?._source || undefined;
 
   useEffect(() => {
     const fetchExperiment = async () => {
@@ -95,21 +95,79 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
-          const query = {
-            index: 'search-relevance-evaluation-result',
-            query: {
-              match: {
-                experimentId: _experiment.id,
+          const maxSize = 10000; // OpenSearch max result window
+          const expectedSize = querySetSize * 66;
+          
+          // Process results and organize by query and variant
+          const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
+          let allResults: any[] = [];
+          
+          // If expected results exceed max, use pagination
+          if (expectedSize > maxSize) {
+            let from = 0;
+            let hasMore = true;
+            console.log(`[DEBUG] Expected size: ${expectedSize}, will fetch in batches`);
+            
+            while (hasMore && from < maxSize) { // Important: from + size cannot exceed max_result_window
+              const batchSize = Math.min(maxSize - from, expectedSize - from);
+              const query = {
+                index: 'search-relevance-evaluation-result',
+                query: {
+                  match: {
+                    experimentId: _experiment.id,
+                  },
+                },
+                from: from,
+                size: batchSize,
+              };
+              console.log(`[DEBUG] Fetching batch: from=${from}, size=${batchSize}`);
+              const result = await http.post(ServiceEndpoints.GetSearchResults, {
+                body: JSON.stringify({ query1: query }),
+              });
+              
+              if (result?.result1?.hits?.hits && result.result1.hits.hits.length > 0) {
+                console.log(`[DEBUG] Batch returned ${result.result1.hits.hits.length} results`);
+                allResults = allResults.concat(result.result1.hits.hits);
+                from += result.result1.hits.hits.length;
+                
+                // Stop if we got less than requested or reached max window
+                if (result.result1.hits.hits.length < batchSize || from >= maxSize) {
+                  hasMore = false;
+                  if (from >= maxSize && expectedSize > maxSize) {
+                    console.warn(`[WARNING] Reached OpenSearch max_result_window limit (${maxSize}). Cannot fetch remaining ${expectedSize - from} results.`);
+                    notifications.toasts.addWarning({
+                      title: 'Partial Results',
+                      text: `Due to OpenSearch limitations, only the first ${from} of ${expectedSize} results could be loaded.`,
+                    });
+                  }
+                }
+              } else {
+                hasMore = false;
+              }
+            }
+            console.log(`[DEBUG] Total results fetched: ${allResults.length}`);
+          } else {
+            // Single query for small result sets
+            const query = {
+              index: 'search-relevance-evaluation-result',
+              query: {
+                match: {
+                  experimentId: _experiment.id,
+                },
               },
-            },
-            size: querySetSize * 66,
+              size: expectedSize,
           };
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
             body: JSON.stringify({ query1: query }),
           });
 
-          if (!result?.result1?.hits?.hits) {
+          if (result?.result1?.hits?.hits) {
+              allResults = result.result1.hits.hits;
+            }
+          }
+
+          if (!allResults || allResults.length === 0) {
             console.error('No evaluation results found');
             notifications.toasts.addWarning({
               title: 'No Results',
@@ -119,11 +177,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             return;
           }
 
-          // Process results and organize by query and variant
-          const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
-          result.result1?.hits?.hits?.forEach((hit) => {
-            const nMetrics = {};
-            hit._source.metrics?.forEach((metric) => {
+          console.log(`[DEBUG] Processing ${allResults.length} total results`);
+          // Process all results
+          allResults.forEach((hit: any) => {
+            const nMetrics: Record<string, number> = {};
+            hit._source.metrics?.forEach((metric: any) => {
               nMetrics[metric.metric] = metric.value;
             });
             evaluationsByQueryAndVariant[hit._source.searchText] =
@@ -260,7 +318,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             ),
             dataType: 'number',
             sortable: true,
-            render: (value) => {
+            render: (value: any) => {
               if (value !== undefined && value !== null) {
                 return new Intl.NumberFormat(undefined, {
                   minimumFractionDigits: 2,
@@ -284,7 +342,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       }
 
       // Flatten the nested structure for table display
-      const items = [];
+      const items: any[] = [];
 
       // For each query
       Object.entries(queryEvaluations).forEach(([queryText, variants]) => {
@@ -318,7 +376,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     <EuiPanel hasBorder={true}>
       <EuiDescriptionList type="column" compressed>
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
-        <EuiDescriptionListDescription>{printType(experiment?.type)}</EuiDescriptionListDescription>
+        <EuiDescriptionListDescription>{experiment?.type ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
