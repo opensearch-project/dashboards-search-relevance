@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { HighlightText } from './highlight_text';
 
 interface ResultItemsProps {
   items: any[];
@@ -15,6 +16,8 @@ interface ResultItemsProps {
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   sizeMultiplier: number;
+  highlightPreTags?: string[];
+  highlightPostTags?: string[];
 }
 
 export const ResultItems: React.FC<ResultItemsProps> = ({
@@ -27,6 +30,8 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
   result1ItemsRef,
   result2ItemsRef,
   sizeMultiplier,
+  highlightPreTags,
+  highlightPostTags,
 }) => {
   const imageSize = 32 * sizeMultiplier;
   const imageSizeClass = `w-${Math.min(sizeMultiplier * 4, 64)} h-${Math.min(sizeMultiplier * 4, 64)}`;
@@ -45,7 +50,7 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
           className={`flex ${
             resultNum === 1 ? 'flex-row-reverse' : ''
           } items-center mb-2 hover:bg-gray-100 p-1 rounded cursor-pointer`}
-          onClick={(event) => handleItemClick(item, event)}
+          onClick={(event) => handleItemClick(item, event, resultNum)}
         >
           <div
             className={`w-8 h-8 rounded-full ${getStatusColor(
@@ -57,10 +62,10 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
           >
             {item.rank}
           </div>
-          <div className={`${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`} style={{ width: `${imageSize}px`, height: `${imageSize}px` }}>
-            {imageFieldName &&
-            item[imageFieldName] &&
-            item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ? (
+          {imageFieldName &&
+          item[imageFieldName] &&
+          item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) && (
+            <div className={`${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`} style={{ width: `${imageSize}px`, height: `${imageSize}px` }}>
               <img
                 width={imageSize}
                 height={imageSize}
@@ -68,10 +73,8 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
                 className="object-contain rounded"
                 style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
               />
-            ) : (
-              <div className="rounded" style={{ width: `${imageSize}px`, height: `${imageSize}px` }} />
-            )}
-          </div>
+            </div>
+          )}
           <div 
             className="font-mono text-xs break-words overflow-hidden flex-grow"
             style={{ 
@@ -81,9 +84,11 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
             }}
           >
             {item.highlight && item.highlight[displayField] ? (
-              <span dangerouslySetInnerHTML={{ 
-                __html: item.highlight[displayField][0].replace(/<em>/g, '<mark style="background-color: yellow;">').replace(/<\/em>/g, '</mark>') 
-              }} />
+              <HighlightText 
+                text={item.highlight[displayField][0]} 
+                preTags={highlightPreTags}
+                postTags={highlightPostTags}
+              />
             ) : (
               item[displayField] || item._id
             )}
