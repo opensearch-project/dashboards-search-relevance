@@ -29,6 +29,10 @@ interface OpenSearchComparisonProps {
   queryText: string;
   resultText1: string;
   resultText2: string;
+  highlightPreTags1?: string[];
+  highlightPostTags1?: string[];
+  highlightPreTags2?: string[];
+  highlightPostTags2?: string[];
 }
 
 export const convertFromSearchResult = (searchResult) => {
@@ -134,6 +138,10 @@ export const VisualComparison = ({
   queryText,
   resultText1,
   resultText2,
+  highlightPreTags1,
+  highlightPostTags1,
+  highlightPreTags2,
+  highlightPostTags2,
 }: OpenSearchComparisonProps) => {
   // Add state for selected style
   const [selectedStyle, setSelectedStyle] = useState('default');
@@ -296,12 +304,12 @@ export const VisualComparison = ({
   };
 
   // Function to handle click for item details
-  const handleItemClick = (item, event) => {
+  const handleItemClick = (item, event, resultNum) => {
     // Toggle the selected item - if clicking the same item, close it
     if (selectedItem && selectedItem._id === item._id) {
       setSelectedItem(null);
     } else {
-      setSelectedItem(item);
+      setSelectedItem({ ...item, resultNum });
       setMousePosition({ x: event.clientX, y: event.clientY });
     }
   };
@@ -371,6 +379,11 @@ export const VisualComparison = ({
                       { value: 3, inputDisplay: '3 (96px)', dropdownDisplay: '3 (96px)' },
                       { value: 4, inputDisplay: '4 (128px)', dropdownDisplay: '4 (128px)' },
                       { value: 5, inputDisplay: '5 (160px)', dropdownDisplay: '5 (160px)' },
+                      { value: 6, inputDisplay: '6 (192px)', dropdownDisplay: '6 (192px)' },
+                      { value: 7, inputDisplay: '7 (224px)', dropdownDisplay: '7 (224px)' },
+                      { value: 8, inputDisplay: '8 (256px)', dropdownDisplay: '8 (256px)' },
+                      { value: 9, inputDisplay: '9 (288px)', dropdownDisplay: '9 (288px)' },
+                      { value: 10, inputDisplay: '10 (320px)', dropdownDisplay: '10 (320px)' },
                     ]}
                     valueOfSelected={sizeMultiplier}
                     onChange={(value) => setSizeMultiplier(Number(value))}
@@ -411,6 +424,8 @@ export const VisualComparison = ({
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                   sizeMultiplier={sizeMultiplier}
+                  highlightPreTags={highlightPreTags1}
+                  highlightPostTags={highlightPostTags1}
                 />
               </div>
 
@@ -441,6 +456,8 @@ export const VisualComparison = ({
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                   sizeMultiplier={sizeMultiplier}
+                  highlightPreTags={highlightPreTags2}
+                  highlightPostTags={highlightPostTags2}
                 />
               </div>
             </div>
@@ -483,6 +500,8 @@ export const VisualComparison = ({
             onMouseEnter={() => {}}
             onMouseLeave={() => setSelectedItem(null)}
             imageFieldName={imageFieldName}
+            highlightPreTags={selectedItem?.resultNum === 1 ? highlightPreTags1 : highlightPreTags2}
+            highlightPostTags={selectedItem?.resultNum === 1 ? highlightPostTags1 : highlightPostTags2}
           />
         </EuiPageContent>
       </EuiPageBody>
