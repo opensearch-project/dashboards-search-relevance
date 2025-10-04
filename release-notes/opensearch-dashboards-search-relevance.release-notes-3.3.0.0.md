@@ -7,6 +7,7 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.3.0
 
 ### Enhancements
 * Improve color coding ([#632](https://github.com/opensearch-project/dashboards-search-relevance/pull/632))
+* Allow more than 10 results for a query in pairwise comparison.([#637](https://github.com/opensearch-project/dashboards-search-relevance/pull/637))
 
 ### Bug Fixes
 * Allow more than ten results in queryset comparison view when k > 10 ([#637](https://github.com/opensearch-project/dashboards-search-relevance/pull/637))
