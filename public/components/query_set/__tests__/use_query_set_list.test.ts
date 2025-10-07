@@ -180,4 +180,23 @@ describe('useQuerySetList', () => {
 
     expect(result.current.error).toBe('Custom error');
   });
+
+  it('handles null response gracefully', async () => {
+    // Mock HTTP get to return null
+    mockHttp.get.mockResolvedValue(null);
+
+    const { result } = renderHook(() => useQuerySetList(mockHttp));
+
+    let queryResult;
+    await act(async () => {
+      queryResult = await result.current.findQuerySets('');
+    });
+
+    expect(queryResult).toEqual({
+      total: 0,
+      hits: [],
+    });
+    expect(result.current.error).toBe(null);
+    expect(result.current.isLoading).toBe(false);
+  });
 });

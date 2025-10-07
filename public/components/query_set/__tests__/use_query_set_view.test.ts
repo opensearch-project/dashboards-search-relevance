@@ -86,6 +86,37 @@ describe('useQuerySetView', () => {
     expect(result.current.querySet).toBe(null);
   });
 
+  it('handles malformed response structure', async () => {
+    const mockResponse = {
+      // Missing the hits.hits structure that the hook expects
+      status: 'success',
+      data: {}
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result, waitForNextUpdate } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+
+    await waitForNextUpdate();
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe('No matching query set found');
+    expect(result.current.querySet).toBe(null);
+  });
+
+  it('handles null response', async () => {
+    // Mock the HTTP get to return null
+    mockHttp.get.mockResolvedValue(null);
+
+    const { result, waitForNextUpdate } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+
+    await waitForNextUpdate();
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe('No matching query set found');
+    expect(result.current.querySet).toBe(null);
+  });
+
   it('handles fetch error', async () => {
     const mockError = new Error('Network error');
     mockHttp.get.mockRejectedValue(mockError);
