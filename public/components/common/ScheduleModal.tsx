@@ -16,8 +16,8 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
         <EuiModalHeaderTitle>Schedule Experiment to Run Periodically</EuiModalHeaderTitle>
       </EuiModalHeader>
       <EuiModalBody>
-        <EuiFormRow label="Cron Job Schedule" helpText="Please submit a valid cron job such as '* 1 * * *' with single spaces between parts">
-          <EuiFieldText value={cronExpression} onChange={(e) => setCronExpression(e.target.value)} name="cron job" placeholder="To run every morning at 1:00 AM use (* 1 * * *)" />
+        <EuiFormRow label="Cron Job Schedule" helpText="Please submit a valid cron job such as '0 1 * * *' with single spaces between parts">
+          <EuiFieldText value={cronExpression} onChange={(e) => setCronExpression(e.target.value)} name="cron job" placeholder="To run every morning at 1:00 AM use (0 1 * * *)" />
         </EuiFormRow>
         <EuiText>
           <p></p>
