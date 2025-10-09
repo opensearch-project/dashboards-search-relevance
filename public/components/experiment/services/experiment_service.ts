@@ -5,7 +5,7 @@
 
 import { CoreStart } from '../../../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../common';
-import { combineResults, toExperiment } from '../../../types/index';
+import { combineResults, toExperiment, toExperimentSchedule } from '../../../types/index';
 
 export class ExperimentService {
   constructor(private http: CoreStart['http']) {}
@@ -39,7 +39,8 @@ export class ExperimentService {
   }
 
   async getScheduledExperiment(id: string) {
-    return await this.http.get(`${ServiceEndpoints.ScheduledExperiments}/${id}`);
+    const response = await this.http.get(`${ServiceEndpoints.ScheduledExperiments}/${id}`);
+    return response ? response.hits.hits.map((hit) => toExperimentSchedule(hit._source))[0] : null;
   }
 
   async createScheduledExperiment(data: any) {
