@@ -111,6 +111,7 @@ export type EvaluationExperiment = ExperimentBase & {
   type: ExperimentType.POINTWISE_EVALUATION;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
 };
 
 interface HybridOptimizerResults {
@@ -125,6 +126,7 @@ export type HybridOptimizerExperiment = ExperimentBase & {
   type: ExperimentType.HYBRID_OPTIMIZER;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
   results: HybridOptimizerResults;
 };
 
@@ -143,6 +145,11 @@ export interface JudgmentSet {
   description: string;
   type: string;
   judgmentRatings: QueryJudgment[];
+}
+
+export interface ExperimentSchedule {
+  id: string;
+  expression: string; // cron expression
 }
 
 export const printType = (type: string) => {
@@ -265,6 +272,20 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
   return { success: true, data };
 };
 
+export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedule> => {
+  if (!source.id || !source.schedule || !source.schedule.cron.expression) {
+    return parseError('Missing one of required fields: id, schedule.cron.expression');
+  }
+
+  return {
+    success: true,
+    data: {
+      id: source.id,
+      expression: source.schedule.cron.expression,
+    },
+  };
+}
+
 export const toExperiment = (source: any): ParseResult<Experiment> => {
   // Validate required base fields exist
   if (!source.id || !source.timestamp || !source.querySetId || source.size === undefined) {
@@ -321,6 +342,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
           size,
         },
       };
@@ -345,6 +367,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
           size,
         },
       };
