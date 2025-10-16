@@ -45,4 +45,11 @@ to the `1.x` branch.
 This plugin comes with some dashboards that are installed into OpenSearch Dashboards as Saved Objects. 
 To update the default dashboards that ship with the plugin, you need to export the raw dashboard JSON and update the file `./public/components/common_utils/dashboards_data.ts` that holds the data.
 
-TIP: To escape the export JSON data for embedding in the TypeScript you can escape the quotes using: `sed 's/\\/\\\\/g' input.txt > output.txt`.
+This is the current list of Dashboards that ship with SRW:
+ * Variants Comparison
+ * Experiment Deep Dive
+ * Daily Scheduled Runs
+
+Once you have exported the data you can convert it to the escaped version that we store in the `const escapedDashboardsData` using the below sed command:
+
+Escape quotes using: `sed 's/\\/\\\\/g' export.ndjson > escaped_output.txt`
