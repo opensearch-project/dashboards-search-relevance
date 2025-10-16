@@ -43,12 +43,12 @@ to the `1.x` branch.
 ### Updating Default Dashboards
 
 This plugin comes with some dashboards that are installed into OpenSearch Dashboards as Saved Objects. 
-To update the default dashboards that ship with the plugin, you need to export the raw dashboard JSON and update the file `./public/components/common_utils/dashboards_data.ts` that holds the data.
+To update the default dashboards that ship with the plugin, you need to export the raw dashboards as JSON and update the file `./public/components/common_utils/dashboards_data.ts` that holds the data.
 
 This is the current list of Dashboards that ship with SRW:
  * Variants Comparison
  * Experiment Deep Dive
- * Daily Scheduled Runs
+ * Pointwise Daily Scheduled Runs
 
 Once you have exported the data you can convert it to the escaped version that we store in the `const escapedDashboardsData` using the below sed command:
 
