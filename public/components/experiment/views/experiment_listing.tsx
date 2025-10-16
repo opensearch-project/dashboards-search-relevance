@@ -205,6 +205,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
     await handleVisualizationClick(experiment, dashboardId, indexPatternId);
   };
+  
+  const handlePointwiseExperimentScheduledRunsVisualizationClick = async (experiment: any) => {
+    const dashboardId = SavedObjectIds.PointwiseExperimentScheduledRuns;
+    const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
+    await handleVisualizationClick(experiment, dashboardId, indexPatternId);
+  };
 
   const handleHybridVisualizationClick = async (experiment: any) => {
     const dashboardId = SavedObjectIds.ExperimentVariantComparison;
@@ -384,6 +390,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           )}
           {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
             displayScheduleIcon(item)
+          )}
+          {item.type === 'POINTWISE_EVALUATION' && item.isScheduled === true && (
+            <EuiButtonIcon
+              aria-label="Visualization"
+              iconType="dashboardApp"
+              color="primary"
+              onClick={() => handlePointwiseExperimentScheduledRunsVisualizationClick(item)}
+            />
           )}
         </>
       ),
