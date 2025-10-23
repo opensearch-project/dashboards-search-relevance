@@ -39,7 +39,8 @@ import {
   checkDashboardsInstalled,
 } from '../../common_utils/dashboards';
 import { getStatusColor } from '../../common_utils/status';
-import { ScheduleModal } from '../../common/ScheduleModal';
+import { ScheduleModal } from './ScheduleModal';
+import { DeleteScheduleModal } from './DeleteScheduleModal';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
@@ -55,6 +56,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [showDeleteScheduleModal, setShowDeleteScheduleModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
   const [experimentToSchedule, setExperimentToSchedule] = useState<any>(null);
+  const [scheduledForExperiment, setScheduledForExperiment] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [tableData, setTableData] = useState<any[]>([]);
   // Dashboard installation modal state
@@ -254,12 +256,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   // Handle delete schedule function
   const handleDeleteSchedule = async () => {
-    if (!experimentToSchedule) return;
+    if (!scheduledForExperiment) return;
 
     setIsLoading(true);
     try {
-      console.log("id to delete: " + experimentToSchedule.id)
-      await experimentService.deleteScheduledExperiment(experimentToSchedule.id);
+      console.log("id to delete: " + scheduledForExperiment.id)
+      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id);
 
       // Close modal and clear state first
       setShowDeleteScheduleModal(false);
@@ -308,6 +310,21 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       setRefreshKey((prev) => prev + 1);
     }
   }
+
+  const getScheduledExperiment = async (experimentId: string) => {
+    setIsLoading(true);
+    try {
+      console.log("id to delete: " + experimentId)
+      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId));
+      console.log(scheduledExperiment)
+      return scheduledExperiment.data;
+    } catch (err) {
+      console.error('Failed to retrieve schedule', err);
+      setError('Failed to retrieve schedule');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Column definitions
   const tableColumns = [
@@ -404,6 +421,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     },
   ];
 
+  const handleDeleteScheduleIconClick = async (experimentId: String) => {
+    const scheduleForExperiment = await getScheduledExperiment(experimentId.valueOf())
+    setScheduledForExperiment(scheduleForExperiment);
+    setShowDeleteScheduleModal(true);
+  }
+
   const displayScheduleIcon = (item: any) => {
     if (item.isScheduled === true) {
       return (<EuiButtonIcon
@@ -411,8 +434,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
               iconType="clock"
               color="primary"
               onClick={() => {
-                setExperimentToSchedule(item);
-                setShowDeleteScheduleModal(true);
+                handleDeleteScheduleIconClick(item.id);
               }}
             />);
     } else {
@@ -583,14 +605,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       )}
 
       {/* Delete Job Scheduling Modal */}
-      {showDeleteScheduleModal && experimentToSchedule && (
-        <DeleteModal
+      {showDeleteScheduleModal && scheduledForExperiment && (
+        <DeleteScheduleModal
           onClose={() => {
             setShowDeleteScheduleModal(false);
-            setExperimentToSchedule(null);
+            setScheduledForExperiment(null);
           }}
-          onConfirm={handleDeleteSchedule}
-          itemName={"Schedule id: " + experimentToSchedule.id}
+          onSubmit={handleDeleteSchedule}
+          scheduleForExperiment={scheduledForExperiment}
         />
       )}
     </EuiPageTemplate>

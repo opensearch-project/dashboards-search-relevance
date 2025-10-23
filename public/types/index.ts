@@ -147,6 +147,11 @@ export interface JudgmentSet {
   judgmentRatings: QueryJudgment[];
 }
 
+export interface ExperimentSchedule {
+  id: string;
+  expression: string; // cron expression
+}
+
 export const printType = (type: string) => {
   switch (type) {
     case ExperimentType.PAIRWISE_COMPARISON:
@@ -265,6 +270,20 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
     }
   });
   return { success: true, data };
+};
+
+export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedule> => {
+  if (!source.id || !source.schedule || !source.schedule.cron.expression) {
+    return parseError('Missing one of required fields: id, schedule.cron.expression');
+  }
+
+  return {
+    success: true,
+    data: {
+      id: source.id,
+      expression: source.schedule.cron.expression,
+    },
+  };
 };
 
 export const toExperiment = (source: any): ParseResult<Experiment> => {
