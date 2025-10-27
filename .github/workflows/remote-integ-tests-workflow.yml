@@ -73,7 +73,7 @@ jobs:
         with:
           path: search-processor
           repository: opensearch-project/search-processor
-          ref: main
+          ref: 2.x
 
       - name: Run OpenSearch with plugin
         run: |
