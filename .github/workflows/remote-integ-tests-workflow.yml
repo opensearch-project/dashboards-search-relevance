@@ -19,8 +19,10 @@ jobs:
         include:
           - os: windows-latest
             cypress_cache_folder: ~/AppData/Local/Cypress/Cache
+            browser: electron
           - os: ubuntu-latest
             cypress_cache_folder: ~/.cache/Cypress
+            browser: chrome
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Java 11
@@ -57,7 +59,7 @@ jobs:
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
+          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$MAJOR_VERSION.$MINOR_VERSION" >> $GITHUB_ENV
           echo "SEARCH_PROCESSOR_VERSION=$MAJOR_VERSION.$MINOR_VERSION.0" >> $GITHUB_ENV
         shell: bash
 
@@ -73,7 +75,7 @@ jobs:
         with:
           path: search-processor
           repository: opensearch-project/search-processor
-          ref: ${{ env.SEARCH_PROCESSOR_PLUGIN_VERSION }}
+          ref: 2.x
 
       - name: Run OpenSearch with plugin
         run: |
@@ -157,7 +159,7 @@ jobs:
         uses: cypress-io/github-action@v4
         with:
           working-directory: opensearch-dashboards-functional-test
-          command: yarn run cypress run --env SECURITY_ENABLED=false --browser chrome --spec cypress/integration/plugins/search-relevance-dashboards/*.js
+          command: yarn run cypress run --env SECURITY_ENABLED=false --browser ${{ matrix.browser }} --spec cypress/integration/plugins/search-relevance-dashboards/*.js
         env:
           CYPRESS_CACHE_FOLDER: ${{ matrix.cypress_cache_folder }}
 
