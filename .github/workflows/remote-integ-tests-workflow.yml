@@ -73,7 +73,7 @@ jobs:
         with:
           path: search-processor
           repository: opensearch-project/search-processor
-          ref: ${{ env.SEARCH_PROCESSOR_PLUGIN_VERSION }}
+          ref: main
 
       - name: Run OpenSearch with plugin
         run: |
