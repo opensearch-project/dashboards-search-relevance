@@ -14,8 +14,12 @@ import {
   EuiSpacer,
   EuiFieldNumber,
   EuiSwitch,
+  EuiTitle,
 } from '@elastic/eui';
 import { isValidTokenLimit } from '../utils/validation';
+import { PromptPanel } from './prompt_template/prompt_panel';
+import { ValidationPanel } from './prompt_template/validation_panel';
+import { usePromptTemplate } from '../hooks/use_prompt_template';
 
 interface AdvancedSettingsProps {
   formData: any;
@@ -24,6 +28,8 @@ interface AdvancedSettingsProps {
   setNewContextField: (value: string) => void;
   addContextField: () => void;
   removeContextField: (field: string) => void;
+  modelOptions?: Array<{ label: string; value: string }>;
+  httpClient?: any;
 }
 
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
@@ -33,9 +39,67 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   setNewContextField,
   addContextField,
   removeContextField,
+  modelOptions = [],
+  httpClient,
 }) => {
+  const {
+    outputSchema,
+    setOutputSchema,
+    userInstructions,
+    setUserInstructions,
+    placeholders,
+    validationModelId,
+    setValidationModelId,
+    validatePrompt,
+    getPromptTemplate,
+  } = usePromptTemplate({
+    querySetId: formData.querySetId,
+    modelId: formData.modelId,
+    httpClient
+  });
+
+  // Auto-save template when it changes
+  React.useEffect(() => {
+    const template = getPromptTemplate();
+    updateFormData({ promptTemplate: template });
+  }, [outputSchema, userInstructions, placeholders]);
+
   return (
     <>
+      <EuiTitle size="xxs">
+        <h4>Prompt Template Configuration</h4>
+      </EuiTitle>
+      <EuiSpacer size="s" />
+
+      <EuiFlexGroup gutterSize="m">
+        <EuiFlexItem>
+          <PromptPanel
+            outputSchema={outputSchema}
+            onOutputSchemaChange={setOutputSchema}
+            userInstructions={userInstructions}
+            onUserInstructionsChange={setUserInstructions}
+            placeholders={placeholders}
+          />
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <ValidationPanel
+            placeholders={placeholders}
+            modelId={validationModelId}
+            modelOptions={modelOptions}
+            onModelChange={setValidationModelId}
+            onValidate={validatePrompt}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+
+      <EuiSpacer size="l" />
+
+      <EuiTitle size="xxs">
+        <h4>Additional Settings</h4>
+      </EuiTitle>
+      <EuiSpacer size="s" />
+
       <EuiCompressedFormRow
         label="Context Fields"
         helpText="Specify context fields used for the LLM judgment."

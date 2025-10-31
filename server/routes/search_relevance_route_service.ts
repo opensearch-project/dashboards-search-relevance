@@ -272,6 +272,51 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Judgments)
   );
+
+  router.post(
+    {
+      path: ServiceEndpoints.ValidatePrompt,
+      validate: {
+        body: schema.object({
+          modelId: schema.string(),
+          prompt: schema.string(),
+        }),
+      },
+    },
+    async (context, req, res) => {
+      const { modelId, prompt } = req.body;
+      const dataSourceId = req.query.data_source;
+      const caller = dataSourceId
+        ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
+        : context.core.opensearch.legacy.client.callAsCurrentUser;
+
+      try {
+        const predictPath = `_plugins/_ml/models/${modelId}/_predict`;
+        const response = await caller('transport.request', {
+          method: 'POST',
+          path: predictPath,
+          body: {
+            parameters: {
+              prompt: prompt,
+            },
+          },
+        });
+
+        return res.ok({ body: response });
+      } catch (err) {
+        console.error('Failed to validate prompt with ml_predict', err);
+        return res.customError({
+          statusCode: err.statusCode || 500,
+          body: {
+            message: err.message,
+            attributes: {
+              error: err.body?.error || err.message,
+            },
+          },
+        });
+      }
+    }
+  );
 }
 
 const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {

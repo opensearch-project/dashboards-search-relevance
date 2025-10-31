@@ -29,6 +29,7 @@ export interface JudgmentFormData {
   contextFields?: string[];
   tokenLimit?: number;
   ignoreFailure?: boolean;
+  promptTemplate?: any; // Prompt template configuration
   // UBI specific
   clickModel?: string;
   maxRank?: number;
@@ -42,3 +43,6 @@ export interface JudgmentCreateProps {
   notifications: any;
   history: any;
 }
+
+// Re-export prompt template types
+export * from './types/prompt_template_types';
