@@ -159,7 +159,7 @@ export const printType = (type: string) => {
 };
 
 export interface Metrics {
-  [key: string]: number;
+  [key: string]: number | string;
 }
 
 export type MetricsCollection = Metrics[];
@@ -197,7 +197,7 @@ export function combineResults(...results: Array<ParseResult<any>>): ParseResult
   return errors.length > 0 ? { success: false, errors } : { success: true, data: values };
 }
 
-export const parseMetrics = (metricsArray: Array<{ metric: string; value: number }>): Metrics => {
+export const parseMetrics = (metricsArray: Array<{ metric: string; value: number | string }>): Metrics => {
   return Object.fromEntries(
     metricsArray.map(({ metric, value }) => [metric, value])
   ) as Metrics;
