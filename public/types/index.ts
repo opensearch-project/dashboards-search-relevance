@@ -112,6 +112,7 @@ export type EvaluationExperiment = ExperimentBase & {
   searchConfigurationId: string;
   judgmentId: string;
   isScheduled: string;
+  scheduledExperimentJobId: string;
 };
 
 interface HybridOptimizerResults {
@@ -127,6 +128,7 @@ export type HybridOptimizerExperiment = ExperimentBase & {
   searchConfigurationId: string;
   judgmentId: string;
   isScheduled: string;
+  scheduledExperimentJobId: string;
   results: HybridOptimizerResults;
 };
 
@@ -343,6 +345,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
           isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };
@@ -368,6 +371,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
           isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };

@@ -36,6 +36,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
         if (source) {
           const parsedExperiment = toExperiment(source);
           if (parsedExperiment.success) {
+            console.log("In parsedExperiment", parsedExperiment.data);
             setExperiment(parsedExperiment.data);
           } else {
             setError('Invalid experiment data format');
