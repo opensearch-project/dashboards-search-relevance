@@ -15,7 +15,7 @@ console.log("experiment schedule to delete: ", scheduleForExperiment.id)
         <EuiModalHeaderTitle>View Experiment Schedule </EuiModalHeaderTitle>
       </EuiModalHeader>
       <EuiModalBody>
-        <EuiFormRow label="Cron Job Schedule">
+        <EuiFormRow label="Cron Job Schedule" helpText="To change the schedule, please delete and create a new schedule">
           <EuiFieldText value={scheduleForExperiment.expression} readOnly={true}/>
         </EuiFormRow>
         <EuiText>
