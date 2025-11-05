@@ -46,7 +46,7 @@ export const usePromptTemplate = ({
   httpClient,
 }: UsePromptTemplateProps = {}): UsePromptTemplateReturn => {
   // Prompt configuration state
-  const [outputSchema, setOutputSchema] = useState<OutputSchema>(OutputSchema.SCORE_1_5);
+  const [outputSchema, setOutputSchema] = useState<OutputSchema>(OutputSchema.SCORE_0_1);
   const [userInstructions, setUserInstructions] = useState<string>(DEFAULT_USER_INSTRUCTIONS);
   const [placeholders, setPlaceholders] = useState<string[]>([]);
 
@@ -162,7 +162,7 @@ export const usePromptTemplate = ({
   );
 
   const resetToDefaults = useCallback(() => {
-    setOutputSchema(OutputSchema.SCORE_1_5);
+    setOutputSchema(OutputSchema.SCORE_0_1);
     setUserInstructions(DEFAULT_USER_INSTRUCTIONS);
   }, []);
 
