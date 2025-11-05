@@ -35,7 +35,9 @@ import {
   printType,
   ExperimentType,
   toExperiment,
+  ScheduledJob,
 } from '../../../types/index';
+import { ScheduleDetails } from '../../common/ScheduleDetails';
 import { MetricsSummaryPanel } from '../metrics/metrics_summary';
 import { DocumentScoresTable } from '../metrics/document_score_table';
 import {
@@ -62,6 +64,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [querySet, setQuerySet] = useState<any | null>(null);
   const [judgmentSet, setJudgmentSet] = useState<any | null>(null);
+  const [scheduledExperimentJob, setScheduledExperimentJob] = useState<ScheduledJob | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -143,6 +146,14 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
             .then(sanitizeResponse));
 
+        const _scheduledExperimentJob =
+          _experiment && inputExperiment.isScheduled &&
+          (await http
+            .get(
+              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId
+            )
+            .then(sanitizeResponse));
+
         const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
         const query = {
           index: 'search-relevance-evaluation-result',
@@ -160,16 +171,12 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           result &&
           result.result1?.hits?.hits &&
           combineResults(...result.result1.hits.hits.map((x: any) => toQueryEvaluation(x._source)));
-
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
-          if (parsedExperiment && parsedExperiment.success) {
-            setExperiment(parsedExperiment.data);
-          } else {
-            setExperiment(_experiment);
-          }
+          setExperiment(parsedExperiment.data);
           setSearchConfiguration(_searchConfiguration);
           setQuerySet(_querySet);
           setJudgmentSet(_judgmentSet);
+          setScheduledExperimentJob(_scheduledExperimentJob);
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
             // Check if there are ZSR queries by comparing resultIds count with query set count
@@ -287,17 +294,15 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     <EuiPanel hasBorder={true}>
       <EuiDescriptionList type="column" compressed>
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
-  <EuiDescriptionListDescription>{experiment ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
+        <EuiDescriptionListDescription>{experiment ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
        
-        {experiment && experiment.type === ExperimentType.POINTWISE_EVALUATION && (
-          <>
-            <EuiDescriptionListTitle>Schedule to Run</EuiDescriptionListTitle>
-            <EuiDescriptionListDescription>
-              {experiment.isScheduled ? experiment.scheduledExperimentJobId : 'Not Scheduled'}
-            </EuiDescriptionListDescription>
-          </>
+        {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && (
+          <ScheduleDetails
+            isScheduled={experiment.isScheduled}
+            scheduledExperimentJob={scheduledExperimentJob}
+          />
         )}
-  
+    
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -349,6 +354,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
                   entityNamePlural="Queries"
                   tableColumns={tableColumns}
                   findItems={findQueries as any}
+                  loading={loading}
                   initialPageSize={10}
                   search={{
                     box: {

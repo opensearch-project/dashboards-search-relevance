@@ -154,6 +154,18 @@ export interface ExperimentSchedule {
   expression: string; // cron expression
 }
 
+export interface ScheduledJob {
+  schedule?: {
+    cron?: {
+      expression?: string;
+      timestamp?: string | number;
+      timezone?: string;
+    };
+  };
+  enabledTime?: number;
+  lastUpdateTime?: number;
+}
+
 export const printType = (type: string) => {
   switch (type) {
     case ExperimentType.PAIRWISE_COMPARISON:
@@ -362,7 +374,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
       return {
         success: true,
         data: {
-          type: 'HYBRID_OPTIMIZER',
+          type: ExperimentType.HYBRID_OPTIMIZER,
           status: source.status,
           id: source.id,
           k: source.size,
