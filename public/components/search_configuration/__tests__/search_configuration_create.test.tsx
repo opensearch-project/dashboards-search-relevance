@@ -6,6 +6,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SearchConfigurationCreate } from '../views/search_configuration_create';
+import { validateDescription } from '../utils/validation';
 
 // Mock the hook
 const mockHookReturn = {
@@ -13,6 +14,10 @@ const mockHookReturn = {
   setName: jest.fn(),
   nameError: '',
   validateNameField: jest.fn(),
+  description: '',
+  setDescription: jest.fn(),
+  descriptionError: '',
+  validateDescriptionField: jest.fn(),
   query: '',
   setQuery: jest.fn(),
   queryError: '',

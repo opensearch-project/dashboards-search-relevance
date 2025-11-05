@@ -48,6 +48,7 @@ describe('useSearchConfigurationForm', () => {
     );
 
     expect(result.current.name).toBe('');
+    expect(result.current.description).toBe('');
     expect(result.current.query).toBe('');
     expect(result.current.searchTemplate).toBe('');
     expect(result.current.testSearchText).toBe('');
@@ -68,6 +69,18 @@ describe('useSearchConfigurationForm', () => {
     });
 
     expect(result.current.name).toBe('test name');
+  });
+
+  it('should update description', () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    act(() => {
+      result.current.setDescription('sample description');
+    });
+
+    expect(result.current.description).toBe('sample description');
   });
 
   it('should update query', () => {
@@ -96,6 +109,22 @@ describe('useSearchConfigurationForm', () => {
     });
 
     expect(result.current.nameError).toBe('Search Configuration Name is a required parameter.');
+  });
+
+  it('should validate description field', () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    const mockEvent = {
+      target: { value: '' },
+    } as React.FocusEvent<HTMLInputElement>;
+
+    act(() => {
+      result.current.validateDescriptionField(mockEvent);
+    });
+
+    expect(result.current.nameError).toBe('Description is a required parameter.');
   });
 
   it('should validate search query successfully', async () => {
@@ -187,6 +216,7 @@ describe('useSearchConfigurationForm', () => {
 
     act(() => {
       result.current.setName('test config');
+      result.current.setDescription('sample description')
       result.current.setQuery('{"query": {"match_all": {}}}');
       result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
     });
@@ -197,6 +227,7 @@ describe('useSearchConfigurationForm', () => {
 
     expect(mockService.createSearchConfiguration).toHaveBeenCalledWith({
       name: 'test config',
+      description: 'sample description',
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: undefined,
@@ -217,6 +248,7 @@ describe('useSearchConfigurationForm', () => {
     });
 
     expect(result.current.nameError).toBe('Search Configuration Name is a required parameter.');
+    expect(result.current.descriptionError).toBe('Description is a required parameter.');
     expect(result.current.queryError).toBe('Query is required.');
     expect(mockNotifications.toasts.addWarning).toHaveBeenCalledWith({
       title: 'Invalid input',
@@ -233,6 +265,7 @@ describe('useSearchConfigurationForm', () => {
 
     act(() => {
       result.current.setName('test config');
+      result.current.setDescription('sample description');
       result.current.setQuery('{"query": {"match_all": {}}}');
       result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
     });
@@ -348,6 +381,7 @@ describe('useSearchConfigurationForm', () => {
 
     act(() => {
       result.current.setName('test config');
+      result.current.setDescription('sample description');
       result.current.setQuery('{"query": {"match_all": {}}}');
       result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
     });
@@ -366,6 +400,7 @@ describe('useSearchConfigurationForm', () => {
 
     act(() => {
       result.current.setName('test config');
+      result.current.setDescription('sample description');
       result.current.setQuery('{"query": {"match_all": {}}}');
       result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
       result.current.setSelectedPipeline([{ label: 'pipeline1' }]);
@@ -377,6 +412,7 @@ describe('useSearchConfigurationForm', () => {
 
     expect(mockService.createSearchConfiguration).toHaveBeenCalledWith({
       name: 'test config',
+      description: 'sample description',
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: 'pipeline1',

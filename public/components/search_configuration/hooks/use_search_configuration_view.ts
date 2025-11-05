@@ -10,6 +10,7 @@ import { ServiceEndpoints } from '../../../../common';
 export interface SearchConfigurationData {
   id: string;
   name: string;
+  description: string;
   index: string;
   query: string;
   searchPipeline?: string;

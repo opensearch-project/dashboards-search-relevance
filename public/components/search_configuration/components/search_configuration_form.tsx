@@ -4,13 +4,17 @@
  */
 
 import React, { memo } from 'react';
-import { EuiForm, EuiFormRow, EuiFieldText, EuiComboBox, EuiCodeEditor } from '@elastic/eui';
+import { EuiForm, EuiFormRow, EuiFieldText, EuiComboBox, EuiCodeEditor,EuiCompressedTextArea } from '@elastic/eui';
 
 interface SearchConfigurationFormProps {
   name: string;
   setName: (name: string) => void;
   nameError: string;
   validateName: (e: React.FocusEvent<HTMLInputElement>) => void;
+  description: string;
+  setDescription: (description: string) => void;
+  descriptionError: string;
+  validateDescription: (e: React.FocusEvent<HTMLInputElement>) => void;
   query: string;
   setQuery: (queryBody: string) => void;
   queryError: string;
@@ -34,6 +38,10 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
     setName,
     nameError,
     validateName,
+    description,
+    setDescription,
+    descriptionError,
+    validateDescription,
     query,
     setQuery,
     queryError,
@@ -67,6 +75,24 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
           fullWidth
           data-test-subj="searchConfigurationNameInput"
           disabled={disabled}
+        />
+      </EuiFormRow>
+
+      <EuiFormRow
+          label="Description"
+          isInvalid={descriptionError.length > 0}
+          error={descriptionError}
+          helpText="Describe the search configuration (< 250 characters)."
+          fullWidth
+      >
+        <EuiCompressedTextArea
+          placeholder="Describe the purpose of this search configuration"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={validateDescription}
+          isInvalid={descriptionError.length > 0}
+          data-test-subj="searchConfigurationDescriptionInput"
+          fullWidth
         />
       </EuiFormRow>
 

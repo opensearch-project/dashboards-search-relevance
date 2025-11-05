@@ -75,6 +75,7 @@ describe('SearchConfigurationView', () => {
       searchConfiguration: {
         id: '1',
         name: 'Test Config',
+        description: 'sample description',
         index: 'test-index',
         query: '{"match_all": {}}',
         timestamp: '2023-01-01T00:00:00Z',
@@ -91,6 +92,7 @@ describe('SearchConfigurationView', () => {
     );
 
     expect(screen.getByText('Search Configuration Details')).toBeInTheDocument();
+    expect(screen.getByText('sample description')).toBeInTheDocument();
     expect(screen.getByText('Test Config')).toBeInTheDocument();
     expect(screen.getByText('test-index')).toBeInTheDocument();
     expect(mockFormatJson).toHaveBeenCalledWith('{"match_all": {}}');
@@ -102,6 +104,7 @@ describe('SearchConfigurationView', () => {
       searchConfiguration: {
         id: '1',
         name: 'Test Config',
+        description: 'sample description',
         index: 'test-index',
         query: '{"match_all": {}}',
         searchPipeline: 'test-pipeline',

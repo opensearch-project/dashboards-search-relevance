@@ -17,6 +17,17 @@ describe('Search Configuration Validation', () => {
     });
   });
 
+  describe('validateDescription', () => {
+    it('should return error for empty description', () => {
+      expect(validateName('')).toBe('Description is a required parameter.');
+      expect(validateName('  ')).toBe('Description is a required parameter.');
+    });
+
+    it('should return empty string for valid description', () => {
+      expect(validateName('sample description')).toBe('');
+    });
+  });
+
   describe('validateQuery', () => {
     it('should return error for empty query', () => {
       expect(validateQuery('')).toBe('Query is required.');

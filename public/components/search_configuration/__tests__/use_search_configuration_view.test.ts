@@ -31,6 +31,7 @@ describe('useSearchConfigurationView', () => {
             _source: {
               id: '1',
               name: 'Test Config',
+              description: 'sample description',
               index: 'test-index',
               query: '{"query": {"match_all": {}}}',
               timestamp: '2023-01-01T00:00:00Z',
@@ -51,6 +52,7 @@ describe('useSearchConfigurationView', () => {
     expect(result.current.searchConfiguration).toEqual({
       id: '1',
       name: 'Test Config',
+      description: 'sample description',
       index: 'test-index',
       query: '{"query": {"match_all": {}}}',
       timestamp: '2023-01-01T00:00:00Z',
@@ -87,6 +89,7 @@ describe('useSearchConfigurationView', () => {
             _source: {
               id: '1',
               name: 'Test Config',
+              description: 'sample description',
               index: 'test-index',
               query: '{"query":{"match_all":{}}}',
               timestamp: '2023-01-01T00:00:00Z',
@@ -112,6 +115,7 @@ describe('useSearchConfigurationView', () => {
             _source: {
               id: '1',
               name: 'Test Config',
+              description: 'sample description',
               index: 'test-index',
               query: 'invalid json',
               timestamp: '2023-01-01T00:00:00Z',
