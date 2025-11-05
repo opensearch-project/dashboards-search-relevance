@@ -235,8 +235,6 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               )}
             </>
           )}
-        </>
-      )}
     </EuiPanel>
   );
 };
