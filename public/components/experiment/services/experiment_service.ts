@@ -34,7 +34,7 @@ export class ExperimentService {
   async getScheduledExperiments() {
     const response = await this.http.get(ServiceEndpoints.ScheduledExperiments);
     return combineResults(
-      ...(response ? response.hits.hits.map((hit) => toExperiment(hit._source)) : [])
+      ...(response ? response.hits.hits.map((hit) => toExperimentSchedule(hit._source)) : [])
     );
   }
 
