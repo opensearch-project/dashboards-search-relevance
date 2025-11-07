@@ -92,7 +92,7 @@ describe('ExperimentService', () => {
       };
       mockHttp.get.mockResolvedValue(mockResponse);
 
-      const result = await service.getExperiment("1");
+      const result = await service.getExperiment('1');
 
       expect(result).toEqual(
         {
@@ -145,7 +145,7 @@ describe('ExperimentService', () => {
       };
       mockHttp.delete.mockResolvedValue(mockResponse);
 
-      const result = await service.deleteExperiment("id");
+      const result = await service.deleteExperiment('id');
 
       expect(result).toEqual(
         mockResponse
@@ -215,7 +215,7 @@ describe('ExperimentService', () => {
       };
       mockHttp.get.mockResolvedValue(mockResponse);
 
-      const result = await service.getScheduledExperiment("id");
+      const result = await service.getScheduledExperiment('id');
 
       expect(result).toEqual(
         {
@@ -251,11 +251,74 @@ describe('ExperimentService', () => {
       };
       mockHttp.delete.mockResolvedValue(mockResponse);
 
-      const result = await service.deleteScheduledExperiment("id");
+      const result = await service.deleteScheduledExperiment('id');
 
       expect(result).toEqual(
         mockResponse
       );
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle getExperiments error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.getExperiments()).rejects.toThrow('API Error');
+    });
+
+    it('should handle getSingleExperiment error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.getExperiment('id')).rejects.toThrow('API Error');
+    });
+
+    it('should handle createExperiment error', async () => {
+      mockHttp.post.mockRejectedValue(new Error('API Error'));
+
+      const formData = {
+        querySetId: '1',
+        searchConfigurationList: ['1'],
+        judgmentList: ['1'],
+        size: 8,
+        type: 'POINTWISE_EVALUATION'
+      };
+
+      await expect(service.createExperiment(formData)).rejects.toThrow('API Error');
+    });
+
+    it('should handle deleteExperiment error', async () => {
+      mockHttp.delete.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.deleteExperiment('id')).rejects.toThrow('API Error');
+    });
+
+    it('should handle getScheduledExperiments error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.getScheduledExperiments()).rejects.toThrow('API Error');
+    });
+
+    it('should handle getSingleScheduledExperiments error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.getScheduledExperiment('id')).rejects.toThrow('API Error');
+    });
+
+    it('should handle createScheduledExperiment error', async () => {
+      mockHttp.post.mockRejectedValue(new Error('API Error'));
+
+      const formData = {
+        experimentId: '1',
+        cronExpression: '* * * * *'
+      };
+
+      await expect(service.createScheduledExperiment(formData)).rejects.toThrow('API Error');
+    });
+
+    it('should handle deleteScheduledExperiment error', async () => {
+      mockHttp.delete.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.deleteScheduledExperiment('id')).rejects.toThrow('API Error');
     });
   });
 });

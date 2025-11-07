@@ -55,7 +55,9 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const [showDeleteExperimentModal, setShowDeleteExperimentModal] = useState(false);
   const [showDeleteScheduleModal, setShowDeleteScheduleModal] = useState(false);
   const [experimentToDelete, setExperimentToDelete] = useState<any>(null);
+  // The underlying experiment to schedule
   const [experimentToSchedule, setExperimentToSchedule] = useState<any>(null);
+  // The actual schedule with cron expression for the experiment to be scheduled
   const [scheduledForExperiment, setScheduledForExperiment] = useState<any>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [tableData, setTableData] = useState<any[]>([]);
