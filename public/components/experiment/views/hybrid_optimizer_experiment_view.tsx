@@ -21,7 +21,8 @@ import {
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart, ToastsStart } from '../../../../../../src/core/public';
 import { ServiceEndpoints } from '../../../../common';
-import { printType, HybridOptimizerExperiment } from '../../../types/index';
+import { printType, HybridOptimizerExperiment, ScheduledJob } from '../../../types/index';
+import { ScheduleDetails } from '../../common/ScheduleDetails';
 import { VariantDetailsModal } from '../metrics/variant_details';
 import {
   NDCG_TOOL_TIP,
@@ -52,9 +53,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
   inputExperiment,
   history,
 }) => {
+  const AnyTableListView = TableListView as unknown as React.ComponentType<any>;
   const [experiment, setExperiment] = useState<HybridOptimizerExperiment | null>(null);
   const [querySet, setQuerySet] = useState<any | null>(null);
   const [judgmentSet, setJudgmentSet] = useState<any | null>(null);
+  const [scheduledExperimentJob, setScheduledExperimentJob] = useState<ScheduledJob | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -93,10 +96,20 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
             .then(sanitizeResponse));
 
+        const _scheduledExperimentJob =
+          _experiment && inputExperiment.isScheduled &&
+          (await http
+            .get(
+              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId
+            )
+            .then(sanitizeResponse));            
+
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
           const maxSize = 10000; // OpenSearch max result window
           const expectedSize = querySetSize * 66;
+
+          setScheduledExperimentJob(_scheduledExperimentJob);
           
           // Process results and organize by query and variant
           const evaluationsByQueryAndVariant: QueryVariantEvaluations = {};
@@ -377,6 +390,12 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       <EuiDescriptionList type="column" compressed>
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>{experiment?.type ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
+
+        <ScheduleDetails
+          isScheduled={experiment?.isScheduled}
+          scheduledExperimentJob={scheduledExperimentJob}
+        />
+
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -421,7 +440,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             <p>{error}</p>
           </EuiCallOut>
         ) : (
-          <TableListView
+          <AnyTableListView
             key={`table-${Object.keys(queryEvaluations).length}`}
             entityName="Query"
             entityNamePlural="Queries"

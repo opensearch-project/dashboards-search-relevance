@@ -111,6 +111,8 @@ export type EvaluationExperiment = ExperimentBase & {
   type: ExperimentType.POINTWISE_EVALUATION;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
+  scheduledExperimentJobId: string;
 };
 
 interface HybridOptimizerResults {
@@ -125,6 +127,8 @@ export type HybridOptimizerExperiment = ExperimentBase & {
   type: ExperimentType.HYBRID_OPTIMIZER;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
+  scheduledExperimentJobId: string;
   results: HybridOptimizerResults;
 };
 
@@ -143,6 +147,23 @@ export interface JudgmentSet {
   description: string;
   type: string;
   judgmentRatings: QueryJudgment[];
+}
+
+export interface ExperimentSchedule {
+  id: string;
+  expression: string; // cron expression
+}
+
+export interface ScheduledJob {
+  schedule?: {
+    cron?: {
+      expression?: string;
+      timestamp?: string | number;
+      timezone?: string;
+    };
+  };
+  enabledTime?: number;
+  lastUpdateTime?: number;
 }
 
 export const printType = (type: string) => {
@@ -265,6 +286,20 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
   return { success: true, data };
 };
 
+export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedule> => {
+  if (!source.id || !source.schedule || !source.schedule.cron.expression) {
+    return parseError('Missing one of required fields: id, schedule.cron.expression');
+  }
+
+  return {
+    success: true,
+    data: {
+      id: source.id,
+      expression: source.schedule.cron.expression,
+    },
+  };
+};
+
 export const toExperiment = (source: any): ParseResult<Experiment> => {
   // Validate required base fields exist
   if (!source.id || !source.timestamp || !source.querySetId || source.size === undefined) {
@@ -321,6 +356,8 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };
@@ -337,7 +374,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
       return {
         success: true,
         data: {
-          type: 'HYBRID_OPTIMIZER',
+          type: ExperimentType.HYBRID_OPTIMIZER,
           status: source.status,
           id: source.id,
           k: source.size,
@@ -345,6 +382,8 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };
