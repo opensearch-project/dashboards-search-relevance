@@ -4,6 +4,7 @@
  */
 
 import React, { useRef, useEffect, useState } from 'react';
+import { HighlightText } from './highlight_text';
 
 interface Position {
   top: number;
@@ -16,6 +17,8 @@ interface ItemDetailHoverPaneProps {
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   imageFieldName: string | null;
+  highlightPreTags?: string[];
+  highlightPostTags?: string[];
 }
 
 const EXCLUDED_FIELDS = [
@@ -37,6 +40,8 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
   onMouseEnter,
   onMouseLeave,
   imageFieldName,
+  highlightPreTags,
+  highlightPostTags,
 }) => {
   const [tooltipPosition, setTooltipPosition] = useState<Position>({ top: 0, left: 0 });
 
@@ -81,11 +86,12 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
 
   return (
     <div
-      className="fixed bg-white shadow-lg rounded-lg p-4 max-w-md z-20 border comparison-tooltip"
+      className="fixed bg-white shadow-lg rounded-lg p-6 z-20 border comparison-tooltip"
       style={{
         left: `${tooltipPosition.left}px`,
         top: `${tooltipPosition.top}px`,
-        maxHeight: '400px',
+        width: '500px',
+        maxHeight: '600px',
         overflow: 'auto',
       }}
       onMouseEnter={onMouseEnter}
@@ -124,16 +130,21 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
       {Object.entries(item)
         .filter(([key]) => !EXCLUDED_FIELDS.includes(key))
         .filter(([key, value]) => typeof value === 'string')
-        .map(([key, value]) => (
-          <div key={key} className="mb-1 text-sm">
-            <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
-            {typeof value === 'string' && value.length > 100 ? (
-              <p className="text-xs mt-1">{String(value)}</p>
-            ) : (
-              <span> {String(value)}</span>
-            )}
-          </div>
-        ))}
+        .map(([key, value]) => {
+          const highlightedText = item.highlight && item.highlight[key] ? item.highlight[key][0] : String(value);
+          return (
+            <div key={key} className="mb-1 text-sm">
+              <span className="font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}:</span>
+              {typeof value === 'string' && value.length > 100 ? (
+                <p className="text-xs mt-1">
+                  <HighlightText text={highlightedText} preTags={highlightPreTags} postTags={highlightPostTags} />
+                </p>
+              ) : (
+                <span> <HighlightText text={highlightedText} preTags={highlightPreTags} postTags={highlightPostTags} /></span>
+              )}
+            </div>
+          );
+        })}
     </div>
   );
 };

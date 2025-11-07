@@ -294,6 +294,21 @@ export const SearchResult = ({
     }
   };
 
+  const extractHighlightTags = (queryString: string) => {
+    try {
+      const query = JSON.parse(queryString);
+      if (query.highlight?.pre_tags && query.highlight?.post_tags) {
+        return {
+          preTags: query.highlight.pre_tags,
+          postTags: query.highlight.post_tags
+        };
+      }
+    } catch {
+      // Ignore parsing errors
+    }
+    return { preTags: ['<em>'], postTags: ['</em>'] };
+  };
+
   const handleQuery = (
     queryError: QueryError,
     selectedIndex: string,
@@ -497,6 +512,10 @@ export const SearchResult = ({
             queryText={searchBarValue}
             resultText1="Result 1"
             resultText2="Result 2"
+            highlightPreTags1={extractHighlightTags(queryString1).preTags}
+            highlightPostTags1={extractHighlightTags(queryString1).postTags}
+            highlightPreTags2={extractHighlightTags(queryString2).preTags}
+            highlightPostTags2={extractHighlightTags(queryString2).postTags}
           />
         )}
       </EuiPageContentBody>
