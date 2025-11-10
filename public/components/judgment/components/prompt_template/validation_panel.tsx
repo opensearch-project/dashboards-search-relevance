@@ -272,15 +272,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                   size="s"
                 >
                   {validationResult.rawResponse && (
-                    <>
-                      <EuiText size="s" color="subdued">
-                        <p>Raw response:</p>
-                      </EuiText>
-                      <EuiSpacer size="s" />
-                      <EuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
-                        {validationResult.rawResponse}
-                      </EuiCodeBlock>
-                    </>
+                    <EuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
+                      {validationResult.rawResponse}
+                    </EuiCodeBlock>
                   )}
                 </EuiCallOut>
               ) : (
@@ -302,7 +296,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                         <p>Error details:</p>
                       </EuiText>
                       <EuiSpacer size="s" />
-                      <EuiCodeBlock fontSize="xs" paddingSize="s" isCopyable>
+                      <EuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
                         {validationResult.rawResponse}
                       </EuiCodeBlock>
                     </>
