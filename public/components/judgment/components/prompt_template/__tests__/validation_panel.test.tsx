@@ -191,5 +191,16 @@ describe('ValidationPanel', () => {
       expect(queryTextInput).toBeInTheDocument();
       expect(categoryInput).toBeInTheDocument();
     });
+
+    it('should handle placeholder value changes', () => {
+      render(<ValidationPanel {...defaultProps} />);
+
+      const queryTextInput = screen.getByLabelText('queryText') as HTMLInputElement;
+
+      fireEvent.change(queryTextInput, { target: { value: 'test value' } });
+
+      expect(queryTextInput.value).toBe('test value');
+    });
   });
+
 });
