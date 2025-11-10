@@ -30,6 +30,7 @@ interface AdvancedSettingsProps {
   removeContextField: (field: string) => void;
   modelOptions?: Array<{ label: string; value: string }>;
   httpClient?: any;
+  selectedSearchConfigs: Array<{ label: string; value: string }>;
 }
 
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
@@ -41,6 +42,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   removeContextField,
   modelOptions = [],
   httpClient,
+  selectedSearchConfigs,
 }) => {
   const {
     outputSchema,
@@ -48,6 +50,9 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     userInstructions,
     setUserInstructions,
     placeholders,
+    validPlaceholders,
+    invalidPlaceholders,
+    availableQuerySetFields,
     validationModelId,
     setValidationModelId,
     validatePrompt,
@@ -55,7 +60,7 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   } = usePromptTemplate({
     querySetId: formData.querySetId,
     modelId: formData.modelId,
-    httpClient
+    httpClient,
   });
 
   // Auto-save template when it changes
@@ -63,6 +68,24 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     const template = getPromptTemplate();
     updateFormData({ promptTemplate: template });
   }, [outputSchema, userInstructions, placeholders]);
+
+  // Convert selectedSearchConfigs to array of IDs
+  const searchConfigurationList = React.useMemo(
+    () => selectedSearchConfigs.map((config) => config.value),
+    [selectedSearchConfigs]
+  );
+
+  // Debug: Log formData to see what's available
+  React.useEffect(() => {
+    console.log('AdvancedSettings - formData:', {
+      selectedSearchConfigs,
+      searchConfigurationList,
+      contextFields: formData.contextFields,
+      size: formData.size,
+      tokenLimit: formData.tokenLimit,
+      ignoreFailure: formData.ignoreFailure,
+    });
+  }, [selectedSearchConfigs, searchConfigurationList, formData.contextFields, formData.size, formData.tokenLimit, formData.ignoreFailure]);
 
   return (
     <>
@@ -85,10 +108,18 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
         <EuiFlexItem>
           <ValidationPanel
             placeholders={placeholders}
+            validPlaceholders={validPlaceholders}
+            invalidPlaceholders={invalidPlaceholders}
+            availableQuerySetFields={availableQuerySetFields}
             modelId={validationModelId}
             modelOptions={modelOptions}
             onModelChange={setValidationModelId}
             onValidate={validatePrompt}
+            searchConfigurationList={searchConfigurationList}
+            contextFields={formData.contextFields || []}
+            size={formData.size}
+            tokenLimit={formData.tokenLimit}
+            ignoreFailure={formData.ignoreFailure}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
