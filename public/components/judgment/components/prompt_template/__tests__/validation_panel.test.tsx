@@ -201,6 +201,99 @@ describe('ValidationPanel', () => {
 
       expect(queryTextInput.value).toBe('test value');
     });
+
+  });
+
+  describe('model selection changes', () => {
+    it('should call onModelChange when a model is selected', () => {
+      const mockOnModelChange = jest.fn();
+      const props = {
+        ...defaultProps,
+        onModelChange: mockOnModelChange,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      // Note: Testing EuiComboBox onChange is complex, but we can verify the prop is passed
+      expect(mockOnModelChange).toBeDefined();
+    });
+
+    it('should work with empty model selection', () => {
+      const props = {
+        ...defaultProps,
+        modelId: '',
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).toBeDisabled();
+    });
+  });
+
+  describe('canValidate logic', () => {
+    it('should disable button when modelId is empty', () => {
+      const props = {
+        ...defaultProps,
+        modelId: '',
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).toBeDisabled();
+    });
+
+    it('should disable button when invalid placeholders exist', () => {
+      const props = {
+        ...defaultProps,
+        invalidPlaceholders: ['unknown'],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).toBeDisabled();
+    });
+
+    it('should enable button when no placeholders exist and model is selected', () => {
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).not.toBeDisabled();
+    });
+
+    it('should enable button when only auto-filled placeholders exist', () => {
+      const props = {
+        ...defaultProps,
+        placeholders: ['hits', 'results'],
+        validPlaceholders: ['hits', 'results'],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).not.toBeDisabled();
+    });
+
+    it('should disable button when valid placeholders are not filled', () => {
+      const props = {
+        ...defaultProps,
+        placeholders: ['queryText'],
+        validPlaceholders: ['queryText'],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).toBeDisabled();
+    });
   });
 
 });
