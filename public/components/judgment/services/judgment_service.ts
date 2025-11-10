@@ -30,6 +30,11 @@ export class JudgmentService {
     }));
   }
 
+  async fetchQuerySetById(id: string): Promise<any> {
+    const response = await this.http.get(`${ServiceEndpoints.QuerySets}/${id}`);
+    return response._source;
+  }
+
   async fetchSearchConfigs(): Promise<ComboBoxOption[]> {
     const response = await this.http.get(ServiceEndpoints.SearchConfigurations);
     return response.hits.hits.map((sc: any) => ({

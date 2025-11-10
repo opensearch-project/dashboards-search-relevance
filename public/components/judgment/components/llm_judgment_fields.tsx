@@ -129,6 +129,7 @@ export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
           removeContextField={removeContextField}
           modelOptions={modelOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
           httpClient={httpClient}
+          selectedSearchConfigs={selectedSearchConfigs}
         />
       </EuiAccordion>
     </>

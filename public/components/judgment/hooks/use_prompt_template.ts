@@ -12,11 +12,21 @@ import {
   DEFAULT_USER_INSTRUCTIONS,
   SYSTEM_PROMPTS,
 } from '../types/prompt_template_types';
+import { JudgmentService } from '../services/judgment_service';
 
 interface UsePromptTemplateProps {
   querySetId?: string;
   modelId?: string;
   httpClient?: any; // OpenSearch Dashboards HTTP client
+}
+
+interface ValidatePromptParams {
+  placeholderValues: Record<string, string>;
+  searchConfigurationList: string[];
+  contextFields: string[];
+  size?: number;
+  tokenLimit?: number;
+  ignoreFailure?: boolean;
 }
 
 interface UsePromptTemplateReturn {
@@ -26,13 +36,16 @@ interface UsePromptTemplateReturn {
   userInstructions: string;
   setUserInstructions: (instructions: string) => void;
   placeholders: string[];
+  validPlaceholders: string[];
+  invalidPlaceholders: string[];
+  availableQuerySetFields: string[];
 
   // Validation state
   validationModelId: string;
   setValidationModelId: (modelId: string) => void;
 
   // Actions
-  validatePrompt: (placeholderValues: Record<string, string>) => Promise<PromptValidationResponse>;
+  validatePrompt: (params: ValidatePromptParams) => Promise<PromptValidationResponse>;
   buildFullPrompt: (placeholderValues?: Record<string, string>) => string;
   resetToDefaults: () => void;
 
@@ -49,9 +62,42 @@ export const usePromptTemplate = ({
   const [outputSchema, setOutputSchema] = useState<OutputSchema>(OutputSchema.SCORE_0_1);
   const [userInstructions, setUserInstructions] = useState<string>(DEFAULT_USER_INSTRUCTIONS);
   const [placeholders, setPlaceholders] = useState<string[]>([]);
+  const [availableQuerySetFields, setAvailableQuerySetFields] = useState<string[]>([]);
+  const [validPlaceholders, setValidPlaceholders] = useState<string[]>([]);
+  const [invalidPlaceholders, setInvalidPlaceholders] = useState<string[]>([]);
 
   // Validation state
   const [validationModelId, setValidationModelId] = useState<string>(modelId || '');
+
+  // Fetch querySet fields when querySetId changes
+  useEffect(() => {
+    const fetchQuerySetFields = async () => {
+      if (!querySetId || !httpClient) {
+        setAvailableQuerySetFields([]);
+        return;
+      }
+
+      try {
+        const service = new JudgmentService(httpClient);
+        const querySetData = await service.fetchQuerySetById(querySetId);
+
+        // Extract field names from the first query in querySetQueries
+        if (querySetData && querySetData.querySetQueries && querySetData.querySetQueries.length > 0) {
+          const firstQuery = querySetData.querySetQueries[0];
+          // Get all field names except internal ones
+          const fields = Object.keys(firstQuery).filter(key => !key.startsWith('_'));
+          setAvailableQuerySetFields(fields);
+        } else {
+          setAvailableQuerySetFields([]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch querySet fields:', error);
+        setAvailableQuerySetFields([]);
+      }
+    };
+
+    fetchQuerySetFields();
+  }, [querySetId, httpClient]);
 
   // Extract placeholders from user instructions
   useEffect(() => {
@@ -71,6 +117,29 @@ export const usePromptTemplate = ({
     const extractedPlaceholders = extractPlaceholders(userInstructions);
     setPlaceholders(extractedPlaceholders);
   }, [userInstructions]);
+
+  // Validate placeholders against querySet fields
+  useEffect(() => {
+    if (availableQuerySetFields.length === 0) {
+      // If no querySet is selected, all placeholders are valid
+      setValidPlaceholders(placeholders);
+      setInvalidPlaceholders([]);
+    } else {
+      const valid: string[] = [];
+      const invalid: string[] = [];
+
+      placeholders.forEach(placeholder => {
+        if (availableQuerySetFields.includes(placeholder)) {
+          valid.push(placeholder);
+        } else {
+          invalid.push(placeholder);
+        }
+      });
+
+      setValidPlaceholders(valid);
+      setInvalidPlaceholders(invalid);
+    }
+  }, [placeholders, availableQuerySetFields]);
 
   // Update validation model when main model changes
   useEffect(() => {
@@ -101,8 +170,26 @@ export const usePromptTemplate = ({
     [outputSchema, userInstructions]
   );
 
+  const getPromptTemplate = useCallback((): PromptTemplate => {
+    const systemPrompt = SYSTEM_PROMPTS[outputSchema];
+    return {
+      outputSchema,
+      systemPromptStart: systemPrompt.start,
+      systemPromptEnd: systemPrompt.end,
+      userInstructions,
+      placeholders,
+    };
+  }, [outputSchema, userInstructions, placeholders]);
+
   const validatePrompt = useCallback(
-    async (placeholderValues: Record<string, string>): Promise<PromptValidationResponse> => {
+    async ({
+      placeholderValues,
+      searchConfigurationList,
+      contextFields,
+      size = 5,
+      tokenLimit = 4000,
+      ignoreFailure = false,
+    }: ValidatePromptParams): Promise<PromptValidationResponse> => {
       if (!validationModelId) {
         return {
           success: false,
@@ -117,65 +204,96 @@ export const usePromptTemplate = ({
         };
       }
 
-      const fullPrompt = buildFullPrompt(placeholderValues);
+      if (!searchConfigurationList || searchConfigurationList.length === 0) {
+        return {
+          success: false,
+          error: 'Please select at least one search configuration',
+        };
+      }
+
+      // Convert OutputSchema to backend llmJudgmentRatingType format
+      const llmJudgmentRatingType = outputSchema === OutputSchema.SCORE_0_1
+        ? 'SCORE0_1'
+        : 'RELEVANT_IRRELEVANT';
+
+      // Backend expects promptTemplate as a string (just the user instructions)
+      const promptTemplate = userInstructions;
+
+      const requestBody = {
+        modelId: validationModelId,
+        promptTemplate,
+        placeholderValues,
+        searchConfigurationList,
+        contextFields,
+        size,
+        tokenLimit,
+        ignoreFailure,
+        llmJudgmentRatingType,
+      };
+
+      console.log('Validation request:', requestBody);
 
       try {
-        // Call the backend API to validate prompt with ml_predict
+        // Call the backend API to validate prompt by creating a temporary judgment
         const response = await httpClient.post('/api/relevancy/judgments/validate_prompt', {
-          body: JSON.stringify({
-            modelId: validationModelId,
-            prompt: fullPrompt,
-          }),
+          body: JSON.stringify(requestBody),
         });
 
-        // Parse the response from ml_predict
-        // The response structure varies by model, but typically contains inference_results
-        if (response && response.inference_results && response.inference_results.length > 0) {
-          const result = response.inference_results[0];
-          const output = result.output || [];
-
-          // Try to extract the actual response text
-          const rawResponse = output.length > 0 && output[0].result
-            ? output[0].result
-            : JSON.stringify(output);
-
+        // Parse the response from judgment API
+        if (response && response.success) {
           return {
             success: true,
-            output: { response: rawResponse },
-            rawResponse: rawResponse,
+            output: response.judgmentResult,
+            rawResponse: JSON.stringify(response.ratings, null, 2),
           };
         } else {
           return {
             success: false,
-            error: 'No inference results returned from model',
+            error: 'No judgment results returned',
             rawResponse: JSON.stringify(response),
           };
         }
-      } catch (error) {
+      } catch (error: any) {
+        console.error('Validation error:', error);
+
+        // Extract detailed error message
+        let errorMessage = 'Validation failed';
+        let errorDetails = '';
+
+        if (error?.body?.message) {
+          errorMessage = error.body.message;
+        } else if (error?.message) {
+          errorMessage = error.message;
+        }
+
+        // Try to get additional error details
+        if (error?.body?.attributes?.error) {
+          if (typeof error.body.attributes.error === 'string') {
+            errorDetails = error.body.attributes.error;
+          } else if (error.body.attributes.error?.reason) {
+            errorDetails = error.body.attributes.error.reason;
+          }
+        }
+
+        // Combine error message and details
+        const fullError = errorDetails && errorDetails !== errorMessage
+          ? `${errorMessage}\n\nDetails: ${errorDetails}`
+          : errorMessage;
+
         return {
           success: false,
-          error: error instanceof Error ? error.message : 'Validation failed',
+          error: fullError,
+          rawResponse: error?.body ? JSON.stringify(error.body, null, 2) : undefined,
         };
       }
     },
-    [validationModelId, httpClient, buildFullPrompt]
+    [validationModelId, httpClient, outputSchema, getPromptTemplate]
   );
 
   const resetToDefaults = useCallback(() => {
     setOutputSchema(OutputSchema.SCORE_0_1);
     setUserInstructions(DEFAULT_USER_INSTRUCTIONS);
   }, []);
-
-  const getPromptTemplate = useCallback((): PromptTemplate => {
-    const systemPrompt = SYSTEM_PROMPTS[outputSchema];
-    return {
-      outputSchema,
-      systemPromptStart: systemPrompt.start,
-      systemPromptEnd: systemPrompt.end,
-      userInstructions,
-      placeholders,
-    };
-  }, [outputSchema, userInstructions, placeholders]);
 
   return {
     // State
@@ -184,6 +302,9 @@ export const usePromptTemplate = ({
     userInstructions,
     setUserInstructions,
     placeholders,
+    validPlaceholders,
+    invalidPlaceholders,
+    availableQuerySetFields,
 
     // Validation
     validationModelId,

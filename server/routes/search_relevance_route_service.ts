@@ -13,6 +13,33 @@ import {
 } from '../../../../src/core/server';
 import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../common';
 
+// Helper function to clean up temporary resources
+async function cleanupTempResources(caller: any, judgmentId: string, querySetId: string): Promise<void> {
+  console.log(`Cleaning up temporary resources: judgment ${judgmentId}, querySet ${querySetId}`);
+
+  try {
+    // Delete judgment first
+    await caller('transport.request', {
+      method: 'DELETE',
+      path: `${BackendEndpoints.Judgments}/${judgmentId}`,
+    });
+    console.log(`Successfully deleted temporary judgment ${judgmentId}`);
+  } catch (err) {
+    console.error(`Failed to delete temporary judgment ${judgmentId}:`, err.message);
+  }
+
+  try {
+    // Then delete query set
+    await caller('transport.request', {
+      method: 'DELETE',
+      path: `${BackendEndpoints.QuerySets}/${querySetId}`,
+    });
+    console.log(`Successfully deleted temporary querySet ${querySetId}`);
+  } catch (err) {
+    console.error(`Failed to delete temporary querySet ${querySetId}:`, err.message);
+  }
+}
+
 export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.post(
     {
@@ -279,32 +306,205 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
       validate: {
         body: schema.object({
           modelId: schema.string(),
-          prompt: schema.string(),
+          promptTemplate: schema.any(),
+          placeholderValues: schema.recordOf(schema.string(), schema.string()),
+          searchConfigurationList: schema.maybe(schema.arrayOf(schema.string())),
+          contextFields: schema.maybe(schema.arrayOf(schema.string())),
+          size: schema.maybe(schema.number()),
+          tokenLimit: schema.maybe(schema.oneOf([schema.number(), schema.string()])),
+          ignoreFailure: schema.maybe(schema.boolean()),
+          llmJudgmentRatingType: schema.string(),
         }),
       },
     },
     async (context, req, res) => {
-      const { modelId, prompt } = req.body;
+      const {
+        modelId,
+        promptTemplate,
+        placeholderValues,
+        searchConfigurationList = [],
+        contextFields = [],
+        size = 5,
+        tokenLimit: rawTokenLimit = 4000,
+        ignoreFailure = false,
+        llmJudgmentRatingType,
+      } = req.body;
+
+      // Convert tokenLimit to number if it's a string
+      const tokenLimit = typeof rawTokenLimit === 'string'
+        ? parseInt(rawTokenLimit, 10)
+        : rawTokenLimit;
+
       const dataSourceId = req.query.data_source;
       const caller = dataSourceId
         ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
         : context.core.opensearch.legacy.client.callAsCurrentUser;
 
+      let tempQuerySetId: string | undefined;
+      let judgmentId: string | undefined;
+
       try {
-        const predictPath = `_plugins/_ml/models/${modelId}/_predict`;
-        const response = await caller('transport.request', {
-          method: 'POST',
-          path: predictPath,
-          body: {
-            parameters: {
-              prompt: prompt,
-            },
-          },
+        console.log('Validate prompt request:', {
+          modelId,
+          placeholderValues,
+          searchConfigurationList,
+          contextFields,
+          size,
+          tokenLimit,
+          llmJudgmentRatingType,
         });
 
-        return res.ok({ body: response });
+        // Validate required fields
+        if (!searchConfigurationList || searchConfigurationList.length === 0) {
+          return res.badRequest({
+            body: {
+              message: 'At least one search configuration is required for validation',
+            },
+          });
+        }
+        // Step 1: Create temporary querySet with placeholder values
+        const tempQuerySetBody = {
+          name: `Temp Validation QuerySet ${Date.now()}`,
+          description: 'Temporary query set for prompt validation',
+          querySetQueries: [placeholderValues],
+        };
+
+        try {
+          const querySetResponse = await caller('transport.request', {
+            method: 'PUT',
+            path: BackendEndpoints.QuerySets,
+            body: tempQuerySetBody,
+          });
+          tempQuerySetId = querySetResponse.query_set_id;
+          console.log(`Created temporary querySet: ${tempQuerySetId}`);
+        } catch (err) {
+          console.error('Failed to create temporary querySet:', err);
+          throw new Error(`Failed to create query set: ${err.body?.error?.reason || err.message}`);
+        }
+
+        // Step 2: Create temporary judgment with the prompt template
+        const tempJudgmentBody = {
+          name: `Temp Validation Judgment ${Date.now()}`,
+          type: 'LLM_JUDGMENT',
+          querySetId: tempQuerySetId,
+          searchConfigurationList,
+          modelId,
+          size,
+          tokenLimit,
+          contextFields,
+          ignoreFailure,
+          llmJudgmentRatingType,
+          promptTemplate,
+          overwriteCache: true,
+        };
+
+        try {
+          const judgmentResponse = await caller('transport.request', {
+            method: 'PUT',
+            path: BackendEndpoints.Judgments,
+            body: tempJudgmentBody,
+          });
+          judgmentId = judgmentResponse.judgment_id;
+          console.log(`Temporary judgment created with ID: ${judgmentId}`);
+          console.log(`Polling judgment status. You can check manually: GET /_plugins/_search_relevance/judgments/${judgmentId}`);
+        } catch (err) {
+          console.error('Failed to create temporary judgment:', err);
+          throw new Error(`Failed to create judgment: ${err.body?.error?.reason || err.message}`);
+        }
+
+        // Step 3: Poll for judgment completion (max 60 seconds)
+        const maxAttempts = 60;
+        const pollInterval = 2000; // 2 seconds
+        let attempts = 0;
+        let judgmentResult;
+
+        while (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, pollInterval));
+
+          judgmentResult = await caller('transport.request', {
+            method: 'GET',
+            path: `${BackendEndpoints.Judgments}/${judgmentId}`,
+          });
+
+          // The GET endpoint returns a search result: { hits: { hits: [{ _source: {...} }] } }
+          const source = judgmentResult?.hits?.hits?.[0]?._source;
+          const status = source?.status;
+          console.log(`Attempt ${attempts + 1}/${maxAttempts}: Judgment status = ${status}`);
+
+          if (status === 'COMPLETED') {
+            console.log('Judgment completed successfully!');
+            judgmentResult = { _source: source }; // Normalize for later use
+            break;
+          } else if (status === 'FAILED') {
+            console.error('Judgment failed:', source);
+            const failureReason = source?.error || source?.metadata?.error || 'Unknown error';
+            throw new Error(`Judgment execution failed: ${failureReason}`);
+          }
+
+          attempts++;
+        }
+
+        if (attempts >= maxAttempts) {
+          console.error(`Judgment ${judgmentId} timed out after ${maxAttempts * pollInterval / 1000} seconds`);
+
+          // Clean up even on timeout
+          await cleanupTempResources(caller, judgmentId, tempQuerySetId);
+
+          throw new Error(`Judgment validation timed out. Check status manually: GET /_plugins/_search_relevance/judgments/${judgmentId}`);
+        }
+
+        // Step 4: Extract results before cleanup
+        const judgmentResults = {
+          success: true,
+          judgmentResult: judgmentResult._source,
+          ratings: judgmentResult._source?.judgmentRatings || [],
+        };
+
+        // Step 5: Clean up temporary resources
+        await cleanupTempResources(caller, judgmentId, tempQuerySetId);
+
+        // Step 6: Return the judgment results
+        return res.ok({
+          body: judgmentResults,
+        });
       } catch (err) {
-        console.error('Failed to validate prompt with ml_predict', err);
+        console.error('Failed to validate prompt with judgment API', err);
+        console.error('Error details:', {
+          message: err.message,
+          statusCode: err.statusCode,
+          body: err.body,
+          stack: err.stack,
+        });
+
+        // Try to clean up resources even on error
+        if (judgmentId || tempQuerySetId) {
+          console.log('Cleaning up temporary resources after error');
+
+          if (judgmentId) {
+            try {
+              await caller('transport.request', {
+                method: 'DELETE',
+                path: `${BackendEndpoints.Judgments}/${judgmentId}`,
+              });
+              console.log(`Cleaned up temporary judgment ${judgmentId} after error`);
+            } catch (cleanupErr) {
+              console.error(`Failed to cleanup judgment after error:`, cleanupErr.message);
+            }
+          }
+
+          if (tempQuerySetId) {
+            try {
+              await caller('transport.request', {
+                method: 'DELETE',
+                path: `${BackendEndpoints.QuerySets}/${tempQuerySetId}`,
+              });
+              console.log(`Cleaned up temporary querySet ${tempQuerySetId} after error`);
+            } catch (cleanupErr) {
+              console.error(`Failed to cleanup querySet after error:`, cleanupErr.message);
+            }
+          }
+        }
+
         return res.customError({
           statusCode: err.statusCode || 500,
           body: {

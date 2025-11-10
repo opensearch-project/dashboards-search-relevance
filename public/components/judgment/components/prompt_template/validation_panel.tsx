@@ -23,19 +23,42 @@ import { PromptValidationResponse } from '../../types/prompt_template_types';
 
 interface ValidationPanelProps {
   placeholders: string[];
+  validPlaceholders?: string[];
+  invalidPlaceholders?: string[];
+  availableQuerySetFields?: string[];
   modelId: string;
   modelOptions: Array<{ label: string; value: string }>;
   onModelChange: (modelId: string) => void;
-  onValidate: (placeholderValues: Record<string, string>) => Promise<PromptValidationResponse>;
+  onValidate: (params: {
+    placeholderValues: Record<string, string>;
+    searchConfigurationList: string[];
+    contextFields: string[];
+    size?: number;
+    tokenLimit?: number;
+    ignoreFailure?: boolean;
+  }) => Promise<PromptValidationResponse>;
+  searchConfigurationList: string[];
+  contextFields: string[];
+  size?: number;
+  tokenLimit?: number;
+  ignoreFailure?: boolean;
   disabled?: boolean;
 }
 
 export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   placeholders,
+  validPlaceholders = placeholders,
+  invalidPlaceholders = [],
+  availableQuerySetFields = [],
   modelId,
   modelOptions,
   onModelChange,
   onValidate,
+  searchConfigurationList,
+  contextFields,
+  size,
+  tokenLimit,
+  ignoreFailure,
   disabled = false,
 }) => {
   const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
@@ -53,8 +76,24 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
     setIsValidating(true);
     setValidationResult(null);
 
+    console.log('ValidationPanel - handleValidate called with:', {
+      placeholderValues,
+      searchConfigurationList,
+      contextFields,
+      size,
+      tokenLimit,
+      ignoreFailure,
+    });
+
     try {
-      const result = await onValidate(placeholderValues);
+      const result = await onValidate({
+        placeholderValues,
+        searchConfigurationList,
+        contextFields,
+        size,
+        tokenLimit,
+        ignoreFailure,
+      });
       setValidationResult(result);
     } catch (error) {
       setValidationResult({
@@ -66,11 +105,22 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
     }
   };
 
+  const isAutoFilledPlaceholder = (placeholder: string) => {
+    const lowerPlaceholder = placeholder.toLowerCase();
+    return lowerPlaceholder === 'hits' || lowerPlaceholder === 'results';
+  };
+
   const canValidate = () => {
     if (!modelId) return false;
-    // If there are placeholders, check if all have values
-    if (placeholders.length > 0) {
-      return placeholders.every((placeholder) => placeholderValues[placeholder]?.trim());
+    // Check if there are invalid placeholders
+    if (invalidPlaceholders.length > 0) return false;
+    // If there are valid placeholders, check if all non-auto-filled ones have values
+    if (validPlaceholders.length > 0) {
+      return validPlaceholders.every((placeholder) => {
+        // Skip validation for auto-filled placeholders
+        if (isAutoFilledPlaceholder(placeholder)) return true;
+        return placeholderValues[placeholder]?.trim();
+      });
     }
     // If no placeholders, allow validation
     return true;
@@ -117,6 +167,29 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
       <EuiSpacer size="m" />
 
+      {invalidPlaceholders.length > 0 && (
+        <>
+          <EuiCallOut
+            title="Invalid placeholders detected"
+            color="danger"
+            iconType="alert"
+            size="s"
+          >
+            <p>
+              The following placeholders are not defined in the selected query set:{' '}
+              <strong>{invalidPlaceholders.join(', ')}</strong>
+            </p>
+            {availableQuerySetFields.length > 0 && (
+              <p>
+                <EuiSpacer size="s" />
+                Available fields: <code>{availableQuerySetFields.join(', ')}</code>
+              </p>
+            )}
+          </EuiCallOut>
+          <EuiSpacer size="m" />
+        </>
+      )}
+
       {placeholders.length === 0 ? (
         <>
           <EuiCallOut
@@ -133,7 +206,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           </EuiCallOut>
           <EuiSpacer size="m" />
         </>
-      ) : (
+      ) : validPlaceholders.length > 0 ? (
         <>
           <EuiTitle size="xs">
             <h4>Placeholder Values</h4>
@@ -144,22 +217,29 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           </EuiText>
           <EuiSpacer size="m" />
 
-          {placeholders.map((placeholder) => (
-            <React.Fragment key={placeholder}>
-              <EuiFormRow label={placeholder} fullWidth>
-                <EuiFieldText
-                  placeholder={`Enter sample value for ${placeholder}`}
-                  value={placeholderValues[placeholder] || ''}
-                  onChange={(e) => handlePlaceholderChange(placeholder, e.target.value)}
-                  disabled={disabled || isValidating}
+          {validPlaceholders.map((placeholder) => {
+            const isAutoFilled = isAutoFilledPlaceholder(placeholder);
+            return (
+              <React.Fragment key={placeholder}>
+                <EuiFormRow
+                  label={placeholder}
+                  helpText={isAutoFilled ? 'This field will be automatically filled with search results' : undefined}
                   fullWidth
-                />
-              </EuiFormRow>
-              <EuiSpacer size="m" />
-            </React.Fragment>
-          ))}
+                >
+                  <EuiFieldText
+                    placeholder={isAutoFilled ? 'Auto-filled with search results' : `Enter sample value for ${placeholder}`}
+                    value={isAutoFilled ? 'Auto-filled with search results' : (placeholderValues[placeholder] || '')}
+                    onChange={(e) => handlePlaceholderChange(placeholder, e.target.value)}
+                    disabled={disabled || isValidating || isAutoFilled}
+                    fullWidth
+                  />
+                </EuiFormRow>
+                <EuiSpacer size="m" />
+              </React.Fragment>
+            );
+          })}
         </>
-      )}
+      ) : null}
 
       <EuiFlexGroup justifyContent="flexEnd">
         <EuiFlexItem grow={false}>
@@ -191,20 +271,13 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                   iconType="check"
                   size="s"
                 >
-                  <EuiText size="s">
-                    <p>The LLM returned a valid response:</p>
-                  </EuiText>
-                  <EuiSpacer size="s" />
-                  <EuiCodeBlock language="json" fontSize="s" paddingSize="s" isCopyable>
-                    {JSON.stringify(validationResult.output, null, 2)}
-                  </EuiCodeBlock>
                   {validationResult.rawResponse && (
                     <>
-                      <EuiSpacer size="s" />
-                      <EuiText size="xs" color="subdued">
+                      <EuiText size="s" color="subdued">
                         <p>Raw response:</p>
                       </EuiText>
-                      <EuiCodeBlock fontSize="xs" paddingSize="s">
+                      <EuiSpacer size="s" />
+                      <EuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
                         {validationResult.rawResponse}
                       </EuiCodeBlock>
                     </>
@@ -218,15 +291,18 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
                   size="s"
                 >
                   <EuiText size="s">
-                    <p>{validationResult.error || 'Unknown error occurred'}</p>
+                    <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', margin: 0 }}>
+                      {validationResult.error || 'Unknown error occurred'}
+                    </pre>
                   </EuiText>
                   {validationResult.rawResponse && (
                     <>
-                      <EuiSpacer size="s" />
+                      <EuiSpacer size="m" />
                       <EuiText size="xs" color="subdued">
-                        <p>Raw response:</p>
+                        <p>Error details:</p>
                       </EuiText>
-                      <EuiCodeBlock fontSize="xs" paddingSize="s">
+                      <EuiSpacer size="s" />
+                      <EuiCodeBlock fontSize="xs" paddingSize="s" isCopyable>
                         {validationResult.rawResponse}
                       </EuiCodeBlock>
                     </>
