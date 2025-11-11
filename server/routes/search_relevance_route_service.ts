@@ -200,7 +200,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         }),
       },
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, { passQueryParams: ['status'] })
   );
   router.get(
     {
@@ -226,7 +226,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   );
 }
 
-const backendAction = (method, path) => {
+const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {
   return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
@@ -255,10 +255,19 @@ const backendAction = (method, path) => {
         });
       } else {
         // Handle PUT, POST, GET as before
-        // For Judgments GET with status query param, append to backend URL
+        // Build backend path with optional query params
         let backendPath = path;
-        if (method === 'GET' && path === BackendEndpoints.Judgments && req.query?.status) {
-          backendPath = `${path}?status=${req.query.status}`;
+        if (options?.passQueryParams && options.passQueryParams.length > 0) {
+          const queryParams: string[] = [];
+          options.passQueryParams.forEach((param) => {
+            const value = (req.query as any)?.[param];
+            if (value) {
+              queryParams.push(`${param}=${value}`);
+            }
+          });
+          if (queryParams.length > 0) {
+            backendPath = `${path}?${queryParams.join('&')}`;
+          }
         }
         response = await caller('transport.request', {
           method,
