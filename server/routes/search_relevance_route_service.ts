@@ -194,7 +194,11 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.get(
     {
       path: ServiceEndpoints.Judgments,
-      validate: false,
+      validate: {
+        query: schema.object({
+          status: schema.maybe(schema.string()),
+        }),
+      },
     },
     backendAction('GET', BackendEndpoints.Judgments)
   );
@@ -251,9 +255,14 @@ const backendAction = (method, path) => {
         });
       } else {
         // Handle PUT, POST, GET as before
+        // For Judgments GET with status query param, append to backend URL
+        let backendPath = path;
+        if (method === 'GET' && path === BackendEndpoints.Judgments && req.query?.status) {
+          backendPath = `${path}?status=${req.query.status}`;
+        }
         response = await caller('transport.request', {
           method,
-          path,
+          path: backendPath,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
         });
       }
