@@ -196,7 +196,12 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
       path: ServiceEndpoints.Judgments,
       validate: {
         query: schema.object({
-          status: schema.maybe(schema.string()),
+          status: schema.maybe(schema.oneOf([
+            schema.literal('COMPLETED'),
+            schema.literal('PROCESSING'),
+            schema.literal('FAILED'),
+            schema.literal('ERROR'),
+          ])),
         }),
       },
     },
