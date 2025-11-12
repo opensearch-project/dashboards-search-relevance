@@ -287,8 +287,6 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
@@ -300,34 +298,17 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
       expect(response.error).toBe('HTTP client not available');
     });
 
-    it('should return error when searchConfigurationList is empty', async () => {
-      const { result } = renderHook(() =>
-        usePromptTemplate({ modelId: 'model1', httpClient: mockHttpClient })
-      );
-
-      const response = await result.current.validatePrompt({
-        placeholderValues: {},
-        searchConfigurationList: [],
-        contextFields: [],
-      });
-
-      expect(response.success).toBe(false);
-      expect(response.error).toBe('Please select at least one search configuration');
-    });
-
     it('should call API with correct payload for SCORE_0_1 output schema', async () => {
       const mockResponse = {
         success: true,
-        judgmentResult: { status: 'COMPLETED' },
-        ratings: [{ query: 'test', rating: 0.8 }],
+        rawResponse: 'The model response text',
+        fullResponse: { inference_results: [{ output: 'model output' }] },
       };
       mockHttpClient.post.mockResolvedValue(mockResponse);
 
@@ -342,37 +323,23 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: { queryText: 'test query' },
-        searchConfigurationList: ['config1'],
-        contextFields: ['field1'],
-        size: 10,
-        tokenLimit: 5000,
-        ignoreFailure: true,
       });
 
       expect(mockHttpClient.post).toHaveBeenCalledWith('/api/relevancy/judgments/validate_prompt', {
-        body: JSON.stringify({
-          modelId: 'model1',
-          promptTemplate: 'Rate {{queryText}}',
-          placeholderValues: { queryText: 'test query' },
-          searchConfigurationList: ['config1'],
-          contextFields: ['field1'],
-          size: 10,
-          tokenLimit: 5000,
-          ignoreFailure: true,
-          llmJudgmentRatingType: 'SCORE0_1',
-        }),
+        body: expect.stringContaining('"modelId":"model1"'),
+      });
+      expect(mockHttpClient.post).toHaveBeenCalledWith('/api/relevancy/judgments/validate_prompt', {
+        body: expect.stringContaining('"placeholderValues":{"queryText":"test query"}'),
       });
 
       expect(response.success).toBe(true);
-      expect(response.output).toEqual({ status: 'COMPLETED' });
-      expect(response.rawResponse).toBe(JSON.stringify(mockResponse.ratings, null, 2));
+      expect(response.rawResponse).toBe('The model response text');
     });
 
-    it('should call API with correct payload for RELEVANT_IRRELEVANT output schema', async () => {
+    it('should use fullResponse when rawResponse is not available', async () => {
       const mockResponse = {
         success: true,
-        judgmentResult: { status: 'COMPLETED' },
-        ratings: [],
+        fullResponse: { inference_results: [{ output: 'full response data' }] },
       };
       mockHttpClient.post.mockResolvedValue(mockResponse);
 
@@ -380,22 +347,12 @@ describe('usePromptTemplate', () => {
         usePromptTemplate({ modelId: 'model1', httpClient: mockHttpClient })
       );
 
-      act(() => {
-        result.current.setOutputSchema(OutputSchema.RELEVANT_IRRELEVANT);
-      });
-
-      await result.current.validatePrompt({
+      const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
-      expect(mockHttpClient.post).toHaveBeenCalledWith(
-        '/api/relevancy/judgments/validate_prompt',
-        expect.objectContaining({
-          body: expect.stringContaining('"llmJudgmentRatingType":"RELEVANT_IRRELEVANT"'),
-        })
-      );
+      expect(response.success).toBe(true);
+      expect(response.rawResponse).toBe(JSON.stringify(mockResponse.fullResponse, null, 2));
     });
 
     it('should handle validation failure with no judgment results', async () => {
@@ -407,12 +364,10 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
-      expect(response.error).toBe('No judgment results returned');
+      expect(response.error).toBe('No response returned from model');
     });
 
     it('should handle API error with body.message', async () => {
@@ -426,12 +381,27 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
       expect(response.error).toBe('API error message');
+    });
+
+    it('should handle API error with error.message when no body', async () => {
+      mockHttpClient.post.mockRejectedValue({
+        message: 'Direct error message',
+      });
+
+      const { result } = renderHook(() =>
+        usePromptTemplate({ modelId: 'model1', httpClient: mockHttpClient })
+      );
+
+      const response = await result.current.validatePrompt({
+        placeholderValues: {},
+      });
+
+      expect(response.success).toBe(false);
+      expect(response.error).toBe('Direct error message');
     });
 
     it('should handle API error with body.attributes.error string', async () => {
@@ -448,8 +418,6 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
@@ -470,8 +438,6 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
@@ -487,50 +453,12 @@ describe('usePromptTemplate', () => {
 
       const response = await result.current.validatePrompt({
         placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
       });
 
       expect(response.success).toBe(false);
       expect(response.error).toBe('Network error');
     });
 
-    it('should use default values for optional parameters', async () => {
-      mockHttpClient.post.mockResolvedValue({
-        success: true,
-        judgmentResult: {},
-        ratings: [],
-      });
-
-      const { result } = renderHook(() =>
-        usePromptTemplate({ modelId: 'model1', httpClient: mockHttpClient })
-      );
-
-      await result.current.validatePrompt({
-        placeholderValues: {},
-        searchConfigurationList: ['config1'],
-        contextFields: [],
-      });
-
-      expect(mockHttpClient.post).toHaveBeenCalledWith(
-        '/api/relevancy/judgments/validate_prompt',
-        expect.objectContaining({
-          body: expect.stringContaining('"size":5'),
-        })
-      );
-      expect(mockHttpClient.post).toHaveBeenCalledWith(
-        '/api/relevancy/judgments/validate_prompt',
-        expect.objectContaining({
-          body: expect.stringContaining('"tokenLimit":4000'),
-        })
-      );
-      expect(mockHttpClient.post).toHaveBeenCalledWith(
-        '/api/relevancy/judgments/validate_prompt',
-        expect.objectContaining({
-          body: expect.stringContaining('"ignoreFailure":false'),
-        })
-      );
-    });
   });
 
   describe('buildFullPrompt', () => {

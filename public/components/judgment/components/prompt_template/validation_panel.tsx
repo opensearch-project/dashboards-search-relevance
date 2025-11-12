@@ -31,17 +31,7 @@ interface ValidationPanelProps {
   onModelChange: (modelId: string) => void;
   onValidate: (params: {
     placeholderValues: Record<string, string>;
-    searchConfigurationList: string[];
-    contextFields: string[];
-    size?: number;
-    tokenLimit?: number;
-    ignoreFailure?: boolean;
   }) => Promise<PromptValidationResponse>;
-  searchConfigurationList: string[];
-  contextFields: string[];
-  size?: number;
-  tokenLimit?: number;
-  ignoreFailure?: boolean;
   disabled?: boolean;
 }
 
@@ -54,11 +44,6 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
   modelOptions,
   onModelChange,
   onValidate,
-  searchConfigurationList,
-  contextFields,
-  size,
-  tokenLimit,
-  ignoreFailure,
   disabled = false,
 }) => {
   const [placeholderValues, setPlaceholderValues] = useState<Record<string, string>>({});
@@ -78,21 +63,11 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 
     console.log('ValidationPanel - handleValidate called with:', {
       placeholderValues,
-      searchConfigurationList,
-      contextFields,
-      size,
-      tokenLimit,
-      ignoreFailure,
     });
 
     try {
       const result = await onValidate({
         placeholderValues,
-        searchConfigurationList,
-        contextFields,
-        size,
-        tokenLimit,
-        ignoreFailure,
       });
       setValidationResult(result);
     } catch (error) {

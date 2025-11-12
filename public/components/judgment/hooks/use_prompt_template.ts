@@ -22,11 +22,6 @@ interface UsePromptTemplateProps {
 
 interface ValidatePromptParams {
   placeholderValues: Record<string, string>;
-  searchConfigurationList: string[];
-  contextFields: string[];
-  size?: number;
-  tokenLimit?: number;
-  ignoreFailure?: boolean;
 }
 
 interface UsePromptTemplateReturn {
@@ -184,11 +179,6 @@ export const usePromptTemplate = ({
   const validatePrompt = useCallback(
     async ({
       placeholderValues,
-      searchConfigurationList,
-      contextFields,
-      size = 5,
-      tokenLimit = 4000,
-      ignoreFailure = false,
     }: ValidatePromptParams): Promise<PromptValidationResponse> => {
       if (!validationModelId) {
         return {
@@ -204,52 +194,33 @@ export const usePromptTemplate = ({
         };
       }
 
-      if (!searchConfigurationList || searchConfigurationList.length === 0) {
-        return {
-          success: false,
-          error: 'Please select at least one search configuration',
-        };
-      }
-
-      // Convert OutputSchema to backend llmJudgmentRatingType format
-      const llmJudgmentRatingType = outputSchema === OutputSchema.SCORE_0_1
-        ? 'SCORE0_1'
-        : 'RELEVANT_IRRELEVANT';
-
-      // Backend expects promptTemplate as a string (just the user instructions)
-      const promptTemplate = userInstructions;
+      // Build the full prompt with user instructions
+      const promptTemplate = buildFullPrompt(placeholderValues);
 
       const requestBody = {
         modelId: validationModelId,
         promptTemplate,
         placeholderValues,
-        searchConfigurationList,
-        contextFields,
-        size,
-        tokenLimit,
-        ignoreFailure,
-        llmJudgmentRatingType,
       };
 
       console.log('Validation request:', requestBody);
 
       try {
-        // Call the backend API to validate prompt by creating a temporary judgment
+        // Call the backend API to validate prompt with direct model predict call
         const response = await httpClient.post('/api/relevancy/judgments/validate_prompt', {
           body: JSON.stringify(requestBody),
         });
 
-        // Parse the response from judgment API
+        // Parse the response from the predict API
         if (response && response.success) {
           return {
             success: true,
-            output: response.judgmentResult,
-            rawResponse: JSON.stringify(response.ratings, null, 2),
+            rawResponse: response.rawResponse || JSON.stringify(response.fullResponse, null, 2),
           };
         } else {
           return {
             success: false,
-            error: 'No judgment results returned',
+            error: 'No response returned from model',
             rawResponse: JSON.stringify(response),
           };
         }
@@ -287,7 +258,7 @@ export const usePromptTemplate = ({
         };
       }
     },
-    [validationModelId, httpClient, outputSchema, getPromptTemplate]
+    [validationModelId, httpClient, buildFullPrompt]
   );
 
   const resetToDefaults = useCallback(() => {
