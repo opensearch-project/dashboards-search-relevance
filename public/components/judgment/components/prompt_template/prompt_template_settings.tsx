@@ -7,8 +7,6 @@ import React from 'react';
 import {
   EuiPage,
   EuiPageBody,
-  EuiPageContent_Deprecated as EuiPageContent,
-  EuiPageContentBody_Deprecated as EuiPageContentBody,
   EuiPageHeader,
   EuiPageHeaderSection,
   EuiTitle,
@@ -18,6 +16,7 @@ import {
   EuiFlexItem,
   EuiButton,
   EuiButtonEmpty,
+  EuiPanel,
 } from '@elastic/eui';
 import { PromptPanel } from './prompt_panel';
 import { ValidationPanel } from './validation_panel';
@@ -77,66 +76,66 @@ export const PromptTemplateSettings: React.FC<PromptTemplateSettingsProps> = ({
           </EuiPageHeaderSection>
         </EuiPageHeader>
 
-        <EuiPageContent>
-          <EuiPageContentBody>
-            <EuiText>
-              <p>
-                Configure and validate your LLM prompt template. The template will be used to
-                generate relevance judgments based on your query set and search configurations.
-              </p>
-            </EuiText>
+        <EuiSpacer size="l" />
 
-            <EuiSpacer size="l" />
+        <EuiPanel paddingSize="l">
+          <EuiText>
+            <p>
+              Configure and validate your LLM prompt template. The template will be used to
+              generate relevance judgments based on your query set and search configurations.
+            </p>
+          </EuiText>
 
-            <EuiFlexGroup direction="column" gutterSize="l">
-              <EuiFlexItem>
-                <PromptPanel
-                  outputSchema={outputSchema}
-                  onOutputSchemaChange={setOutputSchema}
-                  ratingCriteria={ratingCriteria}
-                  onRatingCriteriaChange={setRatingCriteria}
-                  customInstructions={customInstructions}
-                  onCustomInstructionsChange={setCustomInstructions}
-                  placeholders={placeholders}
-                />
-              </EuiFlexItem>
+          <EuiSpacer size="l" />
 
-              <EuiFlexItem>
-                <ValidationPanel
-                  placeholders={placeholders}
-                  modelId={validationModelId}
-                  modelOptions={modelOptions}
-                  onModelChange={setValidationModelId}
-                  onValidate={validatePrompt}
-                />
-              </EuiFlexItem>
-            </EuiFlexGroup>
+          <EuiFlexGroup direction="column" gutterSize="l">
+            <EuiFlexItem>
+              <PromptPanel
+                outputSchema={outputSchema}
+                onOutputSchemaChange={setOutputSchema}
+                ratingCriteria={ratingCriteria}
+                onRatingCriteriaChange={setRatingCriteria}
+                customInstructions={customInstructions}
+                onCustomInstructionsChange={setCustomInstructions}
+                placeholders={placeholders}
+              />
+            </EuiFlexItem>
 
-            <EuiSpacer size="l" />
+            <EuiFlexItem>
+              <ValidationPanel
+                placeholders={placeholders}
+                modelId={validationModelId}
+                modelOptions={modelOptions}
+                onModelChange={setValidationModelId}
+                onValidate={validatePrompt}
+              />
+            </EuiFlexItem>
+          </EuiFlexGroup>
 
-            <EuiFlexGroup justifyContent="spaceBetween">
-              <EuiFlexItem grow={false}>
-                <EuiButtonEmpty onClick={handleReset} color="danger">
-                  Reset to Defaults
-                </EuiButtonEmpty>
-              </EuiFlexItem>
-              <EuiFlexItem grow={false}>
-                <EuiFlexGroup gutterSize="s">
-                  {onCancel && (
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonEmpty onClick={onCancel}>Cancel</EuiButtonEmpty>
-                    </EuiFlexItem>
-                  )}
+          <EuiSpacer size="l" />
+
+          <EuiFlexGroup justifyContent="spaceBetween">
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty onClick={handleReset} color="danger">
+                Reset to Defaults
+              </EuiButtonEmpty>
+            </EuiFlexItem>
+            <EuiFlexItem grow={false}>
+              <EuiFlexGroup gutterSize="s">
+                {onCancel && (
                   <EuiFlexItem grow={false}>
-                    <EuiButton fill onClick={handleSave}>
-                      Save Template
-                    </EuiButton>
+                    <EuiButtonEmpty onClick={onCancel}>Cancel</EuiButtonEmpty>
                   </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </EuiPageContentBody>
-        </EuiPageContent>
+                )}
+                <EuiFlexItem grow={false}>
+                  <EuiButton fill onClick={handleSave}>
+                    Save Template
+                  </EuiButton>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
       </EuiPageBody>
     </EuiPage>
   );
