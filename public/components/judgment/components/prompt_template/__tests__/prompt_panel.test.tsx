@@ -27,7 +27,7 @@ describe('PromptPanel', () => {
 
       expect(screen.getByText('Prompt Configuration')).toBeInTheDocument();
       expect(screen.getByText('Output Schema')).toBeInTheDocument();
-      expect(screen.getByText('System Prompt')).toBeInTheDocument();
+      expect(screen.getByText(/User Input Instructions/)).toBeInTheDocument();
     });
   });
 

@@ -13,10 +13,6 @@ import {
   EuiTextArea,
   EuiText,
   EuiCallOut,
-  EuiBadge,
-  EuiFlexGroup,
-  EuiFlexItem,
-  EuiCodeBlock,
 } from '@elastic/eui';
 import {
   OutputSchema,
@@ -79,25 +75,6 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
     ),
   }));
 
-  const getFullPrompt = () => {
-    const systemPrompt = SYSTEM_PROMPTS[outputSchema];
-    const parts: string[] = [];
-
-    // Add system prompt start
-    parts.push(systemPrompt.start);
-
-    // Add user instructions if provided
-    if (userInstructions.trim()) {
-      parts.push(userInstructions.trim());
-      parts.push('');
-    }
-
-    // Add system prompt end
-    parts.push(systemPrompt.end);
-
-    return parts.join('\n');
-  };
-
   return (
     <EuiPanel paddingSize="l">
       <EuiTitle size="s">
@@ -117,18 +94,6 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
           disabled={disabled}
           fullWidth
         />
-      </EuiFormRow>
-
-      <EuiSpacer size="m" />
-
-      <EuiFormRow
-        label="System Prompt"
-        helpText="Predefined prompt based on the selected output schema (read-only)"
-        fullWidth
-      >
-        <EuiCodeBlock language="text" fontSize="s" paddingSize="m" isCopyable>
-          {SYSTEM_PROMPTS[outputSchema].start}
-        </EuiCodeBlock>
       </EuiFormRow>
 
       <EuiSpacer size="m" />
@@ -172,14 +137,6 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
           <EuiSpacer size="m" />
         </>
       )}
-
-      <EuiCallOut title="Complete Prompt Preview" iconType="iInCircle" size="s">
-        <EuiText size="s">
-          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-            {getFullPrompt()}
-          </pre>
-        </EuiText>
-      </EuiCallOut>
     </EuiPanel>
   );
 };
