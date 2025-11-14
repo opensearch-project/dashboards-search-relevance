@@ -14,8 +14,12 @@ import {
   EuiSpacer,
   EuiFieldNumber,
   EuiSwitch,
+  EuiTitle,
 } from '@elastic/eui';
 import { isValidTokenLimit } from '../utils/validation';
+import { PromptPanel } from './prompt_template/prompt_panel';
+import { ValidationPanel } from './prompt_template/validation_panel';
+import { usePromptTemplate } from '../hooks/use_prompt_template';
 
 interface AdvancedSettingsProps {
   formData: any;
@@ -24,6 +28,9 @@ interface AdvancedSettingsProps {
   setNewContextField: (value: string) => void;
   addContextField: () => void;
   removeContextField: (field: string) => void;
+  modelOptions?: Array<{ label: string; value: string }>;
+  httpClient?: any;
+  selectedSearchConfigs: Array<{ label: string; value: string }>;
 }
 
 export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
@@ -33,9 +40,97 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   setNewContextField,
   addContextField,
   removeContextField,
+  modelOptions = [],
+  httpClient,
+  selectedSearchConfigs,
 }) => {
+  const {
+    outputSchema,
+    setOutputSchema,
+    userInstructions,
+    setUserInstructions,
+    placeholders,
+    validPlaceholders,
+    invalidPlaceholders,
+    availableQuerySetFields,
+    validationModelId,
+    setValidationModelId,
+    validatePrompt,
+    getPromptTemplate,
+  } = usePromptTemplate({
+    querySetId: formData.querySetId,
+    modelId: formData.modelId,
+    httpClient,
+  });
+
+  // Auto-save template when it changes
+  React.useEffect(() => {
+    const template = getPromptTemplate();
+    updateFormData({ promptTemplate: template });
+  }, [outputSchema, userInstructions, placeholders]);
+
+  // Convert selectedSearchConfigs to array of IDs
+  const searchConfigurationList = React.useMemo(
+    () => selectedSearchConfigs.map((config) => config.value),
+    [selectedSearchConfigs]
+  );
+
+  // Debug: Log formData to see what's available
+  React.useEffect(() => {
+    console.log('AdvancedSettings - formData:', {
+      selectedSearchConfigs,
+      searchConfigurationList,
+      contextFields: formData.contextFields,
+      size: formData.size,
+      tokenLimit: formData.tokenLimit,
+      ignoreFailure: formData.ignoreFailure,
+    });
+  }, [selectedSearchConfigs, searchConfigurationList, formData.contextFields, formData.size, formData.tokenLimit, formData.ignoreFailure]);
+
   return (
     <>
+      <EuiTitle size="xxs">
+        <h4>Prompt Template Configuration</h4>
+      </EuiTitle>
+      <EuiSpacer size="s" />
+
+      <EuiFlexGroup gutterSize="m">
+        <EuiFlexItem>
+          <PromptPanel
+            outputSchema={outputSchema}
+            onOutputSchemaChange={setOutputSchema}
+            userInstructions={userInstructions}
+            onUserInstructionsChange={setUserInstructions}
+            placeholders={placeholders}
+          />
+        </EuiFlexItem>
+
+        <EuiFlexItem>
+          <ValidationPanel
+            placeholders={placeholders}
+            validPlaceholders={validPlaceholders}
+            invalidPlaceholders={invalidPlaceholders}
+            availableQuerySetFields={availableQuerySetFields}
+            modelId={validationModelId}
+            modelOptions={modelOptions}
+            onModelChange={setValidationModelId}
+            onValidate={validatePrompt}
+            searchConfigurationList={searchConfigurationList}
+            contextFields={formData.contextFields || []}
+            size={formData.size}
+            tokenLimit={formData.tokenLimit}
+            ignoreFailure={formData.ignoreFailure}
+          />
+        </EuiFlexItem>
+      </EuiFlexGroup>
+
+      <EuiSpacer size="l" />
+
+      <EuiTitle size="xxs">
+        <h4>Additional Settings</h4>
+      </EuiTitle>
+      <EuiSpacer size="s" />
+
       <EuiCompressedFormRow
         label="Context Fields"
         helpText="Specify context fields used for the LLM judgment."
