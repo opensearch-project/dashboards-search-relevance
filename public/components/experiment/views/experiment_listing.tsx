@@ -361,7 +361,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       const filteredList = search
         ? list.filter((item) => {
             const term = search.toLowerCase();
-            console.log("GOTHA")
             return (
               item.id?.toLowerCase().includes(term) ||
               item.type?.toLowerCase().includes(term) ||
