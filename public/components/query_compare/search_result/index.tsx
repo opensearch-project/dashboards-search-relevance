@@ -34,6 +34,8 @@ import {
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
+import { AgentHandler } from './agent/agent_handler';
+import { AgentInfo } from './agent/agent_info_component';
 import {
   ServiceEndpoints,
   SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED,
@@ -83,6 +85,7 @@ export const SearchResult = ({
   const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
   const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
   const [searchBarValue, setSearchBarValue] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const {
     updateComparedResult1,
     updateComparedResult2,
@@ -98,20 +101,18 @@ export const SearchResult = ({
     setPipeline2,
   } = useSearchRelevanceContext();
 
+  const agentHandler = new AgentHandler(http);
+
   const location = useLocation();
 
   // Check for configuration from URL parameters on component mount
   useEffect(() => {
-    console.log('SearchResult useEffect - Current URL:', window.location.href);
-    console.log('SearchResult useEffect - Hash:', window.location.hash);
-    console.log('SearchResult useEffect - Search params:', location.search);
 
     let encodedConfig = null;
 
     // First check query parameters (for experimental workbench UI)
     const searchParams = new URLSearchParams(location.search);
     encodedConfig = searchParams.get('config');
-    console.log('SearchResult useEffect - Config param from search:', encodedConfig);
 
     // If not found in search params, check hash parameters (for old experience)
     if (!encodedConfig) {
@@ -122,21 +123,17 @@ export const SearchResult = ({
       if (hashString.startsWith('?')) {
         hashString = hashString.slice(1); // Remove leading ?
       }
-      console.log('SearchResult useEffect - Hash string to parse:', hashString);
 
       const hashParams = new URLSearchParams(hashString);
       encodedConfig = hashParams.get('config');
-      console.log('SearchResult useEffect - Config param from hash:', encodedConfig);
     }
 
     if (encodedConfig) {
       try {
         // Decode base64 to JSON string
         const jsonString = atob(encodedConfig);
-        console.log('SearchResult useEffect - Decoded JSON:', jsonString);
         // Parse JSON string to object
         const config = JSON.parse(jsonString);
-        console.log('SearchResult useEffect - Parsed config:', config);
 
         // Set the values from config
         if (config.query1) {
@@ -203,6 +200,9 @@ export const SearchResult = ({
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
   const onClickSearch = () => {
+    if (isSearching) return;
+
+    setIsSearching(true);
     const queryErrors = [
       { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
       { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
@@ -348,71 +348,113 @@ export const SearchResult = ({
       setQueryResult2,
       setQueryError2
     );
-    if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
-      // First Query
-      if (Object.keys(requestBody1).length !== 0) {
-        http
-          .post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({
-              query1: requestBody1,
-              dataSourceId1: datasource1 ? datasource1 : '',
-            }),
-          })
-          .then((res) => {
-            if (!isMountedRef.current) return;
-            
-            if (res.result1) {
-              setQueryResult1(res.result1);
-              updateComparedResult1(res.result1);
-            }
 
-            if (res.errorMessage1) {
-              setQueryError1((error: QueryError) => ({
-                ...error,
-                queryString: res.errorMessage1,
-                errorResponse: res.errorMessage1,
-              }));
-              setQueryResult1({} as any);
-              updateComparedResult1({} as any);
-            }
-          })
-          .catch((error: Error) => {
-            console.error(error);
-          });
-      }
-
-      // Second Query
-      if (Object.keys(requestBody2).length !== 0) {
-        http
-          .post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({
-              query2: requestBody2,
-              dataSourceId2: datasource2 ? datasource2 : '',
-            }),
-          })
-          .then((res) => {
-            if (!isMountedRef.current) return;
-            
-            if (res.result2) {
-              setQueryResult2(res.result2);
-              updateComparedResult2(res.result2);
-            }
-
-            if (res.errorMessage2) {
-              setQueryError2((error: QueryError) => ({
-                ...error,
-                queryString: res.errorMessage2,
-                errorResponse: res.errorMessage2,
-              }));
-              setQueryResult2({} as any);
-              updateComparedResult2({} as any);
-            }
-          })
-          .catch((error: Error) => {
-            console.error(error);
-          });
-      }
+    if (Object.keys(requestBody1).length === 0 && Object.keys(requestBody2).length === 0) {
+      setIsSearching(false);
+      return;
     }
+
+    const promises = [];
+
+    // First Query
+    if (Object.keys(requestBody1).length !== 0) {
+      const isAgentic1 = agentHandler.isAgenticQuery(jsonQueries[0]);
+      const promise1 = (isAgentic1 ?
+        agentHandler.performAgenticSearch(requestBody1, datasource1 || '') :
+        http.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({
+            query1: requestBody1,
+            dataSourceId1: datasource1 ? datasource1 : '',
+          }),
+        })
+      )
+        .then((res) => {
+          if (!isMountedRef.current) return;
+
+          if (res.result1) {
+            setQueryResult1(res.result1);
+            updateComparedResult1(res.result1);
+          }
+
+          if (res.errorMessage1) {
+            setQueryError1((error: QueryError) => ({
+              ...error,
+              queryString: res.errorMessage1,
+              errorResponse: res.errorMessage1,
+            }));
+            setQueryResult1({} as any);
+            updateComparedResult1({} as any);
+          }
+        })
+        .catch((error: Error) => {
+          if (!isMountedRef.current) return;
+          setQueryError1((queryError: QueryError) => ({
+            ...queryError,
+            queryString: error.message || 'Search failed',
+            errorResponse: {
+              body: error.message || 'Search failed',
+              statusCode: 500,
+            },
+          }));
+          setQueryResult1({} as any);
+          updateComparedResult1({} as any);
+        });
+      promises.push(promise1);
+    }
+
+    // Second Query
+    if (Object.keys(requestBody2).length !== 0) {
+      const isAgentic2 = agentHandler.isAgenticQuery(jsonQueries[1]);
+      const promise2 = (isAgentic2 ?
+        agentHandler.performAgenticSearch(requestBody2, datasource2 || '').then(res => {
+          return { result2: res.result1, errorMessage2: res.errorMessage1 };
+        }) :
+        http.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({
+            query2: requestBody2,
+            dataSourceId2: datasource2 ? datasource2 : '',
+          }),
+        })
+      )
+        .then((res) => {
+          if (!isMountedRef.current) return;
+
+          if (res.result2) {
+            setQueryResult2(res.result2);
+            updateComparedResult2(res.result2);
+          }
+
+          if (res.errorMessage2) {
+            setQueryError2((error: QueryError) => ({
+              ...error,
+              queryString: res.errorMessage2,
+              errorResponse: res.errorMessage2,
+            }));
+            setQueryResult2({} as any);
+            updateComparedResult2({} as any);
+          }
+        })
+        .catch((error: Error) => {
+          if (!isMountedRef.current) return;
+          setQueryError2((queryError: QueryError) => ({
+            ...queryError,
+            queryString: error.message || 'Search failed',
+            errorResponse: {
+              body: error.message || 'Search failed',
+              statusCode: 500,
+            },
+          }));
+          setQueryResult2({} as any);
+          updateComparedResult2({} as any);
+        });
+      promises.push(promise2);
+    }
+
+    Promise.allSettled(promises).finally(() => {
+      if (isMountedRef.current) {
+        setIsSearching(false);
+      }
+    });
   };
 
   const ErrorMessage = ({ queryError }: { queryError: QueryError }) => (
@@ -456,6 +498,7 @@ export const SearchResult = ({
               setSearchBarValue={setSearchBarValue}
               onClickSearch={onClickSearch}
               getNavGroupEnabled={getNavGroupEnabled}
+              isSearching={isSearching}
             />
           </EuiPanel>
         </>
@@ -472,6 +515,7 @@ export const SearchResult = ({
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
             getNavGroupEnabled={getNavGroupEnabled}
+            isSearching={isSearching}
           />
         </EuiPanel>
       )}
@@ -494,7 +538,7 @@ export const SearchResult = ({
           notifications={notifications}
         />
         {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) ||
-        (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
+          (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
           <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
               {(queryError1.errorResponse.statusCode !== 200 ||
@@ -506,17 +550,32 @@ export const SearchResult = ({
             </EuiSplitPanel.Inner>
           </EuiSplitPanel.Outer>
         ) : (
-          <VisualComparison
-            queryResult1={convertFromSearchResult(queryResult1)}
-            queryResult2={convertFromSearchResult(queryResult2)}
-            queryText={searchBarValue}
-            resultText1="Result 1"
-            resultText2="Result 2"
-            highlightPreTags1={extractHighlightTags(queryString1).preTags}
-            highlightPostTags1={extractHighlightTags(queryString1).postTags}
-            highlightPreTags2={extractHighlightTags(queryString2).preTags}
-            highlightPostTags2={extractHighlightTags(queryString2).postTags}
-          />
+          <>
+            {(agentHandler.hasAgentInfo(queryResult1) || agentHandler.hasAgentInfo(queryResult2)) && (
+              <>
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <AgentInfo queryResult={queryResult1} title="Query 1" agentHandler={agentHandler} />
+                  </EuiFlexItem>
+                  <EuiFlexItem>
+                    <AgentInfo queryResult={queryResult2} title="Query 2" agentHandler={agentHandler} />
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer size="m" />
+              </>
+            )}
+            <VisualComparison
+              queryResult1={convertFromSearchResult(queryResult1)}
+              queryResult2={convertFromSearchResult(queryResult2)}
+              queryText={searchBarValue}
+              resultText1="Result 1"
+              resultText2="Result 2"
+              highlightPreTags1={extractHighlightTags(queryString1).preTags}
+              highlightPostTags1={extractHighlightTags(queryString1).postTags}
+              highlightPreTags2={extractHighlightTags(queryString2).preTags}
+              highlightPostTags2={extractHighlightTags(queryString2).postTags}
+            />
+          </>
         )}
       </EuiPageContentBody>
     </>
