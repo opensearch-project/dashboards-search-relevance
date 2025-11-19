@@ -309,6 +309,57 @@ export const SearchResult = ({
     return { preTags: ['<em>'], postTags: ['</em>'] };
   };
 
+  const extractMemoryId = (queryString: string): string | null => {
+    try {
+      const query = JSON.parse(queryString);
+      return query?.query?.agentic?.memory_id || null;
+    } catch {
+      return null;
+    }
+  };
+
+  const addMemoryIdToQuery = (queryString: string, memoryId: string): string => {
+    try {
+      const query = JSON.parse(queryString);
+      if (query?.query?.agentic) {
+        query.query.agentic.memory_id = memoryId;
+        return JSON.stringify(query, null, 2);
+      }
+    } catch {}
+    return queryString;
+  };
+
+  const removeMemoryIdFromQuery = (queryString: string): string => {
+    try {
+      const query = JSON.parse(queryString);
+      if (query?.query?.agentic?.memory_id) {
+        delete query.query.agentic.memory_id;
+        return JSON.stringify(query, null, 2);
+      }
+    } catch {}
+    return queryString;
+  };
+
+  const handleContinueConversation = (queryNumber: 1 | 2) => {
+    const queryResult = queryNumber === 1 ? queryResult1 : queryResult2;
+    const setQueryString = queryNumber === 1 ? setQueryString1 : setQueryString2;
+    const currentQueryString = queryNumber === 1 ? queryString1 : queryString2;
+    
+    const memoryId = agentHandler.getMemoryId(queryResult);
+    if (memoryId) {
+      const updatedQuery = addMemoryIdToQuery(currentQueryString, memoryId);
+      setQueryString(updatedQuery);
+    }
+  };
+
+  const handleClearConversation = (queryNumber: 1 | 2) => {
+    const setQueryString = queryNumber === 1 ? setQueryString1 : setQueryString2;
+    const currentQueryString = queryNumber === 1 ? queryString1 : queryString2;
+    
+    const updatedQuery = removeMemoryIdFromQuery(currentQueryString);
+    setQueryString(updatedQuery);
+  };
+
   const handleQuery = (
     queryError: QueryError,
     selectedIndex: string,
@@ -555,10 +606,24 @@ export const SearchResult = ({
               <>
                 <EuiFlexGroup>
                   <EuiFlexItem>
-                    <AgentInfo queryResult={queryResult1} title="Query 1" agentHandler={agentHandler} />
+                    <AgentInfo 
+                      queryResult={queryResult1} 
+                      title="Query 1" 
+                      agentHandler={agentHandler}
+                      queryString={queryString1}
+                      onContinueConversation={() => handleContinueConversation(1)}
+                      onClearConversation={() => handleClearConversation(1)}
+                    />
                   </EuiFlexItem>
                   <EuiFlexItem>
-                    <AgentInfo queryResult={queryResult2} title="Query 2" agentHandler={agentHandler} />
+                    <AgentInfo 
+                      queryResult={queryResult2} 
+                      title="Query 2" 
+                      agentHandler={agentHandler}
+                      queryString={queryString2}
+                      onContinueConversation={() => handleContinueConversation(2)}
+                      onClearConversation={() => handleClearConversation(2)}
+                    />
                   </EuiFlexItem>
                 </EuiFlexGroup>
                 <EuiSpacer size="m" />

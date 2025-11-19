@@ -15,7 +15,7 @@ export class AgentHandler {
   }
 
   isAgenticQuery(jsonQuery: any): boolean {
-    return jsonQuery?.query?.agentic === true;
+    return !!(jsonQuery?.query?.agentic && typeof jsonQuery.query.agentic === 'object');
   }
 
   async performAgenticSearch(requestBody: any, dataSourceId: string): Promise<any> {
