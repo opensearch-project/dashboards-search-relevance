@@ -17,6 +17,7 @@ import {
 import React from 'react';
 import { SearchResults } from '../../../../types/index';
 import { AgentHandler } from './agent_handler';
+import { extractMemoryId } from './memory_utils';
 
 interface AgentInfoProps {
   queryResult: SearchResults;
@@ -47,10 +48,9 @@ export const AgentInfo: React.FC<AgentInfoProps> = ({
   let hasMemoryInQuery = false;
   if (showButtons && queryString) {
     try {
-      const query = JSON.parse(queryString);
-      hasMemoryInQuery = !!query?.query?.agentic?.memory_id;
-    } catch {
-      hasMemoryInQuery = false;
+      hasMemoryInQuery = !!extractMemoryId(queryString);
+    } catch (error) {
+      console.warn('Failed to parse query string for memory ID check:', error);
     }
   }
 
