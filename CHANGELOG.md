@@ -15,6 +15,8 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Added support for filtering Query Sets by GUID and aligned QuerySetItem typing with existing structure ([#687](https://github.com/opensearch-project/dashboards-search-relevance/pull/687))
 * Added support for filtering Judgment Lists by GUID (`id`) in the search bar, improving discoverability and navigation when working with judgment identifiers. ([#687](https://github.com/opensearch-project/dashboards-search-relevance/pull/687))
 
+* Filter on Experiment creation page the list of Judgments to COMPLETED status only. ([#674](https://github.com/opensearch-project/dashboards-search-relevance/pull/674))
+
 ### Bug Fixes
 
 ### Infrastructure
