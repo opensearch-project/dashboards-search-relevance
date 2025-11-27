@@ -120,7 +120,10 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       // Use tableData if available (from polling or previous fetch)
       if (tableData.length > 0) {
         const filteredList = search
-          ? tableData.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+          ? tableData.filter((item) => {
+              const q = search.toLowerCase();
+              return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+            })
           : tableData;
         return {
           total: filteredList.length,
@@ -134,7 +137,10 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         const response = await http.get(ServiceEndpoints.Judgments);
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
         const filteredList = search
-          ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+          ? list.filter((item: JudgmentItem) => {
+              const q = search.toLowerCase();
+              return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+            })
           : list;
 
         setJudgments(filteredList);
