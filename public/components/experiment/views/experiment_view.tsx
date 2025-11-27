@@ -56,7 +56,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
 
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="90%">
-      <EuiPageHeader pageTitle="Experiment Visualization" />
+      <EuiPageHeader pageTitle="Experiment Details" />
       {experiment && experiment.type === ExperimentType.PAIRWISE_COMPARISON && (
         <PairwiseExperimentViewWithRouter
           http={http}
