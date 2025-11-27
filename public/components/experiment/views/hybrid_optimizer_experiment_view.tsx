@@ -31,7 +31,7 @@ import {
 } from '../../../../common';
 
 interface VariantEvaluation {
-  metrics: Record<string, number>;
+  metrics: Record<string, number | string>;
 }
 
 interface QueryVariantEvaluations {
@@ -320,6 +320,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             sortable: true,
             render: (value: any) => {
               if (value !== undefined && value !== null) {
+                if (typeof value === 'string') {
+                  return value; // Return string values directly
+                }
                 return new Intl.NumberFormat(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
