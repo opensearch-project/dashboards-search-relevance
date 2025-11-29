@@ -96,7 +96,7 @@ describe('SearchConfigurationView', () => {
     expect(mockFormatJson).toHaveBeenCalledWith('{"match_all": {}}');
   });
 
-  it('renders search pipeline and template when available', () => {
+  it('renders search pipeline when available', () => {
     const mockFormatJson = jest.fn().mockReturnValue('{\n  "match_all": {}\n}');
     mockUseSearchConfigurationView.mockReturnValue({
       searchConfiguration: {
@@ -105,7 +105,6 @@ describe('SearchConfigurationView', () => {
         index: 'test-index',
         query: '{"match_all": {}}',
         searchPipeline: 'test-pipeline',
-        template: 'test-template',
         timestamp: '2023-01-01T00:00:00Z',
       },
       loading: false,
@@ -121,8 +120,6 @@ describe('SearchConfigurationView', () => {
 
     expect(screen.getByText('Search Pipeline')).toBeInTheDocument();
     expect(screen.getByText('test-pipeline')).toBeInTheDocument();
-    expect(screen.getByText('Search Template')).toBeInTheDocument();
-    expect(screen.getByText('test-template')).toBeInTheDocument();
   });
 
   it('renders "None" for search pipeline when not available', () => {
