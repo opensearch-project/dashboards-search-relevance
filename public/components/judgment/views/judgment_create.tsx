@@ -102,6 +102,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             addContextField={addContextField}
             removeContextField={removeContextField}
             dateRangeError={dateRangeError}
+            httpClient={http}
           />
         </EuiFlexItem>
       </EuiPanel>
