@@ -223,8 +223,6 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
   useEffect(() => {
     if (experiment) {
-      console.log('hi')
-      console.log(experiment)
       const metricNames = extractMetricNames(queryEvaluations);
       // metric tool tip texts
       const metricDescriptions: { [key: string]: string } = {
