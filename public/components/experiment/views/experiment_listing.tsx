@@ -262,7 +262,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      console.log("id to delete: " + scheduledForExperiment.id)
       await experimentService.deleteScheduledExperiment(scheduledForExperiment.id);
 
       // Close modal and clear state first
@@ -316,9 +315,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const getScheduledExperiment = async (experimentId: string) => {
     setIsLoading(true);
     try {
-      console.log("id to delete: " + experimentId)
       const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId));
-      console.log(scheduledExperiment)
       return scheduledExperiment.data;
     } catch (err) {
       console.error('Failed to retrieve schedule', err);
