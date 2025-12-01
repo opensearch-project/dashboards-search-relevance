@@ -35,11 +35,15 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
       setError(null);
       try {
         const response = await http.get(ServiceEndpoints.SearchConfigurations);
-        const list = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
+        const list: SearchConfigurationItem[] = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
         const filteredList = search
-          ? list.filter((item) =>
-              item.search_configuration_name.toLowerCase().includes(search.toLowerCase())
-            )
+          ? list.filter((item) => {
+              const term = search.toLowerCase();
+              return (
+                item.search_configuration_name.toLowerCase().includes(term) ||
+                item.id?.toLowerCase().includes(term)
+              );
+            })
           : list;
         return {
           total: filteredList.length,

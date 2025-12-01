@@ -438,6 +438,7 @@ export const VisualComparison = ({
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                   lineColors={lineColors}
+                  sizeMultiplier={sizeMultiplier}
                 />
                 <div className="w-full h-full flex items-center justify-center">
                   {/* Center area for any additional stats */}

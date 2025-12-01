@@ -150,6 +150,47 @@ describe('useSearchConfigurationList', () => {
     });
   });
 
+  it('should filter search configurations by GUID', async () => {
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'abc-123-guid',
+              name: 'Config One',
+              index: 'index-one',
+              query: '{}',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+          {
+            _source: {
+              id: 'def-456-guid',
+              name: 'Another Config',
+              index: 'index-two',
+              query: '{}',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() =>
+      useSearchConfigurationList(mockHttp as any)
+    );
+
+    await act(async () => {
+      const response = await result.current.findSearchConfigurations('abc-123');
+      expect(response.total).toBe(1);
+      expect(response.hits[0].id).toBe('abc-123-guid');
+      expect(response.hits[0].search_configuration_name).toBe('Config One');
+    });
+  });
+
+
   it('should handle empty response', async () => {
     mockHttp.get.mockResolvedValue(null);
 

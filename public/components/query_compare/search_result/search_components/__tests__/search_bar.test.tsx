@@ -19,6 +19,7 @@ describe('Search bar component', () => {
         searchBarValue={TEST_SEARCH_TEXT}
         setSearchBarValue={() => {}}
         onClickSearch={() => {}}
+        isSearching={false}
       />
     );
 
@@ -36,6 +37,7 @@ describe('Search bar component', () => {
         searchBarValue=""
         setSearchBarValue={setSearchBarValue}
         onClickSearch={jest.fn()}
+        isSearching={false}
       />
     );
 
@@ -52,6 +54,7 @@ describe('Search bar component', () => {
         searchBarValue="test"
         setSearchBarValue={jest.fn()}
         onClickSearch={onClickSearch}
+        isSearching={false}
       />
     );
 

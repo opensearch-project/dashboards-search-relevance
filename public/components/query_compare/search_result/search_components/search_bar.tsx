@@ -17,6 +17,7 @@ interface SearchBarProps {
   setSearchBarValue: React.Dispatch<React.SetStateAction<string>>;
   onClickSearch: () => void;
   getNavGroupEnabled?: boolean;
+  isSearching?: boolean;
 }
 
 export const SearchInputBar = ({
@@ -24,6 +25,7 @@ export const SearchInputBar = ({
   setSearchBarValue,
   onClickSearch,
   getNavGroupEnabled,
+  isSearching = false,
 }: SearchBarProps) => {
   return (
     <>
@@ -42,7 +44,13 @@ export const SearchInputBar = ({
           />
         </EuiFlexItem>
         <EuiFlexItem grow={false}>
-          <EuiSmallButton fill onClick={onClickSearch} aria-label="searchRelevance-searchButton">
+          <EuiSmallButton 
+            fill 
+            onClick={onClickSearch} 
+            aria-label="searchRelevance-searchButton"
+            isLoading={isSearching}
+            disabled={isSearching}
+          >
             Search
           </EuiSmallButton>
         </EuiFlexItem>

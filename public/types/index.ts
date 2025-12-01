@@ -45,6 +45,11 @@ export interface SearchResults {
     max_score: number;
     hits: Document[];
   };
+  ext?: {
+    agent_steps_summary?: string;
+    memory_id?: string;
+    dsl_query?: string;
+  };
 }
 
 export enum SelectIndexError {

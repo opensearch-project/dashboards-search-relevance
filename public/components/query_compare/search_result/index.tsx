@@ -34,6 +34,13 @@ import {
 import { VisualComparison, convertFromSearchResult } from './visual_comparison/visual_comparison';
 import { SearchInputBar } from './search_components/search_bar';
 import { SearchConfigsPanel } from './search_components/search_configs/search_configs';
+import { AgentHandler } from './agent/agent_handler';
+import { AgentInfo } from './agent/agent_info_component';
+import { createConversationHandlers } from './agent/conversation_handlers';
+import { SearchHandler } from './search/search_handler';
+import { prepareQueries } from './search/query_processor';
+import { updateUrlWithConfig } from './search/url_config';
+import { extractHighlightTags } from './highlight/highlight_utils';
 import {
   ServiceEndpoints,
   SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED,
@@ -83,6 +90,7 @@ export const SearchResult = ({
   const [queryError1, setQueryError1] = useState<QueryError>(initialQueryErrorState);
   const [queryError2, setQueryError2] = useState<QueryError>(initialQueryErrorState);
   const [searchBarValue, setSearchBarValue] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
   const {
     updateComparedResult1,
     updateComparedResult2,
@@ -98,20 +106,19 @@ export const SearchResult = ({
     setPipeline2,
   } = useSearchRelevanceContext();
 
+  const agentHandler = new AgentHandler(http);
+  const searchHandler = new SearchHandler(http);
+
   const location = useLocation();
 
   // Check for configuration from URL parameters on component mount
   useEffect(() => {
-    console.log('SearchResult useEffect - Current URL:', window.location.href);
-    console.log('SearchResult useEffect - Hash:', window.location.hash);
-    console.log('SearchResult useEffect - Search params:', location.search);
 
     let encodedConfig = null;
 
     // First check query parameters (for experimental workbench UI)
     const searchParams = new URLSearchParams(location.search);
     encodedConfig = searchParams.get('config');
-    console.log('SearchResult useEffect - Config param from search:', encodedConfig);
 
     // If not found in search params, check hash parameters (for old experience)
     if (!encodedConfig) {
@@ -122,21 +129,17 @@ export const SearchResult = ({
       if (hashString.startsWith('?')) {
         hashString = hashString.slice(1); // Remove leading ?
       }
-      console.log('SearchResult useEffect - Hash string to parse:', hashString);
 
       const hashParams = new URLSearchParams(hashString);
       encodedConfig = hashParams.get('config');
-      console.log('SearchResult useEffect - Config param from hash:', encodedConfig);
     }
 
     if (encodedConfig) {
       try {
         // Decode base64 to JSON string
         const jsonString = atob(encodedConfig);
-        console.log('SearchResult useEffect - Decoded JSON:', jsonString);
         // Parse JSON string to object
         const config = JSON.parse(jsonString);
-        console.log('SearchResult useEffect - Parsed config:', config);
 
         // Set the values from config
         if (config.query1) {
@@ -203,111 +206,37 @@ export const SearchResult = ({
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
 
   const onClickSearch = () => {
-    const queryErrors = [
-      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
-      { ...initialQueryErrorState, errorResponse: { ...initialQueryErrorState.errorResponse } },
-    ];
-    const jsonQueries = [{}, {}];
+    if (isSearching) return;
 
-    validateQuery(selectedIndex1, queryString1, queryErrors[0]);
-    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
-
-    validateQuery(selectedIndex2, queryString2, queryErrors[1]);
-    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
+    setIsSearching(true);
+    const { queryErrors, jsonQueries } = prepareQueries(
+      searchBarValue,
+      selectedIndex1,
+      selectedIndex2,
+      queryString1,
+      queryString2
+    );
 
     // Update URL with current configuration
-    updateUrlWithConfig();
+    updateUrlWithConfig(
+      selectedIndex1,
+      selectedIndex2,
+      queryString1,
+      queryString2,
+      pipeline1,
+      pipeline2,
+      searchBarValue
+    );
 
     handleSearch(jsonQueries, queryErrors);
   };
 
-  const updateUrlWithConfig = () => {
-    try {
-      const config = {
-        query1: {
-          index: selectedIndex1,
-          dsl_query: queryString1,
-          search_pipeline: pipeline1 || undefined,
-        },
-        query2: {
-          index: selectedIndex2,
-          dsl_query: queryString2,
-          search_pipeline: pipeline2 || undefined,
-        },
-        search: searchBarValue,
-      };
-
-      // Remove undefined values to keep the config clean
-      if (!config.query1.search_pipeline) delete config.query1.search_pipeline;
-      if (!config.query2.search_pipeline) delete config.query2.search_pipeline;
-
-      // Encode configuration to base64
-      const base64Config = btoa(JSON.stringify(config));
-
-      // Create URL with configuration
-      const newUrl = new URL(window.location);
-      newUrl.hash = `#/?config=${base64Config}`;
-
-      // Check URL length limit (2000 characters is a safe limit for most browsers)
-      const MAX_URL_LENGTH = 2000;
-      const urlString = newUrl.toString();
-
-      if (urlString.length > MAX_URL_LENGTH) {
-        // URL is too long, update without parameters
-        console.log(
-          'URL too long (' + urlString.length + ' characters), updating without config parameter'
-        );
-        newUrl.hash = '#/';
-        window.history.replaceState({}, document.title, newUrl.toString());
-        console.log('Updated URL without config (length limit exceeded):', newUrl.toString());
-      } else {
-        // URL is within safe length, update with configuration
-        window.history.replaceState({}, document.title, urlString);
-        console.log('Updated URL with config:', urlString);
-      }
-    } catch (e) {
-      console.error('Failed to update URL with configuration:', e);
-    }
-  };
-
-  const validateQuery = (selectedIndex: string, queryString: string, queryError: QueryError) => {
-    // Check if select an index
-    if (!selectedIndex.length) {
-      queryError.selectIndex = SelectIndexError.unselected;
-    }
-
-    // Check if query string is empty
-    if (!queryString.length) {
-      queryError.queryString = QueryStringError.empty;
-      queryError.errorResponse.statusCode = 400;
-    }
-  };
-
-  const rewriteQuery = (value: string, queryString: string, queryError: QueryError) => {
-    if (queryString.trim().length > 0) {
-      try {
-        return JSON.parse(queryString.replace(/%SearchText%/g, value));
-      } catch {
-        queryError.queryString = QueryStringError.invalid;
-        queryError.errorResponse.statusCode = 400;
-      }
-    }
-  };
-
-  const extractHighlightTags = (queryString: string) => {
-    try {
-      const query = JSON.parse(queryString);
-      if (query.highlight?.pre_tags && query.highlight?.post_tags) {
-        return {
-          preTags: query.highlight.pre_tags,
-          postTags: query.highlight.post_tags
-        };
-      }
-    } catch {
-      // Ignore parsing errors
-    }
-    return { preTags: ['<em>'], postTags: ['</em>'] };
-  };
+  const { handleContinueConversation, handleClearConversation } = createConversationHandlers(
+    agentHandler,
+    [queryResult1, queryResult2],
+    [queryString1, queryString2],
+    [setQueryString1, setQueryString2]
+  );
 
   const handleQuery = (
     queryError: QueryError,
@@ -326,6 +255,64 @@ export const SearchResult = ({
       setQueryError(initialQueryErrorState);
       return { index: selectedIndex, pipeline, ...jsonQuery };
     }
+  };
+
+  const processQuery = (
+    requestBody: any,
+    jsonQuery: any,
+    datasource: string,
+    setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
+    updateComparedResult: (result: SearchResults) => void,
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>,
+    resultKey: 'result1' | 'result2',
+    errorKey: 'errorMessage1' | 'errorMessage2'
+  ) => {
+    if (Object.keys(requestBody).length === 0) return null;
+
+    const isAgentic = agentHandler.isAgenticQuery(jsonQuery);
+    const searchPromise = isAgentic ?
+      agentHandler.performAgenticSearch(requestBody, datasource) :
+      searchHandler.performSearch(requestBody, datasource);
+
+    return searchPromise
+      .then((res) => {
+        // Normalize response format for query2
+        if (resultKey === 'result2' && res.result1) {
+          res = { result2: res.result1, errorMessage2: res.errorMessage1 };
+        }
+        return res;
+      })
+      .then((res) => {
+        if (!isMountedRef.current) return;
+
+        if (res[resultKey]) {
+          setQueryResult(res[resultKey]);
+          updateComparedResult(res[resultKey]);
+        }
+
+        if (res[errorKey]) {
+          setQueryError((error: QueryError) => ({
+            ...error,
+            queryString: res[errorKey],
+            errorResponse: res[errorKey],
+          }));
+          setQueryResult({} as any);
+          updateComparedResult({} as any);
+        }
+      })
+      .catch((error: Error) => {
+        if (!isMountedRef.current) return;
+        setQueryError((queryError: QueryError) => ({
+          ...queryError,
+          queryString: error.message || 'Search failed',
+          errorResponse: {
+            body: error.message || 'Search failed',
+            statusCode: 500,
+          },
+        }));
+        setQueryResult({} as any);
+        updateComparedResult({} as any);
+      });
   };
 
   const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
@@ -348,71 +335,22 @@ export const SearchResult = ({
       setQueryResult2,
       setQueryError2
     );
-    if (Object.keys(requestBody1).length !== 0 || Object.keys(requestBody2).length !== 0) {
-      // First Query
-      if (Object.keys(requestBody1).length !== 0) {
-        http
-          .post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({
-              query1: requestBody1,
-              dataSourceId1: datasource1 ? datasource1 : '',
-            }),
-          })
-          .then((res) => {
-            if (!isMountedRef.current) return;
-            
-            if (res.result1) {
-              setQueryResult1(res.result1);
-              updateComparedResult1(res.result1);
-            }
 
-            if (res.errorMessage1) {
-              setQueryError1((error: QueryError) => ({
-                ...error,
-                queryString: res.errorMessage1,
-                errorResponse: res.errorMessage1,
-              }));
-              setQueryResult1({} as any);
-              updateComparedResult1({} as any);
-            }
-          })
-          .catch((error: Error) => {
-            console.error(error);
-          });
-      }
-
-      // Second Query
-      if (Object.keys(requestBody2).length !== 0) {
-        http
-          .post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({
-              query2: requestBody2,
-              dataSourceId2: datasource2 ? datasource2 : '',
-            }),
-          })
-          .then((res) => {
-            if (!isMountedRef.current) return;
-            
-            if (res.result2) {
-              setQueryResult2(res.result2);
-              updateComparedResult2(res.result2);
-            }
-
-            if (res.errorMessage2) {
-              setQueryError2((error: QueryError) => ({
-                ...error,
-                queryString: res.errorMessage2,
-                errorResponse: res.errorMessage2,
-              }));
-              setQueryResult2({} as any);
-              updateComparedResult2({} as any);
-            }
-          })
-          .catch((error: Error) => {
-            console.error(error);
-          });
-      }
+    if (Object.keys(requestBody1).length === 0 && Object.keys(requestBody2).length === 0) {
+      setIsSearching(false);
+      return;
     }
+
+    const promises = [
+      processQuery(requestBody1, jsonQueries[0], datasource1 || '', setQueryResult1, updateComparedResult1, setQueryError1, 'result1', 'errorMessage1'),
+      processQuery(requestBody2, jsonQueries[1], datasource2 || '', setQueryResult2, updateComparedResult2, setQueryError2, 'result2', 'errorMessage2')
+    ].filter(Boolean);
+
+    Promise.allSettled(promises).finally(() => {
+      if (isMountedRef.current) {
+        setIsSearching(false);
+      }
+    });
   };
 
   const ErrorMessage = ({ queryError }: { queryError: QueryError }) => (
@@ -456,6 +394,7 @@ export const SearchResult = ({
               setSearchBarValue={setSearchBarValue}
               onClickSearch={onClickSearch}
               getNavGroupEnabled={getNavGroupEnabled}
+              isSearching={isSearching}
             />
           </EuiPanel>
         </>
@@ -472,6 +411,7 @@ export const SearchResult = ({
             setSearchBarValue={setSearchBarValue}
             onClickSearch={onClickSearch}
             getNavGroupEnabled={getNavGroupEnabled}
+            isSearching={isSearching}
           />
         </EuiPanel>
       )}
@@ -494,7 +434,7 @@ export const SearchResult = ({
           notifications={notifications}
         />
         {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) ||
-        (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
+          (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
           <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
               {(queryError1.errorResponse.statusCode !== 200 ||
@@ -506,17 +446,46 @@ export const SearchResult = ({
             </EuiSplitPanel.Inner>
           </EuiSplitPanel.Outer>
         ) : (
-          <VisualComparison
-            queryResult1={convertFromSearchResult(queryResult1)}
-            queryResult2={convertFromSearchResult(queryResult2)}
-            queryText={searchBarValue}
-            resultText1="Result 1"
-            resultText2="Result 2"
-            highlightPreTags1={extractHighlightTags(queryString1).preTags}
-            highlightPostTags1={extractHighlightTags(queryString1).postTags}
-            highlightPreTags2={extractHighlightTags(queryString2).preTags}
-            highlightPostTags2={extractHighlightTags(queryString2).postTags}
-          />
+          <>
+            {(agentHandler.hasAgentInfo(queryResult1) || agentHandler.hasAgentInfo(queryResult2)) && (
+              <>
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <AgentInfo 
+                      queryResult={queryResult1} 
+                      title="Query 1" 
+                      agentHandler={agentHandler}
+                      queryString={queryString1}
+                      onContinueConversation={() => handleContinueConversation(1)}
+                      onClearConversation={() => handleClearConversation(1)}
+                    />
+                  </EuiFlexItem>
+                  <EuiFlexItem>
+                    <AgentInfo 
+                      queryResult={queryResult2} 
+                      title="Query 2" 
+                      agentHandler={agentHandler}
+                      queryString={queryString2}
+                      onContinueConversation={() => handleContinueConversation(2)}
+                      onClearConversation={() => handleClearConversation(2)}
+                    />
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer size="m" />
+              </>
+            )}
+            <VisualComparison
+              queryResult1={convertFromSearchResult(queryResult1)}
+              queryResult2={convertFromSearchResult(queryResult2)}
+              queryText={searchBarValue}
+              resultText1="Result 1"
+              resultText2="Result 2"
+              highlightPreTags1={extractHighlightTags(queryString1).preTags}
+              highlightPostTags1={extractHighlightTags(queryString1).postTags}
+              highlightPreTags2={extractHighlightTags(queryString2).preTags}
+              highlightPostTags2={extractHighlightTags(queryString2).postTags}
+            />
+          </>
         )}
       </EuiPageContentBody>
     </>

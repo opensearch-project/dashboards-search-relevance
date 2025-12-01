@@ -210,4 +210,42 @@ describe('useJudgmentList', () => {
       expect(response.hits).toEqual([]);
     });
   });
+
+  it('should filter judgments by GUID (id search)', async () => {
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'abc-123-guid',
+              name: 'Judgment One',
+              type: 'LLM',
+              status: 'COMPLETED',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+          {
+            _source: {
+              id: 'xyz-999-guid',
+              name: 'Another Judgment',
+              type: 'UBI',
+              status: 'COMPLETED',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      const response = await result.current.findJudgments('abc-123');
+      expect(response.total).toBe(1);
+      expect(response.hits[0].id).toBe('abc-123-guid');
+      expect(response.hits[0].name).toBe('Judgment One');
+    });
+  });
 });

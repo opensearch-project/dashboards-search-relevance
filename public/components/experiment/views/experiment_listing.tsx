@@ -327,7 +327,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     // Use tableData if available (from polling or previous fetch)
     if (tableData.length > 0) {
       const filteredList = search
-        ? tableData.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
+        ? tableData.filter((item) => {
+            const term = search.toLowerCase();
+            return (
+              item.id?.toLowerCase().includes(term) ||
+              item.type?.toLowerCase().includes(term) ||
+              item.status?.toLowerCase().includes(term)
+            );
+          })
         : tableData;
       return {
         total: filteredList.length,
@@ -352,7 +359,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       const list = parseResults.data;
       const filteredList = search
-        ? list.filter((item) => item.id.toLowerCase().includes(search.toLowerCase()))
+        ? list.filter((item) => {
+            const term = search.toLowerCase();
+            return (
+              item.id?.toLowerCase().includes(term) ||
+              item.type?.toLowerCase().includes(term) ||
+              item.status?.toLowerCase().includes(term)
+            );
+          })
         : list;
 
       setExperiments(filteredList);

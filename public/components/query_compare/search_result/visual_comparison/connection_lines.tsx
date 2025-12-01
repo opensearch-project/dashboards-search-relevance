@@ -12,6 +12,7 @@ interface ConnectionLinesProps {
   result1ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   result2ItemsRef: React.MutableRefObject<{ [key: string]: HTMLDivElement }>;
   lineColors: { [key: string]: { stroke: string; strokeWidth: number } };
+  sizeMultiplier: number;
 }
 
 export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
@@ -21,11 +22,14 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
   result1ItemsRef,
   result2ItemsRef,
   lineColors,
+  sizeMultiplier,
 }) => {
+  const containerHeight = Math.max(420, Math.max(result1.length, result2.length) * (32 * sizeMultiplier + 20));
+  
   return (
     <svg
       width="100%"
-      height="420"
+      height={containerHeight}
       style={{ overflow: 'visible' }}
       className="absolute top-0 left-0"
       id="connection-lines"
@@ -45,16 +49,13 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
           if (!r1El || !r2El) return null;
 
           try {
-            // Calculate positions for connecting line
-            const r1Rect = r1El.getBoundingClientRect();
-            const r2Rect = r2El.getBoundingClientRect();
-            const svgRect = document.getElementById('connection-lines')?.getBoundingClientRect();
-
-            if (!svgRect) return null;
-
-            // Calculate relative positions within the SVG
-            const y1 = r1Rect.top - svgRect.top + r1Rect.height / 2;
-            const y2 = r2Rect.top - svgRect.top + r2Rect.height / 2;
+            // Calculate positions based on item index and size multiplier
+            const r1Index = result1.findIndex(item => item._id === r1Item._id);
+            const r2Index = result2.findIndex(item => item._id === r1Item._id);
+            
+            const itemHeight = 32 * sizeMultiplier + 20; // Image size + padding/margins
+            const y1 = r1Index * itemHeight + itemHeight / 2;
+            const y2 = r2Index * itemHeight + itemHeight / 2;
 
             let lineProps = lineColors.unchanged;
             if (r1Item.rank < r2Match.rank) {
@@ -64,7 +65,15 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
             }
 
             return (
-              <line key={`line-${r1Item._id}`} x1="0%" y1={y1} x2="100%" y2={y2} {...lineProps} />
+              <line 
+                key={`line-${r1Item._id}`} 
+                x1="0%" 
+                y1={y1} 
+                x2="100%" 
+                y2={y2} 
+                stroke={lineProps.stroke}
+                strokeWidth={lineProps.strokeWidth * sizeMultiplier}
+              />
             );
           } catch (error) {
             // Fail silently if there's an error calculating positions

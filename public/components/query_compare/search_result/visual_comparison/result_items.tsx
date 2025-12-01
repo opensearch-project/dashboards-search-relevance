@@ -36,6 +36,7 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
   const imageSize = 32 * sizeMultiplier;
   const imageSizeClass = `w-${Math.min(sizeMultiplier * 4, 64)} h-${Math.min(sizeMultiplier * 4, 64)}`;
   const maxLines = sizeMultiplier;
+  const itemHeight = Math.max(40, 32 * sizeMultiplier);
   return (
     <div id={`result${resultNum}-items`}>
       {items.map((item, index) => (
@@ -50,6 +51,7 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
           className={`flex ${
             resultNum === 1 ? 'flex-row-reverse' : ''
           } items-center mb-2 hover:bg-gray-100 p-1 rounded cursor-pointer`}
+          style={{ minHeight: `${itemHeight}px` }}
           onClick={(event) => handleItemClick(item, event, resultNum)}
         >
           <div
