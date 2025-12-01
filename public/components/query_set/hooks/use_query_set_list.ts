@@ -7,12 +7,21 @@ import { useState } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
+export interface QuerySetItem {
+  id: string;
+  name: string;
+  sampling: number;
+  description: string;
+  timestamp: string;
+  numQueries: number;
+}
+
 export const useQuerySetList = (http: CoreStart['http']) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const mapQuerySetFields = (obj: any) => ({
+  const mapQuerySetFields = (obj: any): QuerySetItem => ({
     id: obj._source.id,
     name: obj._source.name,
     sampling: obj._source.sampling,
@@ -21,14 +30,18 @@ export const useQuerySetList = (http: CoreStart['http']) => {
     numQueries: Object.keys(obj._source.querySetQueries).length,
   });
 
-  const findQuerySets = async (search: any) => {
+  const findQuerySets = async (search?: string) => {
     setIsLoading(true);
     setError(null);
     try {
       const response = await http.get(ServiceEndpoints.QuerySets);
-      const list = response ? response.hits.hits.map(mapQuerySetFields) : [];
-      const filteredList = search
-        ? list.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()))
+      const list: QuerySetItem[] = response ? response.hits.hits.map(mapQuerySetFields) : [];
+
+      const filteredList: QuerySetItem[] = search
+        ? list.filter((qs: QuerySetItem) => {
+            const s = search.toLowerCase();
+            return qs.name.toLowerCase().includes(s) || qs.id.toLowerCase().includes(s);
+          })
         : list;
       return {
         total: filteredList.length,
