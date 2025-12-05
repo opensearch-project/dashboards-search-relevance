@@ -168,6 +168,47 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Experiments)
   );
+  router.post(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}`,
+      validate: {
+        body: schema.object({
+          experimentId: schema.string(),
+          cronExpression: schema.string()
+        }),
+      }
+    },
+    backendAction('POST', `${BackendEndpoints.ScheduledExperiments}`)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}`,
+      validate: false,
+    },
+    backendAction('GET', `${BackendEndpoints.ScheduledExperiments}`)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.ScheduledExperiments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.ScheduledExperiments)
+  );
   router.put(
     {
       path: ServiceEndpoints.Judgments,
