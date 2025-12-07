@@ -110,7 +110,7 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
                 onChange={(files) => handleFileContent(files)}
                 display="large"
                 aria-label="Upload query file"
-                accept=".txt"
+                accept=".ndjson,.json,application/json"
                 data-test-subj="manualQueriesFilePicker"
                 compressed
               />
