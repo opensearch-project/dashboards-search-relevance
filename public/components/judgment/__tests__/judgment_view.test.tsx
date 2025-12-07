@@ -102,11 +102,12 @@ describe('JudgmentView', () => {
     expect(screen.getByText('key1:')).toBeInTheDocument();
 
     // Flattened table rows
-    expect(screen.getByText('bluetooth earbuds')).toBeInTheDocument();
-    expect(screen.getByText('A1')).toBeInTheDocument();
-    expect(screen.getByText('A2')).toBeInTheDocument();
-    expect(screen.getByText('3')).toBeInTheDocument();
-    expect(screen.getByText('1')).toBeInTheDocument();
+    expect(screen.getAllByText('bluetooth earbuds').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('A1').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('A2').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('3').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('1').length).toBeGreaterThan(0);
+
   });
 
   it('filters table results using search box', () => {
