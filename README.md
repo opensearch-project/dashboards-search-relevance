@@ -12,7 +12,7 @@ In search applications, tuning relevance is a constant, iterative exercise to br
 # Projects
 Behind the scenes, the plugin uses the [Search Relevance OpenSearch plugin](https://github.com/opensearch-project/search-relevance) for resource management for each tool provided. For example, most use cases involve configuring and creating search configurations, query sets, and judgements. All of these resources are created, updated, deleted, and maintained by the Search Relevance plugin. When users are satisfied with the improvements to relevancy then they take the output and manually deploy the changes into their environment.
 
-For tutorials on how to leverage these tools, see [here](https://docs.opensearch.org/docs/latest/search-plugins/search-relevance/).
+For tutorials on how to leverage these tools, see [here](https://opensearch.org/docs/latest/search-plugins/search-relevance/).
 
 > [!IMPORTANT]  
 > While shipping with OpenSearch, you must OPT IN to this feature.  To enable this go to *Dashboard Management* -> *advanced setting* -> *Search relevance* -> turn on the toggle -> don’t forget to save.

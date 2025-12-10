@@ -65,7 +65,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
           <span>
             Create a new query set by{' '}
             <a
-              href="https://docs.opensearch.org/docs/latest/search-plugins/search-relevance/query-sets/"
+              href="https://opensearch.org/docs/latest/search-plugins/search-relevance/query-sets/"
               target="_blank"
               rel="noopener noreferrer"
             >

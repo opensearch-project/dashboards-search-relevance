@@ -6,6 +6,7 @@
 import React from 'react';
 import {
   EuiButton,
+  EuiButtonEmpty,
   EuiFieldNumber,
   EuiFlexGroup,
   EuiCompressedFormRow,
@@ -29,6 +30,9 @@ const samplingOptions = [
   { value: 'topn', text: 'Top N' },
 ];
 
+const SAMPLE_NDJSON_URL =
+  'https://raw.githubusercontent.com/opensearch-project/dashboards-search-relevance/main/samples/query_set_example_with_references.ndjson';
+
 export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId }) => {
   const {
     name,
@@ -45,6 +49,31 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
     validateField,
     handleFileContent,
   } = formState;
+
+  const downloadSampleNDJSON = async () => {
+    try {
+      const response = await fetch(SAMPLE_NDJSON_URL);
+      const text = await response.text();
+
+      const blob = new Blob([text], {
+        type: 'application/x-ndjson',
+      });
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'queryset-sample.ndjson';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download sample NDJSON:', err);
+    }
+  };
+
 
   return (
     <EuiForm component="form" isInvalid={Object.values(errors).some((error) => error.length > 0)}>
@@ -99,11 +128,11 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
           label="Manual Queries"
           error={errors.manualQueriesError}
           isInvalid={Boolean(errors.manualQueriesError)}
-          helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+          helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer). You can also download a sample template."
           fullWidth
         >
-          <EuiFlexGroup>
-            <EuiFlexItem>
+          <EuiFlexGroup alignItems="center" gutterSize="s">
+            <EuiFlexItem grow={false} style={{ minWidth: 400 }}>
               <EuiFilePicker
                 id={filePickerId}
                 initialPromptText="Select or drag and drop a query file"
@@ -112,8 +141,19 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
                 aria-label="Upload query file"
                 accept=".ndjson,.json,application/json"
                 data-test-subj="manualQueriesFilePicker"
-                compressed
               />
+            </EuiFlexItem>
+
+            <EuiFlexItem grow={false}>
+              <EuiButtonEmpty
+                size="xs"
+                iconType="download"
+                onClick={downloadSampleNDJSON}
+                data-test-subj="downloadSampleNDJSON"
+                flush="left"
+              >
+                Download sample NDJSON
+              </EuiButtonEmpty>
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFormRow>
