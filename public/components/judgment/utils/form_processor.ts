@@ -17,12 +17,10 @@ export const buildJudgmentPayload = (
     type: formData.type,
   };
 
-  if (formData.type === JudgmentType.IMPORT_JUDGMENT) {
+  if (formData.type === JudgmentType.IMPORT) {
     return {
       ...basePayload,
-      metadata: {
-        judgmentRatings: importedRatings,
-      },
+      judgmentRatings: importedRatings,
     } as JudgmentFormData;
   }
 
