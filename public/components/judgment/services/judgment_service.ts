@@ -40,9 +40,15 @@ export class JudgmentService {
       }));
   }
 
-  async createJudgment(data: JudgmentFormData): Promise<void> {
+  async createJudgment(data: JudgmentFormData, dataSourceId?: string): Promise<void> {
+    const query = dataSourceId ? { dataSourceId: dataSourceId } : undefined;
+    
     await this.http.put(ServiceEndpoints.Judgments, {
       body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(query && { query }),
     });
   }
 }

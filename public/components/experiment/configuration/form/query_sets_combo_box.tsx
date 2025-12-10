@@ -14,6 +14,7 @@ interface QuerySetsComboBoxProps {
   onChange: (selectedOptions: OptionLabel[]) => void;
   http: CoreStart['http'];
   hideLabel?: boolean;
+  dataSourceId?: string;
 }
 
 export const QuerySetsComboBox = ({
@@ -21,6 +22,7 @@ export const QuerySetsComboBox = ({
   onChange,
   http,
   hideLabel,
+  dataSourceId,
 }: QuerySetsComboBoxProps) => {
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,7 +31,8 @@ export const QuerySetsComboBox = ({
     let isMounted = true;
     const fetchQuerySets = async () => {
       try {
-        const data = await http.get(ServiceEndpoints.QuerySets);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const data = await http.get(ServiceEndpoints.QuerySets, { query });
         const options = data.hits.hits.map((qs: any) => ({
           label: qs._source.name,
           value: qs._source.id,
@@ -54,7 +57,7 @@ export const QuerySetsComboBox = ({
     return () => {
       isMounted = false;
     };
-  }, [http]);
+  }, [http, dataSourceId]);
 
   const comboBoxComponent = (
     <EuiComboBox

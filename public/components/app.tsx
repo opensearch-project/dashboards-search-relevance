@@ -322,6 +322,9 @@ const SearchRelevancePage = ({
                       history.goBack();
                     }}
                     onClose={() => {}}
+                    savedObjects={savedObjects}
+                    dataSourceEnabled={dataSourceEnabled}
+                    dataSourceManagement={dataSourceManagement}
                   />
                 );
               }
@@ -331,21 +334,40 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetCreate}
             exact
             render={() => {
-              return <QuerySetCreate http={http} notifications={notifications} />;
+              return <QuerySetCreate 
+                http={http} 
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return <SearchConfigurationCreate http={http} notifications={notifications} />;
+              return <SearchConfigurationCreate 
+                http={http} 
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
+              return <JudgmentCreate 
+                http={http} 
+                notifications={notifications} 
+                history={history}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
         </Switch>

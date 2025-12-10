@@ -64,6 +64,9 @@ describe('SearchConfigurationService', () => {
 
       expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/search_configurations', {
         body: JSON.stringify(configData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
     });
   });

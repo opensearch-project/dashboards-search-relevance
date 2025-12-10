@@ -86,6 +86,9 @@ describe('JudgmentService', () => {
 
       expect(mockHttp.put).toHaveBeenCalledWith(expect.any(String), {
         body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
     });
   });

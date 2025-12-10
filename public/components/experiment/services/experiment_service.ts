@@ -21,9 +21,15 @@ export class ExperimentService {
     return await this.http.get(`${ServiceEndpoints.Experiments}/${id}`);
   }
 
-  async createExperiment(data: any) {
+  async createExperiment(data: any, datasourceId?: string) {
+    const query = datasourceId ? { dataSourceId: datasourceId } : undefined;
+    
     return await this.http.post(ServiceEndpoints.Experiments, {
       body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(query && { query }),
     });
   }
 

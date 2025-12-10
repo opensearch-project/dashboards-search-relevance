@@ -11,24 +11,47 @@ import {
   EuiPanel,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiCompressedFormRow,
+  EuiSpacer,
 } from '@elastic/eui';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
+import { CoreStart, NotificationsStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
 import { SearchConfigurationForm } from '../components/search_configuration_form';
 import { ValidationPanel } from '../components/validation_panel';
 import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
+import semver from 'semver';
+import * as pluginManifest from '../../../../opensearch_dashboards.json';
 
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
 export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps> = ({
   http,
   notifications,
   history,
+  savedObjects,
+  dataSourceEnabled,
+  dataSourceManagement,
 }) => {
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
+
+  const onSelectedDataSource = useCallback((dataSources) => {
+    const dataConnectionId = dataSources[0] ? dataSources[0].id : '';
+    setSelectedDataSource(dataConnectionId);
+  }, []);
+
+  const dataSourceFilterFn = useCallback((dataSource: SavedObject<DataSourceAttributes>) => {
+    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+    return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+  }, []);
   const {
     // Form state
     name,
@@ -67,12 +90,18 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     http,
     notifications,
     onSuccess: () => history.push('/searchConfiguration'),
+    dataSourceId: selectedDataSource,
   });
 
   // Handle cancel action
   const handleCancel = useCallback(() => {
     history.push('/searchConfiguration');
   }, [history]);
+
+  let DataSourceSelector;
+  if (dataSourceEnabled && dataSourceManagement?.ui?.DataSourceSelector) {
+    DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
+  }
 
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
@@ -103,6 +132,27 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       <EuiFlexGroup>
         <EuiFlexItem grow={7}>
           <EuiPanel hasBorder={true}>
+            {dataSourceEnabled && DataSourceSelector && (
+              <>
+                <EuiFlexGroup>
+                  <EuiFlexItem>
+                    <EuiCompressedFormRow fullWidth label="Data Source">
+                      <DataSourceSelector
+                        compressed={true}
+                        savedObjectsClient={savedObjects?.client}
+                        notifications={notifications}
+                        onSelectedDataSource={onSelectedDataSource}
+                        disabled={false}
+                        fullWidth={false}
+                        removePrepend={true}
+                        dataSourceFilter={dataSourceFilterFn}
+                      />
+                    </EuiCompressedFormRow>
+                  </EuiFlexItem>
+                </EuiFlexGroup>
+                <EuiSpacer size="m" />
+              </>
+            )}
             <SearchConfigurationForm
               name={name}
               setName={setName}

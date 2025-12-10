@@ -128,7 +128,8 @@ describe('QuerySetCreate', () => {
           querySetSize: 10,
           querySetQueries: undefined,
         },
-        false
+        false,
+        ''
       );
     });
 

@@ -17,7 +17,7 @@ export interface QuerySetData {
 export class QuerySetService {
   constructor(private http: CoreStart['http']) {}
 
-  async createQuerySet(data: QuerySetData, isManualInput: boolean): Promise<any> {
+  async createQuerySet(data: QuerySetData, isManualInput: boolean, dataSourceId: string): Promise<any> {
     const endpoint = ServiceEndpoints.QuerySets;
     const method = isManualInput ? 'put' : 'post';
 
@@ -35,11 +35,14 @@ export class QuerySetService {
           querySetSize: data.querySetSize,
         };
 
+    const query = dataSourceId ? { dataSourceId: dataSourceId } : undefined;
+
     return this.http[method](endpoint, {
       body: JSON.stringify(body),
       headers: {
         'Content-Type': 'application/json',
       },
+      ...(query && {query}),
     });
   }
 }

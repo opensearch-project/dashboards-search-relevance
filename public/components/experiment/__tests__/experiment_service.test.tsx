@@ -134,6 +134,9 @@ describe('ExperimentService', () => {
 
       expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
         body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
     });
   });

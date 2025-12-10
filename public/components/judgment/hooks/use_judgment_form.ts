@@ -10,7 +10,7 @@ import { validateJudgmentForm } from '../utils/validation';
 import { buildJudgmentPayload } from '../utils/form_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any) => {
+export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -149,7 +149,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
           selectedSearchConfigs,
           selectedModel
         );
-        await service.createJudgment(payload);
+        await service.createJudgment(payload, dataSourceId);
         notifications.toasts.addSuccess('Judgment created successfully');
         onSuccess();
       } catch (err) {

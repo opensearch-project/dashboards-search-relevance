@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } from '@elastic/eui';
+import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner, EuiCompressedFormRow } from '@elastic/eui';
 import { withRouter } from 'react-router-dom';
 import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm, ConfigurationFormRef } from './configuration_form';
@@ -14,17 +14,26 @@ import { Routes } from '../../../../common';
 import { ConfigurationActions } from './configuration_action';
 import { ExperimentService } from '../services/experiment_service';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
+import { CoreStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
+import semver from 'semver';
+import * as pluginManifest from '../../../../opensearch_dashboards.json';
 
 export const TemplateConfiguration = ({
   templateType,
   onBack,
   onClose,
   history,
+  savedObjects,
+  dataSourceEnabled,
+  dataSourceManagement,
 }: TemplateConfigurationProps) => {
   const [experimentId, setExperimentId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [showTemplateConfigError, setShowTemplateConfigError] = useState<boolean>(false);
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
 
   const configurationFormRef = useRef<ConfigurationFormRef>(null);
   const isMountedRef = useRef(true);
@@ -40,6 +49,16 @@ export const TemplateConfiguration = ({
   } = useOpenSearchDashboards();
   const experimentService = new ExperimentService(http);
 
+  const onSelectedDataSource = useCallback((dataSources) => {
+    const dataConnectionId = dataSources[0] ? dataSources[0].id : '';
+    setSelectedDataSource(dataConnectionId);
+  }, []);
+
+  const dataSourceFilterFn = useCallback((dataSource: SavedObject<DataSourceAttributes>) => {
+    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+    return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+  }, []);
+
   const handleNext = async () => {
     setShowTemplateConfigError(false); // Clear previous errors
 
@@ -54,7 +73,7 @@ export const TemplateConfiguration = ({
       // If we reach here, `data` is guaranteed to be valid and not null
       try {
         setIsCreating(true);
-        const response = await experimentService.createExperiment(data);
+        const response = await experimentService.createExperiment(data, selectedDataSource);
 
         if (response.experiment_id) {
           if (isMountedRef.current) {
@@ -91,6 +110,11 @@ export const TemplateConfiguration = ({
     setShowEvaluation(false);
   };
 
+  let DataSourceSelector;
+  if (dataSourceEnabled && dataSourceManagement?.ui?.DataSourceSelector) {
+    DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
+  }
+
   const renderConfiguration = () => (
     <EuiPanel>
       <EuiFlexGroup direction="column" gutterSize="m">
@@ -99,7 +123,28 @@ export const TemplateConfiguration = ({
             <h2>{templateType} Experiment</h2>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <ConfigurationForm templateType={templateType} ref={configurationFormRef} />
+          {dataSourceEnabled && DataSourceSelector && (
+            <>
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <EuiCompressedFormRow fullWidth label="Data Source">
+                    <DataSourceSelector
+                      compressed={true}
+                      savedObjectsClient={savedObjects?.client}
+                      notifications={notifications}
+                      onSelectedDataSource={onSelectedDataSource}
+                      disabled={false}
+                      fullWidth={false}
+                      removePrepend={true}
+                      dataSourceFilter={dataSourceFilterFn}
+                    />
+                  </EuiCompressedFormRow>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+              <EuiSpacer size="m" />
+            </>
+          )}
+          <ConfigurationForm templateType={templateType} dataSourceId={selectedDataSource} ref={configurationFormRef} />
         </EuiFlexItem>
 
         <EuiFlexItem>
