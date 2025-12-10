@@ -9,12 +9,22 @@ export const buildJudgmentPayload = (
   formData: JudgmentFormData,
   selectedQuerySet: ComboBoxOption[],
   selectedSearchConfigs: ComboBoxOption[],
-  selectedModel: ComboBoxOption[]
+  selectedModel: ComboBoxOption[],
+  importedRatings: any[] = []
 ): JudgmentFormData => {
   const basePayload = {
     name: formData.name.trim(),
     type: formData.type,
   };
+
+  if (formData.type === JudgmentType.IMPORT_JUDGMENT) {
+    return {
+      ...basePayload,
+      metadata: {
+        judgmentRatings: importedRatings,
+      },
+    } as JudgmentFormData;
+  }
 
   if (formData.type === JudgmentType.LLM) {
     return {
