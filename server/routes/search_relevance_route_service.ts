@@ -235,9 +235,18 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.get(
     {
       path: ServiceEndpoints.Judgments,
-      validate: false,
+      validate: {
+        query: schema.object({
+          status: schema.maybe(schema.oneOf([
+            schema.literal('COMPLETED'),
+            schema.literal('PROCESSING'),
+            schema.literal('FAILED'),
+            schema.literal('ERROR'),
+          ])),
+        }),
+      },
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, { passQueryParams: ['status'] })
   );
   router.get(
     {
@@ -263,7 +272,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   );
 }
 
-const backendAction = (method, path) => {
+const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {
   return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
@@ -292,9 +301,23 @@ const backendAction = (method, path) => {
         });
       } else {
         // Handle PUT, POST, GET as before
+        // Build backend path with optional query params
+        let backendPath = path;
+        if (options?.passQueryParams && options.passQueryParams.length > 0) {
+          const queryParams: string[] = [];
+          options.passQueryParams.forEach((param) => {
+            const value = (req.query as any)?.[param];
+            if (value) {
+              queryParams.push(`${param}=${value}`);
+            }
+          });
+          if (queryParams.length > 0) {
+            backendPath = `${path}?${queryParams.join('&')}`;
+          }
+        }
         response = await caller('transport.request', {
           method,
-          path,
+          path: backendPath,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
         });
       }
