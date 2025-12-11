@@ -3,22 +3,35 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { EuiFlexItem, EuiCallOut, EuiPageTemplate, EuiPageHeader, EuiButton } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { CoreStart } from '../../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
 import { Routes } from '../../../../common';
-import { DeleteModal } from '../../common/DeleteModal';
+import { DeleteModal, DataSourceSelector } from '../../common';
 import { QuerySetTable } from '../components/query_set_table';
 import { useQuerySetList } from '../hooks/use_query_set_list';
 
 interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
-export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+export const QuerySetListing: React.FC<QuerySetListingProps> = ({ 
+  http, 
+  history, 
+  savedObjects, 
+  dataSourceEnabled, 
+  dataSourceManagement 
+}) => {
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const { isLoading, error, refreshKey, findQuerySets, deleteQuerySet, setError } = useQuerySetList(
-    http
+    http,
+    selectedDataSource
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [querySetToDelete, setQuerySetToDelete] = useState<any>(null);
@@ -58,6 +71,15 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
         ]}
       />
 
+      <DataSourceSelector
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        selectedDataSource={selectedDataSource}
+        setSelectedDataSource={setSelectedDataSource}
+        label="Data Source"
+      />
+
       <EuiFlexItem>
         {error ? (
           <EuiCallOut title="Error" color="danger">
@@ -70,6 +92,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
             findItems={findQuerySets}
             onDelete={handleDeleteClick}
             history={history}
+            dataSourceId={selectedDataSource}
           />
         )}
       </EuiFlexItem>

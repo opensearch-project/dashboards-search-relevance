@@ -13,39 +13,52 @@ import {
   EuiPageTemplate,
   EuiText,
 } from '@elastic/eui';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart } from '../../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
 import { Routes } from '../../../../common';
-import { DeleteModal } from '../../common/DeleteModal';
+import { DeleteModal, DataSourceSelector } from '../../common';
 import { useConfig } from '../../../contexts/date_format_context';
 import { useSearchConfigurationList } from '../hooks/use_search_configuration_list';
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
 export const SearchConfigurationListing: React.FC<SearchConfigurationListingProps> = ({
   http,
   history,
+  savedObjects,
+  dataSourceEnabled,
+  dataSourceManagement,
 }) => {
   const { dateFormat } = useConfig();
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     isLoading,
     error,
     findSearchConfigurations,
     deleteSearchConfiguration,
-  } = useSearchConfigurationList(http);
+  } = useSearchConfigurationList(http, selectedDataSource);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [configToDelete, setConfigToDelete] = useState<any>(null);
 
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleDataSourceChange = useCallback(() => {
+    setRefreshKey(prev => prev + 1);
+  }, []);
 
   // Column definitions
   // TODO: extend the table columns by adding search_pipeline & search_template once they
@@ -61,19 +74,22 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         searchConfiguration: {
           id: string;
         }
-      ) => (
-        <>
-          <EuiButtonEmpty
-            size="xs"
-            {...reactRouterNavigate(
-              history,
-              `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}`
-            )}
-          >
-            {name}
-          </EuiButtonEmpty>
-        </>
-      ),
+      ) => {
+        const viewUrl = selectedDataSource 
+          ? `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}?dataSourceId=${encodeURIComponent(selectedDataSource)}`
+          : `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}`;
+        
+        return (
+          <>
+            <EuiButtonEmpty
+              size="xs"
+              {...reactRouterNavigate(history, viewUrl)}
+            >
+              {name}
+            </EuiButtonEmpty>
+          </>
+        );
+      },
     },
     {
       field: 'index',
@@ -159,6 +175,16 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         ]}
       />
 
+      <DataSourceSelector
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        selectedDataSource={selectedDataSource}
+        setSelectedDataSource={setSelectedDataSource}
+        label="Data Source"
+        onChange={handleDataSourceChange}
+      />
+
       <EuiFlexItem>
         {error ? (
           <EuiCallOut title="Error" color="danger">
@@ -207,5 +233,3 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
 };
 
 export const SearchConfigurationListingWithRoute = withRouter(SearchConfigurationListing);
-
-export default SearchConfigurationListingWithRoute;

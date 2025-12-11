@@ -20,10 +20,11 @@ import { useJudgmentView } from '../hooks/use_judgment_view';
 
 interface JudgmentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  dataSourceId?: string | null;
 }
 
-export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
-  const { judgment, loading, error, formatJson } = useJudgmentView(http, id);
+export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id, dataSourceId }) => {
+  const { judgment, loading, error, formatJson } = useJudgmentView(http, id, dataSourceId || undefined);
 
   const JudgmentViewPane: React.FC = () => {
     return (

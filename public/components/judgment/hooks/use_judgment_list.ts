@@ -16,7 +16,7 @@ export interface JudgmentItem {
   timestamp: string;
 }
 
-export const useJudgmentList = (http: CoreStart['http']) => {
+export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [judgments, setJudgments] = useState<JudgmentItem[]>([]);
@@ -33,6 +33,11 @@ export const useJudgmentList = (http: CoreStart['http']) => {
   const errorCount = useRef<number>(0);
   const MAX_POLLING_DURATION = 10 * 60 * 1000;
   const MAX_ERRORS = 3;
+
+  // Trigger refresh when dataSourceId changes
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [dataSourceId]);
 
   const hasProcessing = judgments.some((judgment) => judgment.status === 'PROCESSING');
 
@@ -65,7 +70,8 @@ export const useJudgmentList = (http: CoreStart['http']) => {
 
       setIsBackgroundRefreshing(true);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const response = await http.get(ServiceEndpoints.Judgments, { query });
         const updatedList = response ? response.hits.hits.map(mapJudgmentFields) : [];
         errorCount.current = 0;
 
@@ -134,7 +140,8 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const response = await http.get(ServiceEndpoints.Judgments, { query });
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
         const filteredList = search
           ? list.filter((item: JudgmentItem) => {
@@ -162,14 +169,15 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http, tableData]
+    [http, tableData, dataSourceId]
   );
 
   const deleteJudgment = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
+        const query = dataSourceId ? { dataSourceId } : {};
+        await http.delete(`${ServiceEndpoints.Judgments}/${id}`, { query });
         setError(null);
         setRefreshKey((prev) => prev + 1);
         return true;
@@ -181,7 +189,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   return {

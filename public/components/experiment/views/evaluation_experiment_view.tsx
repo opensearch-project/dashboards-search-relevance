@@ -51,6 +51,7 @@ interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string
   http: CoreStart['http'];
   notifications: CoreStart['notifications'];
   inputExperiment: EvaluationExperiment;
+  dataSourceId?: string | null;
 }
 
 export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> = ({
@@ -58,6 +59,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
   notifications,
   inputExperiment,
   history,
+  dataSourceId,
 }) => {
   const AnyTableListView = TableListView as unknown as React.ComponentType<any>;
   const [experiment, setExperiment] = useState<Experiment | null>(null);
@@ -124,33 +126,37 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     const fetchExperiment = async () => {
       try {
         setLoading(true);
+        const options = dataSourceId ? { query: { dataSourceId } } : {};
+        
         const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id)
+          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
           .then(sanitizeResponse);
         const parsedExperiment = _experiment && toExperiment(_experiment);
         const _searchConfiguration =
           _experiment &&
           (await http
             .get(
-              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId
+              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId,
+              options
             )
             .then(sanitizeResponse));
         const _querySet =
           _experiment &&
           (await http
-            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId)
+            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId, options)
             .then(sanitizeResponse));
         const _judgmentSet =
           _experiment &&
           (await http
-            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
+            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId, options)
             .then(sanitizeResponse));
 
         const _scheduledExperimentJob =
           _experiment && inputExperiment.isScheduled &&
           (await http
             .get(
-              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId
+              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId,
+              options
             )
             .then(sanitizeResponse));
 
@@ -164,8 +170,29 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           },
           size: querySetSize,
         };
+        console.log('Making GetSearchResults call with:', { 
+          query, 
+          dataSourceId, 
+          hasDataSourceId: !!dataSourceId,
+          endpoint: ServiceEndpoints.GetSearchResults
+        });
+        
+        const requestBody = {
+          query1: query,
+          ...(dataSourceId && { dataSourceId1: dataSourceId })
+        };
+        
+        console.log('Request body:', requestBody);
+        
         const result = await http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query1: query }),
+          body: JSON.stringify(requestBody)
+        });
+        
+        console.log('GetSearchResults response:', { 
+          hasResult: !!result, 
+          hasResult1: !!result?.result1,
+          hitsLength: result?.result1?.hits?.hits?.length,
+          fullResponse: result
         });
         const parseResults =
           result &&
@@ -207,7 +234,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     };
 
     fetchExperiment();
-  }, [http, inputExperiment]);
+  }, [http, inputExperiment, dataSourceId]);
 
   function extractMetricNames(queryEvaluations: any): string[] {
     if (queryEvaluations.length > 0) {
@@ -305,7 +332,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/querySet/view/${inputExperiment.querySetId}`)}
+            {...reactRouterNavigate(history, `/querySet/view/${inputExperiment.querySetId}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {querySet?.name}
           </EuiButtonEmpty>
@@ -316,7 +343,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             size="xs"
             {...reactRouterNavigate(
               history,
-              `/searchConfiguration/view/${inputExperiment.searchConfigurationId}`
+              `/searchConfiguration/view/${inputExperiment.searchConfigurationId}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`
             )}
           >
             {searchConfiguration?.name}
@@ -326,7 +353,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/judgment/view/${inputExperiment.judgmentId}`)}
+            {...reactRouterNavigate(history, `/judgment/view/${inputExperiment.judgmentId}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {judgmentSet?.name}
           </EuiButtonEmpty>

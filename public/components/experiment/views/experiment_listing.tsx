@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   EuiFlexItem,
   EuiButtonEmpty,
@@ -24,10 +24,13 @@ import {
   TableListView,
   useOpenSearchDashboards,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { CoreStart } from '../../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
 import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
 import { DashboardInstallModal } from '../../common/dashboard_install_modal';
+import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { printType } from '../../../types/index';
 import { ExperimentService } from '../services/experiment_service';
@@ -44,10 +47,20 @@ import { DeleteScheduleModal } from './DeleteScheduleModal';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
-export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, history }) => {
+export const ExperimentListing: React.FC<ExperimentListingProps> = ({ 
+  http, 
+  history, 
+  savedObjects, 
+  dataSourceEnabled, 
+  dataSourceManagement 
+}) => {
   const { dateFormat } = useConfig();
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const experimentService = new ExperimentService(http);
@@ -71,6 +84,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
+
+  // Refresh experiments when datasource changes
+  useEffect(() => {
+    setTableData([]); // Clear cached data to force refetch
+    setRefreshKey((prev) => prev + 1);
+  }, [selectedDataSource]);
 
   // Custom hook for experiment polling
   const useExperimentPolling = () => {
@@ -103,7 +122,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
         setIsBackgroundRefreshing(true);
         try {
-          const parseResults = await experimentService.getExperiments();
+          let parseResults;
+          try {
+            parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+          } catch (err) {
+            // Fallback: try without dataSourceId if backend doesn't support it
+            if (selectedDataSource) {
+              console.warn('Failed to fetch experiments with dataSourceId, trying without it:', err);
+              parseResults = await experimentService.getExperiments();
+            } else {
+              throw err;
+            }
+          }
 
           if (parseResults.success) {
             const updatedList = parseResults.data;
@@ -187,7 +217,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     indexPatternId: string
   ) => {
     try {
-      const dashboardsAreInstalled = await checkDashboardsInstalled(http);
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http, selectedDataSource || undefined);
       if (!dashboardsAreInstalled) {
         setPendingDashboardAction(() => () =>
           openDashboard(experiment, dashboardId, indexPatternId)
@@ -234,7 +264,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      await experimentService.deleteExperiment(experimentToDelete.id);
+      await experimentService.deleteExperiment(experimentToDelete.id, selectedDataSource || undefined);
 
       // Close modal and clear state first
       setShowDeleteExperimentModal(false);
@@ -262,7 +292,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id);
+      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, selectedDataSource || undefined);
 
       // Close modal and clear state first
       setShowDeleteScheduleModal(false);
@@ -340,7 +370,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       ) => (
         <EuiButtonEmpty
           size="xs"
-          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
+          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
         >
           {printType(type)}
         </EuiButtonEmpty>
@@ -473,7 +503,18 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setIsLoading(true);
     setError(null);
     try {
-      const parseResults = await experimentService.getExperiments();
+      let parseResults;
+      try {
+        parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+      } catch (err) {
+        // Fallback: try without dataSourceId if backend doesn't support it
+        if (selectedDataSource) {
+          console.warn('Failed to fetch experiments with dataSourceId, trying without it:', err);
+          parseResults = await experimentService.getExperiments();
+        } else {
+          throw err;
+        }
+      }
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -551,6 +592,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       <EuiFlexItem>
         <EuiText>Click on an experiment id to view details.</EuiText>
+
+      <DataSourceSelector
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        selectedDataSource={selectedDataSource}
+        setSelectedDataSource={setSelectedDataSource}
+      />
         {error && (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>

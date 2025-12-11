@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
 import { extractUserMessageFromError, ServiceEndpoints } from '../../../../common';
 
@@ -15,9 +15,15 @@ export interface SearchConfigurationItem {
   timestamp: string;
 }
 
-export const useSearchConfigurationList = (http: CoreStart['http']) => {
+export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Trigger refresh when dataSourceId changes
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [dataSourceId]);
 
   const mapSearchConfigurationFields = (obj: any): SearchConfigurationItem => {
     return {
@@ -34,7 +40,8 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.SearchConfigurations);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const response = await http.get(ServiceEndpoints.SearchConfigurations, { query });
         const list: SearchConfigurationItem[] = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
         const filteredList = search
           ? list.filter((item) => {
@@ -61,14 +68,15 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   const deleteSearchConfiguration = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`);
+        const query = dataSourceId ? { dataSourceId } : {};
+        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`, { query });
         setError(null);
         return true;
       } catch (err) {
@@ -79,12 +87,13 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   return {
     isLoading,
     error,
+    refreshKey,
     findSearchConfigurations,
     deleteSearchConfiguration,
   };

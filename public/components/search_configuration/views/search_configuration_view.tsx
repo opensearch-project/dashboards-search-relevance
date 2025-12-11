@@ -23,10 +23,11 @@ import { useSearchConfigurationView } from '../hooks/use_search_configuration_vi
 
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  dataSourceId?: string | null;
 }
 
-export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id }) => {
-  const { searchConfiguration, loading, error, formatJson } = useSearchConfigurationView(http, id);
+export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id, dataSourceId }) => {
+  const { searchConfiguration, loading, error, formatJson } = useSearchConfigurationView(http, id, dataSourceId || undefined);
 
   const SearchConfigurationViewPane: React.FC = () => {
     return (

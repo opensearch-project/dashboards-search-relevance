@@ -17,7 +17,7 @@ export interface JudgmentData {
   timestamp: string;
 }
 
-export const useJudgmentView = (http: CoreStart['http'], id: string) => {
+export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceId?: string) => {
   const [judgment, setJudgment] = useState<JudgmentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,6 +26,24 @@ export const useJudgmentView = (http: CoreStart['http'], id: string) => {
     const fetchJudgment = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        // Try with dataSourceId first if provided
+        if (dataSourceId && dataSourceId.trim() !== '') {
+          try {
+            const options = { query: { dataSourceId } };
+            const response = await http.get(`${ServiceEndpoints.Judgments}/${id}`, options);
+            
+            if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
+              setJudgment(response.hits.hits[0]._source);
+              return;
+            }
+          } catch (err) {
+            // Continue to try without dataSourceId
+          }
+        }
+        
+        // Try without dataSourceId as fallback
         const response = await http.get(`${ServiceEndpoints.Judgments}/${id}`);
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
@@ -41,8 +59,10 @@ export const useJudgmentView = (http: CoreStart['http'], id: string) => {
       }
     };
 
-    fetchJudgment();
-  }, [http, id]);
+    if (id) {
+      fetchJudgment();
+    }
+  }, [http, id, dataSourceId]);
 
   const formatJson = (json: string) => {
     try {

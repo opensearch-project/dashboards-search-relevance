@@ -20,6 +20,7 @@ interface QuerySetTableProps {
   findItems: (search: any) => Promise<{ total: number; hits: any[] }>;
   onDelete: (item: any) => void;
   history: RouteComponentProps['history'];
+  dataSourceId?: string;
 }
 
 export const QuerySetTable: React.FC<QuerySetTableProps> = ({
@@ -28,6 +29,7 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
   findItems,
   onDelete,
   history,
+  dataSourceId,
 }) => {
   const { dateFormat } = useConfig();
 
@@ -37,14 +39,20 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
       name: 'Name',
       dataType: 'string',
       sortable: true,
-      render: (name: string, querySet: { id: string }) => (
-        <EuiButtonEmpty
-          size="xs"
-          {...reactRouterNavigate(history, `${Routes.QuerySetViewPrefix}/${querySet.id}`)}
-        >
-          {name}
-        </EuiButtonEmpty>
-      ),
+      render: (name: string, querySet: { id: string }) => {
+        const viewUrl = dataSourceId 
+          ? `${Routes.QuerySetViewPrefix}/${querySet.id}?dataSourceId=${encodeURIComponent(dataSourceId)}`
+          : `${Routes.QuerySetViewPrefix}/${querySet.id}`;
+        
+        return (
+          <EuiButtonEmpty
+            size="xs"
+            {...reactRouterNavigate(history, viewUrl)}
+          >
+            {name}
+          </EuiButtonEmpty>
+        );
+      },
     },
     {
       field: 'sampling',

@@ -17,7 +17,7 @@ export interface SearchConfigurationData {
   timestamp: string;
 }
 
-export const useSearchConfigurationView = (http: CoreStart['http'], id: string) => {
+export const useSearchConfigurationView = (http: CoreStart['http'], id: string, dataSourceId?: string) => {
   const [searchConfiguration, setSearchConfiguration] = useState<SearchConfigurationData | null>(
     null
   );
@@ -28,6 +28,24 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string) 
     const fetchSearchConfiguration = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        // Try with dataSourceId first if provided
+        if (dataSourceId && dataSourceId.trim() !== '') {
+          try {
+            const options = { query: { dataSourceId } };
+            const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`, options);
+            
+            if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
+              setSearchConfiguration(response.hits.hits[0]._source);
+              return;
+            }
+          } catch (err) {
+            // Continue to try without dataSourceId
+          }
+        }
+        
+        // Try without dataSourceId as fallback
         const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`);
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
@@ -44,7 +62,7 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string) 
     };
 
     fetchSearchConfiguration();
-  }, [http, id]);
+  }, [http, id, dataSourceId]);
 
   const formatJson = (json: string) => {
     try {

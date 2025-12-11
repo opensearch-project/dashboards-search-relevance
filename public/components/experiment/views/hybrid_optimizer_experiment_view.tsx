@@ -45,6 +45,7 @@ interface HybridOptimizerExperimentViewProps extends RouteComponentProps<{ id: s
   http: CoreStart['http'];
   notifications: CoreStart['notifications'];
   inputExperiment: HybridOptimizerExperiment;
+  dataSourceId?: string | null;
 }
 
 export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentViewProps> = ({
@@ -52,6 +53,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
   notifications,
   inputExperiment,
   history,
+  dataSourceId,
 }) => {
   const AnyTableListView = TableListView as unknown as React.ComponentType<any>;
   const [experiment, setExperiment] = useState<HybridOptimizerExperiment | null>(null);
@@ -75,32 +77,36 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     const fetchExperiment = async () => {
       try {
         setLoading(true);
+        const options = dataSourceId ? { query: { dataSourceId } } : {};
+        
         const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id)
+          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
           .then(sanitizeResponse);
         const _searchConfiguration =
           _experiment &&
           (await http
             .get(
-              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId
+              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId,
+              options
             )
             .then(sanitizeResponse));
         const _querySet =
           _experiment &&
           (await http
-            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId)
+            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId, options)
             .then(sanitizeResponse));
         const _judgmentSet =
           _experiment &&
           (await http
-            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
+            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId, options)
             .then(sanitizeResponse));
 
         const _scheduledExperimentJob =
           _experiment && inputExperiment.isScheduled &&
           (await http
             .get(
-              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId
+              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId,
+              options
             )
             .then(sanitizeResponse));            
 
@@ -400,7 +406,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/querySet/view/${inputExperiment.querySetId}`)}
+            {...reactRouterNavigate(history, `/querySet/view/${inputExperiment.querySetId}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {querySet?.name}
           </EuiButtonEmpty>
@@ -411,7 +417,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             size="xs"
             {...reactRouterNavigate(
               history,
-              `/searchConfiguration/view/${inputExperiment.searchConfigurationId}`
+              `/searchConfiguration/view/${inputExperiment.searchConfigurationId}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`
             )}
           >
             {searchConfiguration?.name}
