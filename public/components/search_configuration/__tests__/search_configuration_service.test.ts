@@ -54,6 +54,7 @@ describe('SearchConfigurationService', () => {
     it('should create search configuration with correct data', async () => {
       const configData = {
         name: 'Test Config',
+        description: 'sample description',
         index: 'test-index',
         query: '{"query": {"match_all": {}}}',
         searchPipeline: 'test-pipeline',
