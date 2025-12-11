@@ -8,6 +8,7 @@ import { JudgmentType, ComboBoxOption, ModelOption, JudgmentFormData } from '../
 import { JudgmentService } from '../services/judgment_service';
 import { validateJudgmentForm } from '../utils/validation';
 import { buildJudgmentPayload } from '../utils/form_processor';
+import { processJudgmentFile } from '../utils/judgment_file_processor';
 import moment from 'moment';
 
 export const useJudgmentForm = (http: any, notifications: any) => {
@@ -24,6 +25,10 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     startDate: moment('2000-01-01').format('YYYY-MM-DD'),
     endDate: moment().format('YYYY-MM-DD'),
   });
+
+  const [importedRatings, setImportedRatings] = useState<any[]>([]);
+  const [parsedJudgments, setParsedJudgments] = useState<string[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   // Selection states
   const [selectedQuerySet, setSelectedQuerySet] = useState<ComboBoxOption[]>([]);
@@ -44,6 +49,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const [nameError, setNameError] = useState('');
   const [newContextField, setNewContextField] = useState('');
   const [dateRangeError, setDateRangeError] = useState('');
+  const [importError, setImportError] = useState('');
 
   const service = new JudgmentService(http);
 
@@ -113,6 +119,33 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     [formData.contextFields, updateFormData]
   );
 
+  const handleJudgmentFileContent = useCallback(async (files: FileList) => {
+    if (files && files.length > 0) {
+      const file = files[0];
+      const result = await processJudgmentFile(file);
+
+      if (result.error) {
+        setImportError(result.error);
+        setImportedRatings([]);
+        setParsedJudgments([]);
+        setFiles([]);
+        return;
+      }
+
+      setImportedRatings(result.judgments);
+      setParsedJudgments(result.judgments.map((j) => JSON.stringify(j)));
+      console.log('✅ ImportedRatings:', result.judgments);
+      console.log('✅ ParsedJudgments:', result.judgments.map((j) => JSON.stringify(j)));
+      setFiles([file]);
+      setImportError('');
+    } else {
+      setImportedRatings([]);
+      setParsedJudgments([]);
+      setFiles([]);
+      setImportError('');
+    }
+  }, []);
+
   const validateAndSubmit = useCallback(
     async (onSuccess: () => void) => {
       const validation = validateJudgmentForm(
@@ -125,20 +158,10 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       setNameError(validation.errors.name || '');
       setDateRangeError(validation.errors.dateRange || '');
 
-      if (validation.errors.querySet) {
-        notifications.toasts.addDanger(validation.errors.querySet);
-      }
-      if (validation.errors.searchConfigs) {
-        notifications.toasts.addDanger(validation.errors.searchConfigs);
-      }
-      if (validation.errors.model) {
-        notifications.toasts.addDanger(validation.errors.model);
-      }
-      if (validation.errors.dateRange) {
-        notifications.toasts.addDanger(validation.errors.dateRange);
-      }
-
       if (!validation.isValid) {
+        Object.values(validation.errors).forEach((msg) => {
+          if (msg) notifications.toasts.addDanger(msg);
+        });
         return;
       }
 
@@ -147,8 +170,10 @@ export const useJudgmentForm = (http: any, notifications: any) => {
           formData,
           selectedQuerySet,
           selectedSearchConfigs,
-          selectedModel
+          selectedModel,
+          importedRatings
         );
+
         await service.createJudgment(payload);
         notifications.toasts.addSuccess('Judgment created successfully');
         onSuccess();
@@ -163,6 +188,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       selectedQuerySet,
       selectedSearchConfigs,
       selectedModel,
+      importedRatings,
       service,
       notifications.toasts,
     ]
@@ -188,6 +214,13 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     setNewContextField,
     addContextField,
     removeContextField,
+    importedRatings,
+    setImportedRatings,
+    parsedJudgments,
+    setParsedJudgments,
+    files,
+    setFiles,
+    handleJudgmentFileContent,
     validateAndSubmit,
     dateRangeError,
   };
