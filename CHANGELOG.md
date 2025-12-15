@@ -15,6 +15,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Bug Fixes
 
 ### Infrastructure
+- * Enable CI workflows for automated backport PRs. ([#720](https://github.com/opensearch-project/dashboards-search-relevance/pull/720))
 
 ### Documentation
 
