@@ -13,6 +13,7 @@ jobs:
 
   build-linux:
     needs: Get-CI-Image-Tag
+    timeout-minutes: 90
     runs-on: ubuntu-latest
     container:
       # using the same image which is used by opensearch-build team to build the OpenSearch Distribution
