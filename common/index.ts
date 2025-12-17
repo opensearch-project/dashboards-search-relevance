@@ -86,6 +86,7 @@ export enum SavedObjectIds {
   ExperimentVariantComparison = 'fbf11670-58c8-11f0-a340-41deff9f2f7f',
   PointwiseExperimentScheduledRuns = '1edb6ad0-aac9-11f0-83f6-277d0637de48',
   SearchEvaluationIndexPattern = '1f5d2be0-57f1-11f0-8f39-7b4ad0195873',
+  DeepDiveSummary = '49898070-5d6a-11f0-997f-d5fd279c0ce1',
 }
 
 // tool tip texts

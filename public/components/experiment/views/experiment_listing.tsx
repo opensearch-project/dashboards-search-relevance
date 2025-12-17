@@ -207,7 +207,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       to: addDaysToTimestamp(experiment.timestamp, 1),
     };
 
-    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
+    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange, selectedDataSource || undefined);
     window.open(url, '_blank');
   };
 
@@ -651,6 +651,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
           onSuccess={pendingDashboardAction}
           http={http}
           setError={setError}
+          dataSourceId={selectedDataSource || undefined}
         />
       )}
 
