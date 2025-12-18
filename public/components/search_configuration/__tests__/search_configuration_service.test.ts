@@ -82,4 +82,16 @@ describe('SearchConfigurationService', () => {
       expect(result).toEqual(mockResponse.result);
     });
   });
+
+  describe('with dataSourceId', () => {
+    it('should handle dataSourceId parameter', async () => {
+      const mockIndexes = [{ index: 'test-index', uuid: 'uuid-1' }];
+      mockHttp.get.mockResolvedValue(mockIndexes);
+
+      const result = await service.fetchIndexes('test-datasource');
+
+      expect(result).toEqual([{ label: 'test-index', value: 'uuid-1' }]);
+      expect(mockHttp.get).toHaveBeenCalled();
+    });
+  });
 });

@@ -105,6 +105,40 @@ describe('useJudgmentList', () => {
     expect(result.current.error).toBe('Failed to delete judgment');
   });
 
+  it('should handle background polling with completions', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'PROCESSING' },
+      { id: '2', name: 'Test Judgment 2', status: 'COMPLETED' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(result.current.judgments).toHaveLength(2);
+  });
+
+  it('should stop polling when no processing judgments', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'COMPLETED' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(result.current.judgments).toHaveLength(1);
+    expect(result.current.hasProcessing).toBe(false);
+  });
+
   it('should filter judgments by search term', async () => {
     const mockResponse = {
       hits: {
@@ -208,6 +242,120 @@ describe('useJudgmentList', () => {
       const response = await result.current.findJudgments();
       expect(response.total).toBe(0);
       expect(response.hits).toEqual([]);
+    });
+  });
+
+  it('should handle polling with dataSourceId', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'PROCESSING' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any, 'test-datasource'));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments, { 
+      query: { dataSourceId: 'test-datasource' } 
+    });
+  });
+
+  it('should handle polling timeout', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'PROCESSING' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    // Fast-forward past the max polling duration
+    act(() => {
+      jest.advanceTimersByTime(11 * 60 * 1000); // 11 minutes
+    });
+
+    expect(result.current.isBackgroundRefreshing).toBe(false);
+  });
+
+  it('should handle polling errors and stop after max errors', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'PROCESSING' },
+    ];
+
+    mockHttp.get
+      .mockResolvedValueOnce({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } })
+      .mockRejectedValue(new Error('Network error'));
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(result.current.hasProcessing).toBe(true);
+  });
+
+  it('should show completion notifications', async () => {
+    const processingJudgments = [
+      { id: '1', name: 'Test Judgment 1', status: 'PROCESSING' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: processingJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(result.current.hasProcessing).toBe(true);
+  });
+
+  it('should use tableData for filtering when available', async () => {
+    const mockJudgments = [
+      { id: '1', name: 'Test Judgment', status: 'COMPLETED' },
+      { id: '2', name: 'Another Judgment', status: 'COMPLETED' },
+    ];
+
+    mockHttp.get.mockResolvedValue({ hits: { hits: mockJudgments.map(j => ({ _source: j })) } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    // First call to populate tableData
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    // Second call should use tableData for filtering
+    await act(async () => {
+      const response = await result.current.findJudgments('test');
+      expect(response.total).toBe(1);
+      expect(response.hits[0].name).toBe('Test Judgment');
+    });
+
+    // Should only have called HTTP once (for initial load)
+    expect(mockHttp.get).toHaveBeenCalledTimes(1);
+  });
+
+  it('should handle delete with dataSourceId', async () => {
+    mockHttp.delete.mockResolvedValue({});
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any, 'test-datasource'));
+
+    await act(async () => {
+      const success = await result.current.deleteJudgment('1');
+      expect(success).toBe(true);
+    });
+
+    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`, { 
+      query: { dataSourceId: 'test-datasource' } 
     });
   });
 

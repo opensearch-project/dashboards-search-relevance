@@ -184,4 +184,28 @@ describe('QuerySetCreate', () => {
     expect(screen.getByTestId('query-preview')).toBeInTheDocument();
     expect(screen.getByText('2 queries')).toBeInTheDocument();
   });
+
+  it('should render with data source enabled', () => {
+    const renderWithDataSource = () => {
+      return render(
+        <Router history={history}>
+          <QuerySetCreate
+            http={mockHttp}
+            notifications={mockNotifications}
+            history={history}
+            location={history.location}
+            match={{ params: {}, isExact: true, path: '', url: '' }}
+            dataSourceEnabled={true}
+            dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+            savedObjects={{ client: {} } as any}
+            navigation={{} as any}
+            setActionMenu={jest.fn()}
+          />
+        </Router>
+      );
+    };
+
+    renderWithDataSource();
+    expect(screen.getByText('DataSourceSelector')).toBeInTheDocument();
+  });
 });

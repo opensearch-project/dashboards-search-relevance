@@ -83,5 +83,33 @@ describe('QuerySetService', () => {
 
       await expect(service.createQuerySet(querySetData, false)).rejects.toThrow('API Error');
     });
+
+    it('should include dataSourceId in POST request when provided', async () => {
+      const querySetData = { name: 'test', sampling: 'random', querySetSize: 10 };
+      
+      await service.createQuerySet(querySetData, false, 'test-datasource');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(querySetData),
+        headers: { 'Content-Type': 'application/json' },
+        query: { dataSourceId: 'test-datasource' }
+      });
+    });
+
+    it('should include dataSourceId in PUT request when provided', async () => {
+      const querySetData = { 
+        name: 'test', 
+        sampling: 'manual', 
+        querySetQueries: [{ queryText: 'test', referenceAnswer: 'answer' }] 
+      };
+      
+      await service.createQuerySet(querySetData, true, 'test-datasource');
+
+      expect(mockHttp.put).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify({ ...querySetData, sampling: 'manual' }),
+        headers: { 'Content-Type': 'application/json' },
+        query: { dataSourceId: 'test-datasource' }
+      });
+    });
   });
 });
