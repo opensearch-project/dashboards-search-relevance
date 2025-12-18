@@ -13,4 +13,3 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.4.0
 * Added support for filtering Judgment Lists by GUID (`id`) in the search bar, improving discoverability and navigation when working with judgment identifiers. ([#687](https://github.com/opensearch-project/dashboards-search-relevance/pull/687))
 
 * Use appropriate title on the Experiment Detail page. ([#670](https://github.com/opensearch-project/dashboards-search-relevance/pull/670))
-* Enable CI workflows for automated backport PRs. ([#720](https://github.com/opensearch-project/dashboards-search-relevance/pull/720))
