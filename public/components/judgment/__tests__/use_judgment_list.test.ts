@@ -76,7 +76,7 @@ describe('useJudgmentList', () => {
       expect(response.hits[0].name).toBe('Test Judgment');
     });
 
-    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments);
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments, { query: {} });
   });
 
   it('should delete judgment successfully', async () => {
@@ -89,7 +89,7 @@ describe('useJudgmentList', () => {
       expect(success).toBe(true);
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`);
+    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`, { query: {} });
   });
 
   it('should handle delete error', async () => {

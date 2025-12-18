@@ -13,7 +13,7 @@ import * as pluginManifest from '../../../opensearch_dashboards.json';
  * Parse dataSourceId from URL search parameters
  */
 export const parseDataSourceIdFromUrl = (location: any): string | undefined => {
-  if (location.search) {
+  if (location?.search) {
     const params = new URLSearchParams(location.search);
     return params.get('dataSourceId') || undefined;
   }
