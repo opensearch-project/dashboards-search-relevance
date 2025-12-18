@@ -26,6 +26,7 @@ export const ServiceEndpoints = Object.freeze({
   SearchConfigurations: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search_configurations`,
   Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
+  ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';
@@ -34,6 +35,7 @@ export const BackendEndpoints = Object.freeze({
   SearchConfigurations: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/search_configurations`,
   Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
+  ScheduledExperiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments/schedule`,
 } as const);
 
 const ML_COMMON_PLUGIN_BASE_PATH = '_plugins/_ml';
@@ -82,6 +84,7 @@ export enum Routes {
 export enum SavedObjectIds {
   ExperimentDeepDive = '75b6ca00-58af-11f0-a87e-4d769b1dbd6c',
   ExperimentVariantComparison = 'fbf11670-58c8-11f0-a340-41deff9f2f7f',
+  PointwiseExperimentScheduledRuns = '1edb6ad0-aac9-11f0-83f6-277d0637de48',
   SearchEvaluationIndexPattern = '1f5d2be0-57f1-11f0-8f39-7b4ad0195873',
 }
 
