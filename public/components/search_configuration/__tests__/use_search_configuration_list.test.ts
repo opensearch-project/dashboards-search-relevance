@@ -70,7 +70,7 @@ describe('useSearchConfigurationList', () => {
       expect(response.hits[0].search_configuration_name).toBe('Test Config');
     });
 
-    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations);
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations, { query: {} });
   });
 
   it('should delete search configuration successfully', async () => {
@@ -83,7 +83,7 @@ describe('useSearchConfigurationList', () => {
       expect(success).toBe(true);
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`);
+    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`, { query: {} });
   });
 
   it('should handle delete error', async () => {

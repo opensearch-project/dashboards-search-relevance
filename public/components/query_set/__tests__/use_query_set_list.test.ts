@@ -33,7 +33,7 @@ describe('useQuerySetList', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBe(null);
-    expect(result.current.refreshKey).toBe(0);
+    expect(result.current.refreshKey).toBe(1);
   });
 
   it('fetches query sets successfully', async () => {
@@ -149,7 +149,7 @@ describe('useQuerySetList', () => {
       await result.current.deleteQuerySet('1');
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith('/api/relevancy/querySets/1');
+    expect(mockHttp.delete).toHaveBeenCalledWith('/api/relevancy/querySets/1', { query: {} });
     expect(result.current.refreshKey).toBe(initialRefreshKey + 1);
     expect(result.current.error).toBe(null);
   });

@@ -16,6 +16,7 @@ interface JudgmentsComboBoxProps {
   onChange: (selectedOptions: JudgmentOption[]) => void;
   http: CoreStart['http'];
   hideLabel?: boolean;
+  dataSourceId?: string;
 }
 
 export const JudgmentsComboBox = ({
@@ -23,6 +24,7 @@ export const JudgmentsComboBox = ({
   onChange,
   http,
   hideLabel,
+  dataSourceId,
 }: JudgmentsComboBoxProps) => {
   const [judgmentOptions, setJudgmentOptions] = useState<OptionLabel[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -31,7 +33,8 @@ export const JudgmentsComboBox = ({
     let isMounted = true;
     const fetchJudgments = async () => {
       try {
-        const data = await http.get(ServiceEndpoints.Judgments);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const data = await http.get(ServiceEndpoints.Judgments, { query });
         const options = data.hits.hits.map((judgment: any) => ({
           label: judgment._source.name,
           value: judgment._source.id,
@@ -56,7 +59,7 @@ export const JudgmentsComboBox = ({
     return () => {
       isMounted = false;
     };
-  }, [http]);
+  }, [http, dataSourceId]);
 
   const comboBoxComponent = (
     <EuiComboBox

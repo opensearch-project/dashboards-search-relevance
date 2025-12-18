@@ -41,6 +41,7 @@ import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
+import { parseEntityParams } from './common/datasource_utils';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -215,7 +216,12 @@ const SearchRelevancePage = ({
                 return null;
               } else {
                 // No config parameter, show experiment listing
-                return <ExperimentListingWithRoute http={http} />;
+                return <ExperimentListingWithRoute 
+                  http={http} 
+                  savedObjects={savedObjects}
+                  dataSourceEnabled={dataSourceEnabled}
+                  dataSourceManagement={dataSourceManagement}
+                />;
               }
             }}
           />
@@ -223,28 +229,48 @@ const SearchRelevancePage = ({
             path={Routes.Home}
             exact
             render={() => {
-              return <ExperimentListingWithRoute http={http} />;
+              return <ExperimentListingWithRoute 
+                http={http} 
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListing http={http} />;
+              return <QuerySetListing 
+                http={http} 
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListing http={http} />;
+              return <SearchConfigurationListing 
+                http={http} 
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListing http={http} />;
+              return <JudgmentListing 
+                http={http} 
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
@@ -252,8 +278,15 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              
               return (
-                <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />
+                <ExperimentViewWithRouter 
+                  http={http} 
+                  notifications={notifications}
+                  id={cleanEntityId}
+                  dataSourceId={dataSourceId}
+                />
               );
             }}
           />
@@ -262,7 +295,21 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <QuerySetView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              
+              console.log('App.tsx - Parsed params:', { cleanEntityId, dataSourceId, originalEntityId: entityId });
+              
+              return <QuerySetView 
+                http={http} 
+                id={cleanEntityId} 
+                dataSourceId={dataSourceId}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+                location={props.location}
+                match={props.match}
+                history={props.history}
+              />;
             }}
           />
           <Route
@@ -270,7 +317,9 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <SearchConfigurationView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              
+              return <SearchConfigurationView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -278,7 +327,9 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <JudgmentView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              
+              return <JudgmentView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -322,6 +373,9 @@ const SearchRelevancePage = ({
                       history.goBack();
                     }}
                     onClose={() => {}}
+                    savedObjects={savedObjects}
+                    dataSourceEnabled={dataSourceEnabled}
+                    dataSourceManagement={dataSourceManagement}
                   />
                 );
               }
@@ -331,21 +385,40 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetCreate}
             exact
             render={() => {
-              return <QuerySetCreate http={http} notifications={notifications} />;
+              return <QuerySetCreate 
+                http={http} 
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return <SearchConfigurationCreate http={http} notifications={notifications} />;
+              return <SearchConfigurationCreate 
+                http={http} 
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
+              return <JudgmentCreate 
+                http={http} 
+                notifications={notifications} 
+                history={history}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
         </Switch>

@@ -134,6 +134,9 @@ describe('ExperimentService', () => {
 
       expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
         body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
     });
   });
@@ -319,6 +322,39 @@ describe('ExperimentService', () => {
       mockHttp.delete.mockRejectedValue(new Error('API Error'));
 
       await expect(service.deleteScheduledExperiment('id')).rejects.toThrow('API Error');
+    });
+  });
+
+  describe('with dataSourceId', () => {
+    it('should include dataSourceId in query params', async () => {
+      const mockResponse = { hits: { hits: [] } };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      await service.getExperiments('test-datasource');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), {
+        query: { dataSourceId: 'test-datasource' }
+      });
+    });
+
+    it('should include dataSourceId in create experiment', async () => {
+      const formData = {
+        querySetId: '1',
+        searchConfigurationList: ['1'],
+        judgmentList: ['1'],
+        size: 8,
+        type: 'POINTWISE_EVALUATION'
+      };
+
+      await service.createExperiment(formData, 'test-datasource');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        query: { dataSourceId: 'test-datasource' }
+      });
     });
   });
 });

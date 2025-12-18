@@ -36,10 +36,11 @@ export interface ConfigurationFormRef {
 
 interface ConfigurationFormProps {
   templateType: TemplateType;
+  dataSourceId?: string;
 }
 
 export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationFormProps>(
-  ({ templateType }, ref) => {
+  ({ templateType, dataSourceId }, ref) => {
     const {
       services: { http },
     } = useOpenSearchDashboards();
@@ -114,6 +115,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
                 formData={formData as ResultListComparisonFormData}
                 onChange={handleChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 ref={activeFormRef as React.Ref<ResultListComparisonFormRef>}
               />
             </>
@@ -127,6 +129,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
                 formData={formData as PointwiseExperimentFormData}
                 onChange={handleChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 ref={activeFormRef as React.Ref<PointwiseExperimentFormRef>}
               />
             </>
@@ -140,6 +143,7 @@ export const ConfigurationForm = forwardRef<ConfigurationFormRef, ConfigurationF
                 formData={formData as HybridOptimizerExperimentFormData}
                 onChange={handleChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 ref={activeFormRef as React.Ref<HybridOptimizerExperimentFormRef>}
               />
             </>

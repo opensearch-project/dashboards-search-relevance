@@ -5,6 +5,7 @@
 
 import { schema } from '@osd/config-schema';
 import {
+  ILegacyScopedClusterClient,
   IOpenSearchDashboardsResponse,
   IRouter,
   OpenSearchDashboardsRequest,
@@ -13,7 +14,7 @@ import {
 } from '../../../../src/core/server';
 import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../common';
 
-export function registerSearchRelevanceRoutes(router: IRouter): void {
+export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled: boolean): void {
   router.post(
     {
       path: ServiceEndpoints.QuerySets,
@@ -24,9 +25,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           sampling: schema.string(),
           querySetSize: schema.number(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('POST', BackendEndpoints.QuerySets)
+    backendAction('POST', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.put(
     {
@@ -47,16 +49,19 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
             schema.string(),
           ]),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('PUT', BackendEndpoints.QuerySets)
+    backendAction('PUT', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.QuerySets,
-      validate: false,
+      validate: {
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+      }
     },
-    backendAction('GET', BackendEndpoints.QuerySets)
+    backendAction('GET', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.delete(
     {
@@ -65,9 +70,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('DELETE', BackendEndpoints.QuerySets)
+    backendAction('DELETE', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.put(
     {
@@ -79,16 +85,19 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           query: schema.string(),
           searchPipeline: schema.maybe(schema.string()),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('PUT', BackendEndpoints.SearchConfigurations)
+    backendAction('PUT', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.SearchConfigurations,
-      validate: false,
+      validate: {
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+      }
     },
-    backendAction('GET', BackendEndpoints.SearchConfigurations)
+    backendAction('GET', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.delete(
     {
@@ -97,9 +106,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('DELETE', BackendEndpoints.SearchConfigurations)
+    backendAction('DELETE', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.post(
     {
@@ -113,16 +123,19 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           // TODO: make mandatory conditional on experiment type
           judgmentList: schema.maybe(schema.arrayOf(schema.string())),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('PUT', BackendEndpoints.Experiments)
+    backendAction('PUT', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.Experiments,
-      validate: false,
+      validate: {
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+      }
     },
-    backendAction('GET', BackendEndpoints.Experiments)
+    backendAction('GET', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
@@ -131,9 +144,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('GET', BackendEndpoints.Experiments)
+    backendAction('GET', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
@@ -142,9 +156,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('GET', BackendEndpoints.SearchConfigurations)
+    backendAction('GET', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.get(
     {
@@ -153,9 +168,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('GET', BackendEndpoints.QuerySets)
+    backendAction('GET', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.delete(
     {
@@ -164,9 +180,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('DELETE', BackendEndpoints.Experiments)
+    backendAction('DELETE', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.post(
     {
@@ -228,16 +245,19 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           startDate: schema.maybe(schema.string()),
           endDate: schema.maybe(schema.string())
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('PUT', BackendEndpoints.Judgments)
+    backendAction('PUT', BackendEndpoints.Judgments, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.Judgments,
-      validate: false,
+      validate: {
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
+      }
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, dataSourceEnabled)
   );
   router.get(
     {
@@ -246,9 +266,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, dataSourceEnabled)
   );
   router.delete(
     {
@@ -257,42 +278,45 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: schema.maybe(schema.object({}, { unknowns: 'allow' })),
       },
     },
-    backendAction('DELETE', BackendEndpoints.Judgments)
+    backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
   );
 }
 
-const backendAction = (method, path) => {
+const backendAction = (method, path, dataSourceEnabled) => {
   return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const dataSourceId = req.query.data_source;
-    const caller = dataSourceId
-      ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
-      : context.core.opensearch.legacy.client.callAsCurrentUser;
-
+    const dataSourceId = req.query.dataSourceId;
+    let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+    if (dataSourceEnabled && dataSourceId) {
+        callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+    } else {
+        callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+    }
     try {
       let response;
       if (method === 'DELETE') {
         const { id } = req.params;
         const deletePath = `${path}/${id}`;
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path: deletePath,
         });
       } else if (method === 'GET' && req.params.id) {
         // Handle GET request for individual experiment
         const getPath = `${path}/${req.params.id}`;
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path: getPath,
         });
       } else {
         // Handle PUT, POST, GET as before
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),

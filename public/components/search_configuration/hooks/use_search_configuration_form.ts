@@ -18,6 +18,7 @@ export interface UseSearchConfigurationFormProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
   onSuccess?: () => void;
+  dataSourceId?: string;
 }
 
 export interface UseSearchConfigurationFormReturn {
@@ -62,6 +63,7 @@ export const useSearchConfigurationForm = ({
   http,
   notifications,
   onSuccess,
+  dataSourceId,
 }: UseSearchConfigurationFormProps): UseSearchConfigurationFormReturn => {
   // Form state
   const [name, setName] = useState('');
@@ -216,7 +218,7 @@ export const useSearchConfigurationForm = ({
         index: selectedIndex[0].label,
         query,
         searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : undefined,
-      });
+      }, dataSourceId);
 
       notifications.toasts.addSuccess(`Search configuration "${name}" created successfully`);
 

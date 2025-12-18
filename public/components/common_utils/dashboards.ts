@@ -62,7 +62,8 @@ export async function dashboardUrl(
   dashboardId: string,
   indexPatternId: string,
   filters: any[] = [],
-  timeRange: { from: string; to: string }
+  timeRange: { from: string; to: string },
+  dataSourceId?: string
 ) {
   const dashboardParams = {
     dashboardId,
@@ -75,42 +76,106 @@ export async function dashboardUrl(
     },
     filters,
     viewMode: 'view',
+    ...(dataSourceId && { dataSourceId }),
   };
 
   return await buildDashboardUrl(share, dashboardParams);
 }
 
 /**
- * Check if the required dashboards are installed
+ * Check if the required dashboards are installed for the specific datasource context
+ * 
+ * This function determines whether dashboards need to be installed/overwritten based on:
+ * 1. Current visualization suffixes vs expected suffixes for the datasource
+ * 2. If suffixes don't match, it returns false to trigger installation/overwrite
+ * 
+ * Overwrite scenarios:
+ * - Current: "Deep Dive Summary_remote", Expected: "_test" → Returns false (will overwrite with _test)
+ * - Current: "Deep Dive Summary_test", Expected: "_remote" → Returns false (will overwrite with _remote)
+ * - Current: "Deep Dive Summary_remote", Expected: "" (local) → Returns false (will overwrite with no suffix)
+ * 
+ * No installation scenarios:
+ * - Current: "Deep Dive Summary_test", Expected: "_test" → Returns true (no installation needed)
+ * - Current: "Deep Dive Summary", Expected: "" (local) → Returns true (no installation needed)
  */
-export const checkDashboardsInstalled = async (http: CoreStart['http']): Promise<boolean> => {
+export const checkDashboardsInstalled = async (http: CoreStart['http'], dataSourceId?: string): Promise<boolean> => {
   try {
-    const _ = await http.get(`/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}`);
-    return true;
+    // Get datasource name dynamically to create expected suffix
+    // This ensures we check for visualizations specific to the current datasource context
+    let expectedSuffix = '';
+    if (dataSourceId) {
+      try {
+        const datasourceResponse = await http.get(`/api/saved_objects/data-source/${dataSourceId}`);
+        const datasourceName = datasourceResponse.attributes?.title || dataSourceId;
+        expectedSuffix = `_${datasourceName}`;
+      } catch (error) {
+        // If can't get datasource name, use dataSourceId as fallback
+        expectedSuffix = `_${dataSourceId}`;
+      }
+    }
+
+    try {
+      // Check the "Deep Dive Summary" visualization as a representative test case
+      // All visualizations in a dashboard set should have consistent suffixes
+      const response = await http.get(`/api/saved_objects/visualization/${SavedObjectIds.DeepDiveSummary}`);
+      const title = response.attributes?.title || '';
+      
+      // Check if the visualization title matches the expected suffix
+      // If it doesn't match, return false to trigger installation/overwrite
+      return expectedSuffix === '' ? !title.includes('_') : title.endsWith(expectedSuffix);
+    } catch (error) {
+      // If visualization doesn't exist, dashboards need to be installed
+      return false;
+    }
   } catch (error) {
     return false;
   }
 };
 
 /**
- * Install the required dashboards
+ * Install the required dashboards with datasource name as suffix
  */
-export const installDashboards = async (http: CoreStart['http']): Promise<boolean> => {
+export const installDashboards = async (http: CoreStart['http'], dataSourceId?: string): Promise<boolean> => {
   try {
+    // Get datasource name dynamically
+    let suffix = '';
+    if (dataSourceId) {
+      try {
+        const datasourceResponse = await http.get(`/api/saved_objects/data-source/${dataSourceId}`);
+        const datasourceName = datasourceResponse.attributes?.title || dataSourceId;
+        suffix = `_${datasourceName}`;
+      } catch (error) {
+        // If can't get datasource name, use dataSourceId
+        suffix = `_${dataSourceId}`;
+      }
+    }
+    
+    // Modify dashboard data to use the datasource name suffix
+    let dashboardData = escapedDashboardsData;
+    
+    if (suffix) {
+      // Replace _remote with the datasource name suffix
+      dashboardData = dashboardData.replace(/_remote/g, suffix);
+    } else {
+      // For local cluster, remove _remote suffix
+      dashboardData = dashboardData.replace(/_remote/g, '');
+    }
+
     const formData = new FormData();
     formData.append(
       'file',
-      new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }),
+      new Blob([dashboardData], { type: 'application/x-ndjson' }),
       'dashboards.ndjson'
     );
+    
+    const queryParams = dataSourceId ? { dataSourceId, overwrite: true } : { overwrite: true };
+    
     await http.post('/api/saved_objects/_import', {
       body: formData,
       headers: {
         'Content-Type': undefined,
       },
-      query: {
-        overwrite: true,
-      },
+      query: queryParams,
     });
     return true;
   } catch (error) {

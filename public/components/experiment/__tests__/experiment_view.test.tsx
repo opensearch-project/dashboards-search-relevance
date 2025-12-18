@@ -50,6 +50,8 @@ describe('ExperimentView', () => {
     notifications: mockNotifications,
     id: 'test-experiment-id',
     history: mockHistory,
+    location: { search: '' },
+    match: { params: { entityId: 'test-experiment-id' } },
   };
 
   beforeEach(() => {
@@ -89,7 +91,7 @@ describe('ExperimentView', () => {
     render(<ExperimentView {...defaultProps} />);
 
     await waitFor(() => {
-      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/experiments/test-experiment-id');
+      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/experiments/test-experiment-id', { query: undefined });
     });
   });
 

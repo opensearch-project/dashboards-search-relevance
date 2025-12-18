@@ -45,11 +45,18 @@ export class SearchConfigurationService {
   /**
    * Creates a new search configuration
    * @param data The search configuration data
+   * @param dataSourceId Optional data source ID
    * @returns Promise with the API response
    */
-  async createSearchConfiguration(data: SearchConfigurationData): Promise<any> {
+  async createSearchConfiguration(data: SearchConfigurationData, dataSourceId?: string): Promise<any> {
+    const query = dataSourceId ? { dataSourceId: dataSourceId } : undefined;
+    
     return await this.http.put(ServiceEndpoints.SearchConfigurations, {
       body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      ...(query && { query }),
     });
   }
 

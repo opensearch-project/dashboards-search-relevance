@@ -4,7 +4,7 @@
  */
 
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   EuiButtonEmpty,
   EuiButton,
@@ -17,12 +17,14 @@ import {
   EuiHealth,
 } from '@elastic/eui';
 import moment from 'moment';
-import { CoreStart } from '../../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
+import { DataSourceAttributes } from '../../../../../../src/plugins/data_source/common/data_sources';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { DeleteModal } from '../../common/DeleteModal';
+import { DeleteModal, DataSourceSelector } from '../../common';
 import { useConfig } from '../../../contexts/date_format_context';
 import { Routes } from '../../../../common';
 import { useJudgmentList } from '../hooks/use_judgment_list';
@@ -30,10 +32,20 @@ import { getStatusColor } from '../../common_utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects: CoreStart['savedObjects'];
+  dataSourceEnabled: boolean;
+  dataSourceManagement: DataSourceManagementPluginSetup;
 }
 
-export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history }) => {
+export const JudgmentListing: React.FC<JudgmentListingProps> = ({ 
+  http, 
+  history, 
+  savedObjects, 
+  dataSourceEnabled, 
+  dataSourceManagement 
+}) => {
   const { dateFormat } = useConfig();
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     isLoading,
     error,
@@ -42,7 +54,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     refreshKey,
     findJudgments,
     deleteJudgment,
-  } = useJudgmentList(http);
+  } = useJudgmentList(http, selectedDataSource);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [judgmentToDelete, setJudgmentToDelete] = useState<any>(null);
@@ -67,16 +79,22 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         judgment: {
           id: string;
         }
-      ) => (
-        <>
-          <EuiButtonEmpty
-            size="xs"
-            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}`)}
-          >
-            {name}
-          </EuiButtonEmpty>
-        </>
-      ),
+      ) => {
+        const viewUrl = selectedDataSource 
+          ? `${Routes.JudgmentViewPrefix}/${judgment.id}?dataSourceId=${encodeURIComponent(selectedDataSource)}`
+          : `${Routes.JudgmentViewPrefix}/${judgment.id}`;
+        
+        return (
+          <>
+            <EuiButtonEmpty
+              size="xs"
+              {...reactRouterNavigate(history, viewUrl)}
+            >
+              {name}
+            </EuiButtonEmpty>
+          </>
+        );
+      },
     },
     {
       field: 'status',
@@ -139,6 +157,15 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
             Create Judgment
           </EuiButton>,
         ]}
+      />
+
+      <DataSourceSelector
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        selectedDataSource={selectedDataSource}
+        setSelectedDataSource={setSelectedDataSource}
+        label="Data Source"
       />
 
       <EuiFlexItem>

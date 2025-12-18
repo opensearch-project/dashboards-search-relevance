@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
@@ -16,10 +16,15 @@ export interface QuerySetItem {
   numQueries: number;
 }
 
-export const useQuerySetList = (http: CoreStart['http']) => {
+export const useQuerySetList = (http: CoreStart['http'], dataSourceId?: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // Trigger refresh when dataSourceId changes
+  useEffect(() => {
+    setRefreshKey(prev => prev + 1);
+  }, [dataSourceId]);
 
   const mapQuerySetFields = (obj: any): QuerySetItem => ({
     id: obj._source.id,
@@ -34,7 +39,8 @@ export const useQuerySetList = (http: CoreStart['http']) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await http.get(ServiceEndpoints.QuerySets);
+      const query = dataSourceId ? { dataSourceId } : {};
+      const response = await http.get(ServiceEndpoints.QuerySets, { query });
       const list: QuerySetItem[] = response ? response.hits.hits.map(mapQuerySetFields) : [];
 
       const filteredList: QuerySetItem[] = search
@@ -63,7 +69,8 @@ export const useQuerySetList = (http: CoreStart['http']) => {
   const deleteQuerySet = async (id: string) => {
     setIsLoading(true);
     try {
-      await http.delete(`${ServiceEndpoints.QuerySets}/${id}`);
+      const query = dataSourceId ? { dataSourceId } : {};
+      await http.delete(`${ServiceEndpoints.QuerySets}/${id}`, { query });
       setError(null);
       setRefreshKey((prev) => prev + 1);
     } catch (err) {

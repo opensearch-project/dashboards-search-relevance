@@ -40,4 +40,7 @@ export interface JudgmentCreateProps {
   http: any;
   notifications: any;
   history: any;
+  savedObjects: any;
+  dataSourceEnabled: boolean;
+  dataSourceManagement: any;
 }
