@@ -51,26 +51,9 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
           </EuiCodeBlock>
         </EuiFormRow>
 
-        {(searchConfiguration.searchPipeline || searchConfiguration.template) && (
-          <EuiDescriptionList type="column" compressed>
-            {searchConfiguration.searchPipeline && (
-              <>
-                <EuiDescriptionListTitle>Search Pipeline</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>
-                  {searchConfiguration.searchPipeline}
-                </EuiDescriptionListDescription>
-              </>
-            )}
-            {searchConfiguration.template && (
-              <>
-                <EuiDescriptionListTitle>Search Template</EuiDescriptionListTitle>
-                <EuiDescriptionListDescription>
-                  {searchConfiguration.template}
-                </EuiDescriptionListDescription>
-              </>
-            )}
-          </EuiDescriptionList>
-        )}
+        <EuiFormRow label="Search Pipeline" fullWidth>
+          <EuiText>{searchConfiguration.searchPipeline || 'None'}</EuiText>
+        </EuiFormRow>
       </EuiForm>
     );
   };
@@ -96,5 +79,3 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
     </EuiPageTemplate>
   );
 };
-
-export default SearchConfigurationView;
