@@ -7,17 +7,16 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
-- Support semantic highlighting and dynamic image sizing ([#627](https://github.com/opensearch-project/dashboards-search-relevance/pull/627))
+
+- Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
 
 - Introduce ability to enter queries directly in SRW when creating a new QuerySet ([#599](https://github.com/opensearch-project/dashboards-search-relevance/pull/599))
 
 ### Enhancements
-- Improve color coding ([#632](https://github.com/opensearch-project/dashboards-search-relevance/pull/632))
 
 ### Bug Fixes
 
 ### Infrastructure
-- Update delete-backport-branch workflow permissions to use contents:write instead of pull-requests:write
 
 ### Documentation
 

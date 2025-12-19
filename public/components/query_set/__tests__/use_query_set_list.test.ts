@@ -181,22 +181,45 @@ describe('useQuerySetList', () => {
     expect(result.current.error).toBe('Custom error');
   });
 
-  it('handles null response gracefully', async () => {
-    // Mock HTTP get to return null
-    mockHttp.get.mockResolvedValue(null);
+  it('handles GUID filtering', async () => {
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'guid-12345',
+              name: 'Alpha Set',
+              sampling: 'random',
+              description: 'First set',
+              timestamp: '2023-01-01T00:00:00Z',
+              querySetQueries: { q1: 'x' },
+            },
+          },
+          {
+            _source: {
+              id: 'guid-98765',
+              name: 'Beta Set',
+              sampling: 'random',
+              description: 'Second set',
+              timestamp: '2023-01-01T00:00:00Z',
+              querySetQueries: { q1: 'x' },
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
 
     const { result } = renderHook(() => useQuerySetList(mockHttp));
 
     let queryResult;
     await act(async () => {
-      queryResult = await result.current.findQuerySets('');
+      queryResult = await result.current.findQuerySets('98765'); // GUID search
     });
 
-    expect(queryResult).toEqual({
-      total: 0,
-      hits: [],
-    });
-    expect(result.current.error).toBe(null);
-    expect(result.current.isLoading).toBe(false);
+    expect(queryResult?.hits).toHaveLength(1);
+    expect(queryResult?.hits[0].id).toBe('guid-98765');
+    expect(queryResult?.hits[0].name).toBe('Beta Set');
   });
 });

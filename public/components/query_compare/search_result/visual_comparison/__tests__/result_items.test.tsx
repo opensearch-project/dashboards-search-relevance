@@ -79,7 +79,20 @@ describe('ResultItems', () => {
   });
 
   it('applies correct size multiplier', () => {
-    const { container } = render(<ResultItems {...defaultProps} sizeMultiplier={3} />);
+    const propsWithImage = {
+      ...defaultProps,
+      imageFieldName: 'image',
+      sizeMultiplier: 3,
+      items: [
+        {
+          _id: '1',
+          rank: 1,
+          title: 'Test Document 1',
+          image: 'https://example.com/image.jpg',
+        },
+      ],
+    };
+    const { container } = render(<ResultItems {...propsWithImage} />);
     const imageContainer = container.querySelector('[style*="width: 96px"]');
     expect(imageContainer).toBeInTheDocument();
   });

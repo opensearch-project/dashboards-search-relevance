@@ -166,16 +166,6 @@ describe('SearchResult Base64 Config Loading', () => {
         expect(mockContextValue.setPipeline1).toHaveBeenCalledWith('test_pipeline_1');
         expect(mockContextValue.setPipeline2).toHaveBeenCalledWith('test_pipeline_2');
       });
-
-      // Verify console logs
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Hash string to parse:',
-        `config=${base64Config}`
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Parsed config:',
-        testConfig
-      );
     });
 
     it('should handle missing optional fields in config', async () => {
@@ -296,13 +286,6 @@ describe('SearchResult Base64 Config Loading', () => {
       window.location.hash = `#/?config=${base64Config}`;
 
       renderWithContext();
-
-      await waitFor(() => {
-        expect(mockConsoleLog).toHaveBeenCalledWith(
-          'SearchResult useEffect - Hash string to parse:',
-          `config=${base64Config}`
-        );
-      });
     });
 
     it('should handle partial config with only query1', async () => {
@@ -342,13 +325,6 @@ describe('SearchResult Base64 Config Loading', () => {
       window.location.hash = `#/?config=${base64Config}`;
 
       renderWithContext();
-
-      await waitFor(() => {
-        expect(mockConsoleLog).toHaveBeenCalledWith(
-          'SearchResult useEffect - Parsed config:',
-          testConfig
-        );
-      });
     });
 
     // Note: URL length limit functionality is tested in the base64_config.test.ts file
@@ -428,12 +404,6 @@ describe('SearchResult Base64 Config Loading', () => {
         expect(mockContextValue.setPipeline1).toHaveBeenCalledWith('test_pipeline_1');
         expect(mockContextValue.setPipeline2).toHaveBeenCalledWith('test_pipeline_2');
       });
-
-      // Verify console logs show query parameter parsing
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from search:',
-        base64Config
-      );
     });
 
     it('should fallback to hash parameters when query parameters not found', async () => {
@@ -453,16 +423,6 @@ describe('SearchResult Base64 Config Loading', () => {
       await waitFor(() => {
         expect(mockContextValue.setSelectedIndex1).toHaveBeenCalledWith('test_index_fallback');
       });
-
-      // Verify fallback logic was used
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from search:',
-        null
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from hash:',
-        base64Config
-      );
     });
 
     it('should prioritize query parameters over hash parameters', async () => {
@@ -496,11 +456,6 @@ describe('SearchResult Base64 Config Loading', () => {
         expect(mockContextValue.setSelectedIndex1).toHaveBeenCalledWith('query_param_index');
         expect(mockContextValue.setSelectedIndex1).not.toHaveBeenCalledWith('hash_param_index');
       });
-
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from search:',
-        base64QueryConfig
-      );
     });
 
     it('should handle empty query and hash parameters gracefully', async () => {
@@ -514,15 +469,6 @@ describe('SearchResult Base64 Config Loading', () => {
         expect(mockContextValue.setSelectedIndex1).toHaveBeenCalledTimes(1);
         expect(mockContextValue.setSelectedIndex2).toHaveBeenCalledTimes(1);
       });
-
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from search:',
-        null
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from hash:',
-        null
-      );
     });
 
     it('should handle malformed query parameter gracefully', async () => {
@@ -574,11 +520,6 @@ describe('SearchResult Base64 Config Loading', () => {
         // Should successfully use query parameter config
         expect(mockContextValue.setSelectedIndex1).toHaveBeenCalledWith('valid_index');
       });
-
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'SearchResult useEffect - Config param from search:',
-        validBase64Config
-      );
     });
   });
 });

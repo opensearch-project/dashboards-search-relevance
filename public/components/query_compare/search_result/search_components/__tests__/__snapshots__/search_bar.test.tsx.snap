@@ -2,6 +2,7 @@
 
 exports[`Search bar component Renders search bar component 1`] = `
 <SearchInputBar
+  isSearching={false}
   onClickSearch={[Function]}
   searchBarValue="basic"
   setSearchBarValue={[Function]}
@@ -182,12 +183,16 @@ exports[`Search bar component Renders search bar component 1`] = `
         >
           <EuiSmallButton
             aria-label="searchRelevance-searchButton"
+            disabled={false}
             fill={true}
+            isLoading={false}
             onClick={[Function]}
           >
             <EuiButton
               aria-label="searchRelevance-searchButton"
+              disabled={false}
               fill={true}
+              isLoading={false}
               onClick={[Function]}
               size="s"
             >
@@ -198,6 +203,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                 element="button"
                 fill={true}
                 isDisabled={false}
+                isLoading={false}
                 onClick={[Function]}
                 size="s"
                 type="button"
@@ -218,6 +224,7 @@ exports[`Search bar component Renders search bar component 1`] = `
                     className="euiButton__content"
                     iconGap="m"
                     iconSide="left"
+                    isLoading={false}
                     textProps={
                       Object {
                         "className": "euiButton__text",

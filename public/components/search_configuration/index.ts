@@ -6,7 +6,7 @@
 // Views
 export { SearchConfigurationCreateWithRouter as SearchConfigurationCreate } from './views/search_configuration_create';
 export { SearchConfigurationListingWithRoute as SearchConfigurationListing } from './views/search_configuration_listing';
-export { default as SearchConfigurationView } from './views/search_configuration_view';
+export { SearchConfigurationView } from './views/search_configuration_view';
 
 // Components
 export { ResultsPanel } from './components/results_panel';

@@ -33,7 +33,11 @@ import {
   toQueryEvaluation,
   EvaluationExperiment,
   printType,
+  ExperimentType,
+  toExperiment,
+  ScheduledJob,
 } from '../../../types/index';
+import { ScheduleDetails } from '../../common/ScheduleDetails';
 import { MetricsSummaryPanel } from '../metrics/metrics_summary';
 import { DocumentScoresTable } from '../metrics/document_score_table';
 import {
@@ -55,10 +59,12 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
   inputExperiment,
   history,
 }) => {
+  const AnyTableListView = TableListView as unknown as React.ComponentType<any>;
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
   const [querySet, setQuerySet] = useState<any | null>(null);
   const [judgmentSet, setJudgmentSet] = useState<any | null>(null);
+  const [scheduledExperimentJob, setScheduledExperimentJob] = useState<ScheduledJob | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,7 +77,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     Array<{ docId: string; rating: string }>
   >([]);
 
-  const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
+  const sanitizeResponse = (response: any) => response?.hits?.hits?.[0]?._source || undefined;
 
   const handleQueryClick = useCallback(
     (queryText: string) => {
@@ -89,13 +95,13 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
         // Get ratings from the already fetched judgment set
         const judgmentEntry = judgmentSet?.judgmentRatings?.find(
-          (entry) => entry.query === queryText
+          (entry: any) => entry.query === queryText
         );
         const judgments = judgmentEntry?.ratings || [];
 
         // Create document scores by matching evaluation documentIds with judgments
         const documentScores = evaluation.documentIds.map((docId) => {
-          const judgment = judgments.find((j) => j.docId === docId);
+          const judgment = judgments.find((j: any) => j.docId === docId);
           return {
             docId,
             rating: judgment ? judgment.rating : 'N/A',
@@ -121,6 +127,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         const _experiment = await http
           .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id)
           .then(sanitizeResponse);
+        const parsedExperiment = _experiment && toExperiment(_experiment);
         const _searchConfiguration =
           _experiment &&
           (await http
@@ -139,6 +146,14 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId)
             .then(sanitizeResponse));
 
+        const _scheduledExperimentJob =
+          _experiment && inputExperiment.isScheduled &&
+          (await http
+            .get(
+              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId
+            )
+            .then(sanitizeResponse));
+
         const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
         const query = {
           index: 'search-relevance-evaluation-result',
@@ -155,13 +170,13 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         const parseResults =
           result &&
           result.result1?.hits?.hits &&
-          combineResults(...result.result1.hits.hits.map((x) => toQueryEvaluation(x._source)));
-
+          combineResults(...result.result1.hits.hits.map((x: any) => toQueryEvaluation(x._source)));
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
-          setExperiment(_experiment);
+          setExperiment(parsedExperiment.data);
           setSearchConfiguration(_searchConfiguration);
           setQuerySet(_querySet);
           setJudgmentSet(_judgmentSet);
+          setScheduledExperimentJob(_scheduledExperimentJob);
           if (parseResults.success) {
             setQueryEvaluations(parseResults.data);
             // Check if there are ZSR queries by comparing resultIds count with query set count
@@ -217,7 +232,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         coverage: COVERAGE_TOOL_TIP,
       };
 
-      const columns = [
+      const columns: any[] = [
         {
           field: 'queryText',
           name: 'Query',
@@ -246,8 +261,8 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           ),
           dataType: 'number',
           sortable: true,
-          render: (value) => {
-            if (value !== undefined && value !== null) {
+          render: (value: any) => {
+            if (typeof value === 'number') {
               return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -277,7 +292,15 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     <EuiPanel hasBorder={true}>
       <EuiDescriptionList type="column" compressed>
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
-        <EuiDescriptionListDescription>{printType(experiment?.type)}</EuiDescriptionListDescription>
+        <EuiDescriptionListDescription>{experiment ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
+       
+        {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && (
+          <ScheduleDetails
+            isScheduled={experiment.isScheduled}
+            scheduledExperimentJob={scheduledExperimentJob}
+          />
+        )}
+    
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -323,12 +346,12 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
                   <p>{error}</p>
                 </EuiCallOut>
               ) : (
-                <TableListView
+                <AnyTableListView
                   key={`table-${queryEvaluations.length}`}
                   entityName="Query"
                   entityNamePlural="Queries"
                   tableColumns={tableColumns}
-                  findItems={findQueries}
+                  findItems={findQueries as any}
                   loading={loading}
                   initialPageSize={10}
                   search={{
