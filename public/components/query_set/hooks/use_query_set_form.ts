@@ -101,18 +101,18 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
           if (isPlainText) {
             queryList.push({
               queryText: line.trim(),
-              referenceAnswer: '',
             });
           } else {
             // Try to parse as JSON for file upload mode
             const parsed = JSON.parse(line.trim());
             if (parsed.queryText) {
-              queryList.push({
+              const queryItem: QueryItem = {
                 queryText: String(parsed.queryText).trim(),
-                referenceAnswer: parsed.referenceAnswer
-                  ? String(parsed.referenceAnswer).trim()
-                  : '',
-              });
+              };
+              if (parsed.referenceAnswer) {
+                queryItem.referenceAnswer = String(parsed.referenceAnswer).trim();
+              }
+              queryList.push(queryItem);
             }
           }
         } catch (e) {
@@ -124,7 +124,6 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
             // Even if JSON parsing fails, still add it as a plain query
             queryList.push({
               queryText: line.trim(),
-              referenceAnswer: '',
             });
           }
         }

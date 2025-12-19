@@ -43,7 +43,6 @@ describe('file_processor', () => {
       expect(result.queries).toHaveLength(2);
       expect(result.queries[0]).toEqual({
         queryText: 'test query 1',
-        referenceAnswer: '',
       });
     });
 
@@ -158,15 +157,12 @@ query 3`;
       expect(result.queries).toHaveLength(3);
       expect(result.queries[0]).toEqual({
         queryText: 'query 1',
-        referenceAnswer: '',
       });
       expect(result.queries[1]).toEqual({
         queryText: 'query 2',
-        referenceAnswer: '',
       });
       expect(result.queries[2]).toEqual({
         queryText: 'query 3',
-        referenceAnswer: '',
       });
     });
 

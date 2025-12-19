@@ -29,11 +29,12 @@ describe('useQuerySetForm', () => {
       }
       try {
         const parsed = JSON.parse(text);
+        const queryItem = { queryText: parsed.queryText };
+        if (parsed.referenceAnswer) {
+          queryItem.referenceAnswer = parsed.referenceAnswer;
+        }
         return { 
-          queries: [{ 
-            queryText: parsed.queryText, 
-            referenceAnswer: parsed.referenceAnswer || '' 
-          }],
+          queries: [queryItem],
           error: undefined
         };
       } catch (e) {
@@ -49,7 +50,7 @@ describe('useQuerySetForm', () => {
       const lines = text.trim().split('\n');
       const queries = lines
         .filter(line => line.trim())
-        .map(line => ({ queryText: line.trim(), referenceAnswer: '' }));
+        .map(line => ({ queryText: line.trim() }));
       return { queries, error: undefined };
     });
   });
@@ -217,8 +218,8 @@ describe('useQuerySetForm', () => {
     
     expect(result.current.manualQueries).toBe(
       JSON.stringify([
-        { queryText: 'query 1', referenceAnswer: '' },
-        { queryText: 'query 2', referenceAnswer: '' }
+        { queryText: 'query 1' },
+        { queryText: 'query 2' }
       ])
     );
     expect(result.current.parsedQueries).toHaveLength(2);
@@ -281,8 +282,8 @@ describe('useQuerySetForm', () => {
     // Only valid JSON lines should be processed when isPlainText is false
     expect(result.current.manualQueries).toBe(
       JSON.stringify([
-        { queryText: 'valid json', referenceAnswer: '' },
-        { queryText: 'another valid', referenceAnswer: '' }
+        { queryText: 'valid json' },
+        { queryText: 'another valid' }
       ])
     );
     expect(result.current.parsedQueries).toHaveLength(2);
@@ -300,8 +301,8 @@ describe('useQuerySetForm', () => {
     // In text input mode, all lines should be treated as query text
     expect(result.current.manualQueries).toBe(
       JSON.stringify([
-        { queryText: 'plain text query', referenceAnswer: '' },
-        { queryText: '{"this looks like": "json but is treated as plain text"}', referenceAnswer: '' }
+        { queryText: 'plain text query' },
+        { queryText: '{"this looks like": "json but is treated as plain text"}' }
       ])
     );
     expect(result.current.parsedQueries).toHaveLength(2);
@@ -404,14 +405,14 @@ describe('useQuerySetForm', () => {
     // Should be treated as plain text despite JSON-like format
     expect(result.current.manualQueries).toBe(
       JSON.stringify([
-        { queryText: '{"looks like": "json"}', referenceAnswer: '' }
+        { queryText: '{"looks like": "json"}' }
       ])
     );
     
     // Confirm it was treated as plain text (single query) not JSON (would be error or empty)
     expect(result.current.parsedQueries).toHaveLength(1);
     expect(JSON.parse(result.current.parsedQueries[0])).toEqual(
-      { queryText: '{"looks like": "json"}', referenceAnswer: '' }
+      { queryText: '{"looks like": "json"}' }
     );
     
     // Now test the opposite case

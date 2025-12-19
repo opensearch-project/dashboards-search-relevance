@@ -5,7 +5,7 @@
 
 export interface QueryItem {
   queryText: string;
-  referenceAnswer: string;
+  referenceAnswer?: string;
 }
 
 export interface FileProcessResult {
@@ -25,7 +25,6 @@ export const processPlainTextFile = async (file: File): Promise<FileProcessResul
       // Each line is a query in plain text mode
       queryList.push({
         queryText: line.trim(),
-        referenceAnswer: '',
       });
     }
 
@@ -57,10 +56,13 @@ export const processQueryFile = async (file: File): Promise<FileProcessResult> =
         // Parse each line as JSON
         const parsed = JSON.parse(line.trim());
         if (parsed.queryText) {
-          queryList.push({
+          const queryItem: QueryItem = {
             queryText: String(parsed.queryText).trim(),
-            referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : '',
-          });
+          };
+          if (parsed.referenceAnswer) {
+            queryItem.referenceAnswer = String(parsed.referenceAnswer).trim();
+          }
+          queryList.push(queryItem);
         }
       } catch (e) {
         // console.error('Error parsing line:', line, e);
