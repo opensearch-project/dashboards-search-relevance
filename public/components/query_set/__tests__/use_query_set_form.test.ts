@@ -8,7 +8,16 @@ import { useQuerySetForm } from '../hooks/use_query_set_form';
 import * as validation from '../utils/validation';
 import { processQueryFile, processPlainTextFile } from '../utils/file_processor';
 
-jest.mock('../utils/validation');
+jest.mock('../utils/validation', () => ({
+  validateForm: jest.fn(),
+  hasValidationErrors: jest.fn(),
+  isValidInputString: jest.fn(),
+  hasPairedCurlyBraces: (input: string) => {
+    const openBraces = (input.match(/\{/g) || []).length;
+    const closeBraces = (input.match(/\}/g) || []).length;
+    return openBraces > 0 && closeBraces > 0;
+  },
+}));
 jest.mock('../utils/file_processor');
 
 describe('useQuerySetForm', () => {
@@ -270,6 +279,57 @@ describe('useQuerySetForm', () => {
     expect(result.current.errors.manualQueriesError).toBeTruthy();
   });
 
+  it('rejects text input with paired curly braces', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+    
+    const textWithCurlyBraces = 'what is opensearch\nquery with {field: value}\nhow to search';
+    
+    act(() => {
+      result.current.parseQueriesText(textWithCurlyBraces, true);
+    });
+    
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+    expect(result.current.errors.manualQueriesError).toBe('Queries should not be in JSON format.');
+  });
+
+  it('allows text input with only opening curly braces', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+    
+    const textWithOpenBrace = 'what is opensearch\nquery with { only opening\nhow to search';
+    
+    act(() => {
+      result.current.parseQueriesText(textWithOpenBrace, true);
+    });
+    
+    expect(result.current.manualQueries).toBe(
+      JSON.stringify([
+        { queryText: 'what is opensearch' },
+        { queryText: 'query with { only opening' },
+        { queryText: 'how to search' }
+      ])
+    );
+    expect(result.current.errors.manualQueriesError).toBe('');
+  });
+
+  it('allows JSON input with curly braces in file upload mode', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+    
+    const jsonInput = '{"queryText": "what is opensearch"}\n{"queryText": "query with {nested: json}"}';
+    
+    act(() => {
+      result.current.parseQueriesText(jsonInput, false);
+    });
+    
+    expect(result.current.manualQueries).toBe(
+      JSON.stringify([
+        { queryText: 'what is opensearch' },
+        { queryText: 'query with {nested: json}' }
+      ])
+    );
+    expect(result.current.errors.manualQueriesError).toBe('');
+  });
+
   it('handles mixed valid/invalid JSON lines', () => {
     const { result } = renderHook(() => useQuerySetForm());
     
@@ -289,7 +349,7 @@ describe('useQuerySetForm', () => {
     expect(result.current.parsedQueries).toHaveLength(2);
   });
 
-  it('treats all lines as queries in text input mode regardless of JSON validity', () => {
+  it('rejects text input with JSON-like content containing paired curly braces', () => {
     const { result } = renderHook(() => useQuerySetForm());
     
     const mixedInput = 'plain text query\n{"this looks like": "json but is treated as plain text"}';
@@ -298,14 +358,10 @@ describe('useQuerySetForm', () => {
       result.current.parseQueriesText(mixedInput, true);
     });
     
-    // In text input mode, all lines should be treated as query text
-    expect(result.current.manualQueries).toBe(
-      JSON.stringify([
-        { queryText: 'plain text query' },
-        { queryText: '{"this looks like": "json but is treated as plain text"}' }
-      ])
-    );
-    expect(result.current.parsedQueries).toHaveLength(2);
+    // Should be rejected due to paired curly braces
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+    expect(result.current.errors.manualQueriesError).toBe('Queries should not be in JSON format.');
   });
 
   it('handles file processing errors', async () => {
@@ -395,25 +451,17 @@ describe('useQuerySetForm', () => {
     });
     
     // Even though we're in JSON mode, explicitly pass true for isPlainText
-    // This should override the component state and parse as plain text
+    // This should reject content with paired curly braces
     const textWithJsonSyntax = '{"looks like": "json"}';
     
     act(() => {
       result.current.parseQueriesText(textWithJsonSyntax, true); // explicitly true
     });
     
-    // Should be treated as plain text despite JSON-like format
-    expect(result.current.manualQueries).toBe(
-      JSON.stringify([
-        { queryText: '{"looks like": "json"}' }
-      ])
-    );
-    
-    // Confirm it was treated as plain text (single query) not JSON (would be error or empty)
-    expect(result.current.parsedQueries).toHaveLength(1);
-    expect(JSON.parse(result.current.parsedQueries[0])).toEqual(
-      { queryText: '{"looks like": "json"}' }
-    );
+    // Should be rejected due to paired curly braces
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+    expect(result.current.errors.manualQueriesError).toBe('Queries should not be in JSON format.');
     
     // Now test the opposite case
     const plainText = 'simple query text';

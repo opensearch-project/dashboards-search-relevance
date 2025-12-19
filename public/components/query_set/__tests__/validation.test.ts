@@ -95,6 +95,8 @@ describe('validation utils', () => {
       expect(errors.manualQueriesError).toBe('Please enter at least one query.');
     });
 
+
+
     it('should return error when name is too long', () => {
       const formData = {
         name: 'A'.repeat(51), // 51 characters
@@ -175,6 +177,47 @@ describe('validation utils', () => {
       it('should return false for strings with control characters', () => {
         expect(isValidInputString('String with \u0000 control char')).toBe(false);
         expect(isValidInputString('String with \u0001 control char')).toBe(false);
+      });
+    });
+
+    describe('hasPairedCurlyBraces', () => {
+      const { hasPairedCurlyBraces } = require('../utils/validation');
+
+      it('should return false for strings without curly braces', () => {
+        expect(hasPairedCurlyBraces('Simple query')).toBe(false);
+        expect(hasPairedCurlyBraces('what is opensearch')).toBe(false);
+        expect(hasPairedCurlyBraces('[]()!@#$%^&*()')).toBe(false);
+      });
+
+      it('should return false for strings with only opening braces', () => {
+        expect(hasPairedCurlyBraces('query with {')).toBe(false);
+        expect(hasPairedCurlyBraces('{{')).toBe(false);
+        expect(hasPairedCurlyBraces('what { is opensearch')).toBe(false);
+      });
+
+      it('should return false for strings with only closing braces', () => {
+        expect(hasPairedCurlyBraces('query with }')).toBe(false);
+        expect(hasPairedCurlyBraces('}}')).toBe(false);
+        expect(hasPairedCurlyBraces('what } is opensearch')).toBe(false);
+      });
+
+      it('should return true for strings with both opening and closing braces', () => {
+        expect(hasPairedCurlyBraces('{}')).toBe(true);
+        expect(hasPairedCurlyBraces('query {field: value}')).toBe(true);
+        expect(hasPairedCurlyBraces('{query: "test"}')).toBe(true);
+        expect(hasPairedCurlyBraces('multiple { } braces { here }')).toBe(true);
+      });
+
+      it('should return true for JSON-like strings', () => {
+        expect(hasPairedCurlyBraces('{"queryText": "search term"}')).toBe(true);
+        expect(hasPairedCurlyBraces('search with {match: {field: "value"}}')).toBe(true);
+      });
+
+      it('should return true even with unbalanced but present pairs', () => {
+        expect(hasPairedCurlyBraces('{ unbalanced')).toBe(false);
+        expect(hasPairedCurlyBraces('unbalanced }')).toBe(false);
+        expect(hasPairedCurlyBraces('{{ }')).toBe(true);
+        expect(hasPairedCurlyBraces('{ }}')).toBe(true);
       });
     });
   });

@@ -35,6 +35,20 @@ export const isValidInputString = (input: string): boolean => {
   return !forbiddenCharsRegex.test(input);
 };
 
+/**
+ * Validates if a string contains paired curly braces { }
+ * This is a light validation check to prevent JSON-like syntax in manual query input.
+ * @param input The string to validate
+ * @returns true if the string contains paired curly braces, false otherwise
+ */
+export const hasPairedCurlyBraces = (input: string): boolean => {
+  const openBraces = (input.match(/\{/g) || []).length;
+  const closeBraces = (input.match(/\}/g) || []).length;
+  
+  // If there are both opening and closing braces, consider it paired
+  return openBraces > 0 && closeBraces > 0;
+};
+
 export const validateForm = (data: FormData): ValidationErrors => {
   const errors: ValidationErrors = {
     nameError: '',

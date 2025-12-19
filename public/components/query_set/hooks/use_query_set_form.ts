@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { validateForm, ValidationErrors, hasValidationErrors } from '../utils/validation';
+import { validateForm, ValidationErrors, hasValidationErrors, hasPairedCurlyBraces } from '../utils/validation';
 import { processQueryFile, processPlainTextFile, QueryItem } from '../utils/file_processor';
 
 export interface UseQuerySetFormReturn {
@@ -85,6 +85,14 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
       if (!text.trim()) {
         const errorMsg = isPlainText ? 'No valid queries found' : 'No valid queries found in file';
         setErrors((prev) => ({ ...prev, manualQueriesError: errorMsg }));
+        setManualQueries('');
+        setParsedQueries([]);
+        return;
+      }
+
+      // For plain text input, check for paired curly braces
+      if (isPlainText && hasPairedCurlyBraces(text)) {
+        setErrors((prev) => ({ ...prev, manualQueriesError: 'Queries should not be in JSON format.' }));
         setManualQueries('');
         setParsedQueries([]);
         return;
