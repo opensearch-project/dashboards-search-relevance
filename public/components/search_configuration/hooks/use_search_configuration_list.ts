@@ -10,6 +10,7 @@ import { extractUserMessageFromError, ServiceEndpoints } from '../../../../commo
 export interface SearchConfigurationItem {
   id: string;
   search_configuration_name: string;
+  description: string;
   index: string;
   query: string;
   timestamp: string;
@@ -23,6 +24,7 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
     return {
       id: obj._source.id,
       search_configuration_name: obj._source.name,
+      description: obj._source.description,
       index: obj._source.index,
       query: obj._source.query,
       timestamp: obj._source.timestamp,

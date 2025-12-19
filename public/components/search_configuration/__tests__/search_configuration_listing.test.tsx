@@ -55,6 +55,7 @@ describe('SearchConfigurationListing', () => {
           {
             id: '1',
             search_configuration_name: 'Test Config',
+            description: 'sample description',
             index: 'test-index',
             query: '{"match_all": {}}',
             timestamp: '2023-01-01T00:00:00Z',
@@ -111,6 +112,7 @@ describe('SearchConfigurationListing', () => {
         {
           id: '1',
           search_configuration_name: 'Test Config',
+          description: 'sample description',
           index: 'test-index',
           query: '{"match_all": {}}',
           timestamp: '2023-01-01T00:00:00Z',
@@ -149,6 +151,7 @@ describe('SearchConfigurationListing', () => {
         {
           id: '1',
           search_configuration_name: 'Test Config',
+          description: 'sample description',
           index: 'test-index',
           query: '{"match_all": {}}',
           timestamp: '2023-01-01T00:00:00Z',

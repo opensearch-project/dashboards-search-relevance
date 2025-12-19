@@ -37,6 +37,10 @@ const mockProps = {
   setName: jest.fn(),
   nameError: '',
   validateName: jest.fn(),
+  description: '',
+  setDescription: jest.fn(),
+  descriptionError: '',
+  validateDescription: jest.fn(),
   query: '',
   setQuery: jest.fn(),
   queryError: '',
@@ -62,6 +66,7 @@ describe('SearchConfigurationForm', () => {
     render(<SearchConfigurationForm {...mockProps} />);
 
     expect(screen.getByLabelText('Search Configuration Name')).toBeInTheDocument();
+    expect(screen.getByText('Description')).toBeInTheDocument();
     expect(screen.getByLabelText('Index')).toBeInTheDocument();
     expect(screen.getByText('Search Pipeline')).toBeInTheDocument();
     expect(screen.getByLabelText('Query')).toBeInTheDocument();
@@ -89,6 +94,30 @@ describe('SearchConfigurationForm', () => {
     render(<SearchConfigurationForm {...mockProps} nameError="Name is required" />);
 
     expect(screen.getByText('Name is required')).toBeInTheDocument();
+  });
+
+  it('should call setDescription when description field changes', () => {
+    render(<SearchConfigurationForm {...mockProps} />);
+
+    const descriptionInput = screen.getByLabelText('Description');
+    fireEvent.change(descriptionInput, { target: { value: 'sample description' } });
+
+    expect(mockProps.setName).toHaveBeenCalledWith('sample description');
+  });
+
+  it('should call validateDescription on description field blur', () => {
+    render(<SearchConfigurationForm {...mockProps} />);
+
+    const descriptionInput = screen.getByLabelText('Description');
+    fireEvent.blur(descriptionInput);
+
+    expect(mockProps.validateName).toHaveBeenCalled();
+  });
+
+  it('should display description error when present', () => {
+    render(<SearchConfigurationForm {...mockProps} nameError="Description is required" />);
+
+    expect(screen.getByText('Description is required')).toBeInTheDocument();
   });
 
   it('should render query code editor', () => {
@@ -192,6 +221,7 @@ describe('SearchConfigurationForm', () => {
     const fullProps = {
       ...mockProps,
       name: 'Full Configuration',
+      description: 'sample description',
       query: '{"query": {"bool": {"must": [{"match": {"title": "test"}}]}}}',
       selectedIndex: [{ label: 'test-index', value: 'test-index' }],
       selectedPipeline: [{ label: 'test-pipeline' }],
@@ -210,10 +240,12 @@ describe('SearchConfigurationForm', () => {
     const errorProps = {
       ...mockProps,
       nameError: 'Name is required',
+      descriptionError: 'Description is required',
     };
 
     rerender(<SearchConfigurationForm {...errorProps} />);
     expect(screen.getByText('Name is required')).toBeInTheDocument();
+    expect(screen.getByText('Description is required')).toBeInTheDocument();
   });
 
   it('should handle complex query structures', () => {
