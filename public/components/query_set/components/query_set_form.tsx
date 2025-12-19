@@ -158,7 +158,6 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
                     accept=".txt"
                     data-test-subj="manualQueriesFilePicker"
                     compressed
-                    helpText={`Each line should be a JSON object with queryText and optionally referenceAnswer. Example: {"queryText": "what is opensearch?"}`}
                   />
                 </EuiFlexItem>
               </EuiFlexGroup>
