@@ -27,13 +27,16 @@ import {
   SavedObjectsStart,
   ToastsStart,
 } from '../../../../../../../../src/core/public';
+import { useOpenSearchDashboards } from '../../../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../../../src/plugins/data_source_management/public';
 import { DataSourceOption } from '../../../../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
 import { DataSourceAttributes } from '../../../../../../../../src/plugins/data_source/common/data_sources';
+import { ServiceEndpoints } from '../../../../../../common';
 import * as pluginManifest from '../../../../../../opensearch_dashboards.json';
+import { SearchConfigurationService } from '../../../../search_configuration/services/search_configuration_service';
 
 export interface SearchRelevanceServices extends CoreStart {
   setHeaderActionMenu: AppMountParameters['setHeaderActionMenu'];
@@ -85,6 +88,12 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setActionMenu,
   dataSourceOptions,
 }) => {
+  const [searchConfigOptions, setSearchConfigOptions] = React.useState<any[]>([]);
+  const [selectedSearchConfig, setSelectedSearchConfig] = React.useState<any[]>([]);
+  const [isLoadingConfigs, setIsLoadingConfigs] = React.useState<boolean>(false);
+  const [allConfigs, setAllConfigs] = React.useState<any[]>([]);
+  const { services } = useOpenSearchDashboards<SearchRelevanceServices>();
+  const searchConfigurationService = React.useMemo(() => new SearchConfigurationService(services.http), [services.http]);
   const {
     documentsIndexes1,
     setDataSource1,
@@ -96,6 +105,69 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     datasource1,
     datasource2,
   } = useSearchRelevanceContext();
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSearchConfigurations = async () => {
+      setIsLoadingConfigs(true);
+      try {
+        const data = await searchConfigurationService.getSearchConfigurations();
+        if (isMounted) {
+          setAllConfigs(data.hits.hits);
+          const options = data.hits.hits.map((search_config: any) => ({
+            label: search_config._source.name,
+            value: search_config._source.id,
+          }));
+          setSearchConfigOptions(options);
+        }
+      } catch (error) {
+        console.error('Failed to fetch search configurations', error);
+      } finally {
+        if (isMounted) {
+          setIsLoadingConfigs(false);
+        }
+      }
+    };
+
+    fetchSearchConfigurations();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchConfigurationService]);
+
+  const onSearchConfigChange = (selectedOptions: any[]) => {
+    setSelectedSearchConfig(selectedOptions);
+    if (selectedOptions.length > 0) {
+      const configId = selectedOptions[0].value;
+      const config = allConfigs.find((c) => c._source.id === configId);
+      if (config) {
+        const source = config._source;
+        // Update index
+        if (source.index) {
+          setSelectedIndex(source.index);
+        }
+        // Update pipeline
+        if (source.search_pipeline) {
+          setPipeline(source.search_pipeline);
+        }
+        // Update query
+        if (source.query) {
+          try {
+            const parsedQuery = JSON.parse(source.query);
+            setQueryString(JSON.stringify(parsedQuery, null, 2));
+          } catch (e) {
+            // Fallback to raw string if parsing fails
+            setQueryString(source.query);
+          }
+          setQueryError((error: QueryError) => ({
+            ...error,
+            queryString: '',
+          }));
+        }
+      }
+    }
+  };
   // On select index
   const onChangeSelectedIndex: React.ChangeEventHandler<HTMLSelectElement> = (e) => {
     setSelectedIndex(e.target.value);
@@ -156,7 +228,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       }));
     }
   };
-  const onSelectedDataSource = (e) => {
+  const onSelectedDataSource = (e: any[]) => {
     const dataConnectionId = e[0] ? e[0].id : undefined;
     if (queryNumber == 1) {
       setDataSource1(dataConnectionId);
@@ -184,6 +256,21 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
       <EuiTitle size="xs">
         <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
       </EuiTitle>
+      <EuiSpacer size="m" />
+      <EuiCompressedFormRow
+        label="Search Configuration"
+        fullWidth
+      >
+        <EuiCompressedComboBox
+          placeholder="Select search configuration"
+          singleSelection={{ asPlainText: true }}
+          options={searchConfigOptions}
+          selectedOptions={selectedSearchConfig}
+          onChange={onSearchConfigChange}
+          isLoading={isLoadingConfigs}
+          isClearable={true}
+        />
+      </EuiCompressedFormRow>
       <EuiSpacer size="m" />
       <EuiFlexGroup>
         {dataSourceEnabled && (
