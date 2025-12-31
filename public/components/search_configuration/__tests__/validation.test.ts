@@ -30,6 +30,35 @@ describe('Search Configuration Validation', () => {
     it('should return empty string for valid JSON', () => {
       expect(validateQuery('{"query": {"match_all": {}}}')).toBe('');
     });
+
+    it('should handle complex JSON objects', () => {
+      const complexQuery = JSON.stringify({
+        query: {
+          bool: {
+            must: [
+              { match: { field1: 'value1' } },
+              { range: { date_field: { gte: 'now-1d/d', lte: 'now/d' } } }
+            ],
+            should: [
+              { match: { field2: 'value2' } }
+            ],
+            must_not: [
+              { term: { status: 'deleted' } }
+            ],
+            filter: [
+              { term: { public: true } }
+            ]
+          }
+        },
+        size: 50,
+        from: 0
+      });
+      expect(validateQuery(complexQuery)).toBe('');
+    });
+
+    it('should handle whitespace around valid JSON', () => {
+      expect(validateQuery('  {"query": {"match_all": {}}}  ')).toBe('');
+    });
   });
 
   describe('validateIndex', () => {
@@ -39,6 +68,15 @@ describe('Search Configuration Validation', () => {
 
     it('should return empty string for valid index selection', () => {
       expect(validateIndex([{ label: 'test-index', value: 'uuid' }])).toBe('');
+    });
+
+    it('should return empty string for multiple selected indices', () => {
+      const multipleIndices = [
+        { label: 'index-1', value: 'uuid1' },
+        { label: 'index-2', value: 'uuid2' },
+        { label: 'index-3', value: 'uuid3' }
+      ];
+      expect(validateIndex(multipleIndices)).toBe('');
     });
   });
 
@@ -60,5 +98,18 @@ describe('Search Configuration Validation', () => {
       expect(result.queryError).toBe('');
       expect(result.indexError).toBe('');
     });
+
+    it('should return mixed validation results', () => {
+      // Valid name, invalid query, valid index
+      const result = validateForm('Test Configuration', '{ invalid json }', [
+        { label: 'test-index', value: 'uuid' },
+      ]);
+      expect(result.isValid).toBe(false);
+      expect(result.nameError).toBe('');
+      expect(result.queryError).toBe('Query Body must be valid JSON.');
+      expect(result.indexError).toBe('');
+    });
+
+
   });
 });

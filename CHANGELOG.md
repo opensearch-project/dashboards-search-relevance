@@ -10,6 +10,8 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 * Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
 
+- Introduce ability to enter queries directly in SRW when creating a new QuerySet ([#599](https://github.com/opensearch-project/dashboards-search-relevance/pull/599))
+
 ### Enhancements
 
 * Filter on Experiment creation page the list of Judgments to COMPLETED status only. ([#674](https://github.com/opensearch-project/dashboards-search-relevance/pull/674))
