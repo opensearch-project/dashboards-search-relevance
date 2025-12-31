@@ -39,6 +39,16 @@ const query2 = `
 }
 `;
 
+const agenticQuery = `
+{
+  "query": {
+    "agentic": {
+      "question": "%SearchText%"
+    }
+  }
+}
+`;
+
 export const Flyout = () => {
   const { setShowFlyout } = useSearchRelevanceContext();
 
@@ -69,6 +79,16 @@ export const Flyout = () => {
             bar. When you enter <strong>Search</strong>, the queries are sent to the search engine
             using the <EuiCode>GET</EuiCode> HTTP method and the <EuiCode>_search</EuiCode>{' '}
             endpoint.
+          </p>
+          <p>
+            For AI-powered search, see{' '}
+            <EuiLink
+              target="_blank"
+              href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+            >
+              Agentic Search Documentation
+            </EuiLink>
+            .
           </p>
           <h3>Example</h3>
           <br />

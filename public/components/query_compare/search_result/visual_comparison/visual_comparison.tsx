@@ -15,6 +15,8 @@ import {
   EuiAccordion,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiLoadingSpinner,
+  EuiText,
 } from '@elastic/eui';
 
 import './visual_comparison.scss';
@@ -33,6 +35,7 @@ interface OpenSearchComparisonProps {
   highlightPostTags1?: string[];
   highlightPreTags2?: string[];
   highlightPostTags2?: string[];
+  isSearching?: boolean;
 }
 
 export const convertFromSearchResult = (searchResult) => {
@@ -142,6 +145,7 @@ export const VisualComparison = ({
   highlightPostTags1,
   highlightPreTags2,
   highlightPostTags2,
+  isSearching = false,
 }: OpenSearchComparisonProps) => {
   // Add state for selected style
   const [selectedStyle, setSelectedStyle] = useState('default');
@@ -313,6 +317,30 @@ export const VisualComparison = ({
       setMousePosition({ x: event.clientX, y: event.clientY });
     }
   };
+
+  // Loading state for agentic search
+  if (isSearching) {
+    return (
+      <EuiPanel
+        hasBorder={false}
+        hasShadow={false}
+        grow={true}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}
+      >
+        <EuiFlexGroup direction="column" alignItems="center" gutterSize="m">
+          <EuiFlexItem grow={false}>
+            <EuiLoadingSpinner size="xl" />
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiText textAlign="center">
+              <h3>Searching...</h3>
+              <p>Please wait while we process your search query.</p>
+            </EuiText>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiPanel>
+    );
+  }
 
   // Initial state (empty prompt) when no valid results
   if (initialState) {
