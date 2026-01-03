@@ -35,6 +35,10 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
+  const [sortField, setSortField] = useState<'query' | 'docId' | 'rating'>(
+    'query'
+  );
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Flatten JSON → table rows
   const flattened = useMemo(() => {
@@ -53,36 +57,55 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
     const q = search.toLowerCase();
     return flattened.filter(row =>
       row.query.toLowerCase().includes(q) ||
-      row.docId.toLowerCase().includes(q) ||
-      row.rating.toString().includes(q)
+      row.docId.toLowerCase().includes(q)
     );
   }, [search, flattened]);
+
+  // Sorting
+  const sorted = useMemo(() => {
+    const items = [...filtered];
+    items.sort((a: any, b: any) => {
+      const aVal = a[sortField];
+      const bVal = b[sortField];
+
+      if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return items;
+  }, [filtered, sortField, sortDirection]);
 
   // Pagination: slice only the visible page
   const pageOfItems = useMemo(() => {
     const start = pageIndex * pageSize;
-    return filtered.slice(start, start + pageSize);
-  }, [filtered, pageIndex, pageSize]);
+    return sorted.slice(start, start + pageSize);
+  }, [sorted, pageIndex, pageSize]);
 
   // Table Columns
   const columns = [
-    { field: 'query', name: 'Query' },
-    { field: 'docId', name: 'Doc ID' },
-    { field: 'rating', name: 'Rating' },
+    { field: 'query', name: 'Query', sortable: true },
+    { field: 'docId', name: 'Doc ID', sortable: true },
+    { field: 'rating', name: 'Rating', sortable: true },
   ];
 
-  // Pagination config for EUI
   const pagination = {
     pageIndex,
     pageSize,
-    totalItemCount: filtered.length,
+    totalItemCount: sorted.length,
     pageSizeOptions: [10, 20, 50, 100],
+  };
+
+  const sorting = {
+    sort: {
+      field: sortField,
+      direction: sortDirection,
+    },
   };
 
   return (
     <div>
       <EuiFieldSearch
-        placeholder="Filter by query, doc ID, or rating..."
+        placeholder="Filter by query or doc ID..."
         value={search}
         onChange={(e) => {
           setSearch(e.target.value);
@@ -98,9 +121,16 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
         items={pageOfItems}
         columns={columns}
         pagination={pagination}
-        onChange={({ page }) => {
-          setPageIndex(page.index);
-          setPageSize(page.size);
+        sorting={sorting}
+        onChange={({ page, sort }) => {
+          if (page) {
+            setPageIndex(page.index);
+            setPageSize(page.size);
+          }
+          if (sort) {
+            setSortField(sort.field as any);
+            setSortDirection(sort.direction);
+          }
         }}
       />
     </div>
@@ -116,16 +146,16 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
     return (
       <EuiForm>
         <EuiFormRow label="Judgment Name" fullWidth>
-          <EuiText>{judgment?.name}</EuiText>
+          <EuiText>{judgment.name}</EuiText>
         </EuiFormRow>
 
         <EuiFormRow label="Type" fullWidth>
-          <EuiText>{judgment?.type}</EuiText>
+          <EuiText>{judgment.type}</EuiText>
         </EuiFormRow>
 
         <EuiFormRow label="Metadata" fullWidth>
           <EuiText>
-            {(Object.entries(judgment?.metadata || {})).map(([key, value]) => (
+            {(Object.entries(judgment.metadata)).map(([key, value]) => (
               <p key={key}>
                 <strong>{key}:</strong> {JSON.stringify(value)}
               </p>
