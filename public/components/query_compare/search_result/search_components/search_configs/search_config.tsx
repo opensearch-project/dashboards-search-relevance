@@ -257,21 +257,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
         <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
       </EuiTitle>
       <EuiSpacer size="m" />
-      <EuiCompressedFormRow
-        label="Search Configuration"
-        fullWidth
-      >
-        <EuiCompressedComboBox
-          placeholder="Select search configuration"
-          singleSelection={{ asPlainText: true }}
-          options={searchConfigOptions}
-          selectedOptions={selectedSearchConfig}
-          onChange={onSearchConfigChange}
-          isLoading={isLoadingConfigs}
-          isClearable={true}
-        />
-      </EuiCompressedFormRow>
-      <EuiSpacer size="m" />
       <EuiFlexGroup>
         {dataSourceEnabled && (
           <EuiFlexItem>
@@ -290,6 +275,8 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             <EuiSpacer size="s" />
           </EuiFlexItem>
         )}
+
+        {/* Index */}
         <EuiFlexItem>
           <EuiCompressedFormRow
             fullWidth
@@ -310,6 +297,23 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             />
           </EuiCompressedFormRow>
         </EuiFlexItem>
+
+        {/* Search Configuration */}
+        <EuiFlexItem>
+          <EuiCompressedFormRow label="Search Configuration" fullWidth>
+            <EuiCompressedComboBox
+              data-test-subj="searchConfigComboBox"
+              singleSelection={{ asPlainText: true }}
+              options={searchConfigOptions}
+              selectedOptions={selectedSearchConfig}
+              onChange={onSearchConfigChange}
+              isLoading={isLoadingConfigs}
+              isClearable={true}
+            />
+          </EuiCompressedFormRow>
+        </EuiFlexItem>
+
+        {/* Pipeline */}
         <EuiFlexItem>
           <EuiCompressedFormRow
             label={
@@ -320,6 +324,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
             fullWidth
           >
             <EuiCompressedComboBox
+              data-test-subj="pipelineComboBox"
               placeholder=""
               singleSelection={{ asPlainText: true }}
               options={sortedPipelines}
