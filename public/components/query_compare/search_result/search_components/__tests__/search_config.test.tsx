@@ -44,12 +44,13 @@ describe('Flyout component', () => {
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
       wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
       wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [] },
-      });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
-      });
+      wrapper
+        .find('EuiCompressedComboBox[data-test-subj="pipelineComboBox"]')
+        .prop('onChange')([]);
+
+      wrapper
+        .find('EuiCompressedComboBox[data-test-subj="pipelineComboBox"]')
+        .prop('onChange')([{ label: '_none' }]);
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
     expect(setSelectedIndex).toHaveBeenCalledTimes(2);
@@ -86,12 +87,13 @@ describe('Flyout component', () => {
       wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
       wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
       wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [] },
-      });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
-      });
+      wrapper
+        .find('EuiCompressedComboBox[data-test-subj="pipelineComboBox"]')
+        .prop('onChange')([]);
+
+      wrapper
+        .find('EuiCompressedComboBox[data-test-subj="pipelineComboBox"]')
+        .prop('onChange')([{ label: '_none' }]);
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
     expect(setSelectedIndex).toHaveBeenCalledTimes(2);
@@ -121,7 +123,7 @@ describe('Flyout component', () => {
 
     const select = wrapper.find('EuiCompressedSelect');
     select.prop('onChange')({ target: { value: 'test-index' } });
-    
+
     expect(setSelectedIndex).toHaveBeenCalledWith('test-index');
     expect(setQueryError).toHaveBeenCalled();
   });
@@ -145,9 +147,11 @@ describe('Flyout component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    const comboBox = wrapper.find('EuiCompressedComboBox');
+    const comboBox = wrapper.find(
+      'EuiCompressedComboBox[data-test-subj="pipelineComboBox"]'
+    );
     comboBox.prop('onChange')([]);
-    
+
     expect(setPipeline).toHaveBeenCalledWith('');
   });
 
@@ -172,7 +176,7 @@ describe('Flyout component', () => {
 
     const codeEditor = wrapper.find('EuiCodeEditor');
     codeEditor.prop('onBlur')();
-    
+
     expect(setQueryError).toHaveBeenCalled();
   });
 
@@ -197,7 +201,7 @@ describe('Flyout component', () => {
 
     const select = wrapper.find('EuiCompressedSelect');
     select.prop('onBlur')();
-    
+
     expect(setQueryError).toHaveBeenCalled();
   });
 
@@ -341,9 +345,11 @@ describe('Flyout component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    const comboBox = wrapper.find('EuiCompressedComboBox');
+    const comboBox = wrapper.find(
+      'EuiCompressedComboBox[data-test-subj="pipelineComboBox"]'
+    );
     comboBox.prop('onChange')([{ label: 'test-pipeline' }]);
-    
+
     expect(setPipeline).toHaveBeenCalledWith('test-pipeline');
   });
 });

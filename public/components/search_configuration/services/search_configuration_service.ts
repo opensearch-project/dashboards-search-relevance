@@ -43,6 +43,14 @@ export class SearchConfigurationService {
   }
 
   /**
+   * Fetches all search configurations
+   * @returns Promise with search configurations
+   */
+  async getSearchConfigurations(): Promise<any> {
+    return await this.http.get(ServiceEndpoints.SearchConfigurations);
+  }
+
+  /**
    * Creates a new search configuration
    * @param data The search configuration data
    * @returns Promise with the API response
