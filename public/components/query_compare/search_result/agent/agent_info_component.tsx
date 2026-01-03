@@ -9,10 +9,11 @@ import {
   EuiText,
   EuiSpacer,
   EuiCodeBlock,
-  EuiButtonEmpty,
   EuiIconTip,
   EuiFlexGroup,
   EuiFlexItem,
+  EuiLink,
+  EuiIcon,
 } from '@elastic/eui';
 import React from 'react';
 import { SearchResults } from '../../../../types/index';
@@ -66,36 +67,22 @@ export const AgentInfo: React.FC<AgentInfoProps> = ({
       >
         {(shouldShowContinueButton || shouldShowClearButton) && (
           <>
-            <EuiFlexGroup gutterSize="s" alignItems="center">
-              {shouldShowContinueButton && (
-                <EuiFlexItem grow={false}>
-                  <EuiFlexGroup gutterSize="xs" alignItems="center">
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonEmpty size="s" iconType="folderClosed" onClick={onContinueConversation}>
-                        Continue conversation
-                      </EuiButtonEmpty>
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiIconTip content="Add the recent memory ID into the query to pass conversational history to the agent." />
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                </EuiFlexItem>
-              )}
-              {shouldShowClearButton && (
-                <EuiFlexItem grow={false}>
-                  <EuiFlexGroup gutterSize="xs" alignItems="center">
-                    <EuiFlexItem grow={false}>
-                      <EuiButtonEmpty size="s" iconType="cross" onClick={onClearConversation}>
-                        Clear conversation
-                      </EuiButtonEmpty>
-                    </EuiFlexItem>
-                    <EuiFlexItem grow={false}>
-                      <EuiIconTip content="Remove the memory ID associated with the query. No conversational history will be passed to the agent." />
-                    </EuiFlexItem>
-                  </EuiFlexGroup>
-                </EuiFlexItem>
-              )}
-            </EuiFlexGroup>
+            {shouldShowContinueButton && (
+              <EuiText size="s">
+                <EuiLink onClick={onContinueConversation} style={{ cursor: 'pointer' }}>
+                  <EuiIcon type="editorComment" size="s" /> Continue conversation
+                </EuiLink>{' '}
+                <EuiIconTip content="Add the recent memory ID into the query to pass conversational history to the agent." />
+              </EuiText>
+            )}
+            {shouldShowClearButton && (
+              <EuiText size="s">
+                <EuiLink onClick={onClearConversation} style={{ cursor: 'pointer' }}>
+                  <EuiIcon type="cross" size="s" /> Clear conversation
+                </EuiLink>{' '}
+                <EuiIconTip content="Remove the memory ID associated with the query. No conversational history will be passed to the agent." />
+              </EuiText>
+            )}
             <EuiSpacer size="s" />
           </>
         )}
