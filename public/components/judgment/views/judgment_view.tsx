@@ -155,7 +155,7 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
 
         <EuiFormRow label="Metadata" fullWidth>
           <EuiText>
-            {(Object.entries(judgment.metadata)).map(([key, value]) => (
+            {Object.entries(judgment.metadata).map(([key, value]) => (
               <p key={key}>
                 <strong>{key}:</strong> {JSON.stringify(value)}
               </p>
