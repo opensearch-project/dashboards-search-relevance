@@ -58,7 +58,7 @@ export const getUbiSavedObjects = (): SavedObject[] => [
     references: [],
   },
   {
-    id: 'Queries over Time',
+    id: 'ubi-queries-over-time-orig',
     type: 'visualization',
     updated_at: '2018-10-01T15:13:03.270Z',
     version: '1',
@@ -77,7 +77,7 @@ export const getUbiSavedObjects = (): SavedObject[] => [
     references: [],
   },
   {
-    id: 'Queries by Hour',
+    id: 'ubi-queries-by-hour-orig',
     type: 'visualization',
     updated_at: '2018-10-01T15:13:03.270Z',
     version: '1',
@@ -96,7 +96,7 @@ export const getUbiSavedObjects = (): SavedObject[] => [
     references: [],
   },
   {
-    id: 'Day of Week',
+    id: 'ubi-day-of-week',
     type: 'visualization',
     updated_at: '2018-10-01T15:13:03.270Z',
     version: '1',
@@ -115,7 +115,7 @@ export const getUbiSavedObjects = (): SavedObject[] => [
   references: [],
 },
 {
-  id: 'Most Common Queries',
+  id: 'ubi-most-common-queries',
   type: 'visualization',
   updated_at: '2018-10-01T15:13:03.270Z',
   version: '1',
@@ -212,7 +212,7 @@ export const getUbiSavedObjects = (): SavedObject[] => [
 },
 // UBI Dashboard
 {
-  id: 'ubi-dashboard-ecommerce',
+  id: 'ubi-dashboard',
   type: 'dashboard',
   updated_at: '2018-10-01T15:13:03.270Z',
   version: '1',

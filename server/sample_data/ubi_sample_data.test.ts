@@ -16,7 +16,7 @@ describe('UBI Sample Data', () => {
       expect(spec.description).toBeDefined();
       expect(spec.previewImagePath).toBe('/api/search_relevance/static/ubi_dashboard.png');
       expect(spec.darkPreviewImagePath).toBe('/api/search_relevance/static/dark_ubi_dashboard.png');
-      expect(spec.overviewDashboard).toBe('ubi-dashboard-ecommerce');
+      expect(spec.overviewDashboard).toBe('ubi-dashboard');
       expect(spec.defaultIndex).toBe('ubi-queries-index-pattern');
       expect(spec.hasNewThemeImages).toBe(false);
       expect(spec.status).toBe('not_installed');
@@ -118,7 +118,7 @@ describe('UBI Sample Data', () => {
       const dashboards = savedObjects.filter(obj => obj.type === 'dashboard');
       
       expect(dashboards.length).toBe(1);
-      expect(dashboards[0].id).toBe('ubi-dashboard-ecommerce');
+      expect(dashboards[0].id).toBe('ubi-dashboard');
       expect(dashboards[0].attributes.title).toContain('[UBI] Search Overview');
     });
   });
