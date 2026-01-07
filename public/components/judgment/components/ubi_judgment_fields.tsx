@@ -4,19 +4,23 @@
  */
 
 import React from 'react';
-import { EuiCompressedFormRow, EuiSelect, EuiFieldNumber, EuiDatePicker } from '@elastic/eui';
+import { EuiCompressedFormRow, EuiSelect, EuiFieldNumber, EuiDatePicker, EuiComboBox } from '@elastic/eui';
 import moment from 'moment';
 
 interface UBIJudgmentFieldsProps {
   formData: any;
   updateFormData: (updates: any) => void;
   dateRangeError?: string;
+  indexOptions: Array<{ label: string; value: string }>;
+  isLoadingIndexes: boolean;
 }
 
 export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
   formData,
   updateFormData,
   dateRangeError,
+  indexOptions,
+  isLoadingIndexes,
 }) => {
   const handleDateChange = (date: moment.Moment | null, fieldName: string) => {
     // If a date is selected, format it; otherwise, set to null or an empty string
@@ -68,6 +72,28 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
           dateFormat="YYYY-MM-DD"
           fullWidth
           showTimeSelect={false}
+        />
+      </EuiCompressedFormRow>
+      <EuiCompressedFormRow
+        label="UBI Events Index (Optional)"
+        helpText="Select from UBI queries indexes or type a custom index name and press Enter. Leave empty to use default."
+        fullWidth>
+        <EuiComboBox
+          placeholder="Select or type UBI events index"
+          options={indexOptions}
+          selectedOptions={formData.ubi_events_index ? [{ label: formData.ubi_events_index, value: formData.ubi_events_index }] : []}
+          onChange={(selected) => updateFormData({ ubi_events_index: selected[0]?.label || '' })}
+          onCreateOption={(searchValue) => {
+            const trimmed = searchValue.trim();
+            if (trimmed) {
+              updateFormData({ ubi_events_index: trimmed });
+            }
+          }}
+          singleSelection={{ asPlainText: true }}
+          isLoading={isLoadingIndexes}
+          isClearable={true}
+          fullWidth
+          customOptionText="Use custom index: {searchValue}"
         />
       </EuiCompressedFormRow>
     </>

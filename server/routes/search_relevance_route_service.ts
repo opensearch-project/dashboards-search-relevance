@@ -23,6 +23,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           description: schema.string(),
           sampling: schema.string(),
           querySetSize: schema.number(),
+          ubi_queries_index: schema.maybe(schema.string()),
         }),
       },
     },
@@ -226,7 +227,8 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
-          endDate: schema.maybe(schema.string())
+          endDate: schema.maybe(schema.string()),
+          ubi_events_index: schema.maybe(schema.string()),
         }),
       },
     },

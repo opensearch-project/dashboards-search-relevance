@@ -18,6 +18,50 @@ describe('JudgmentService', () => {
     service = new JudgmentService(mockHttp);
   });
 
+  describe('fetchUbiIndexes', () => {
+    it('should fetch and filter UBI events indexes', async () => {
+      const mockIndexes = [
+        { index: 'opensearch_dashboards_sample_ubi_queries', uuid: 'uuid1' },
+        { index: 'opensearch_dashboards_sample_ubi_events', uuid: 'uuid2' },
+        { index: '.kibana', uuid: 'uuid3' },
+        { index: 'other_index', uuid: 'uuid4' },
+      ];
+
+      mockHttp.get.mockResolvedValue(mockIndexes);
+
+      const result = await service.fetchUbiIndexes();
+
+      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/search/indexes');
+      expect(result).toEqual([
+        { label: 'opensearch_dashboards_sample_ubi_events', value: 'uuid2' },
+      ]);
+    });
+
+    it('should filter out system indexes and non-ubi_events indexes', async () => {
+      const mockIndexes = [
+        { index: '.internal', uuid: 'uuid1' },
+        { index: 'custom_ubi_events_index', uuid: 'uuid2' },
+        { index: 'ubi_queries_only', uuid: 'uuid3' },
+      ];
+
+      mockHttp.get.mockResolvedValue(mockIndexes);
+
+      const result = await service.fetchUbiIndexes();
+
+      expect(result).toEqual([
+        { label: 'custom_ubi_events_index', value: 'uuid2' },
+      ]);
+    });
+
+    it('should handle empty index list', async () => {
+      mockHttp.get.mockResolvedValue([]);
+
+      const result = await service.fetchUbiIndexes();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('fetchQuerySets', () => {
     it('should fetch and transform query sets', async () => {
       const mockResponse = {
@@ -35,6 +79,27 @@ describe('JudgmentService', () => {
       expect(result).toEqual([
         { label: 'Query Set 1', value: 'qs1' },
         { label: 'Query Set 2', value: 'qs2' },
+      ]);
+    });
+  });
+
+  describe('fetchSearchConfigs', () => {
+    it('should fetch and transform search configurations', async () => {
+      const mockResponse = {
+        hits: {
+          hits: [
+            { _source: { name: 'Config 1', id: 'sc1' } },
+            { _source: { name: 'Config 2', id: 'sc2' } },
+          ],
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchSearchConfigs();
+
+      expect(result).toEqual([
+        { label: 'Config 1', value: 'sc1' },
+        { label: 'Config 2', value: 'sc2' },
       ]);
     });
   });
@@ -91,6 +156,12 @@ describe('JudgmentService', () => {
   });
 
   describe('error handling', () => {
+    it('should handle fetchUbiIndexes error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.fetchUbiIndexes()).rejects.toThrow('API Error');
+    });
+
     it('should handle fetchQuerySets error', async () => {
       mockHttp.get.mockRejectedValue(new Error('API Error'));
 

@@ -36,7 +36,7 @@ describe('UBI Sample Data', () => {
       expect(Array.isArray(spec.savedObjects)).toBe(true);
       expect(spec.savedObjects.length).toBeGreaterThan(0);
       expect(Array.isArray(spec.dataIndices)).toBe(true);
-      expect(spec.dataIndices.length).toBe(2);
+      expect(spec.dataIndices.length).toBe(3);
     });
 
     it('should have correct dashboard time range in saved objects', () => {
@@ -50,12 +50,13 @@ describe('UBI Sample Data', () => {
   });
 
   describe('getUbiDataIndices', () => {
-    it('should return two data indices', () => {
+    it('should return three data indices', () => {
       const indices = getUbiDataIndices();
       
-      expect(indices).toHaveLength(2);
+      expect(indices).toHaveLength(3);
       expect(indices[0].id).toBe('ubi-events');
       expect(indices[1].id).toBe('ubi-queries');
+      expect(indices[2].id).toBe('ubi-ecommerce-products');
     });
 
     it('should have correct index names', () => {
@@ -63,6 +64,7 @@ describe('UBI Sample Data', () => {
       
       expect(indices[0].indexName).toBe('opensearch_dashboards_sample_ubi_events');
       expect(indices[1].indexName).toBe('opensearch_dashboards_sample_ubi_queries');
+      expect(indices[2].indexName).toBe('opensearch_dashboards_sample_ubi_ecommerce_products');
     });
 
     it('should have data paths', () => {
@@ -77,11 +79,16 @@ describe('UBI Sample Data', () => {
     it('should have field mappings', () => {
       const indices = getUbiDataIndices();
       
-      indices.forEach(index => {
-        expect(index.fields).toBeDefined();
-        expect(index.fields.timestamp).toBeDefined();
-        expect(index.fields.timestamp.type).toBe('date');
-      });
+      // Only ubi-events and ubi-queries have timestamp field
+      expect(indices[0].fields.timestamp).toBeDefined();
+      expect(indices[0].fields.timestamp.type).toBe('date');
+      expect(indices[1].fields.timestamp).toBeDefined();
+      expect(indices[1].fields.timestamp.type).toBe('date');
+      
+      // ubi-ecommerce-products has different fields
+      expect(indices[2].fields.asin).toBeDefined();
+      expect(indices[2].fields.title).toBeDefined();
+      expect(indices[2].fields.price).toBeDefined();
     });
   });
 

@@ -34,11 +34,13 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const [querySetOptions, setQuerySetOptions] = useState<ComboBoxOption[]>([]);
   const [searchConfigOptions, setSearchConfigOptions] = useState<ComboBoxOption[]>([]);
   const [modelOptions, setModelOptions] = useState<ModelOption[]>([]);
+  const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
 
   // Loading states
   const [isLoadingQuerySets, setIsLoadingQuerySets] = useState(false);
   const [isLoadingSearchConfigs, setIsLoadingSearchConfigs] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
   // UI states
   const [nameError, setNameError] = useState('');
@@ -48,6 +50,18 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const service = new JudgmentService(http);
 
   const fetchData = useCallback(async () => {
+    // Fetch indexes for UBI index selection
+    setIsLoadingIndexes(true);
+    try {
+      const indexes = await service.fetchUbiIndexes();
+      setIndexOptions(indexes);
+    } catch (error) {
+      notifications.toasts.addDanger('Failed to fetch indexes');
+      setIndexOptions([]);
+    } finally {
+      setIsLoadingIndexes(false);
+    }
+
     if (formData.type === JudgmentType.LLM) {
       // Fetch query sets
       setIsLoadingQuerySets(true);
@@ -180,9 +194,11 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     querySetOptions,
     searchConfigOptions,
     modelOptions,
+    indexOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
+    isLoadingIndexes,
     nameError,
     newContextField,
     setNewContextField,

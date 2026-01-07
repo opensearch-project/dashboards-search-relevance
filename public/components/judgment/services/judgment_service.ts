@@ -5,9 +5,27 @@
 
 import { ServiceEndpoints } from '../../../../common';
 import { ComboBoxOption, ModelOption, JudgmentFormData } from '../types';
+import { DocumentsIndex } from '../../../types';
 
 export class JudgmentService {
   constructor(private http: any) {}
+
+  /**
+     * Fetches available ubi indexes from the API
+     * @returns Promise with index options
+     */
+  async fetchUbiIndexes(): Promise<Array<{ label: string; value: string }>> {
+    const res = await this.http.get(ServiceEndpoints.GetIndexes);
+    return res
+      .filter((index: DocumentsIndex) => 
+        !index.index.startsWith('.') && 
+        index.index.includes('ubi_events')
+      )
+      .map((index: DocumentsIndex) => ({
+        label: index.index,
+        value: index.uuid,
+      }));
+  }
 
   async fetchQuerySets(): Promise<ComboBoxOption[]> {
     const response = await this.http.get(ServiceEndpoints.QuerySets);

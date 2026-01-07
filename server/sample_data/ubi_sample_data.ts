@@ -88,6 +88,22 @@ export const getUbiDataIndices = () => [
     preserveDayOfWeekTimeOfDay: false,
     indexName: 'opensearch_dashboards_sample_ubi_queries',
   },
+  {
+    id: 'ubi-ecommerce-products',
+    dataPath: path.join(__dirname, './data/ubi_ecommerce_products.json.gz'),
+    fields: {
+      asin: { type: 'keyword', ignore_above: 100 },
+      title: { type: 'text' },
+      description: { type: 'text' },
+      category: { type: 'keyword', ignore_above: 256 },
+      price: { type: 'float' },
+      brand: { type: 'keyword', ignore_above: 256 },
+    },
+    timeFields: [],
+    currentTimeMarker: '2024-12-10T00:00:00',
+    preserveDayOfWeekTimeOfDay: false,
+    indexName: 'opensearch_dashboards_sample_ubi_ecommerce_products',
+  },
 ];
 
 const ubiName = i18n.translate('searchRelevance.sampleData.ubiSpecTitle', {

@@ -114,6 +114,23 @@ describe('useQuerySetForm', () => {
     expect(result.current.errors.nameError).toBe('Name is a required parameter.');
   });
 
+  it('validates description field correctly', () => {
+    (validation.validateForm as jest.Mock).mockReturnValue({
+      nameError: '',
+      descriptionError: 'Description is required',
+      querySizeError: '',
+      manualQueriesError: '',
+    });
+
+    const { result } = renderHook(() => useQuerySetForm());
+
+    act(() => {
+      result.current.validateField('description', '');
+    });
+
+    expect(result.current.errors.descriptionError).toBe('Description is required');
+  });
+
   it('validates form correctly', () => {
     (validation.validateForm as jest.Mock).mockReturnValue({
       nameError: 'Name is required',
@@ -183,6 +200,24 @@ describe('useQuerySetForm', () => {
     await waitForNextUpdate();
 
     expect(result.current.errors.manualQueriesError).toBe('Invalid file format');
+    expect(result.current.files).toEqual([]);
+    expect(result.current.manualQueries).toBe('');
+    expect(result.current.parsedQueries).toEqual([]);
+  });
+
+  it('handles empty file list', async () => {
+    const mockFileList = ({
+      length: 0,
+      item: () => null,
+    } as unknown) as FileList;
+
+    const { result } = renderHook(() => useQuerySetForm());
+
+    act(() => {
+      result.current.handleFileContent(mockFileList);
+    });
+
+    expect(fileProcessor.processQueryFile).not.toHaveBeenCalled();
     expect(result.current.files).toEqual([]);
     expect(result.current.manualQueries).toBe('');
     expect(result.current.parsedQueries).toEqual([]);

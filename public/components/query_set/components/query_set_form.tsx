@@ -15,12 +15,15 @@ import {
   EuiFormRow,
   EuiForm,
   EuiFilePicker,
+  EuiComboBox,
 } from '@elastic/eui';
 import { UseQuerySetFormReturn } from '../hooks/use_query_set_form';
 
 interface QuerySetFormProps {
   formState: UseQuerySetFormReturn;
   filePickerId: string;
+  indexOptions: Array<{ label: string; value: string }>;
+  isLoadingIndexes: boolean;
 }
 
 const samplingOptions = [
@@ -29,7 +32,7 @@ const samplingOptions = [
   { value: 'topn', text: 'Top N' },
 ];
 
-export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId }) => {
+export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId, indexOptions, isLoadingIndexes }) => {
   const {
     name,
     setName,
@@ -41,6 +44,8 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
     setQuerySetSize,
     isManualInput,
     setIsManualInput,
+    ubiQueriesIndex,
+    setUbiQueriesIndex,
     errors,
     validateField,
     handleFileContent,
@@ -152,6 +157,31 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
               data-test-subj="querySetSizeInput"
             />
           </EuiFormRow>
+
+          <EuiFormRow
+            label="UBI Queries Index (Optional)"
+            helpText="Select from UBI queries indexes or type a custom index name and press Enter. Leave empty to use default."
+            fullWidth
+          >
+            <EuiComboBox
+              placeholder="Select or type UBI queries index"
+              options={indexOptions}
+              selectedOptions={ubiQueriesIndex ? [{ label: ubiQueriesIndex, value: ubiQueriesIndex }] : []}
+              onChange={(selected) => setUbiQueriesIndex(selected[0]?.label || '')}
+              onCreateOption={(searchValue) => {
+                const trimmed = searchValue.trim();
+                if (trimmed) {
+                  setUbiQueriesIndex(trimmed);
+                }
+              }}
+              singleSelection={{ asPlainText: true }}
+              isLoading={isLoadingIndexes}
+              isClearable={true}
+              fullWidth
+              customOptionText="Use custom index: {searchValue}"
+            />
+          </EuiFormRow>
+
         </>
       )}
     </EuiForm>
