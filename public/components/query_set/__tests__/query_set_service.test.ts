@@ -88,13 +88,13 @@ describe('QuerySetService', () => {
       expect(mockHttp.put).not.toHaveBeenCalled();
     });
 
-    it('should include ubi_queries_index when provided', async () => {
+    it('should include ubiQueriesIndex when provided', async () => {
       const querySetData = {
         name: 'Test Query Set',
         description: 'Test description',
         sampling: 'random',
         querySetSize: 10,
-        ubi_queries_index: 'custom_ubi_queries',
+        ubiQueriesIndex: 'custom_ubi_queries',
       };
 
       mockHttp.post.mockResolvedValue({ success: true });
@@ -107,7 +107,7 @@ describe('QuerySetService', () => {
           description: 'Test description',
           sampling: 'random',
           querySetSize: 10,
-          ubi_queries_index: 'custom_ubi_queries',
+          ubiQueriesIndex: 'custom_ubi_queries',
         }),
         headers: {
           'Content-Type': 'application/json',

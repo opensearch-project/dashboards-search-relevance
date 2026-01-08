@@ -81,12 +81,12 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
         <EuiComboBox
           placeholder="Select or type UBI events index"
           options={indexOptions}
-          selectedOptions={formData.ubi_events_index ? [{ label: formData.ubi_events_index, value: formData.ubi_events_index }] : []}
-          onChange={(selected) => updateFormData({ ubi_events_index: selected[0]?.label || '' })}
+          selectedOptions={formData.ubiEventsIndex ? [{ label: formData.ubiEventsIndex, value: formData.ubiEventsIndex }] : []}
+          onChange={(selected) => updateFormData({ ubiEventsIndex: selected[0]?.label || '' })}
           onCreateOption={(searchValue) => {
             const trimmed = searchValue.trim();
             if (trimmed) {
-              updateFormData({ ubi_events_index: trimmed });
+              updateFormData({ ubiEventsIndex: trimmed });
             }
           }}
           singleSelection={{ asPlainText: true }}

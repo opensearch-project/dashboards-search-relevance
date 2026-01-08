@@ -35,6 +35,6 @@ export const buildJudgmentPayload = (
     maxRank: formData.maxRank,
     startDate: formData.startDate,
     endDate: formData.endDate,
-    ...(formData.ubi_events_index && { ubi_events_index: formData.ubi_events_index }),
+    ...(formData.ubiEventsIndex && { ubiEventsIndex: formData.ubiEventsIndex }),
   };
 };

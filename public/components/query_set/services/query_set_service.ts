@@ -13,7 +13,7 @@ export interface QuerySetData {
   sampling: string;
   querySetSize?: number;
   querySetQueries?: Array<{ queryText: string; referenceAnswer: string }>;
-  ubi_queries_index?: string;
+  ubiQueriesIndex?: string;
 }
 
 export class QuerySetService {
@@ -53,7 +53,7 @@ export class QuerySetService {
           description: data.description,
           sampling: data.sampling,
           querySetSize: data.querySetSize,
-          ...(data.ubi_queries_index && { ubi_queries_index: data.ubi_queries_index }),
+          ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),
         };
 
     return this.http[method](endpoint, {

@@ -60,8 +60,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         sampling: formState.sampling,
         querySetSize: formState.querySetSize,
         querySetQueries: formState.manualQueries ? JSON.parse(formState.manualQueries) : undefined,
-        ...(formState.ubiQueriesIndex && { ubi_queries_index: formState.ubiQueriesIndex }),
-        ...(formState.ubiEventsIndex && { ubi_events_index: formState.ubiEventsIndex }),
+        ...(formState.ubiQueriesIndex && { ubiQueriesIndex: formState.ubiQueriesIndex }),
       };
 
       await querySetService.createQuerySet(querySetData, formState.isManualInput);
