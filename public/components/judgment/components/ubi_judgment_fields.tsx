@@ -76,7 +76,7 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
       </EuiCompressedFormRow>
       <EuiCompressedFormRow
         label="UBI Events Index (Optional)"
-        helpText="Select from UBI queries indexes or type a custom index name and press Enter. Leave empty to use default."
+        helpText="Select from UBI events indexes or type a custom index name and press Enter. Leave empty to use default."
         fullWidth>
         <EuiComboBox
           placeholder="Select or type UBI events index"

@@ -4,7 +4,17 @@
  */
 
 import { schema } from '@osd/config-schema';
-import { IRouter, Logger } from '../../../../src/core/server';
+import {
+  IRouter,
+  Logger,
+  OpenSearchDashboardsRequest,
+  OpenSearchDashboardsResponseFactory,
+} from '../../../../src/core/server';
+
+const ALLOWED_FILES: Record<string, string> = {
+  'ubi_dashboard.png': 'image/png',
+  'dark_ubi_dashboard.png': 'image/png',
+};
 
 export class StaticAssetsService {
   private readonly logger: Logger;
@@ -30,12 +40,8 @@ export class StaticAssetsService {
           params: schema.object({
             file: schema.string({
               validate: (value) => {
-                const allowedFiles = ['ubi_dashboard.png', 'dark_ubi_dashboard.png'];
-                if (!allowedFiles.includes(value)) {
+                if (!(value in ALLOWED_FILES)) {
                   return 'File not allowed';
-                }
-                if (value.includes('..') || value.includes('/') || value.includes('\\')) {
-                  return 'Invalid file name';
                 }
               },
             }),
@@ -56,37 +62,23 @@ export class StaticAssetsService {
     );
   }
 
-  private async handleStaticFileRequest(request: any, response: any) {
+  private async handleStaticFileRequest(
+    request: OpenSearchDashboardsRequest<{ file: string }>,
+    response: OpenSearchDashboardsResponseFactory
+  ) {
     const path = require('path');
     const fs = require('fs');
-    
-    const allowedFiles = {
-      'ubi_dashboard.png': 'image/png',
-      'dark_ubi_dashboard.png': 'image/png'
-    };
-    
     const fileName = request.params.file;
-    if (!allowedFiles[fileName]) {
-      return response.notFound({ body: 'File not found' });
-    }
-    
     const filePath = path.resolve(__dirname, '../../public/assets', fileName);
-    const assetsDir = path.resolve(__dirname, '../../public/assets');
-    
-    if (!filePath.startsWith(assetsDir)) {
-      return response.forbidden({ body: 'Access denied' });
-    }
     
     if (!fs.existsSync(filePath)) {
       return response.notFound({ body: 'File not found' });
     }
     
-    const fileBuffer = fs.readFileSync(filePath);
-    
     return response.ok({
-      body: fileBuffer,
+      body: fs.readFileSync(filePath),
       headers: {
-        'content-type': allowedFiles[fileName],
+        'content-type': ALLOWED_FILES[fileName],
         'cache-control': 'public, max-age=3600',
       },
     });

@@ -50,55 +50,46 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const service = new JudgmentService(http);
 
   const fetchData = useCallback(async () => {
-    // Fetch indexes for UBI index selection
-    setIsLoadingIndexes(true);
-    try {
-      const indexes = await service.fetchUbiIndexes();
-      setIndexOptions(indexes);
-    } catch (error) {
-      notifications.toasts.addDanger('Failed to fetch indexes');
-      setIndexOptions([]);
-    } finally {
-      setIsLoadingIndexes(false);
+    const fetchIndexes = async () => {
+      setIsLoadingIndexes(true);
+      try {
+        setIndexOptions(await service.fetchUbiIndexes());
+      } catch (error) {
+        notifications.toasts.addDanger('Failed to fetch indexes');
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+
+    if (formData.type !== JudgmentType.LLM) {
+      await fetchIndexes();
+      return;
     }
 
-    if (formData.type === JudgmentType.LLM) {
-      // Fetch query sets
-      setIsLoadingQuerySets(true);
-      try {
-        const querySets = await service.fetchQuerySets();
-        setQuerySetOptions(querySets);
-      } catch (error) {
+    setIsLoadingIndexes(true);
+    setIsLoadingQuerySets(true);
+    setIsLoadingSearchConfigs(true);
+    setIsLoadingModels(true);
+
+    await Promise.all([
+      service.fetchUbiIndexes().then(setIndexOptions).catch(() => {
+        notifications.toasts.addDanger('Failed to fetch indexes');
+        setIndexOptions([]);
+      }).finally(() => setIsLoadingIndexes(false)),
+      service.fetchQuerySets().then(setQuerySetOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch query sets');
         setQuerySetOptions([]);
-      } finally {
-        setIsLoadingQuerySets(false);
-      }
-
-      // Fetch search configurations
-      setIsLoadingSearchConfigs(true);
-      try {
-        const searchConfigs = await service.fetchSearchConfigs();
-        setSearchConfigOptions(searchConfigs);
-      } catch (error) {
+      }).finally(() => setIsLoadingQuerySets(false)),
+      service.fetchSearchConfigs().then(setSearchConfigOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch search configurations');
         setSearchConfigOptions([]);
-      } finally {
-        setIsLoadingSearchConfigs(false);
-      }
-
-      // Fetch models
-      setIsLoadingModels(true);
-      try {
-        const models = await service.fetchModels();
-        setModelOptions(models);
-      } catch (error) {
+      }).finally(() => setIsLoadingSearchConfigs(false)),
+      service.fetchModels().then(setModelOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch models');
         setModelOptions([]);
-      } finally {
-        setIsLoadingModels(false);
-      }
-    }
+      }).finally(() => setIsLoadingModels(false)),
+    ]);
   }, [formData.type, http, notifications.toasts]);
 
   useEffect(() => {
