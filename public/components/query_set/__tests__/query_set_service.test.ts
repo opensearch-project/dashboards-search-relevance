@@ -19,36 +19,18 @@ describe('QuerySetService', () => {
   });
 
   describe('fetchUbiIndexes', () => {
-    it('should fetch and filter UBI indexes', async () => {
+    it('should fetch UBI indexes using pattern endpoint', async () => {
       const mockIndexes = [
         { index: 'opensearch_dashboards_sample_ubi_queries', uuid: 'uuid1' },
-        { index: 'opensearch_dashboards_sample_ubi_events', uuid: 'uuid2' },
-        { index: '.kibana', uuid: 'uuid3' },
-        { index: 'other_index', uuid: 'uuid4' },
       ];
 
       mockHttp.get.mockResolvedValue(mockIndexes);
 
       const result = await service.fetchUbiIndexes();
 
-      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/search/indexes');
+      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/search/indexes/pattern/*ubi_queries*');
       expect(result).toEqual([
         { label: 'opensearch_dashboards_sample_ubi_queries', value: 'uuid1' },
-      ]);
-    });
-
-    it('should filter out system indexes', async () => {
-      const mockIndexes = [
-        { index: '.internal', uuid: 'uuid1' },
-        { index: 'my_ubi_queries_index', uuid: 'uuid2' },
-      ];
-
-      mockHttp.get.mockResolvedValue(mockIndexes);
-
-      const result = await service.fetchUbiIndexes();
-
-      expect(result).toEqual([
-        { label: 'my_ubi_queries_index', value: 'uuid2' },
       ]);
     });
 

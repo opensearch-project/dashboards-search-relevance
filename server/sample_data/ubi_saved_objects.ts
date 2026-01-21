@@ -6,6 +6,10 @@
 import { i18n } from '@osd/i18n';
 import { SavedObject } from '../../../../src/core/server';;
 
+/**
+ * Returns UBI saved objects (index patterns, visualizations, dashboards) for sample data.
+ * See SavedObject definition in OSD: https://github.com/opensearch-project/OpenSearch-Dashboards/blob/fb3af297fa4fc0ddd89aa0da71d2cc863c759af5/src/core/types/saved_objects.ts
+ */
 export const getUbiSavedObjects = (): SavedObject[] => [
   // UBI Index Patterns
   {

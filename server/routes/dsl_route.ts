@@ -262,6 +262,51 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
     }
   );
 
+  // Get Indices by pattern
+  router.get(
+    {
+      path: `${ServiceEndpoints.GetIndexesByPattern}/{pattern}`,
+      validate: {
+        params: schema.object({
+          pattern: schema.string(),
+        }),
+      },
+    },
+    async (context, request, response) => {
+      const start = performance.now();
+      try {
+        const callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        const resp = await callApi('cat.indices', {
+          index: request.params.pattern,
+          format: 'json',
+        });
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_INDEX,
+          200,
+          end - start
+        );
+        return response.ok({ body: resp });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_INDEX,
+          error.statusCode,
+          end - start
+        );
+        if (error.statusCode === 404) {
+          return response.ok({ body: [] });
+        }
+        return response.custom({
+          statusCode: error.statusCode || 400,
+          body: error.message,
+        });
+      }
+    }
+  );
+
   // Get Pipelines
   router.get(
     {

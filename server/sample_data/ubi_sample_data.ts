@@ -13,6 +13,10 @@ import {
 } from '../../../../src/plugins/home/server/services/sample_data/data_sets';
 import { getUbiSavedObjects } from './ubi_saved_objects';
 
+/**
+ * Returns UBI data index definitions for sample data.
+ * See UBI schemas: https://docs.opensearch.org/latest/search-plugins/ubi/schemas/
+ */
 export const getUbiDataIndices = () => [
   {
     id: 'ubi-events',
