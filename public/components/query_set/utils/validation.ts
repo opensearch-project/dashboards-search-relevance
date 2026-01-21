@@ -16,6 +16,7 @@ export interface FormData {
   querySetSize: number;
   manualQueries: string;
   isManualInput: boolean;
+  isTextInput?: boolean;
 }
 
 /**
@@ -32,6 +33,20 @@ export const isValidInputString = (input: string): boolean => {
   //   that could interfere with JSON or string parsing.
   const forbiddenCharsRegex = /[<>"\\\x00-\x1F]/;
   return !forbiddenCharsRegex.test(input);
+};
+
+/**
+ * Validates if a string contains paired curly braces { }
+ * This is a light validation check to prevent JSON-like syntax in manual query input.
+ * @param input The string to validate
+ * @returns true if the string contains paired curly braces, false otherwise
+ */
+export const hasPairedCurlyBraces = (input: string): boolean => {
+  const openBraces = (input.match(/\{/g) || []).length;
+  const closeBraces = (input.match(/\}/g) || []).length;
+  
+  // If there are both opening and closing braces, consider it paired
+  return openBraces > 0 && closeBraces > 0;
 };
 
 export const validateForm = (data: FormData): ValidationErrors => {
@@ -62,7 +77,9 @@ export const validateForm = (data: FormData): ValidationErrors => {
 
   if (data.isManualInput) {
     if (!data.manualQueries.trim()) {
-      errors.manualQueriesError = 'Manual queries are required.';
+      errors.manualQueriesError = data.isTextInput 
+        ? 'Please enter at least one query.' 
+        : 'Manual queries are required.';
     }
   } else {
     if (data.querySetSize <= 0) {
