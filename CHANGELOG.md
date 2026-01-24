@@ -11,6 +11,8 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
 
 ### Enhancements
+* Improve manual Query Set upload UX with downloadable NDJSON sample template ([#711](https://github.com/opensearch-project/dashboards-search-relevance/pull/711))
+
 
 * Filter on Experiment creation page the list of Judgments to COMPLETED status only. ([#674](https://github.com/opensearch-project/dashboards-search-relevance/pull/674))
 * Improve UI/UX experience on Agent Search for single pairwise comparison. ([#728](https://github.com/opensearch-project/dashboards-search-relevance/pull/728))
