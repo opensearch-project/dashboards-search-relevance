@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ValidationPanel } from '../validation_panel';
 
 const mockModelOptions = [
@@ -293,6 +293,258 @@ describe('ValidationPanel', () => {
 
       const button = screen.getByRole('button', { name: /Validate Prompt/ });
       expect(button).toBeDisabled();
+    });
+  });
+
+  describe('handleValidate', () => {
+    it('should call onValidate and display success result with rawResponse', async () => {
+      const mockOnValidate = jest.fn().mockResolvedValue({
+        success: true,
+        rawResponse: '{"score": 0.85}',
+      });
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      expect(button).not.toBeDisabled();
+
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(mockOnValidate).toHaveBeenCalledWith({
+          placeholderValues: {},
+        });
+        expect(screen.getByText('Validation Successful')).toBeInTheDocument();
+        expect(screen.getByText('{"score": 0.85}')).toBeInTheDocument();
+      });
+    });
+
+    it('should display error result when validation fails', async () => {
+      const mockOnValidate = jest.fn().mockResolvedValue({
+        success: false,
+        error: 'Model returned invalid output',
+        rawResponse: '{"error": "bad request"}',
+      });
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Failed')).toBeInTheDocument();
+        expect(screen.getByText('Model returned invalid output')).toBeInTheDocument();
+        expect(screen.getByText('{"error": "bad request"}')).toBeInTheDocument();
+      });
+    });
+
+    it('should display error when validation throws', async () => {
+      const mockOnValidate = jest.fn().mockRejectedValue(new Error('Network error'));
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Failed')).toBeInTheDocument();
+        expect(screen.getByText('Network error')).toBeInTheDocument();
+      });
+    });
+
+    it('should handle non-Error thrown values', async () => {
+      const mockOnValidate = jest.fn().mockRejectedValue('string error');
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Failed')).toBeInTheDocument();
+        expect(screen.getByText('Validation failed')).toBeInTheDocument();
+      });
+    });
+
+    it('should display failed result without rawResponse', async () => {
+      const mockOnValidate = jest.fn().mockResolvedValue({
+        success: false,
+        error: 'Something went wrong',
+      });
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Failed')).toBeInTheDocument();
+        expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+        expect(screen.queryByText('Error details:')).not.toBeInTheDocument();
+      });
+    });
+
+    it('should display success result without rawResponse', async () => {
+      const mockOnValidate = jest.fn().mockResolvedValue({
+        success: true,
+      });
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Successful')).toBeInTheDocument();
+      });
+    });
+
+    it('should display "Unknown error occurred" when error is undefined', async () => {
+      const mockOnValidate = jest.fn().mockResolvedValue({
+        success: false,
+      });
+
+      const props = {
+        ...defaultProps,
+        placeholders: [],
+        validPlaceholders: [],
+        onValidate: mockOnValidate,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      const button = screen.getByRole('button', { name: /Validate Prompt/ });
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Validation Failed')).toBeInTheDocument();
+        expect(screen.getByText('Unknown error occurred')).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe('model selection via EuiComboBox', () => {
+    it('should call onModelChange when a model option is selected', () => {
+      const mockOnModelChange = jest.fn();
+      const props = {
+        ...defaultProps,
+        modelId: '',
+        onModelChange: mockOnModelChange,
+      };
+
+      const { container } = render(<ValidationPanel {...props} />);
+
+      // EuiComboBox renders a search input with role="textbox"
+      const comboBoxInput = container.querySelector('.euiComboBox input[role="textbox"]') as HTMLInputElement;
+      expect(comboBoxInput).toBeTruthy();
+
+      // Focus to open the dropdown, then type to filter
+      fireEvent.focus(comboBoxInput);
+      fireEvent.change(comboBoxInput, { target: { value: 'Model 1' } });
+
+      // Click the matching option
+      const option = screen.getByRole('option', { name: 'Model 1' });
+      fireEvent.click(option);
+
+      expect(mockOnModelChange).toHaveBeenCalledWith('model-1');
+    });
+
+    it('should call onModelChange with empty string when selection is cleared', () => {
+      const mockOnModelChange = jest.fn();
+      const props = {
+        ...defaultProps,
+        onModelChange: mockOnModelChange,
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      // EuiComboBox renders a clear button with aria-label
+      const clearButton = screen.getByLabelText('Clear input');
+      fireEvent.click(clearButton);
+
+      expect(mockOnModelChange).toHaveBeenCalledWith('');
+    });
+  });
+
+  describe('auto-filled placeholders', () => {
+    it('should show auto-filled text for hits placeholder', () => {
+      const props = {
+        ...defaultProps,
+        placeholders: ['hits', 'queryText'],
+        validPlaceholders: ['hits', 'queryText'],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      expect(screen.getByText(/This field will be automatically filled/)).toBeInTheDocument();
+    });
+
+    it('should show auto-filled text for results placeholder', () => {
+      const props = {
+        ...defaultProps,
+        placeholders: ['results'],
+        validPlaceholders: ['results'],
+      };
+
+      render(<ValidationPanel {...props} />);
+
+      expect(screen.getByText(/This field will be automatically filled/)).toBeInTheDocument();
     });
   });
 

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { PromptPanel } from '../prompt_panel';
 import { OutputSchema } from '../../../types/prompt_template_types';
 
@@ -66,6 +66,35 @@ describe('PromptPanel', () => {
       render(<PromptPanel {...props} />);
 
       expect(screen.getByText(/Duplicate placeholders detected/)).toBeInTheDocument();
+    });
+  });
+
+  describe('user instructions input', () => {
+    it('should call onUserInstructionsChange when textarea value changes', () => {
+      const mockOnChange = jest.fn();
+      const props = {
+        ...defaultProps,
+        onUserInstructionsChange: mockOnChange,
+      };
+
+      render(<PromptPanel {...props} />);
+
+      const textarea = screen.getByPlaceholderText(/Focus on semantic similarity/);
+      fireEvent.change(textarea, { target: { value: 'new instructions {{query}}' } });
+
+      expect(mockOnChange).toHaveBeenCalledWith('new instructions {{query}}');
+    });
+
+    it('should display current user instructions', () => {
+      const props = {
+        ...defaultProps,
+        userInstructions: 'Evaluate the {{query}} results',
+      };
+
+      render(<PromptPanel {...props} />);
+
+      const textarea = screen.getByDisplayValue('Evaluate the {{query}} results');
+      expect(textarea).toBeInTheDocument();
     });
   });
 
