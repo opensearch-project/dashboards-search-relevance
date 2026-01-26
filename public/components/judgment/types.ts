@@ -34,6 +34,7 @@ export interface JudgmentFormData {
   maxRank?: number;
   startDate?: string;
   endDate?: string;
+  ubiEventsIndex?: string;
 }
 
 export interface JudgmentCreateProps {

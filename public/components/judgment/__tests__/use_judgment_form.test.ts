@@ -12,6 +12,7 @@ const mockService = {
   fetchQuerySets: jest.fn().mockResolvedValue([]),
   fetchSearchConfigs: jest.fn().mockResolvedValue([]),
   fetchModels: jest.fn().mockResolvedValue([]),
+  fetchUbiIndexes: jest.fn().mockResolvedValue([]),
   createJudgment: jest.fn().mockResolvedValue({}),
 };
 
