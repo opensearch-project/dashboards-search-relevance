@@ -242,7 +242,7 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
       hasMetrics = false;
     }
     return {
-      queryText: result.queryText,
+      queryText: result.query_text,
       metrics: parseMetrics(result.metrics),
       documentIds: [],
     };
@@ -283,7 +283,7 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
     const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
     if (snapshot) {
       data.push({
-        queryText: result.queryText,
+        queryText: result.query_text,
         documentIds: snapshot.docIds,
       });
     }

@@ -11,7 +11,7 @@ import {
   EuiPanel,
   EuiPageHeader,
 } from '@elastic/eui';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart, NotificationsStart } from '../../../../../../core/public';
 import { QuerySetService } from '../services/query_set_service';
@@ -28,6 +28,26 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
   const formState = useQuerySetForm();
   const querySetService = useMemo(() => new QuerySetService(http), [http]);
   const filePickerId = useMemo(() => `filePicker-${Math.random().toString(36).substr(2, 9)}`, []);
+  
+  const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
+
+  useEffect(() => {
+    const fetchIndexes = async () => {
+      setIsLoadingIndexes(true);
+      try {
+        const indexes = await querySetService.fetchUbiIndexes();
+        setIndexOptions(indexes);
+      } catch (error) {
+        notifications.toasts.addDanger('Failed to fetch UBI indexes');
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+    fetchIndexes();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [querySetService]);
 
   const createQuerySet = useCallback(async () => {
     if (!formState.isFormValid()) {
@@ -41,6 +61,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         sampling: formState.sampling,
         querySetSize: formState.querySetSize,
         querySetQueries: formState.manualQueries ? JSON.parse(formState.manualQueries) : undefined,
+        ...(formState.ubiQueriesIndex && { ubiQueriesIndex: formState.ubiQueriesIndex }),
       };
 
       await querySetService.createQuerySet(querySetData, formState.isManualInput);
@@ -99,7 +120,12 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
-          <QuerySetForm formState={formState} filePickerId={filePickerId} />
+          <QuerySetForm 
+            formState={formState} 
+            filePickerId={filePickerId}
+            indexOptions={indexOptions}
+            isLoadingIndexes={isLoadingIndexes}
+          />
           {formState.isManualInput && <QueryPreview parsedQueries={formState.parsedQueries} />}
         </EuiFlexItem>
       </EuiPanel>
