@@ -272,6 +272,113 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Judgments)
   );
+
+  router.post(
+    {
+      path: ServiceEndpoints.ValidatePrompt,
+      validate: {
+        body: schema.object({
+          modelId: schema.string(),
+          promptTemplate: schema.string(),
+          placeholderValues: schema.recordOf(schema.string(), schema.string()),
+        }),
+      },
+    },
+    async (context, req, res) => {
+      const {
+        modelId,
+        promptTemplate,
+        placeholderValues,
+      } = req.body;
+
+      const dataSourceId = req.query.data_source;
+      const caller = dataSourceId
+        ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
+        : context.core.opensearch.legacy.client.callAsCurrentUser;
+
+      try {
+        console.log('Validate prompt request:', {
+          modelId,
+          placeholderValues,
+          promptTemplate,
+        });
+
+        // Step 1: Build the prompt by substituting placeholders
+        let filledPrompt = promptTemplate;
+        Object.keys(placeholderValues).forEach((key) => {
+          const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+          filledPrompt = filledPrompt.replace(regex, placeholderValues[key]);
+        });
+
+        console.log('Filled prompt:', filledPrompt);
+
+        // Step 2: Make direct predict call to the model
+        const predictBody = {
+          parameters: {
+            messages: [
+              {
+                role: 'user',
+                content: filledPrompt,
+              },
+            ],
+          },
+        };
+
+        console.log('Making predict call to model:', modelId);
+
+        const predictResponse = await caller('transport.request', {
+          method: 'POST',
+          path: `/_plugins/_ml/models/${modelId}/_predict`,
+          body: predictBody,
+        });
+
+        console.log('Predict response:', JSON.stringify(predictResponse, null, 2));
+
+        // Step 3: Extract the response
+        const inference_results = predictResponse?.inference_results?.[0];
+        const output = inference_results?.output;
+
+        let responseText = '';
+        if (output) {
+          if (Array.isArray(output)) {
+            // For models that return array of outputs
+            responseText = output.map(item => item.result || item.response || '').join('\n');
+          } else if (typeof output === 'object') {
+            // For models with nested structure
+            responseText = output.response || output.result || JSON.stringify(output);
+          } else {
+            // For simple string responses
+            responseText = String(output);
+          }
+        }
+
+        return res.ok({
+          body: {
+            success: true,
+            rawResponse: responseText,
+            fullResponse: predictResponse,
+          },
+        });
+      } catch (err) {
+        console.error('Failed to validate prompt:', err);
+        console.error('Error details:', {
+          message: err.message,
+          statusCode: err.statusCode,
+          body: err.body,
+        });
+
+        return res.customError({
+          statusCode: err.statusCode || 500,
+          body: {
+            message: err.message,
+            attributes: {
+              error: err.body?.error || err.message,
+            },
+          },
+        });
+      }
+    }
+  );
 }
 
 const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {

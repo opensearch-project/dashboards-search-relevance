@@ -28,6 +28,7 @@ export const ServiceEndpoints = Object.freeze({
   Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
+  ValidatePrompt: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/validate_prompt`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';

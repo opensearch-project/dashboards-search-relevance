@@ -85,6 +85,32 @@ describe('JudgmentService', () => {
     });
   });
 
+  describe('fetchQuerySetById', () => {
+    it('should fetch query set by id and return source', async () => {
+      const mockResponse = {
+        _source: {
+          id: 'qs1',
+          name: 'Query Set 1',
+          querySetQueries: [
+            { queryText: 'test', category: 'tech' },
+          ],
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchQuerySetById('qs1');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('/qs1'));
+      expect(result).toEqual(mockResponse._source);
+    });
+
+    it('should handle fetchQuerySetById error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('Not found'));
+
+      await expect(service.fetchQuerySetById('invalid-id')).rejects.toThrow('Not found');
+    });
+  });
+
   describe('fetchModels', () => {
     it('should fetch and filter deployed remote models', async () => {
       const mockResponse = {
