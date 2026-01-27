@@ -110,49 +110,6 @@ describe('JudgmentView', () => {
 
   });
 
-  it('filters table results using search box', () => {
-    mockUseJudgmentView.mockReturnValue({
-      judgment: {
-        id: '1',
-        name: 'Test Judgment',
-        type: 'LLM',
-        status: 'COMPLETED',
-        metadata: {},
-        judgmentRatings: [
-          {
-            query: 'bluetooth earbuds',
-            ratings: [{ docId: 'A1', rating: '3' }],
-          },
-          {
-            query: 'wired earbuds',
-            ratings: [{ docId: 'B1', rating: '4' }],
-          },
-        ],
-        timestamp: '2023-01-01',
-      },
-      loading: false,
-      error: null,
-    });
-
-    render(
-      <Router history={history}>
-        <JudgmentView {...defaultProps} />
-      </Router>
-    );
-
-    const searchInput = screen.getByPlaceholderText(
-      'Filter by query, doc ID, or rating...'
-    );
-
-    // Search for query "wired"
-    fireEvent.change(searchInput, { target: { value: 'wired' } });
-
-    expect(screen.queryByText('bluetooth earbuds')).not.toBeInTheDocument();
-    expect(screen.getByText('wired earbuds')).toBeInTheDocument();
-    expect(screen.getByText('B1')).toBeInTheDocument();
-    expect(screen.getByText('4')).toBeInTheDocument();
-  });
-
   it('shows paginated rows (slice of full results)', () => {
     // Create many rows to trigger pagination
     const bigRatings = [
@@ -187,5 +144,83 @@ describe('JudgmentView', () => {
 
     // Verify that NOT all 50 records show (pagination works)
     expect(screen.queryByText('ID-40')).not.toBeInTheDocument();
+  });
+
+  it('filters table results using search box', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Test Judgment',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: [
+          {
+            query: 'bluetooth earbuds',
+            ratings: [{ docId: 'A1', rating: '3' }],
+          },
+          {
+            query: 'wired earbuds',
+            ratings: [{ docId: 'B1', rating: '4' }],
+          },
+        ],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    const searchInput = screen.getByPlaceholderText(
+      'Filter by query or doc ID...'
+    );
+
+    fireEvent.change(searchInput, { target: { value: 'wired' } });
+
+    expect(screen.queryByText('bluetooth earbuds')).not.toBeInTheDocument();
+    expect(screen.getByText('wired earbuds')).toBeInTheDocument();
+    expect(screen.getByText('B1')).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
+  });
+
+  it('sorts ratings by Doc ID when column header is clicked', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Sorting Test',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: [
+          {
+            query: 'sort-test',
+            ratings: [
+              { docId: 'B2', rating: '2' },
+              { docId: 'A1', rating: '3' },
+            ],
+          },
+        ],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    const docIdHeader = screen.getAllByText('Doc ID')[0];
+    fireEvent.click(docIdHeader);
+
+    const rows = screen.getAllByRole('row');
+    expect(rows[1]).toHaveTextContent('A1');
   });
 });
