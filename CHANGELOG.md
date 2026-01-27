@@ -9,8 +9,10 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 - LLM Judgement Template UX/UI Support [#667](https://github.com/opensearch-project/dashboards-search-relevance/pull/667)
 
-- Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
+* Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
 - Add UBI sample dataset ([#729](https://github.com/opensearch-project/dashboards-search-relevance/pull/729))
+* Add option to reuse Search Configurations with the Single Query Comparison UI ([#727](https://github.com/opensearch-project/dashboards-search-relevance/pull/727))
+
 
 ### Enhancements
 
