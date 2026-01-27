@@ -37,6 +37,9 @@ interface JudgmentFormProps {
   addContextField: () => void;
   removeContextField: (field: string) => void;
   dateRangeError?: string;
+  indexOptions: any[];
+  isLoadingIndexes: boolean;
+  httpClient?: any;
 }
 
 export const JudgmentForm: React.FC<JudgmentFormProps> = ({
@@ -60,6 +63,9 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
   addContextField,
   removeContextField,
   dateRangeError,
+  indexOptions,
+  isLoadingIndexes,
+  httpClient,
 }) => {
   return (
     <EuiForm component="form" isInvalid={Boolean(nameError)}>
@@ -122,12 +128,15 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           setNewContextField={setNewContextField}
           addContextField={addContextField}
           removeContextField={removeContextField}
+          httpClient={httpClient}
         />
       ) : (
         <UBIJudgmentFields
           formData={formData}
           updateFormData={updateFormData}
           dateRangeError={dateRangeError}
+          indexOptions={indexOptions}
+          isLoadingIndexes={isLoadingIndexes}
         />
       )}
     </EuiForm>

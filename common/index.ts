@@ -14,6 +14,7 @@ const SEARCH_RELEVANCE_WORKBENCH_BASE_PATH = '/api/relevancy';
 export const ServiceEndpoints = Object.freeze({
   // OpenSearch node APIs
   GetIndexes: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/indexes`,
+  GetIndexesByPattern: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/indexes/pattern`,
   GetPipelines: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/pipelines`,
   GetSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search`,
   GetSingleSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/single_search`,
@@ -27,6 +28,7 @@ export const ServiceEndpoints = Object.freeze({
   Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
+  ValidatePrompt: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/validate_prompt`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';

@@ -25,6 +25,8 @@ describe('QuerySetForm', () => {
     setFiles: jest.fn(),
     parsedQueries: [],
     setParsedQueries: jest.fn(),
+    ubiQueriesIndex: '',
+    setUbiQueriesIndex: jest.fn(),
     errors: {
       nameError: '',
       descriptionError: '',
@@ -38,13 +40,17 @@ describe('QuerySetForm', () => {
   };
 
   const mockFilePickerId = 'test-file-picker-id';
+  const mockIndexOptions = [
+    { label: 'ubi_queries_index_1', value: 'uuid1' },
+    { label: 'ubi_queries_index_2', value: 'uuid2' },
+  ];
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('renders the form with sampling mode correctly', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     expect(screen.getByText('Switch to manually adding queries')).toBeInTheDocument();
     expect(screen.getAllByTestId('querySetDescriptionInput')[0]).toHaveValue('Test Query Set');
@@ -59,7 +65,7 @@ describe('QuerySetForm', () => {
       isManualInput: true,
     };
 
-    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     expect(screen.getByText('Switch to sampling queries from UBI data')).toBeInTheDocument();
     expect(screen.getAllByTestId('querySetDescriptionInput')[0]).toHaveValue('Test Query Set');
@@ -70,7 +76,7 @@ describe('QuerySetForm', () => {
   });
 
   it('handles name input change', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const nameInput = screen.getAllByTestId('querySetDescriptionInput')[0];
     fireEvent.change(nameInput, { target: { value: 'New Name' } });
@@ -79,7 +85,7 @@ describe('QuerySetForm', () => {
   });
 
   it('handles description input change', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const descriptionInput = screen.getAllByTestId('querySetDescriptionInput')[1];
     fireEvent.change(descriptionInput, { target: { value: 'New Description' } });
@@ -88,7 +94,7 @@ describe('QuerySetForm', () => {
   });
 
   it('handles sampling method change', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const samplingSelect = screen.getByTestId('querySetSamplingSelect');
     fireEvent.change(samplingSelect, { target: { value: 'topn' } });
@@ -97,7 +103,7 @@ describe('QuerySetForm', () => {
   });
 
   it('handles query set size change', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const sizeInput = screen.getByTestId('querySetSizeInput');
     fireEvent.change(sizeInput, { target: { value: '20' } });
@@ -106,7 +112,7 @@ describe('QuerySetForm', () => {
   });
 
   it('handles input mode toggle', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const toggleButton = screen.getByText('Switch to manually adding queries');
     fireEvent.click(toggleButton);
@@ -125,7 +131,7 @@ describe('QuerySetForm', () => {
       },
     };
 
-    render(<QuerySetForm formState={formStateWithErrors} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={formStateWithErrors} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     expect(screen.getByText('Name is required')).toBeInTheDocument();
     expect(screen.getByText('Description is required')).toBeInTheDocument();
@@ -133,7 +139,7 @@ describe('QuerySetForm', () => {
   });
 
   it('validates fields on blur', () => {
-    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} />);
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
 
     const nameInput = screen.getAllByTestId('querySetDescriptionInput')[0];
     fireEvent.blur(nameInput);

@@ -449,7 +449,7 @@ export const SearchResult = ({
           <>
             {(agentHandler.hasAgentInfo(queryResult1) || agentHandler.hasAgentInfo(queryResult2)) && (
               <>
-                <EuiFlexGroup>
+                <EuiFlexGroup gutterSize="none" alignItems="stretch">
                   <EuiFlexItem>
                     <AgentInfo 
                       queryResult={queryResult1} 
@@ -484,6 +484,7 @@ export const SearchResult = ({
               highlightPostTags1={extractHighlightTags(queryString1).postTags}
               highlightPreTags2={extractHighlightTags(queryString2).preTags}
               highlightPostTags2={extractHighlightTags(queryString2).postTags}
+              isSearching={isSearching}
             />
           </>
         )}

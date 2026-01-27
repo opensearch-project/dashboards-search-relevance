@@ -32,6 +32,7 @@ interface LLMJudgmentFieldsProps {
   setNewContextField: (value: string) => void;
   addContextField: () => void;
   removeContextField: (field: string) => void;
+  httpClient?: any;
 }
 
 export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
@@ -53,6 +54,7 @@ export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
   setNewContextField,
   addContextField,
   removeContextField,
+  httpClient,
 }) => {
   const [isAdvancedSettingsOpen, setIsAdvancedSettingsOpen] = useState(false);
 
@@ -125,6 +127,9 @@ export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
           setNewContextField={setNewContextField}
           addContextField={addContextField}
           removeContextField={removeContextField}
+          modelOptions={modelOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
+          httpClient={httpClient}
+          selectedSearchConfigs={selectedSearchConfigs}
         />
       </EuiAccordion>
     </>

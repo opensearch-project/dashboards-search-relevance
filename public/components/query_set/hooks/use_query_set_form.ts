@@ -25,6 +25,10 @@ export interface UseQuerySetFormReturn {
   setFiles: (files: File[]) => void;
   parsedQueries: string[];
   setParsedQueries: (queries: string[]) => void;
+  ubiQueriesIndex: string;
+  setUbiQueriesIndex: (index: string) => void;
+  ubiEventsIndex: string;
+  setUbiEventsIndex: (index: string) => void;
 
   // Validation
   errors: ValidationErrors;
@@ -45,6 +49,8 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
   const [manualQueries, setManualQueries] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [parsedQueries, setParsedQueries] = useState<string[]>([]);
+  const [ubiQueriesIndex, setUbiQueriesIndex] = useState('');
+  const [ubiEventsIndex, setUbiEventsIndex] = useState('');
 
   const [errors, setErrors] = useState<ValidationErrors>({
     nameError: '',
@@ -126,6 +132,10 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     setFiles,
     parsedQueries,
     setParsedQueries,
+    ubiQueriesIndex,
+    setUbiQueriesIndex,
+    ubiEventsIndex,
+    setUbiEventsIndex,
     errors,
     validateField,
     isFormValid,

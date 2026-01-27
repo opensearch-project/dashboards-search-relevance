@@ -5,6 +5,7 @@
 
 import { CoreStart } from '../../../../../../core/public';
 import { ServiceEndpoints } from '../../../../common';
+import { DocumentsIndex } from '../../../types';
 
 export interface QuerySetData {
   name: string;
@@ -12,10 +13,24 @@ export interface QuerySetData {
   sampling: string;
   querySetSize?: number;
   querySetQueries?: Array<{ queryText: string; referenceAnswer: string }>;
+  ubiQueriesIndex?: string;
 }
 
 export class QuerySetService {
   constructor(private http: CoreStart['http']) {}
+
+
+  /**
+   * Fetches available ubi indexes from the API
+   * @returns Promise with index options
+   */
+  async fetchUbiIndexes(): Promise<Array<{ label: string; value: string }>> {
+    const res = await this.http.get(`${ServiceEndpoints.GetIndexesByPattern}/*ubi_queries*`);
+    return res.map((index: DocumentsIndex) => ({
+      label: index.index,
+      value: index.uuid,
+    }));
+  }
 
   async createQuerySet(data: QuerySetData, isManualInput: boolean): Promise<any> {
     const endpoint = ServiceEndpoints.QuerySets;
@@ -33,6 +48,7 @@ export class QuerySetService {
           description: data.description,
           sampling: data.sampling,
           querySetSize: data.querySetSize,
+          ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),
         };
 
     return this.http[method](endpoint, {

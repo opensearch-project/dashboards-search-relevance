@@ -18,6 +18,31 @@ describe('JudgmentService', () => {
     service = new JudgmentService(mockHttp);
   });
 
+  describe('fetchUbiIndexes', () => {
+    it('should fetch UBI events indexes using pattern endpoint', async () => {
+      const mockIndexes = [
+        { index: 'opensearch_dashboards_sample_ubi_events', uuid: 'uuid1' },
+      ];
+
+      mockHttp.get.mockResolvedValue(mockIndexes);
+
+      const result = await service.fetchUbiIndexes();
+
+      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/search/indexes/pattern/*ubi_events*');
+      expect(result).toEqual([
+        { label: 'opensearch_dashboards_sample_ubi_events', value: 'uuid1' },
+      ]);
+    });
+
+    it('should handle empty index list', async () => {
+      mockHttp.get.mockResolvedValue([]);
+
+      const result = await service.fetchUbiIndexes();
+
+      expect(result).toEqual([]);
+    });
+  });
+
   describe('fetchQuerySets', () => {
     it('should fetch and transform query sets', async () => {
       const mockResponse = {
@@ -36,6 +61,53 @@ describe('JudgmentService', () => {
         { label: 'Query Set 1', value: 'qs1' },
         { label: 'Query Set 2', value: 'qs2' },
       ]);
+    });
+  });
+
+  describe('fetchSearchConfigs', () => {
+    it('should fetch and transform search configurations', async () => {
+      const mockResponse = {
+        hits: {
+          hits: [
+            { _source: { name: 'Config 1', id: 'sc1' } },
+            { _source: { name: 'Config 2', id: 'sc2' } },
+          ],
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchSearchConfigs();
+
+      expect(result).toEqual([
+        { label: 'Config 1', value: 'sc1' },
+        { label: 'Config 2', value: 'sc2' },
+      ]);
+    });
+  });
+
+  describe('fetchQuerySetById', () => {
+    it('should fetch query set by id and return source', async () => {
+      const mockResponse = {
+        _source: {
+          id: 'qs1',
+          name: 'Query Set 1',
+          querySetQueries: [
+            { queryText: 'test', category: 'tech' },
+          ],
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchQuerySetById('qs1');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('/qs1'));
+      expect(result).toEqual(mockResponse._source);
+    });
+
+    it('should handle fetchQuerySetById error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('Not found'));
+
+      await expect(service.fetchQuerySetById('invalid-id')).rejects.toThrow('Not found');
     });
   });
 
@@ -91,6 +163,12 @@ describe('JudgmentService', () => {
   });
 
   describe('error handling', () => {
+    it('should handle fetchUbiIndexes error', async () => {
+      mockHttp.get.mockRejectedValue(new Error('API Error'));
+
+      await expect(service.fetchUbiIndexes()).rejects.toThrow('API Error');
+    });
+
     it('should handle fetchQuerySets error', async () => {
       mockHttp.get.mockRejectedValue(new Error('API Error'));
 
