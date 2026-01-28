@@ -174,7 +174,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     // Create timeRange from experiment timestamp
     const timeRange = {
       from: addDaysToTimestamp(experiment.timestamp, -1),
-      to: addDaysToTimestamp(experiment.timestamp, 1),
+      to: "now",
     };
 
     const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
