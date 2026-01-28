@@ -20,6 +20,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Bug Fixes
 * Bug bugs on pairwise comparison experiment view page. ([#735]https://github.com/opensearch-project/dashboards-search-relevance/pull/735)
+* Fix link to Pointwise Daily Scheduled Runs dashboard to set date range from first experiment to NOW to include the most recent run. ([#738]https://github.com/opensearch-project/dashboards-search-relevance/pull/738)
 
 ### Infrastructure
 * Enable CI workflows for automated backport PRs. ([#720](https://github.com/opensearch-project/dashboards-search-relevance/pull/720))
