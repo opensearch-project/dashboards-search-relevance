@@ -9,6 +9,7 @@ import { DocumentsIndex } from '../../../types';
 
 export interface SearchConfigurationData {
   name: string;
+  description: string;
   index: string;
   query: string;
   searchPipeline?: string;

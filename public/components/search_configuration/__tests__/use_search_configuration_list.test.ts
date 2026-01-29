@@ -6,6 +6,7 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 import { useSearchConfigurationList } from '../hooks/use_search_configuration_list';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
+import { description } from 'joi';
 
 // Mock extractUserMessageFromError
 jest.mock('../../../../common', () => ({
@@ -51,6 +52,7 @@ describe('useSearchConfigurationList', () => {
             _source: {
               id: '1',
               name: 'Test Config',
+              description: 'sample description',
               index: 'test-index',
               query: '{"query": {"match_all": {}}}',
               timestamp: '2023-01-01T00:00:00Z',
@@ -121,6 +123,7 @@ describe('useSearchConfigurationList', () => {
             _source: {
               id: '1',
               name: 'Test Config',
+              description: 'sample description 1'
               index: 'test-index',
               query: '{}',
               timestamp: '2023-01-01T00:00:00Z',
@@ -130,6 +133,7 @@ describe('useSearchConfigurationList', () => {
             _source: {
               id: '2',
               name: 'Another Config',
+              description: 'sample description 2'
               index: 'another-index',
               query: '{}',
               timestamp: '2023-01-01T00:00:00Z',
