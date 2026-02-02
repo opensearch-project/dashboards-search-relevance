@@ -242,4 +242,121 @@ describe('useQuerySetForm', () => {
     expect(result.current.manualQueries).toBe('');
     expect(result.current.parsedQueries).toEqual([]);
   });
+
+  describe('manual text input', () => {
+    it('initializes with default manual input method and text', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      expect(result.current.manualInputMethod).toBe('file');
+      expect(result.current.manualQueryText).toBe('');
+    });
+
+    it('handles text change with valid queries', () => {
+      (fileProcessor.parseQueryFromLine as jest.Mock).mockImplementation((line: string) => {
+        if (line.trim()) {
+          return { queryText: line.trim(), referenceAnswer: '' };
+        }
+        return null;
+      });
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.setManualQueryText('query1\nquery2\nquery3');
+      });
+
+      expect(result.current.manualQueryText).toBe('query1\nquery2\nquery3');
+      expect(result.current.parsedQueries.length).toBe(3);
+      expect(result.current.errors.manualQueriesError).toBe('');
+    });
+
+    it('handles empty text input', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // First set some text
+      (fileProcessor.parseQueryFromLine as jest.Mock).mockReturnValue({ queryText: 'test', referenceAnswer: '' });
+      act(() => {
+        result.current.setManualQueryText('test');
+      });
+
+      // Then clear it
+      act(() => {
+        result.current.setManualQueryText('');
+      });
+
+      expect(result.current.manualQueryText).toBe('');
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('handles whitespace-only text input', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.setManualQueryText('   \n   \n   ');
+      });
+
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('handles text with no valid queries', () => {
+      (fileProcessor.parseQueryFromLine as jest.Mock).mockReturnValue(null);
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.setManualQueryText('invalid\ninvalid2');
+      });
+
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('switches to text mode and clears file data', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // First set some file data
+      act(() => {
+        result.current.setFiles([new File(['test'], 'test.txt')]);
+        result.current.setManualQueries('file queries');
+        result.current.setParsedQueries(['query1']);
+      });
+
+      // Switch to text mode
+      act(() => {
+        result.current.setManualInputMethod('text');
+      });
+
+      expect(result.current.manualInputMethod).toBe('text');
+      expect(result.current.files).toEqual([]);
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('switches to file mode and clears text data', () => {
+      (fileProcessor.parseQueryFromLine as jest.Mock).mockReturnValue({ queryText: 'test', referenceAnswer: '' });
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // First switch to text mode and set some text data
+      act(() => {
+        result.current.setManualInputMethod('text');
+      });
+      act(() => {
+        result.current.setManualQueryText('text query');
+      });
+
+      // Switch back to file mode
+      act(() => {
+        result.current.setManualInputMethod('file');
+      });
+
+      expect(result.current.manualInputMethod).toBe('file');
+      expect(result.current.manualQueryText).toBe('');
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+  });
 });
+
