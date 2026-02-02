@@ -3,15 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
 import React from 'react';
-import { waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { useLocation } from 'react-router-dom';
 import { SearchResult } from '../index';
 import { SearchRelevanceContext } from '../../../../contexts';
-
-configure({ adapter: new Adapter() });
 
 // Mock react-router-dom
 jest.mock('react-router-dom', () => ({
@@ -104,7 +100,7 @@ describe('SearchResult Base64 Config Loading', () => {
   };
 
   const renderWithContext = (props = mockProps) => {
-    return mount(
+    return render(
       <SearchRelevanceContext.Provider value={mockContextValue}>
         <SearchResult {...props} />
       </SearchRelevanceContext.Provider>
@@ -115,8 +111,8 @@ describe('SearchResult Base64 Config Loading', () => {
     const originalLocation = window.location;
 
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      delete (window as any).location;
+      window.location = { ...originalLocation } as Location;
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -131,6 +127,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: window.location.search || '',
         hash: window.location.hash || '',
+        state: undefined,
+        key: '',
       });
     });
 
@@ -285,7 +283,8 @@ describe('SearchResult Base64 Config Loading', () => {
       const base64Config = btoa(JSON.stringify(testConfig));
       window.location.hash = `#/?config=${base64Config}`;
 
-      renderWithContext();
+      const { container } = renderWithContext();
+      expect(container).toBeTruthy();
     });
 
     it('should handle partial config with only query1', async () => {
@@ -324,7 +323,8 @@ describe('SearchResult Base64 Config Loading', () => {
       const base64Config = btoa(JSON.stringify(testConfig));
       window.location.hash = `#/?config=${base64Config}`;
 
-      renderWithContext();
+      const { container } = renderWithContext();
+      expect(container).toBeTruthy();
     });
 
     // Note: URL length limit functionality is tested in the base64_config.test.ts file
@@ -335,8 +335,8 @@ describe('SearchResult Base64 Config Loading', () => {
     const originalLocation = window.location;
 
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      delete (window as any).location;
+      window.location = { ...originalLocation } as Location;
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -351,6 +351,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: window.location.search || '',
         hash: window.location.hash || '',
+        state: undefined,
+        key: '',
       });
     });
 
@@ -385,6 +387,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: `?config=${base64Config}`,
         hash: '',
+        state: undefined,
+        key: '',
       });
 
       // Create props with experimental UI enabled
@@ -447,6 +451,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: `?config=${base64QueryConfig}`,
         hash: `#/?config=${base64HashConfig}`,
+        state: undefined,
+        key: '',
       });
 
       renderWithContext();
@@ -482,6 +488,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: '?config=malformed_base64',
         hash: '',
+        state: undefined,
+        key: '',
       });
 
       renderWithContext();
@@ -512,6 +520,8 @@ describe('SearchResult Base64 Config Loading', () => {
         pathname: '/experiment/create/singleQueryComparison',
         search: `?config=${validBase64Config}`,
         hash: '#/?config=invalid_hash_config',
+        state: undefined,
+        key: '',
       });
 
       renderWithContext();

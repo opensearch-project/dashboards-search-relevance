@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useSearchConfigurationView } from '../hooks/use_search_configuration_view';
 import { ServiceEndpoints } from '../../../../common';
 
@@ -42,11 +42,11 @@ describe('useSearchConfigurationView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useSearchConfigurationView(mockHttp as any, '1')
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.searchConfiguration).toEqual({
       id: '1',
@@ -68,11 +68,11 @@ describe('useSearchConfigurationView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useSearchConfigurationView(mockHttp as any, 'nonexistent')
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.searchConfiguration).toBe(null);
     expect(result.current.loading).toBe(false);
@@ -132,11 +132,11 @@ describe('useSearchConfigurationView', () => {
   it('should handle fetch error', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useSearchConfigurationView(mockHttp as any, '1')
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.searchConfiguration).toBe(null);
     expect(result.current.loading).toBe(false);
