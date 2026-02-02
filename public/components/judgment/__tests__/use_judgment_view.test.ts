@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useJudgmentView } from '../hooks/use_judgment_view';
 import { ServiceEndpoints } from '../../../../common';
 
@@ -37,9 +37,9 @@ describe('useJudgmentView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.judgment).toEqual({
       id: '1',
@@ -63,11 +63,11 @@ describe('useJudgmentView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() =>
+    const { result } = renderHook(() =>
       useJudgmentView(mockHttp as any, 'nonexistent')
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.judgment).toBe(null);
     expect(result.current.loading).toBe(false);
@@ -77,9 +77,9 @@ describe('useJudgmentView', () => {
   it('should handle fetch error', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 
-    const { result, waitForNextUpdate } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
 
-    await waitForNextUpdate();
+    await waitFor(() => {});
 
     expect(result.current.judgment).toBe(null);
     expect(result.current.loading).toBe(false);

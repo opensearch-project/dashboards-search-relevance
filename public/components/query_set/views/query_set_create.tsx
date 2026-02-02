@@ -18,17 +18,19 @@ import { QuerySetService } from '../services/query_set_service';
 import { useQuerySetForm } from '../hooks/use_query_set_form';
 import { QuerySetForm } from '../components/query_set_form';
 import { QueryPreview } from '../components/query_preview';
+import { QuerySetHelpFlyout } from '../components/query_set_help_flyout';
 
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
 }
 
-export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notifications, history }) => {
+export const QuerySetCreate = ({ http, notifications, history }: QuerySetCreateProps) => {
   const formState = useQuerySetForm();
   const querySetService = useMemo(() => new QuerySetService(http), [http]);
   const filePickerId = useMemo(() => `filePicker-${Math.random().toString(36).substr(2, 9)}`, []);
-  
+  const [showHelpFlyout, setShowHelpFlyout] = useState(false);
+
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
@@ -120,15 +122,18 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
-          <QuerySetForm 
-            formState={formState} 
+          <QuerySetForm
+            formState={formState}
             filePickerId={filePickerId}
             indexOptions={indexOptions}
             isLoadingIndexes={isLoadingIndexes}
+            onShowHelp={() => setShowHelpFlyout(true)}
           />
           {formState.isManualInput && <QueryPreview parsedQueries={formState.parsedQueries} />}
         </EuiFlexItem>
       </EuiPanel>
+
+      {showHelpFlyout && <QuerySetHelpFlyout onClose={() => setShowHelpFlyout(false)} />}
     </EuiPageTemplate>
   );
 };

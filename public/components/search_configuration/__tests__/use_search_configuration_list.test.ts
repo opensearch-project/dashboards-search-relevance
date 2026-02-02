@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useSearchConfigurationList } from '../hooks/use_search_configuration_list';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 

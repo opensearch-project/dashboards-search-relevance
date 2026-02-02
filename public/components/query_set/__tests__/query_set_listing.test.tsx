@@ -272,9 +272,10 @@ describe('QuerySetListing', () => {
     // Initially no modal
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
 
-    // Trigger delete
+    // Trigger delete using fireEvent instead of dispatchEvent
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
-    deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(deleteButton).toBeTruthy();
+    fireEvent.click(deleteButton!);
 
     // Modal should appear
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
@@ -296,11 +297,11 @@ describe('QuerySetListing', () => {
 
     // Trigger delete to show modal
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
-    deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(deleteButton!);
 
     // Confirm delete
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
-    confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(confirmButton!);
 
     expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
   });
@@ -319,14 +320,14 @@ describe('QuerySetListing', () => {
 
     // Trigger delete to show modal
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
-    deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(deleteButton!);
 
     // Modal should be visible
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
 
     // Cancel delete
     const cancelButton = container.querySelector('[data-testid="cancel-button"]');
-    cancelButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(cancelButton!);
 
     // Modal should be hidden
     expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
@@ -348,10 +349,10 @@ describe('QuerySetListing', () => {
 
     // Trigger delete and confirm
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
-    deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(deleteButton!);
 
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
-    confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    fireEvent.click(confirmButton!);
 
     // Should still call deleteQuerySet even if it fails
     expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');

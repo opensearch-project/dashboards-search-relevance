@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { validateForm, ValidationErrors, hasValidationErrors } from '../utils/validation';
-import { processQueryFile, QueryItem } from '../utils/file_processor';
+import { processQueryFile, QueryItem, parseQueryFromLine } from '../utils/file_processor';
 
 export interface UseQuerySetFormReturn {
   // Form state
@@ -30,6 +30,12 @@ export interface UseQuerySetFormReturn {
   ubiEventsIndex: string;
   setUbiEventsIndex: (index: string) => void;
 
+  // New properties for manual input
+  manualInputMethod: 'file' | 'text';
+  setManualInputMethod: (method: 'file' | 'text') => void;
+  manualQueryText: string;
+  setManualQueryText: (text: string) => void;
+
   // Validation
   errors: ValidationErrors;
   validateField: (field: string, value: string) => void;
@@ -52,6 +58,10 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
   const [ubiQueriesIndex, setUbiQueriesIndex] = useState('');
   const [ubiEventsIndex, setUbiEventsIndex] = useState('');
 
+  // New state for manual input method
+  const [manualInputMethod, setManualInputMethod] = useState<'file' | 'text'>('file');
+  const [manualQueryText, setManualQueryText] = useState('');
+
   const [errors, setErrors] = useState<ValidationErrors>({
     nameError: '',
     descriptionError: '',
@@ -71,7 +81,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
       };
 
       // Get full validation results
-      const validationResults = validateForm(partialData);
+      const validationResults = validateForm(partialData) as any;
 
       // Only update the error for the specific field
       setErrors((prev) => ({
@@ -109,11 +119,59 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     }
   }, []);
 
+  const handleTextChange = useCallback((text: string) => {
+    setManualQueryText(text);
+
+    if (!text.trim()) {
+      setManualQueries('');
+      setParsedQueries([]);
+      return;
+    }
+
+    const lines = text.split('\n');
+    const queries: QueryItem[] = [];
+
+    lines.forEach(line => {
+      const queryItem = parseQueryFromLine(line);
+      if (queryItem) {
+        queries.push(queryItem);
+      }
+    });
+
+    if (queries.length > 0) {
+      setManualQueries(JSON.stringify(queries));
+      setParsedQueries(queries.map((q) => JSON.stringify(q)));
+      setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+    } else {
+      setManualQueries('');
+      setParsedQueries([]);
+    }
+  }, []);
+
   const clearFileData = useCallback(() => {
     setFiles([]);
     setManualQueries('');
     setParsedQueries([]);
   }, []);
+
+  const clearTextData = useCallback(() => {
+    setManualQueryText('');
+    setManualQueries('');
+    setParsedQueries([]);
+  }, []);
+
+  // When switching input methods, clear the data from the previous method
+  // to prevent stale data from showing in preview or being submitted
+  const handleManualInputMethodChange = useCallback((method: 'file' | 'text') => {
+    if (method === 'text') {
+      // Switching to text, clear file data
+      clearFileData();
+    } else {
+      // Switching to file, clear text data
+      clearTextData();
+    }
+    setManualInputMethod(method);
+  }, [clearFileData, clearTextData]);
 
   return {
     name,
@@ -136,6 +194,13 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     setUbiQueriesIndex,
     ubiEventsIndex,
     setUbiEventsIndex,
+
+    // New exports
+    manualInputMethod,
+    setManualInputMethod: handleManualInputMethodChange,
+    manualQueryText,
+    setManualQueryText: handleTextChange,
+
     errors,
     validateField,
     isFormValid,

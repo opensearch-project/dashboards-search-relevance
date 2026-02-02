@@ -94,4 +94,26 @@ describe('QuerySetQueriesTable', () => {
     expect(result.total).toBe(3);
     expect(result.hits).toHaveLength(3);
   });
+
+  it('parses queries with metadata correctly', async () => {
+    const queriesWithMetadata = [
+      { queryText: 'clean query' },
+      { queryText: 'query with#{"referenceAnswer":"raw json"}' },
+      { queryText: 'malformed query#' },
+    ];
+
+    render(<QuerySetQueriesTable queries={queriesWithMetadata} />);
+
+    const result = await mockFindItems('');
+    expect(result.hits).toHaveLength(3);
+    expect(result.hits[0].queryText).toBe('clean query');
+    expect(result.hits[0].referenceAnswer).toBe('');
+
+    expect(result.hits[1].queryText).toBe('query with');
+    expect(result.hits[1].referenceAnswer).toBe('raw json');
+
+    // malformed query# ends with #, so it should be treated as query "malformed query" and empty answer
+    expect(result.hits[2].queryText).toBe('malformed query');
+    expect(result.hits[2].referenceAnswer).toBe('');
+  });
 });

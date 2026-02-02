@@ -47,9 +47,9 @@ describe('file_processor', () => {
       });
     });
 
-    it('should return error when no valid queries found', async () => {
-      const fileContent = `{"invalidField": "value"}
-{"anotherField": "value"}`;
+    it('should return error when file is empty or contains only whitespace', async () => {
+      const fileContent = `   
+      `;
 
       const mockFile = ({
         text: jest.fn().mockResolvedValue(fileContent),
@@ -61,7 +61,7 @@ describe('file_processor', () => {
       expect(result.queries).toHaveLength(0);
     });
 
-    it('should handle malformed JSON gracefully', async () => {
+    it('should treat malformed JSON as text queries', async () => {
       const fileContent = `{"queryText": "valid query"}
 {invalid json}
 {"queryText": "another valid query"}`;
@@ -73,9 +73,43 @@ describe('file_processor', () => {
       const result = await processQueryFile(mockFile);
 
       expect(result.error).toBeUndefined();
-      expect(result.queries).toHaveLength(2);
+      expect(result.queries).toHaveLength(3);
       expect(result.queries[0].queryText).toBe('valid query');
-      expect(result.queries[1].queryText).toBe('another valid query');
+      expect(result.queries[1].queryText).toBe('{invalid json}');
+      expect(result.queries[2].queryText).toBe('another valid query');
+    });
+
+    it('should parsed CSV/Text formatted queries correctly', async () => {
+      const fileContent = `simple query
+query with ref, reference
+"query, with comma", reference
+"query, with comma and no ref"`;
+
+      const mockFile = ({
+        text: jest.fn().mockResolvedValue(fileContent),
+      } as unknown) as File;
+
+      const result = await processQueryFile(mockFile);
+
+      expect(result.error).toBeUndefined();
+      expect(result.queries).toHaveLength(4);
+
+      expect(result.queries[0]).toEqual({
+        queryText: 'simple query',
+        referenceAnswer: '',
+      });
+      expect(result.queries[1]).toEqual({
+        queryText: 'query with ref',
+        referenceAnswer: 'reference',
+      });
+      expect(result.queries[2]).toEqual({
+        queryText: 'query, with comma',
+        referenceAnswer: 'reference',
+      });
+      expect(result.queries[3]).toEqual({
+        queryText: 'query, with comma and no ref',
+        referenceAnswer: '',
+      });
     });
 
     it('should handle file read errors', async () => {

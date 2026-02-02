@@ -13,9 +13,14 @@ import {
   EuiFlexItem,
   EuiSelect,
   EuiFormRow,
+  EuiPanel,
   EuiForm,
   EuiFilePicker,
   EuiComboBox,
+  EuiText,
+  EuiCodeBlock,
+  EuiSpacer,
+  EuiButtonEmpty,
 } from '@elastic/eui';
 import { UseQuerySetFormReturn } from '../hooks/use_query_set_form';
 
@@ -24,6 +29,7 @@ interface QuerySetFormProps {
   filePickerId: string;
   indexOptions: Array<{ label: string; value: string }>;
   isLoadingIndexes: boolean;
+  onShowHelp: () => void;
 }
 
 const samplingOptions = [
@@ -32,7 +38,12 @@ const samplingOptions = [
   { value: 'topn', text: 'Top N' },
 ];
 
-export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId, indexOptions, isLoadingIndexes }) => {
+const inputOptions = [
+  { value: 'file', text: 'Upload file' },
+  { value: 'text', text: 'Text input' },
+];
+
+export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId, indexOptions, isLoadingIndexes, onShowHelp }) => {
   const {
     name,
     setName,
@@ -49,6 +60,10 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
     errors,
     validateField,
     handleFileContent,
+    manualInputMethod,
+    setManualInputMethod,
+    manualQueryText,
+    setManualQueryText,
   } = formState;
 
   return (
@@ -100,28 +115,83 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
       </EuiCompressedFormRow>
 
       {isManualInput ? (
-        <EuiFormRow
-          label="Manual Queries"
-          error={errors.manualQueriesError}
-          isInvalid={Boolean(errors.manualQueriesError)}
-          helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
-          fullWidth
-        >
-          <EuiFlexGroup>
-            <EuiFlexItem>
-              <EuiFilePicker
-                id={filePickerId}
-                initialPromptText="Select or drag and drop a query file"
-                onChange={(files) => handleFileContent(files)}
-                display="large"
-                aria-label="Upload query file"
-                accept=".txt"
-                data-test-subj="manualQueriesFilePicker"
-                compressed
-              />
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
+        <>
+          <EuiFormRow
+            label="Input Method"
+            helpText="Choose how you want to provide queries."
+            fullWidth
+          >
+            <EuiSelect
+              options={inputOptions}
+              value={manualInputMethod}
+              onChange={(e) => setManualInputMethod(e.target.value as 'file' | 'text')}
+              fullWidth
+              data-test-subj="inputMethodSelect"
+            />
+          </EuiFormRow>
+
+          {manualInputMethod === 'file' ? (
+            <EuiFormRow
+              label="Upload File"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+              labelAppend={
+                <EuiText size="xs">
+                  <EuiButtonEmpty size="xs" color="primary" onClick={onShowHelp}>
+                    Help
+                  </EuiButtonEmpty>
+                </EuiText>
+              }
+              fullWidth
+            >
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <EuiFilePicker
+                    id={filePickerId}
+                    initialPromptText="Select or drag and drop a query file"
+                    onChange={(files) => files && handleFileContent(files)}
+                    display="large"
+                    aria-label="Upload query file"
+                    accept=".txt"
+                    data-test-subj="manualQueriesFilePicker"
+                    compressed
+                    fullWidth
+                  />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+          ) : (
+            <EuiFormRow
+              label="Manual Queries"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText="Enter queries, one per line."
+              labelAppend={
+                <EuiText size="xs">
+                  <EuiButtonEmpty size="xs" color="primary" onClick={onShowHelp}>
+                    Help
+                  </EuiButtonEmpty>
+                </EuiText>
+              }
+              fullWidth
+            >
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <EuiCompressedTextArea
+                    placeholder="Enter queries, one per line..."
+                    value={manualQueryText}
+                    onChange={(e) => setManualQueryText(e.target.value)}
+                    rows={10}
+                    isInvalid={Boolean(errors.manualQueriesError)}
+                    fullWidth
+                    data-test-subj="manualQueriesTextInput"
+                  />
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiFormRow>
+          )}
+        </>
       ) : (
         <>
           <EuiFormRow

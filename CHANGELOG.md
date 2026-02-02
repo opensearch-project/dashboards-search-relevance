@@ -12,6 +12,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Add Search Pipeline to Search Configuration Detail page ([#699](https://github.com/opensearch-project/dashboards-search-relevance/issues/699))
 - Add UBI sample dataset ([#729](https://github.com/opensearch-project/dashboards-search-relevance/pull/729))
 - Add option to reuse Search Configurations with the Single Query Comparison UI ([#727](https://github.com/opensearch-project/dashboards-search-relevance/pull/727))
+- Support manually creating Query Sets directly from the UI by entering one query per line, enabling hand-curated query sets without requiring NDJSON or API usage. ([#739](https://github.com/opensearch-project/dashboards-search-relevance/pull/739), [#705](https://github.com/opensearch-project/dashboards-search-relevance/issues/705))
 
 ### Enhancements
 
