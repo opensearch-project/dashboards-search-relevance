@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
 
 // Mock console.error to avoid noise in tests

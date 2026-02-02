@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useQuerySetView } from '../hooks/use_query_set_view';
 
 // Mock the common module
@@ -53,9 +53,9 @@ describe('useQuerySetView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
 
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe(null);
@@ -77,9 +77,9 @@ describe('useQuerySetView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
 
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe('No matching query set found');
@@ -90,9 +90,9 @@ describe('useQuerySetView', () => {
     const mockError = new Error('Network error');
     mockHttp.get.mockRejectedValue(mockError);
 
-    const { result, waitForNextUpdate } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
 
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe('Failed to load query set due to an unknown error.');
@@ -142,11 +142,11 @@ describe('useQuerySetView', () => {
       }
     );
 
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.querySet?.name).toBe('Query Set 1');
 
     rerender({ id: 'test-id-2' });
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.querySet?.name).toBe('Query Set 2');
   });
 });
