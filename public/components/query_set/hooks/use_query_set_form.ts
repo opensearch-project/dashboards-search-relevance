@@ -152,18 +152,26 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     setFiles([]);
     setManualQueries('');
     setParsedQueries([]);
-    // also clear text input if we are clearing data, though this might be called from file picker mostly
   }, []);
 
-  // When switching methods, we might want to clear data or not. 
-  // For now, let's keep it simple: if you switch to text, we clear file data? 
-  // Or maybe we treat them as separate sources but only one writes to manualQueries at a time.
-  // The original implementation had clearFileData that wipes manualQueries. 
-  // Let's ensure manualQueries is updated correctly when method changes.
+  const clearTextData = useCallback(() => {
+    setManualQueryText('');
+    setManualQueries('');
+    setParsedQueries([]);
+  }, []);
 
-  // Actually, let's just expose the new state and handler. 
-  // If the user switches back to file, they might need to re-upload or we keep it. 
-  // But since start, `manualQueries` is the source of truth for submission.
+  // When switching input methods, clear the data from the previous method
+  // to prevent stale data from showing in preview or being submitted
+  const handleManualInputMethodChange = useCallback((method: 'file' | 'text') => {
+    if (method === 'text') {
+      // Switching to text, clear file data
+      clearFileData();
+    } else {
+      // Switching to file, clear text data
+      clearTextData();
+    }
+    setManualInputMethod(method);
+  }, [clearFileData, clearTextData]);
 
   return {
     name,
@@ -189,7 +197,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
 
     // New exports
     manualInputMethod,
-    setManualInputMethod,
+    setManualInputMethod: handleManualInputMethodChange,
     manualQueryText,
     setManualQueryText: handleTextChange,
 
