@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useQuerySetForm } from '../hooks/use_query_set_form';
 import * as validation from '../utils/validation';
 import * as fileProcessor from '../utils/file_processor';
@@ -160,13 +160,11 @@ describe('useQuerySetForm', () => {
       item: () => mockFile,
     } as unknown) as FileList;
 
-    const { result, waitForNextUpdate } = renderHook(() => useQuerySetForm());
+    const { result } = renderHook(() => useQuerySetForm());
 
-    act(() => {
-      result.current.handleFileContent(mockFileList);
+    await act(async () => {
+      await result.current.handleFileContent(mockFileList);
     });
-
-    await waitForNextUpdate();
 
     expect(fileProcessor.processQueryFile).toHaveBeenCalledWith(mockFile);
     expect(result.current.manualQueries).toBe(
@@ -191,13 +189,11 @@ describe('useQuerySetForm', () => {
       item: () => mockFile,
     } as unknown) as FileList;
 
-    const { result, waitForNextUpdate } = renderHook(() => useQuerySetForm());
+    const { result } = renderHook(() => useQuerySetForm());
 
-    act(() => {
-      result.current.handleFileContent(mockFileList);
+    await act(async () => {
+      await result.current.handleFileContent(mockFileList);
     });
-
-    await waitForNextUpdate();
 
     expect(result.current.errors.manualQueriesError).toBe('Invalid file format');
     expect(result.current.files).toEqual([]);

@@ -253,7 +253,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -407,7 +406,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -418,9 +416,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 </span>
                                 <span
                                   class="euiCodeBlock__line"
-                                >
-                                  
-                                </span>
+                                />
                               </code>
                             </pre>
                             <div
@@ -495,7 +491,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -649,7 +644,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -660,9 +654,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 </span>
                                 <span
                                   class="euiCodeBlock__line"
-                                >
-                                  
-                                </span>
+                                />
                               </code>
                             </pre>
                             <div
@@ -1064,7 +1056,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1218,7 +1209,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1229,9 +1219,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         </span>
                                         <span
                                           class="euiCodeBlock__line"
-                                        >
-                                          
-                                        </span>
+                                        />
                                       </code>
                                     </pre>
                                     <div
@@ -1306,7 +1294,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1460,7 +1447,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1471,9 +1457,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         </span>
                                         <span
                                           class="euiCodeBlock__line"
-                                        >
-                                          
-                                        </span>
+                                        />
                                       </code>
                                     </pre>
                                     <div
@@ -1807,7 +1791,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -1961,7 +1944,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -1972,9 +1954,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           </span>
                                           <span
                                             class="euiCodeBlock__line"
-                                          >
-                                            
-                                          </span>
+                                          />
                                         </code>
                                       </pre>
                                       <div
@@ -2049,7 +2029,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -2203,7 +2182,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -2214,9 +2192,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           </span>
                                           <span
                                             class="euiCodeBlock__line"
-                                          >
-                                            
-                                          </span>
+                                          />
                                         </code>
                                       </pre>
                                       <div
@@ -2550,7 +2526,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2704,7 +2679,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2715,9 +2689,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             </span>
                                             <span
                                               class="euiCodeBlock__line"
-                                            >
-                                              
-                                            </span>
+                                            />
                                           </code>
                                         </pre>
                                         <div
@@ -2792,7 +2764,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2946,7 +2917,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2957,9 +2927,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             </span>
                                             <span
                                               class="euiCodeBlock__line"
-                                            >
-                                              
-                                            </span>
+                                            />
                                           </code>
                                         </pre>
                                         <div
@@ -3281,7 +3249,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3435,7 +3402,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3446,9 +3412,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               </span>
                                               <span
                                                 class="euiCodeBlock__line"
-                                              >
-                                                
-                                              </span>
+                                              />
                                             </code>
                                           </pre>
                                           <div
@@ -3523,7 +3487,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3677,7 +3640,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3688,9 +3650,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               </span>
                                               <span
                                                 class="euiCodeBlock__line"
-                                              >
-                                                
-                                              </span>
+                                              />
                                             </code>
                                           </pre>
                                           <div
