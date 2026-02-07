@@ -29,20 +29,18 @@ import {
 import { SearchRelevanceContextProvider } from '../contexts';
 import { Home as QueryCompareHome } from './query_compare/home';
 import { useOpenSearchDashboards } from '../../../../src/plugins/opensearch_dashboards_react/public';
-import { ExperimentListingWithRoute } from './experiment_listing';
-import { ExperimentViewWithRouter } from './experiment_view/experiment_view';
-import { QuerySetListingWithRoute } from './query_set_listing';
-import { SearchConfigurationListingWithRoute } from './search_config_listing';
-import { JudgmentListingWithRoute } from './judgment_listing';
-import QuerySetView from './query_set_view/query_set_view';
-import SearchConfigurationView from './search_config_view/search_config_view';
-import JudgmentView from './judgment_view/judgment_view';
-import { QuerySetCreateWithRouter } from './query_set_create/query_set_create';
-import { SearchConfigurationCreateWithRouter } from './search_config_create/search_config_create';
-import { JudgmentCreateWithRouter } from './judgment_create/judgment_create';
-import { GetStartedAccordion } from './experiment_create/get_started_accordion';
-import { TemplateType, routeToTemplateType } from './experiment_create/configuration/types';
-import { TemplateConfigurationWithRouter } from './experiment_create/configuration/template_configuration';
+import { ExperimentListingWithRoute, ExperimentViewWithRouter } from './experiment';
+import { QuerySetListing } from './query_set';
+import {
+  SearchConfigurationListing,
+  SearchConfigurationView,
+  SearchConfigurationCreate,
+} from './search_configuration';
+import { JudgmentListing, JudgmentView, JudgmentCreate } from './judgment';
+import { QuerySetView } from './query_set';
+import { QuerySetCreate } from './query_set';
+import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
+import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -85,6 +83,7 @@ const SearchRelevancePage = ({
   dataSourceEnabled,
   dataSourceManagement,
   setActionMenu,
+  uiSettings,
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
@@ -192,6 +191,35 @@ const SearchRelevancePage = ({
       <EuiPageBody>
         <Switch>
           <Route
+            path="/"
+            exact
+            render={() => {
+              // Check if there's a config parameter in the URL hash
+              // Hash format: #/?config=base64string
+              let hashString = window.location.hash.slice(1); // Remove #
+              if (hashString.startsWith('/')) {
+                hashString = hashString.slice(1); // Remove leading /
+              }
+              if (hashString.startsWith('?')) {
+                hashString = hashString.slice(1); // Remove leading ?
+              }
+
+              const urlParams = new URLSearchParams(hashString);
+              const configParam = urlParams.get('config');
+
+              if (configParam) {
+                // Redirect to single query comparison with the config parameter as search param
+                history.push(
+                  `${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`
+                );
+                return null;
+              } else {
+                // No config parameter, show experiment listing
+                return <ExperimentListingWithRoute http={http} />;
+              }
+            }}
+          />
+          <Route
             path={Routes.Home}
             exact
             render={() => {
@@ -202,21 +230,21 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListingWithRoute http={http} />;
+              return <QuerySetListing http={http} />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListingWithRoute http={http} />;
+              return <SearchConfigurationListing http={http} />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListingWithRoute http={http} />;
+              return <JudgmentListing http={http} />;
             }}
           />
           <Route
@@ -272,6 +300,7 @@ const SearchRelevancePage = ({
                     dataSourceEnabled={dataSourceEnabled}
                     dataSourceManagement={dataSourceManagement}
                     setActionMenu={setActionMenu}
+                    uiSettings={uiSettings}
                     setToast={(title: string, color = 'success', text?: React.ReactNode) => {
                       if (color === 'success') {
                         notifications.toasts.addSuccess({ title, text });
@@ -302,29 +331,21 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetCreate}
             exact
             render={() => {
-              return <QuerySetCreateWithRouter http={http} notifications={notifications} />;
+              return <QuerySetCreate http={http} notifications={notifications} />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return (
-                <SearchConfigurationCreateWithRouter http={http} notifications={notifications} />
-              );
+              return <SearchConfigurationCreate http={http} notifications={notifications} />;
             }}
           />
           <Route
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return (
-                <JudgmentCreateWithRouter
-                  http={http}
-                  notifications={notifications}
-                  history={history}
-                />
-              );
+              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
             }}
           />
         </Switch>
@@ -383,6 +404,7 @@ export const SearchRelevanceApp = ({
             dataSourceEnabled={dataSourceEnabled}
             dataSourceManagement={dataSourceManagement}
             setActionMenu={setActionMenu}
+            uiSettings={uiSettings}
           />
         </SearchRelevanceContextProvider>
       </I18nProvider>
@@ -420,6 +442,7 @@ export const SearchRelevanceApp = ({
                       dataSourceEnabled={dataSourceEnabled}
                       dataSourceManagement={dataSourceManagement}
                       setActionMenu={setActionMenu}
+                      uiSettings={uiSettings}
                     />
                   );
                 }}

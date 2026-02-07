@@ -19,15 +19,21 @@ import { defineRoutes, registerSearchRelevanceRoutes } from './routes';
 
 import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
 import { DataSourceManagementPlugin } from '../../../src/plugins/data_source_management/public/plugin';
+import { SharePluginStart } from '../../../src/plugins/share/public';
+import { HomeServerPluginSetup } from '../../../src/plugins/home/server';
 import { SearchRelevancePluginConfigType } from '../config';
 import { MetricsService, MetricsServiceSetup } from './metrics/metrics_service';
 import { SearchRelevancePluginSetup, SearchRelevancePluginStart } from './types';
 import { SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED } from '../common';
 import { registerMLRoutes } from './routes/ml_route_service';
+import { ubiSpecProvider } from './sample_data/ubi_sample_data';
+import { StaticAssetsService } from './services/static_assets_service';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSourceManagement: ReturnType<DataSourceManagementPlugin['setup']>;
   dataSource: DataSourcePluginSetup;
+  share: SharePluginStart;
+  home?: HomeServerPluginSetup;
 }
 
 export class SearchRelevancePlugin
@@ -35,21 +41,29 @@ export class SearchRelevancePlugin
   private readonly config$: Observable<SearchRelevancePluginConfigType>;
   private readonly logger: Logger;
   private metricsService: MetricsService;
+  private staticAssetsService: StaticAssetsService;
 
   constructor(private initializerContext: PluginInitializerContext) {
     this.config$ = this.initializerContext.config.create<SearchRelevancePluginConfigType>();
     this.logger = this.initializerContext.logger.get();
     this.metricsService = new MetricsService(this.logger.get('metrics-service'));
+    this.staticAssetsService = new StaticAssetsService(this.logger.get('static-assets'));
   }
 
-  public async setup(core: CoreSetup, { dataSource }: SearchRelevancePluginSetupDependencies) {
+  // Register standalone UBI sample dataset
+  private addUbiSampleData(home: HomeServerPluginSetup) {
+    // Register standalone UBI sample dataset
+    home.sampleData.registerSampleDataset(ubiSpecProvider);
+  }
+
+  public async setup(core: CoreSetup, { dataSource, home }: SearchRelevancePluginSetupDependencies) {
     const dataSourceEnabled = !!dataSource;
     this.logger.debug('SearchRelevance: Setup');
 
     core.uiSettings.register({
       [SEARCH_RELEVANCE_EXPERIMENTAL_WORKBENCH_UI_EXPERIENCE_ENABLED]: {
         name: 'Experimental Search Relevance Workbench',
-        value: false,
+        value: true,
         description: 'Whether to opt-in the experimental search relevance workbench feature',
         schema: schema.boolean(),
         category: ['search relevance'],
@@ -64,6 +78,13 @@ export class SearchRelevancePlugin
     );
 
     const router = core.http.createRouter();
+
+    // Initialize static assets service (non-blocking)
+    try {
+      this.staticAssetsService.setup(router);
+    } catch (error) {
+      this.logger.warn('Static assets service failed to initialize, continuing without it', error);
+    }
 
     let opensearchSearchRelevanceClient: ILegacyClusterClient | undefined = undefined;
     opensearchSearchRelevanceClient = core.opensearch.legacy.createClient(
@@ -83,6 +104,11 @@ export class SearchRelevancePlugin
     defineRoutes(router, core.opensearch, dataSourceEnabled);
     registerSearchRelevanceRoutes(router);
     registerMLRoutes(router, dataSourceEnabled);
+
+    // Add UBI sample data if home plugin is available
+    if (home) {
+      this.addUbiSampleData(home);
+    }
 
     return {};
   }

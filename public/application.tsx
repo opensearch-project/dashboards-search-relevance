@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AppMountParameters, CoreStart } from '../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../src/plugins/data_source_management/public';
 import { SearchRelevanceApp } from './components/app';
@@ -14,7 +14,7 @@ import { ConfigProvider } from './contexts/date_format_context';
 
 export const renderApp = (
   coreStart: CoreStart,
-  { navigation, dataSource }: AppPluginStartDependencies,
+  { navigation, dataSource, share }: AppPluginStartDependencies,
   { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
@@ -32,8 +32,9 @@ export const renderApp = (
     uiSettings,
   };
 
-  ReactDOM.render(
-    <OpenSearchDashboardsContextProvider services={coreStart}>
+  const root = createRoot(element);
+  root.render(
+    <OpenSearchDashboardsContextProvider services={{ ...coreStart, share }}>
       <ConfigProvider
         uiSettings={uiSettings}
         dataSourceEnabled={!!dataSource}
@@ -43,9 +44,8 @@ export const renderApp = (
       >
         <SearchRelevanceApp {...props} />
       </ConfigProvider>
-    </OpenSearchDashboardsContextProvider>,
-    element
+    </OpenSearchDashboardsContextProvider>
   );
 
-  return () => ReactDOM.unmountComponentAtNode(element);
+  return () => root.unmount();
 };

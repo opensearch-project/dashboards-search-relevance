@@ -1,4 +1,4 @@
-/* 
+/*
  * Enhanced OpenSearch Comparison Component Styles
  * Compatible with OpenSearch Dashboards
  */
@@ -216,6 +216,14 @@
   width: 50%;
 }
 
+.w-1\/5 {
+  width: 20%;
+}
+
+.w-2\/5 {
+  width: 40%;
+}
+
 .w-4 {
   width: 1rem;
 }
@@ -372,12 +380,12 @@
   background-color: #eff6ff;
 }
 
-.bg-blue-100 {
-  background-color: #dbeafe;
-}
-
 .bg-blue-300 {
   background-color: #93c5fd;
+}
+
+.bg-unchanged {
+  background-color: #d8f9d5;
 }
 
 .bg-green-50 {
@@ -386,10 +394,6 @@
 
 .bg-green-100 {
   background-color: #d1fae5;
-}
-
-.bg-green-300 {
-  background-color: #86efac;
 }
 
 .bg-yellow-50 {
@@ -402,8 +406,12 @@
   --gray-custom: 240, 242, 244;
 }
 
-.bg-yellow-custom {
-  background-color: rgb(var(--yellow-custom));
+.bg-result-set-1 {
+  background-color: #859fd1;
+}
+
+.bg-result-set-2 {
+  background-color: #abeb14;
 }
 
 .bg-yellow-300 {
@@ -420,19 +428,6 @@
 
 .bg-purple-300 {
   background-color: #c4b5fd;
-}
-
-.bg-purple-custom {
-  background-color: rgb(var(--purple-custom));
-}
-
-.rank-no-change {
-  background-color: rgb(var(--gray-custom));
-  // border: 1px solid #000;
-}
-
-.bg-red-300 {
-  background-color: #fca5a5;
 }
 
 .text-gray-600 {
@@ -525,27 +520,27 @@ svg line {
   .bg-white {
     background-color: #1d1e24;
   }
-  
+
   .bg-gray-50 {
     background-color: #25262e;
   }
-  
+
   .bg-gray-100 {
     background-color: #2d2e36;
   }
-  
+
   .border, .border-t, .border-b {
     border-color: #343741;
   }
-  
+
   .text-gray-600 {
     color: #a7a8ad;
   }
-  
+
   .text-gray-700 {
     color: #d3dae6;
   }
-  
+
   .comparison-tooltip {
     background-color: #1d1e24;
     border-color: #343741;

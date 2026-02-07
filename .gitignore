@@ -5,3 +5,4 @@ coverage/
 .cypress/screenshots
 .cypress/videos
 yarn-error.log
+.idea/

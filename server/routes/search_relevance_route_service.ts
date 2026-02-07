@@ -11,7 +11,7 @@ import {
   OpenSearchDashboardsResponseFactory,
   RequestHandlerContext,
 } from '../../../../src/core/server';
-import { ServiceEndpoints, BackendEndpoints } from '../../common';
+import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../common';
 
 export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.post(
@@ -23,6 +23,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           description: schema.string(),
           sampling: schema.string(),
           querySetSize: schema.number(),
+          ubiQueriesIndex: schema.maybe(schema.string()),
         }),
       },
     },
@@ -168,6 +169,47 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Experiments)
   );
+  router.post(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}`,
+      validate: {
+        body: schema.object({
+          experimentId: schema.string(),
+          cronExpression: schema.string()
+        }),
+      }
+    },
+    backendAction('POST', `${BackendEndpoints.ScheduledExperiments}`)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}`,
+      validate: false,
+    },
+    backendAction('GET', `${BackendEndpoints.ScheduledExperiments}`)
+  );
+  router.get(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('GET', BackendEndpoints.ScheduledExperiments)
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.ScheduledExperiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.ScheduledExperiments)
+  );
   router.put(
     {
       path: ServiceEndpoints.Judgments,
@@ -184,6 +226,9 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
+          startDate: schema.maybe(schema.string()),
+          endDate: schema.maybe(schema.string()),
+          ubiEventsIndex: schema.maybe(schema.string()),
         }),
       },
     },
@@ -192,9 +237,18 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   router.get(
     {
       path: ServiceEndpoints.Judgments,
-      validate: false,
+      validate: {
+        query: schema.object({
+          status: schema.maybe(schema.oneOf([
+            schema.literal('COMPLETED'),
+            schema.literal('PROCESSING'),
+            schema.literal('FAILED'),
+            schema.literal('ERROR'),
+          ])),
+        }),
+      },
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, { passQueryParams: ['status'] })
   );
   router.get(
     {
@@ -218,9 +272,116 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
     },
     backendAction('DELETE', BackendEndpoints.Judgments)
   );
+
+  router.post(
+    {
+      path: ServiceEndpoints.ValidatePrompt,
+      validate: {
+        body: schema.object({
+          modelId: schema.string(),
+          promptTemplate: schema.string(),
+          placeholderValues: schema.recordOf(schema.string(), schema.string()),
+        }),
+      },
+    },
+    async (context, req, res) => {
+      const {
+        modelId,
+        promptTemplate,
+        placeholderValues,
+      } = req.body;
+
+      const dataSourceId = req.query.data_source;
+      const caller = dataSourceId
+        ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
+        : context.core.opensearch.legacy.client.callAsCurrentUser;
+
+      try {
+        console.log('Validate prompt request:', {
+          modelId,
+          placeholderValues,
+          promptTemplate,
+        });
+
+        // Step 1: Build the prompt by substituting placeholders
+        let filledPrompt = promptTemplate;
+        Object.keys(placeholderValues).forEach((key) => {
+          const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+          filledPrompt = filledPrompt.replace(regex, placeholderValues[key]);
+        });
+
+        console.log('Filled prompt:', filledPrompt);
+
+        // Step 2: Make direct predict call to the model
+        const predictBody = {
+          parameters: {
+            messages: [
+              {
+                role: 'user',
+                content: filledPrompt,
+              },
+            ],
+          },
+        };
+
+        console.log('Making predict call to model:', modelId);
+
+        const predictResponse = await caller('transport.request', {
+          method: 'POST',
+          path: `/_plugins/_ml/models/${modelId}/_predict`,
+          body: predictBody,
+        });
+
+        console.log('Predict response:', JSON.stringify(predictResponse, null, 2));
+
+        // Step 3: Extract the response
+        const inference_results = predictResponse?.inference_results?.[0];
+        const output = inference_results?.output;
+
+        let responseText = '';
+        if (output) {
+          if (Array.isArray(output)) {
+            // For models that return array of outputs
+            responseText = output.map(item => item.result || item.response || '').join('\n');
+          } else if (typeof output === 'object') {
+            // For models with nested structure
+            responseText = output.response || output.result || JSON.stringify(output);
+          } else {
+            // For simple string responses
+            responseText = String(output);
+          }
+        }
+
+        return res.ok({
+          body: {
+            success: true,
+            rawResponse: responseText,
+            fullResponse: predictResponse,
+          },
+        });
+      } catch (err) {
+        console.error('Failed to validate prompt:', err);
+        console.error('Error details:', {
+          message: err.message,
+          statusCode: err.statusCode,
+          body: err.body,
+        });
+
+        return res.customError({
+          statusCode: err.statusCode || 500,
+          body: {
+            message: err.message,
+            attributes: {
+              error: err.body?.error || err.message,
+            },
+          },
+        });
+      }
+    }
+  );
 }
 
-const backendAction = (method, path) => {
+const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {
   return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
@@ -249,22 +410,66 @@ const backendAction = (method, path) => {
         });
       } else {
         // Handle PUT, POST, GET as before
+        // Build backend path with optional query params
+        let backendPath = path;
+        if (options?.passQueryParams && options.passQueryParams.length > 0) {
+          const queryParams: string[] = [];
+          options.passQueryParams.forEach((param) => {
+            const value = (req.query as any)?.[param];
+            if (value) {
+              queryParams.push(`${param}=${value}`);
+            }
+          });
+          if (queryParams.length > 0) {
+            backendPath = `${path}?${queryParams.join('&')}`;
+          }
+        }
         response = await caller('transport.request', {
           method,
-          path,
+          path: backendPath,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
         });
       }
 
       return res.ok({ body: response });
     } catch (err) {
-      console.error('Failed to call search-relevance APIs', err);
+
+      console.error('Failed to call search-relevance APIs', err); // Keep for full server-side logging
+
+      let clientMessage = err.message; // Default to the err.message from transport.request
+      let clientAttributesError = err.body?.error || err.message; // Default attributes error
+
+      // Check if the backend error body contains the specific message
+      if (err.body && typeof err.body === 'string' && err.body.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
+          clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
+          clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
+      }
+      // If the backend error body is a JSON object with a message/reason
+      else if (err.body && typeof err.body === 'object') {
+          // Check for common backend error formats
+          if (err.body.message && typeof err.body.message === 'string' && err.body.message.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
+              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
+              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
+          } else if (err.body.reason && typeof err.body.reason === 'string' && err.body.reason.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
+              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
+              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
+          } else if (err.body.error && typeof err.body.error === 'object' && err.body.error.reason && typeof err.body.error.reason === 'string' && err.body.error.reason.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
+              clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
+              clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
+          }
+          // Fallback if specific message not found in complex body, but body has a message
+          else if (err.body.message && typeof err.body.message === 'string') {
+              clientMessage = err.body.message;
+              clientAttributesError = err.body.message;
+          }
+      }
+
       return res.customError({
         statusCode: err.statusCode || 500,
         body: {
-          message: err.message,
+          message: clientMessage, // Use the determined message
           attributes: {
-            error: err.body?.error || err.message,
+            error: clientAttributesError, // Use the determined attributes error
           },
         },
       });

@@ -4,7 +4,7 @@
  */
 
 import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@cfaester/enzyme-adapter-react-18';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { SearchInputBar } from '../search_bar';
@@ -19,6 +19,7 @@ describe('Search bar component', () => {
         searchBarValue={TEST_SEARCH_TEXT}
         setSearchBarValue={() => {}}
         onClickSearch={() => {}}
+        isSearching={false}
       />
     );
 
@@ -27,5 +28,39 @@ describe('Search bar component', () => {
     await waitFor(() => {
       expect(wrapper).toMatchSnapshot();
     });
+  });
+
+  it('handles input change', () => {
+    const setSearchBarValue = jest.fn();
+    const wrapper = mount(
+      <SearchInputBar
+        searchBarValue=""
+        setSearchBarValue={setSearchBarValue}
+        onClickSearch={jest.fn()}
+        isSearching={false}
+      />
+    );
+
+    const input = wrapper.find('EuiCompressedFieldSearch');
+    input.prop('onChange')({ target: { value: 'new search' } });
+    
+    expect(setSearchBarValue).toHaveBeenCalledWith('new search');
+  });
+
+  it('handles search button click', () => {
+    const onClickSearch = jest.fn();
+    const wrapper = mount(
+      <SearchInputBar
+        searchBarValue="test"
+        setSearchBarValue={jest.fn()}
+        onClickSearch={onClickSearch}
+        isSearching={false}
+      />
+    );
+
+    const input = wrapper.find('EuiCompressedFieldSearch');
+    input.prop('onSearch')();
+    
+    expect(onClickSearch).toHaveBeenCalled();
   });
 });

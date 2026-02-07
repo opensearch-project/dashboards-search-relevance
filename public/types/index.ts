@@ -25,6 +25,7 @@ export interface Document {
   _score: number;
   _source: IDocType;
   fields: IDocType;
+  highlight?: { [key: string]: string[] };
 }
 
 export interface SearchResults {
@@ -43,6 +44,11 @@ export interface SearchResults {
     };
     max_score: number;
     hits: Document[];
+  };
+  ext?: {
+    agent_steps_summary?: string;
+    memory_id?: string;
+    dsl_query?: string;
   };
 }
 
@@ -110,6 +116,8 @@ export type EvaluationExperiment = ExperimentBase & {
   type: ExperimentType.POINTWISE_EVALUATION;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
+  scheduledExperimentJobId: string;
 };
 
 interface HybridOptimizerResults {
@@ -124,6 +132,8 @@ export type HybridOptimizerExperiment = ExperimentBase & {
   type: ExperimentType.HYBRID_OPTIMIZER;
   searchConfigurationId: string;
   judgmentId: string;
+  isScheduled: string;
+  scheduledExperimentJobId: string;
   results: HybridOptimizerResults;
 };
 
@@ -142,6 +152,23 @@ export interface JudgmentSet {
   description: string;
   type: string;
   judgmentRatings: QueryJudgment[];
+}
+
+export interface ExperimentSchedule {
+  id: string;
+  expression: string; // cron expression
+}
+
+export interface ScheduledJob {
+  schedule?: {
+    cron?: {
+      expression?: string;
+      timestamp?: string | number;
+      timezone?: string;
+    };
+  };
+  enabledTime?: number;
+  lastUpdateTime?: number;
 }
 
 export const printType = (type: string) => {
@@ -215,7 +242,7 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
       hasMetrics = false;
     }
     return {
-      queryText: result.queryText,
+      queryText: result.query_text,
       metrics: parseMetrics(result.metrics),
       documentIds: [],
     };
@@ -256,12 +283,26 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
     const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
     if (snapshot) {
       data.push({
-        queryText: result.queryText,
+        queryText: result.query_text,
         documentIds: snapshot.docIds,
       });
     }
   });
   return { success: true, data };
+};
+
+export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedule> => {
+  if (!source.id || !source.schedule || !source.schedule.cron.expression) {
+    return parseError('Missing one of required fields: id, schedule.cron.expression');
+  }
+
+  return {
+    success: true,
+    data: {
+      id: source.id,
+      expression: source.schedule.cron.expression,
+    },
+  };
 };
 
 export const toExperiment = (source: any): ParseResult<Experiment> => {
@@ -320,6 +361,8 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };
@@ -336,7 +379,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
       return {
         success: true,
         data: {
-          type: 'HYBRID_OPTIMIZER',
+          type: ExperimentType.HYBRID_OPTIMIZER,
           status: source.status,
           id: source.id,
           k: source.size,
@@ -344,6 +387,8 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationId: source.searchConfigurationList[0],
           judgmentId: source.judgmentList[0],
+          isScheduled: source.isScheduled,
+          scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
         },
       };

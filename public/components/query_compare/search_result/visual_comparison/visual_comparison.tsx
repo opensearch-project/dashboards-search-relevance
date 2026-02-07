@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import {
   EuiPanel,
   EuiEmptyPrompt,
@@ -13,6 +13,10 @@ import {
   EuiSuperSelect,
   EuiFormRow,
   EuiAccordion,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiLoadingSpinner,
+  EuiText,
 } from '@elastic/eui';
 
 import './visual_comparison.scss';
@@ -27,101 +31,108 @@ interface OpenSearchComparisonProps {
   queryText: string;
   resultText1: string;
   resultText2: string;
+  highlightPreTags1?: string[];
+  highlightPostTags1?: string[];
+  highlightPreTags2?: string[];
+  highlightPostTags2?: string[];
+  isSearching?: boolean;
 }
 
 export const convertFromSearchResult = (searchResult) => {
-  if (!searchResult.hits?.hits) return undefined;
+  if (!searchResult?.hits?.hits) return undefined;
 
   return searchResult.hits.hits.map((x, index) => ({
     _id: x._id,
     _score: x._score,
     rank: index + 1,
+    highlight: x.highlight,
     ...x._source,
   }));
 };
 
 export const defaultStyleConfig = {
   lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
+    unchanged: { stroke: '#d8f9d5', strokeWidth: 4 },
+    increased: { stroke: '#d8f9d5', strokeWidth: 4 },
+    decreased: { stroke: '#d8f9d5', strokeWidth: 4 },
   },
   statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'bg-yellow-custom',
-    inResult2: 'bg-purple-custom',
+    unchanged: 'bg-unchanged',
+    increased: 'bg-unchanged',
+    decreased: 'bg-unchanged',
+    inResult1: 'bg-result-set-1',
+    inResult2: 'bg-result-set-2',
   },
   vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--yellow-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
+    left: { backgroundColor: 'rgba(133, 159, 209, 1.0)' },
+    middle: { backgroundColor: 'rgba(216,249,213, 0.7)' },
+    right: { backgroundColor: 'rgba(170, 235, 20, 1.0)' },
   },
-  hideLegend: [],
+  hideLegend: ['unchanged', 'increased', 'decreased', 'inResult1', 'inResult2'],
 };
 
-export const rankingChangeStyleConfig = {
-  lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'bg-purple-custom',
-    inResult2: 'bg-purple-custom',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2'],
+// Utility function to determine display fields and image field
+const getDisplayFieldsAndImageField = (sampleItem) => {
+  const fields = Object.keys(sampleItem)
+    .filter((key) => !key.startsWith('_')) // Exclude hidden fields
+    .filter((key) => typeof sampleItem[key] === 'string')
+    .map((key) => ({ value: key, label: key.charAt(0).toUpperCase() + key.slice(1) }));
+
+  // Find a field that might contain image names or URLs
+  let imageField = null;
+  if (sampleItem) {
+    // Look for fields with common image-related names
+    const possibleImageFields = ['image', 'img', 'thumbnail', 'picture', 'photo', 'avatar'];
+    imageField = Object.keys(sampleItem).find((key) =>
+      possibleImageFields.some((imgField) => key.toLowerCase().includes(imgField))
+    );
+
+    // If no obvious image field found, look for fields with URL patterns that might be images
+    if (!imageField) {
+      imageField = Object.keys(sampleItem).find((key) => {
+        const value = String(sampleItem[key] || '');
+        return (
+          value.match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ||
+          value.match(/(\/images\/|\/img\/|\/photos\/)/i) ||
+          value.match(/\b(amazon|cloudfront|cloudinary|unsplash|media).*(\.com|net|org)/i)
+        );
+      });
+    }
+  }
+
+  // Always include _id at the beginning
+  return {
+    displayFields: [{ value: '_id', label: 'ID' }, ...fields],
+    imageFieldName: imageField || null,
+  };
 };
 
-export const rankingChange2StyleConfig = {
-  lineColors: {
-    unchanged: { stroke: '#93C5FD', strokeWidth: 4 },
-    increased: { stroke: '#86EFAC', strokeWidth: 4 },
-    decreased: { stroke: '#FCA5A5', strokeWidth: 4 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-300',
-    increased: 'bg-green-300',
-    decreased: 'bg-red-300',
-    inResult1: 'rank-no-change',
-    inResult2: 'rank-no-change',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--gray-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(var(--gray-custom), 0.7)' },
-    right: { backgroundColor: 'rgba(var(--gray-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2'],
-};
+// Utility function to calculate statistics for the Venn diagram and rank changes
+const calculateStatistics = (result1, result2) => {
+  const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id)).length;
+  const onlyInResult1 = result1.length - inBoth;
+  const onlyInResult2 = result2.length - inBoth;
+  const unchanged = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank === item2.rank;
+  }).length;
+  const improved = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank > item2.rank;
+  }).length;
+  const worsened = result1.filter((item1) => {
+    const item2 = result2.find((item2) => item2._id === item1._id);
+    return item2 && item1.rank < item2.rank;
+  }).length;
 
-export const vennDiagramStyleConfig = {
-  lineColors: {
-    unchanged: { stroke: 'black', strokeWidth: 2 },
-    increased: { stroke: 'black', strokeWidth: 2 },
-    decreased: { stroke: 'black', strokeWidth: 2 },
-  },
-  statusClassName: {
-    unchanged: 'bg-blue-100',
-    increased: 'bg-blue-100',
-    decreased: 'bg-blue-100',
-    inResult1: 'bg-purple-custom',
-    inResult2: 'bg-purple-custom',
-  },
-  vennDiagramStyle: {
-    left: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-    middle: { backgroundColor: 'rgba(219, 234, 254, 0.7)' },
-    right: { backgroundColor: 'rgba(var(--purple-custom), 0.9)' },
-  },
-  hideLegend: ['inResult1', 'inResult2', 'unchanged', 'increased', 'decreased'],
+  return {
+    inBoth,
+    onlyInResult1,
+    onlyInResult2,
+    unchanged,
+    improved,
+    worsened,
+  };
 };
 
 export const VisualComparison = ({
@@ -130,22 +141,19 @@ export const VisualComparison = ({
   queryText,
   resultText1,
   resultText2,
+  highlightPreTags1,
+  highlightPostTags1,
+  highlightPreTags2,
+  highlightPostTags2,
+  isSearching = false,
 }: OpenSearchComparisonProps) => {
   // Add state for selected style
   const [selectedStyle, setSelectedStyle] = useState('default');
 
   // Get the style based on selection
   const getCurrentStyle = () => {
-    switch (selectedStyle) {
-      case 'simpler':
-        return rankingChangeStyleConfig;
-      case 'simpler2':
-        return rankingChange2StyleConfig;
-      case 'twoColor':
-        return vennDiagramStyleConfig;
-      default:
-        return defaultStyleConfig;
-    }
+    // Return the default style config. Keep this in case the need for additional styles turns up.
+    return defaultStyleConfig;
   };
 
   const { lineColors, statusClassName, vennDiagramStyle, hideLegend } = getCurrentStyle();
@@ -153,6 +161,7 @@ export const VisualComparison = ({
   // State for selected display field
   const [displayField, setDisplayField] = useState('_id');
   const [imageFieldName, setImageFieldName] = useState(null);
+  const [sizeMultiplier, setSizeMultiplier] = useState(2);
 
   // Available fields for display - will be updated based on actual data
   const [displayFields, setDisplayFields] = useState([{ value: '_id', label: 'ID' }]);
@@ -173,7 +182,6 @@ export const VisualComparison = ({
   // Process the results into the format we need
   const [result1, setResult1] = useState([]);
   const [result2, setResult2] = useState([]);
-  const [combinedData, setCombinedData] = useState([]);
 
   // Summary statistics
   const [statistics, setStatistics] = useState({
@@ -216,10 +224,12 @@ export const VisualComparison = ({
     }
   }, [queryResult1, queryResult2, initialState]);
 
-  // Process results when they change
+  // Remove the useEffect that depends on result1/result2
+  // Instead, use a single useEffect for all derived state
   useEffect(() => {
     if (!queryResult1 || !queryResult2) return;
 
+    // Set result1 and result2
     setResult1(queryResult1);
     setResult2(queryResult2);
 
@@ -227,95 +237,21 @@ export const VisualComparison = ({
     if (queryResult1.length > 0 || queryResult2.length > 0) {
       const sampleItem = queryResult1[0] || queryResult2[0];
       if (sampleItem) {
-        const fields = Object.keys(sampleItem)
-          .filter((key) => !key.startsWith('_')) // Exclude hidden fields
-          .filter((key) => typeof sampleItem[key] === 'string')
-          .map((key) => ({ value: key, label: key.charAt(0).toUpperCase() + key.slice(1) }));
-
-        // Find a field that might contain image names or URLs
-        let imageField = null;
-        if (sampleItem) {
-          // Look for fields with common image-related names
-          const possibleImageFields = ['image', 'img', 'thumbnail', 'picture', 'photo', 'avatar'];
-          imageField = Object.keys(sampleItem).find((key) =>
-            possibleImageFields.some((imgField) => key.toLowerCase().includes(imgField))
-          );
-
-          // If no obvious image field found, look for fields with URL patterns that might be images
-          if (!imageField) {
-            imageField = Object.keys(sampleItem).find((key) => {
-              const value = String(sampleItem[key] || '');
-              return (
-                value.match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) ||
-                value.match(/(\/images\/|\/img\/|\/photos\/)/i) ||
-                value.match(/\b(amazon|cloudfront|cloudinary|unsplash|media).*\.(com|net|org)/i)
-              );
-            });
-          }
-
-          // Store the image field in state if found
-          if (imageField) {
-            // Add this outside the component or in a new state variable
-            // This will be used in the component where images need to be displayed
-            console.debug('Found potential image field:', imageField);
-          }
-        }
-
-        // Always include _id at the beginning
-        setDisplayFields([{ value: '_id', label: 'ID' }, ...fields]);
-
-        // Optionally set a preferred display field if an image field was found
-        if (imageField) {
-          setImageFieldName(imageField);
+        const { displayFields, imageFieldName } = getDisplayFieldsAndImageField(sampleItem);
+        setDisplayFields(displayFields);
+        if (imageFieldName) {
+          setImageFieldName(imageFieldName);
+        } else {
+          setImageFieldName(null);
         }
       }
+    } else {
+      setDisplayFields([{ value: '_id', label: 'ID' }]);
+      setImageFieldName(null);
     }
+
+    setStatistics(calculateStatistics(queryResult1, queryResult2));
   }, [queryResult1, queryResult2]);
-
-  // Create combined dataset when results change
-  useEffect(() => {
-    if (!result1.length && !result2.length) return;
-
-    // Create combined dataset
-    const combined = [...result1];
-
-    // Add items that are only in result2
-    result2.forEach((item2) => {
-      const exists = combined.some((item) => item._id === item2._id);
-      if (!exists) {
-        combined.push(item2);
-      }
-    });
-
-    setCombinedData(combined);
-
-    // Calculate summary statistics
-    const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id))
-      .length;
-    const onlyInResult1 = result1.length - inBoth;
-    const onlyInResult2 = result2.length - inBoth;
-    const unchanged = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank === item2.rank;
-    }).length;
-    const improved = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank > item2.rank;
-    }).length;
-    const worsened = result1.filter((item1) => {
-      const item2 = result2.find((item2) => item2._id === item1._id);
-      return item2 && item1.rank < item2.rank;
-    }).length;
-
-    setStatistics({
-      inBoth,
-      onlyInResult1,
-      onlyInResult2,
-      unchanged,
-      improved,
-      worsened,
-    });
-  }, [result1, result2]);
 
   // Update lines on window resize and after mounting
   useEffect(() => {
@@ -332,15 +268,11 @@ export const VisualComparison = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update lines after component mounts to ensure all refs are loaded
-  useEffect(() => {
-    // Small delay to ensure DOM is fully rendered
-    const timer = setTimeout(() => {
-      setDisplayField((curr) => curr); // Force re-render
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [mounted]);
+  // Force re-render after result items are rendered and refs are set
+  const [, forceRerender] = useState(0);
+  useLayoutEffect(() => {
+    forceRerender((v) => v + 1);
+  }, [result1, result2, displayField, imageFieldName]);
 
   // Color function for item status
   const getStatusColor = (item, resultNum) => {
@@ -376,15 +308,39 @@ export const VisualComparison = ({
   };
 
   // Function to handle click for item details
-  const handleItemClick = (item, event) => {
+  const handleItemClick = (item, event, resultNum) => {
     // Toggle the selected item - if clicking the same item, close it
     if (selectedItem && selectedItem._id === item._id) {
       setSelectedItem(null);
     } else {
-      setSelectedItem(item);
+      setSelectedItem({ ...item, resultNum });
       setMousePosition({ x: event.clientX, y: event.clientY });
     }
   };
+
+  // Loading state for agentic search
+  if (isSearching) {
+    return (
+      <EuiPanel
+        hasBorder={false}
+        hasShadow={false}
+        grow={true}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '200px' }}
+      >
+        <EuiFlexGroup direction="column" alignItems="center" gutterSize="m">
+          <EuiFlexItem grow={false}>
+            <EuiLoadingSpinner size="xl" />
+          </EuiFlexItem>
+          <EuiFlexItem grow={false}>
+            <EuiText textAlign="center">
+              <h3>Searching...</h3>
+              <p>Please wait while we process your search query.</p>
+            </EuiText>
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </EuiPanel>
+    );
+  }
 
   // Initial state (empty prompt) when no valid results
   if (initialState) {
@@ -414,30 +370,57 @@ export const VisualComparison = ({
 
           {/* Field selector dropdown */}
           <div className="mb-4">
-            <EuiFormRow label="Display Field:" id="fieldSelectorForm">
-              <EuiSuperSelect
-                id="field-selector"
-                options={
-                  displayFields && displayFields.length > 0
-                    ? displayFields.map((field) => ({
-                        value: field.value,
-                        inputDisplay: field.label,
-                        dropdownDisplay: field.label,
-                      }))
-                    : [
-                        {
-                          value: '',
-                          inputDisplay: 'No fields available',
-                          dropdownDisplay: 'No fields available',
-                        },
-                      ]
-                }
-                valueOfSelected={displayField}
-                onChange={(value) => setDisplayField(value)}
-                fullWidth
-                hasDividers
-              />
-            </EuiFormRow>
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <EuiFormRow label="Display Field:" id="fieldSelectorForm">
+                  <EuiSuperSelect
+                    id="field-selector"
+                    options={
+                      displayFields && displayFields.length > 0
+                        ? displayFields.map((field) => ({
+                            value: field.value,
+                            inputDisplay: field.label,
+                            dropdownDisplay: field.label,
+                          }))
+                        : [
+                            {
+                              value: '',
+                              inputDisplay: 'No fields available',
+                              dropdownDisplay: 'No fields available',
+                            },
+                          ]
+                    }
+                    valueOfSelected={displayField}
+                    onChange={(value) => setDisplayField(value)}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+              <EuiFlexItem grow={false} style={{ minWidth: '150px' }}>
+                <EuiFormRow label="Size:" id="sizeSelectorForm">
+                  <EuiSuperSelect
+                    id="size-selector"
+                    options={[
+                      { value: 1, inputDisplay: '1 (32px)', dropdownDisplay: '1 (32px)' },
+                      { value: 2, inputDisplay: '2 (64px)', dropdownDisplay: '2 (64px)' },
+                      { value: 3, inputDisplay: '3 (96px)', dropdownDisplay: '3 (96px)' },
+                      { value: 4, inputDisplay: '4 (128px)', dropdownDisplay: '4 (128px)' },
+                      { value: 5, inputDisplay: '5 (160px)', dropdownDisplay: '5 (160px)' },
+                      { value: 6, inputDisplay: '6 (192px)', dropdownDisplay: '6 (192px)' },
+                      { value: 7, inputDisplay: '7 (224px)', dropdownDisplay: '7 (224px)' },
+                      { value: 8, inputDisplay: '8 (256px)', dropdownDisplay: '8 (256px)' },
+                      { value: 9, inputDisplay: '9 (288px)', dropdownDisplay: '9 (288px)' },
+                      { value: 10, inputDisplay: '10 (320px)', dropdownDisplay: '10 (320px)' },
+                    ]}
+                    valueOfSelected={sizeMultiplier}
+                    onChange={(value) => setSizeMultiplier(Number(value))}
+                    fullWidth
+                    hasDividers
+                  />
+                </EuiFormRow>
+              </EuiFlexItem>
+            </EuiFlexGroup>
           </div>
 
           {/* Summary section with Venn diagram style using CSS classes */}
@@ -458,7 +441,7 @@ export const VisualComparison = ({
 
             <div className="flex">
               {/* Result 1 ranks - with refs to capture positions */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result1}
                   resultNum={1}
@@ -468,11 +451,14 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
+                  highlightPreTags={highlightPreTags1}
+                  highlightPostTags={highlightPostTags1}
                 />
               </div>
 
               {/* Connection lines */}
-              <div className="w-1/3 relative">
+              <div className="w-1/5 relative">
                 <ConnectionLines
                   mounted={mounted}
                   result1={result1}
@@ -480,6 +466,7 @@ export const VisualComparison = ({
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
                   lineColors={lineColors}
+                  sizeMultiplier={sizeMultiplier}
                 />
                 <div className="w-full h-full flex items-center justify-center">
                   {/* Center area for any additional stats */}
@@ -487,7 +474,7 @@ export const VisualComparison = ({
               </div>
 
               {/* Result 2 ranks */}
-              <div className="w-1/3 relative">
+              <div className="w-2/5 relative">
                 <ResultItems
                   items={result2}
                   resultNum={2}
@@ -497,6 +484,9 @@ export const VisualComparison = ({
                   handleItemClick={handleItemClick}
                   result1ItemsRef={result1ItemsRef}
                   result2ItemsRef={result2ItemsRef}
+                  sizeMultiplier={sizeMultiplier}
+                  highlightPreTags={highlightPreTags2}
+                  highlightPostTags={highlightPostTags2}
                 />
               </div>
             </div>
@@ -532,47 +522,6 @@ export const VisualComparison = ({
             )}
           </div>
 
-          {/* Style selector dropdown */}
-          <div className="mt-4">
-            <EuiAccordion
-              id="styleSelectorAccordion"
-              buttonContent={<span className="text-xs">Visualization Style Options</span>}
-              paddingSize="m"
-            >
-              <EuiFormRow label="Visualization Style:" id="styleSelectorForm">
-                <EuiSuperSelect
-                  id="style-selector"
-                  options={[
-                    {
-                      value: 'default',
-                      inputDisplay: 'Default Style',
-                      dropdownDisplay: 'Default Style',
-                    },
-                    {
-                      value: 'simpler',
-                      inputDisplay: 'Ranking Change Color Coding',
-                      dropdownDisplay: 'Ranking Change Color Coding',
-                    },
-                    {
-                      value: 'simpler2',
-                      inputDisplay: 'Ranking Change Color Coding 2',
-                      dropdownDisplay: 'Ranking Change Color Coding 2',
-                    },
-                    {
-                      value: 'twoColor',
-                      inputDisplay: 'Venn Diagram Color Coding',
-                      dropdownDisplay: 'Venn Diagram Color Coding',
-                    },
-                  ]}
-                  valueOfSelected={selectedStyle}
-                  onChange={(value) => setSelectedStyle(value)}
-                  fullWidth
-                  hasDividers
-                />
-              </EuiFormRow>
-            </EuiAccordion>
-          </div>
-
           {/* Item Details Tooltip on Click */}
           <ItemDetailHoverPane
             item={selectedItem}
@@ -580,6 +529,8 @@ export const VisualComparison = ({
             onMouseEnter={() => {}}
             onMouseLeave={() => setSelectedItem(null)}
             imageFieldName={imageFieldName}
+            highlightPreTags={selectedItem?.resultNum === 1 ? highlightPreTags1 : highlightPreTags2}
+            highlightPostTags={selectedItem?.resultNum === 1 ? highlightPostTags1 : highlightPostTags2}
           />
         </EuiPageContent>
       </EuiPageBody>
