@@ -65,6 +65,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                       },
                     }
                   }
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -97,7 +98,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       1
                     </h2>
                   </EuiTitle>
@@ -1111,6 +1112,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                       },
                     }
                   }
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -1143,7 +1145,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       2
                     </h2>
                   </EuiTitle>
@@ -2204,6 +2206,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -2236,7 +2239,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       1
                     </h2>
                   </EuiTitle>
@@ -3247,6 +3250,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -3279,7 +3283,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       2
                     </h2>
                   </EuiTitle>
@@ -4343,6 +4347,7 @@ exports[`Flyout component handles search configuration selection without crashin
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -4375,7 +4380,7 @@ exports[`Flyout component handles search configuration selection without crashin
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       1
                     </h2>
                   </EuiTitle>
@@ -5386,6 +5391,7 @@ exports[`Flyout component handles search configuration selection without crashin
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  optional={true}
                   pipeline=""
                   queryError={
                     Object {
@@ -5418,7 +5424,7 @@ exports[`Flyout component handles search configuration selection without crashin
                         }
                       }
                     >
-                      Query 
+                      Setup 
                       2
                     </h2>
                   </EuiTitle>
