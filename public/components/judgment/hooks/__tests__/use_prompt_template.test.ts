@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { usePromptTemplate } from '../use_prompt_template';
 import { JudgmentService } from '../../services/judgment_service';
 import { OutputSchema } from '../../types/prompt_template_types';
@@ -63,14 +63,14 @@ describe('usePromptTemplate', () => {
       };
       mockFetchQuerySetById.mockResolvedValue(mockQuerySetData);
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields.length).toBeGreaterThan(0));
 
       expect(mockFetchQuerySetById).toHaveBeenCalledWith('qs1');
       expect(result.current.availableQuerySetFields).toEqual([
@@ -93,14 +93,14 @@ describe('usePromptTemplate', () => {
       };
       mockFetchQuerySetById.mockResolvedValue(mockQuerySetData);
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields).toBeDefined());
 
       expect(result.current.availableQuerySetFields).toEqual(['queryText', 'category']);
     });
@@ -111,14 +111,14 @@ describe('usePromptTemplate', () => {
       };
       mockFetchQuerySetById.mockResolvedValue(mockQuerySetData);
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields).toBeDefined());
 
       expect(result.current.availableQuerySetFields).toEqual([]);
     });
@@ -127,14 +127,14 @@ describe('usePromptTemplate', () => {
       const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       mockFetchQuerySetById.mockRejectedValue(new Error('Failed to fetch'));
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields).toBeDefined());
 
       expect(result.current.availableQuerySetFields).toEqual([]);
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -231,14 +231,14 @@ describe('usePromptTemplate', () => {
       };
       mockFetchQuerySetById.mockResolvedValue(mockQuerySetData);
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields).toBeDefined());
 
       expect(result.current.availableQuerySetFields).toEqual(['queryText', 'category']);
 
@@ -261,14 +261,14 @@ describe('usePromptTemplate', () => {
       };
       mockFetchQuerySetById.mockResolvedValue(mockQuerySetData);
 
-      const { result, waitForNextUpdate } = renderHook(() =>
+      const { result } = renderHook(() =>
         usePromptTemplate({
           querySetId: 'qs1',
           httpClient: mockHttpClient,
         })
       );
 
-      await waitForNextUpdate();
+      await waitFor(() => expect(result.current.availableQuerySetFields).toEqual(['field1', 'field2']));
 
       expect(result.current.availableQuerySetFields).toEqual(['field1', 'field2']);
 

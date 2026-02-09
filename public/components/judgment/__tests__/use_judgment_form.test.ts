@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
 import { JudgmentType } from '../types';
 

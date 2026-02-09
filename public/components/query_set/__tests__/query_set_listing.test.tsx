@@ -257,7 +257,7 @@ describe('QuerySetListing', () => {
     expect(container).toBeTruthy();
   });
 
-  it('shows delete modal when delete is triggered', () => {
+  it('shows delete modal when delete is triggered', async () => {
     mockUseQuerySetList.mockReturnValue({
       isLoading: false,
       error: null,
@@ -276,8 +276,10 @@ describe('QuerySetListing', () => {
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    // Modal should appear
-    expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    // Modal should appear - wait for async rendering
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    });
   });
 
   it('handles delete confirmation', async () => {
@@ -298,14 +300,21 @@ describe('QuerySetListing', () => {
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
+    // Wait for modal to appear
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    });
+
     // Confirm delete
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
     confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
+    await waitFor(() => {
+      expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
+    });
   });
 
-  it('handles delete cancellation', () => {
+  it('handles delete cancellation', async () => {
     mockUseQuerySetList.mockReturnValue({
       isLoading: false,
       error: null,
@@ -321,15 +330,19 @@ describe('QuerySetListing', () => {
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    // Modal should be visible
-    expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    // Modal should be visible - wait for async rendering
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    });
 
     // Cancel delete
     const cancelButton = container.querySelector('[data-testid="cancel-button"]');
     cancelButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
-    // Modal should be hidden
-    expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
+    // Modal should be hidden - wait for async state update
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="delete-modal"]')).toBeFalsy();
+    });
   });
 
   it('handles delete error', async () => {
@@ -350,10 +363,17 @@ describe('QuerySetListing', () => {
     const deleteButton = container.querySelector('[data-testid="delete-trigger"]');
     deleteButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
+    // Wait for modal to appear
+    await waitFor(() => {
+      expect(container.querySelector('[data-testid="delete-modal"]')).toBeTruthy();
+    });
+
     const confirmButton = container.querySelector('[data-testid="confirm-button"]');
     confirmButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
     // Should still call deleteQuerySet even if it fails
-    expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
+    await waitFor(() => {
+      expect(mockDeleteQuerySet).toHaveBeenCalledWith('1');
+    });
   });
 });

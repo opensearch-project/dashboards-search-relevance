@@ -5,7 +5,7 @@
 
 import { waitFor } from '@testing-library/react';
 import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@cfaester/enzyme-adapter-react-18';
 import React from 'react';
 import { initialQueryErrorState } from '../../../../../../public/types/index';
 import { TEST_QUERY_STRING } from '../../../../../../test/constants';
