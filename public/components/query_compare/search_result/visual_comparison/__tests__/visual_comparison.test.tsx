@@ -73,7 +73,7 @@ describe('VisualComparison', () => {
 
   it('shows empty prompt when results are not arrays', () => {
     render(<VisualComparison {...defaultProps} queryResult1={null} queryResult2={null} />);
-    expect(screen.getByText('You need two queries to display search results.')).toBeInTheDocument();
+    expect(screen.getByText('You need two Setups to display comparison.')).toBeInTheDocument();
   });
 
   it('handles empty results arrays', () => {

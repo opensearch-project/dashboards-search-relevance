@@ -336,15 +336,32 @@ export const SearchResult = ({
       setQueryError2
     );
 
-    if (Object.keys(requestBody1).length === 0 && Object.keys(requestBody2).length === 0) {
+    // Check if we have valid request bodies (handle undefined)
+    const hasRequestBody1 = requestBody1 && Object.keys(requestBody1).length > 0;
+    const hasRequestBody2 = requestBody2 && Object.keys(requestBody2).length > 0;
+
+    if (!hasRequestBody1 && !hasRequestBody2) {
       setIsSearching(false);
       return;
     }
 
-    const promises = [
-      processQuery(requestBody1, jsonQueries[0], datasource1 || '', setQueryResult1, updateComparedResult1, setQueryError1, 'result1', 'errorMessage1'),
-      processQuery(requestBody2, jsonQueries[1], datasource2 || '', setQueryResult2, updateComparedResult2, setQueryError2, 'result2', 'errorMessage2')
-    ].filter(Boolean);
+    // Build promises array only for valid request bodies
+    const promises: Promise<any>[] = [];
+
+    if (hasRequestBody1) {
+      const promise1 = processQuery(requestBody1, jsonQueries[0], datasource1 || '', setQueryResult1, updateComparedResult1, setQueryError1, 'result1', 'errorMessage1');
+      if (promise1) promises.push(promise1);
+    }
+
+    if (hasRequestBody2) {
+      const promise2 = processQuery(requestBody2, jsonQueries[1], datasource2 || '', setQueryResult2, updateComparedResult2, setQueryError2, 'result2', 'errorMessage2');
+      if (promise2) promises.push(promise2);
+    }
+
+    if (promises.length === 0) {
+      setIsSearching(false);
+      return;
+    }
 
     Promise.allSettled(promises).finally(() => {
       if (isMountedRef.current) {
@@ -433,16 +450,16 @@ export const SearchResult = ({
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) ||
-          (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
+        {/* Only show error panel if Setup 1 has a real API error (not just validation) */}
+        {(queryError1.errorResponse.statusCode !== 200 && queryError1.errorResponse.body) ? (
           <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
-              {(queryError1.errorResponse.statusCode !== 200 ||
-                queryError1.queryString.length > 0) && <ErrorMessage queryError={queryError1} />}
+              <ErrorMessage queryError={queryError1} />
             </EuiSplitPanel.Inner>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
-              {(queryError2.errorResponse.statusCode !== 200 ||
-                queryError2.queryString.length > 0) && <ErrorMessage queryError={queryError2} />}
+              {/* Only show Setup 2 error if it's a real API error, not a validation error */}
+              {(queryError2.errorResponse.statusCode !== 200 && queryError2.errorResponse.body) &&
+                <ErrorMessage queryError={queryError2} />}
             </EuiSplitPanel.Inner>
           </EuiSplitPanel.Outer>
         ) : (
@@ -451,9 +468,9 @@ export const SearchResult = ({
               <>
                 <EuiFlexGroup gutterSize="none" alignItems="stretch">
                   <EuiFlexItem>
-                    <AgentInfo 
-                      queryResult={queryResult1} 
-                      title="Query 1" 
+                    <AgentInfo
+                      queryResult={queryResult1}
+                      title="Setup 1"
                       agentHandler={agentHandler}
                       queryString={queryString1}
                       onContinueConversation={() => handleContinueConversation(1)}
@@ -461,9 +478,9 @@ export const SearchResult = ({
                     />
                   </EuiFlexItem>
                   <EuiFlexItem>
-                    <AgentInfo 
-                      queryResult={queryResult2} 
-                      title="Query 2" 
+                    <AgentInfo
+                      queryResult={queryResult2}
+                      title="Setup 2"
                       agentHandler={agentHandler}
                       queryString={queryString2}
                       onContinueConversation={() => handleContinueConversation(2)}
@@ -478,8 +495,8 @@ export const SearchResult = ({
               queryResult1={convertFromSearchResult(queryResult1)}
               queryResult2={convertFromSearchResult(queryResult2)}
               queryText={searchBarValue}
-              resultText1="Result 1"
-              resultText2="Result 2"
+              resultText1="Setup 1 Results"
+              resultText2="Setup 2 Results"
               highlightPreTags1={extractHighlightTags(queryString1).preTags}
               highlightPostTags1={extractHighlightTags(queryString1).postTags}
               highlightPreTags2={extractHighlightTags(queryString2).preTags}
