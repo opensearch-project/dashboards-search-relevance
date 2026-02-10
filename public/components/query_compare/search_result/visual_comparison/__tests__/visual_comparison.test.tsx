@@ -167,4 +167,66 @@ describe('convertFromSearchResult', () => {
     // Assert that the title from the mock data appears in the document
     expect(screen.getByText('Test Document 1')).toBeInTheDocument();
   });
+
+  it('deselects item when clicking the same item again', () => {
+    render(<VisualComparison {...defaultProps} />);
+    const item = document.getElementById('r1-item-1');
+    // Click to select
+    fireEvent.click(item);
+    expect(screen.getByText('Test Document 1')).toBeInTheDocument();
+    // Click again to deselect
+    fireEvent.click(item);
+    expect(screen.queryByText('Test Document 1')).not.toBeInTheDocument();
+  });
+
+  it('shows loading state when isSearching is true', () => {
+    render(<VisualComparison {...defaultProps} isSearching={true} />);
+    expect(screen.getByText('Searching...')).toBeInTheDocument();
+    expect(
+      screen.getByText('Please wait while we process your search query.')
+    ).toBeInTheDocument();
+  });
+
+  it('renders single-result mode when only queryResult1 is provided', () => {
+    render(
+      <VisualComparison
+        {...defaultProps}
+        queryResult1={mockQueryResult1}
+        queryResult2={undefined}
+      />
+    );
+    expect(screen.getByText('No comparison')).toBeInTheDocument();
+    expect(screen.getByText('Configure Setup 2 to compare results.')).toBeInTheDocument();
+  });
+
+  it('renders single-result mode when only queryResult2 is provided', () => {
+    render(
+      <VisualComparison
+        {...defaultProps}
+        queryResult1={undefined}
+        queryResult2={mockQueryResult2}
+      />
+    );
+    expect(screen.getByText('No comparison')).toBeInTheDocument();
+    expect(screen.getByText('Configure Setup 1 to compare results.')).toBeInTheDocument();
+  });
+
+  it('correctly applies status color for rank change in result1', () => {
+    // item1 rank 1 in result1, rank 2 in result2 — in both results with different rank
+    const { container } = render(<VisualComparison {...defaultProps} />);
+    const result1ItemsContainer = container.querySelector('#result1-items');
+    const result1Item1 = result1ItemsContainer!.querySelector('#r1-item-1');
+    // Default style maps all in-both statuses to bg-unchanged
+    const statusElement = result1Item1!.querySelector('.bg-unchanged');
+    expect(statusElement).toBeInTheDocument();
+  });
+
+  it('correctly applies status color for result2 rank changes', () => {
+    const { container } = render(<VisualComparison {...defaultProps} />);
+    const result2ItemsContainer = container.querySelector('#result2-items');
+    const result2Item1 = result2ItemsContainer!.querySelector('#r2-item-1');
+    // Default style maps all in-both statuses to bg-unchanged
+    const statusElement = result2Item1!.querySelector('.bg-unchanged');
+    expect(statusElement).toBeInTheDocument();
+  });
 });
