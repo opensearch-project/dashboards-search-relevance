@@ -51,12 +51,12 @@ describe('VisualComparison', () => {
 
   it('shows field selector dropdown', () => {
     render(<VisualComparison {...defaultProps} />);
-    expect(screen.getByText('Display Field:')).toBeInTheDocument();
+    expect(screen.getByText('Display Field')).toBeInTheDocument();
   });
 
   it('shows size selector dropdown', () => {
     render(<VisualComparison {...defaultProps} />);
-    expect(screen.getByText('Size:')).toBeInTheDocument();
+    expect(screen.getByText('Size')).toBeInTheDocument();
   });
 
   it('displays result headers', () => {
