@@ -17,6 +17,7 @@ import {
   EuiFlexItem,
   EuiLoadingSpinner,
   EuiText,
+  EuiSpacer,
 } from '@elastic/eui';
 
 import './visual_comparison.scss';
@@ -135,6 +136,99 @@ const calculateStatistics = (result1, result2) => {
   };
 };
 
+// Extracted sub-component for field and size selector dropdowns
+const FieldSelectorDropdown = ({ displayFields, displayField, setDisplayField, sizeMultiplier, setSizeMultiplier }: any) => {
+  return (
+    <EuiFlexGroup gutterSize="m" alignItems="center" style={{ marginBottom: '16px' }}>
+      <EuiFlexItem grow={false}>
+        <EuiFormRow label="Display Field">
+          <EuiSuperSelect
+            options={
+              displayFields && displayFields.length > 0
+                ? displayFields.map((field) => ({
+                  value: field.value,
+                  inputDisplay: field.label,
+                  dropdownDisplay: field.label,
+                }))
+                : [
+                  {
+                    value: '',
+                    inputDisplay: 'No fields available',
+                    dropdownDisplay: 'No fields available',
+                  },
+                ]
+            }
+            valueOfSelected={displayField}
+            onChange={(value) => setDisplayField(value)}
+            style={{ minWidth: 200 }}
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+      <EuiFlexItem grow={false}>
+        <EuiFormRow label="Size">
+          <EuiSuperSelect
+            options={[
+              { value: '1', inputDisplay: 'Small' },
+              { value: '2', inputDisplay: 'Medium' },
+              { value: '3', inputDisplay: 'Large' },
+            ]}
+            valueOfSelected={String(sizeMultiplier)}
+            onChange={(value) => setSizeMultiplier(Number(value))}
+            style={{ minWidth: 120 }}
+          />
+        </EuiFormRow>
+      </EuiFlexItem>
+    </EuiFlexGroup>
+  );
+};
+
+// Extracted ResultPanel sub-component to reduce duplication between single and comparison modes.
+// Renders either a ResultItems list or an empty prompt if the setup is not configured.
+const ResultPanel = ({
+  items,
+  resultNum,
+  isConfigured,
+  setupLabel,
+  imageFieldName,
+  displayField,
+  getStatusColor,
+  handleItemClick,
+  result1ItemsRef,
+  result2ItemsRef,
+  sizeMultiplier,
+  highlightPreTags,
+  highlightPostTags,
+}: any) => {
+  if (!isConfigured) {
+    return (
+      <EuiPanel hasBorder paddingSize="l" style={{ minHeight: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <EuiEmptyPrompt
+          iconType="documents"
+          title={<h3>No comparison</h3>}
+          body={<p>Configure {setupLabel} to compare results.</p>}
+        />
+      </EuiPanel>
+    );
+  }
+
+  return (
+    <ResultItems
+      items={items}
+      resultNum={resultNum}
+      imageFieldName={imageFieldName}
+      displayField={displayField}
+      getStatusColor={getStatusColor}
+      handleItemClick={handleItemClick}
+      result1ItemsRef={result1ItemsRef}
+      result2ItemsRef={result2ItemsRef}
+      sizeMultiplier={sizeMultiplier}
+      highlightPreTags={highlightPreTags}
+      highlightPostTags={highlightPostTags}
+    />
+  );
+};
+
+
 export const VisualComparison = ({
   queryResult1,
   queryResult2,
@@ -178,6 +272,8 @@ export const VisualComparison = ({
   const [mounted, setMounted] = useState(false);
   // State to track if we have valid results
   const [initialState, setInitialState] = useState(true);
+  // State to track if we're in single result mode (only Setup 1 has results)
+  const [singleResultMode, setSingleResultMode] = useState(false);
 
   // Process the results into the format we need
   const [result1, setResult1] = useState([]);
@@ -217,25 +313,40 @@ export const VisualComparison = ({
 
   // Set initial state similar to first component
   useEffect(() => {
-    if (Array.isArray(queryResult1) && Array.isArray(queryResult2)) {
+    // Check if setup is configured (array exists, even if empty) vs not configured (undefined/null)
+    const isSetup1Configured = Array.isArray(queryResult1);
+    const isSetup2Configured = Array.isArray(queryResult2);
+
+    if (isSetup1Configured && isSetup2Configured) {
+      // Both setups are configured - comparison mode (even if one or both have 0 results)
       setInitialState(false);
+      setSingleResultMode(false);
+    } else if (isSetup1Configured || isSetup2Configured) {
+      // Single result mode - only one setup is configured
+      setInitialState(false);
+      setSingleResultMode(true);
     } else if (initialState !== true) {
+      // Neither setup is configured
       setInitialState(true);
+      setSingleResultMode(false);
     }
   }, [queryResult1, queryResult2, initialState]);
 
-  // Remove the useEffect that depends on result1/result2
-  // Instead, use a single useEffect for all derived state
+  // Single useEffect for all derived state
+  // Treats missing queryResult as [] to leverage the same code path for both modes
   useEffect(() => {
-    if (!queryResult1 || !queryResult2) return;
+    if (initialState) return;
 
-    // Set result1 and result2
-    setResult1(queryResult1);
-    setResult2(queryResult2);
+    // Treat unconfigured setups as empty arrays
+    const effectiveResult1 = queryResult1 || [];
+    const effectiveResult2 = queryResult2 || [];
+
+    setResult1(effectiveResult1);
+    setResult2(effectiveResult2);
 
     // Determine available fields for display by checking what's in the data
-    if (queryResult1.length > 0 || queryResult2.length > 0) {
-      const sampleItem = queryResult1[0] || queryResult2[0];
+    if (effectiveResult1.length > 0 || effectiveResult2.length > 0) {
+      const sampleItem = effectiveResult1[0] || effectiveResult2[0];
       if (sampleItem) {
         const { displayFields, imageFieldName } = getDisplayFieldsAndImageField(sampleItem);
         setDisplayFields(displayFields);
@@ -250,8 +361,8 @@ export const VisualComparison = ({
       setImageFieldName(null);
     }
 
-    setStatistics(calculateStatistics(queryResult1, queryResult2));
-  }, [queryResult1, queryResult2]);
+    setStatistics(calculateStatistics(effectiveResult1, effectiveResult2));
+  }, [queryResult1, queryResult2, initialState]);
 
   // Update lines on window resize and after mounting
   useEffect(() => {
@@ -354,9 +465,102 @@ export const VisualComparison = ({
         <EuiEmptyPrompt
           iconType="search"
           title={<h2>No results</h2>}
-          body={<p>You need two queries to display search results.</p>}
+          body={<p>You need two Setups to display comparison.</p>}
         />
       </EuiPanel>
+    );
+  }
+
+  // Single result mode - show results with a message on the unconfigured side
+  if (singleResultMode) {
+    const isSetup1Configured = Array.isArray(queryResult1);
+    const isSetup2Configured = Array.isArray(queryResult2);
+    const emptySetupNum = isSetup1Configured ? '2' : '1';
+
+    return (
+      <EuiPage>
+        <EuiPageBody>
+          <EuiPageContent>
+            <h3 className="text-lg font-semibold mb-2">
+              Results for query: <em>{queryText}</em>
+            </h3>
+
+            <FieldSelectorDropdown
+              displayFields={displayFields}
+              displayField={displayField}
+              setDisplayField={setDisplayField}
+              sizeMultiplier={sizeMultiplier}
+              setSizeMultiplier={setSizeMultiplier}
+            />
+
+            {/* Single result layout */}
+            <EuiFlexGroup gutterSize="l">
+              {/* Left side - Setup 1 */}
+              <EuiFlexItem>
+                <EuiPanel hasBorder={false} hasShadow={false} paddingSize="m">
+                  <EuiText textAlign="center">
+                    <h4>{resultText1}</h4>
+                    <p style={{ color: '#6a717d' }}>({result1.length} results)</p>
+                  </EuiText>
+                  <EuiSpacer size="m" />
+                  <ResultPanel
+                    items={result1}
+                    resultNum={1}
+                    isConfigured={isSetup1Configured}
+                    setupLabel="Setup 1"
+                    imageFieldName={imageFieldName}
+                    displayField={displayField}
+                    getStatusColor={getStatusColor}
+                    handleItemClick={handleItemClick}
+                    result1ItemsRef={result1ItemsRef}
+                    result2ItemsRef={result2ItemsRef}
+                    sizeMultiplier={sizeMultiplier}
+                    highlightPreTags={highlightPreTags1}
+                    highlightPostTags={highlightPostTags1}
+                  />
+                </EuiPanel>
+              </EuiFlexItem>
+
+              {/* Right side - Setup 2 */}
+              <EuiFlexItem>
+                <EuiPanel hasBorder={false} hasShadow={false} paddingSize="m">
+                  <EuiText textAlign="center">
+                    <h4>{resultText2}</h4>
+                    <p style={{ color: '#6a717d' }}>({result2.length} results)</p>
+                  </EuiText>
+                  <EuiSpacer size="m" />
+                  <ResultPanel
+                    items={result2}
+                    resultNum={2}
+                    isConfigured={isSetup2Configured}
+                    setupLabel="Setup 2"
+                    imageFieldName={imageFieldName}
+                    displayField={displayField}
+                    getStatusColor={getStatusColor}
+                    handleItemClick={handleItemClick}
+                    result1ItemsRef={result1ItemsRef}
+                    result2ItemsRef={result2ItemsRef}
+                    sizeMultiplier={sizeMultiplier}
+                    highlightPreTags={highlightPreTags2}
+                    highlightPostTags={highlightPostTags2}
+                  />
+                </EuiPanel>
+              </EuiFlexItem>
+            </EuiFlexGroup>
+
+            {/* Item Details Tooltip on Click */}
+            <ItemDetailHoverPane
+              item={selectedItem}
+              mousePosition={mousePosition}
+              onMouseEnter={() => { }}
+              onMouseLeave={() => setSelectedItem(null)}
+              imageFieldName={imageFieldName}
+              highlightPreTags={isSetup1Configured ? highlightPreTags1 : highlightPreTags2}
+              highlightPostTags={isSetup1Configured ? highlightPostTags1 : highlightPostTags2}
+            />
+          </EuiPageContent>
+        </EuiPageBody>
+      </EuiPage>
     );
   }
 
@@ -368,60 +572,13 @@ export const VisualComparison = ({
             Results for query: <em>{queryText}</em>
           </h3>
 
-          {/* Field selector dropdown */}
-          <div className="mb-4">
-            <EuiFlexGroup>
-              <EuiFlexItem>
-                <EuiFormRow label="Display Field:" id="fieldSelectorForm">
-                  <EuiSuperSelect
-                    id="field-selector"
-                    options={
-                      displayFields && displayFields.length > 0
-                        ? displayFields.map((field) => ({
-                            value: field.value,
-                            inputDisplay: field.label,
-                            dropdownDisplay: field.label,
-                          }))
-                        : [
-                            {
-                              value: '',
-                              inputDisplay: 'No fields available',
-                              dropdownDisplay: 'No fields available',
-                            },
-                          ]
-                    }
-                    valueOfSelected={displayField}
-                    onChange={(value) => setDisplayField(value)}
-                    fullWidth
-                    hasDividers
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
-              <EuiFlexItem grow={false} style={{ minWidth: '150px' }}>
-                <EuiFormRow label="Size:" id="sizeSelectorForm">
-                  <EuiSuperSelect
-                    id="size-selector"
-                    options={[
-                      { value: 1, inputDisplay: '1 (32px)', dropdownDisplay: '1 (32px)' },
-                      { value: 2, inputDisplay: '2 (64px)', dropdownDisplay: '2 (64px)' },
-                      { value: 3, inputDisplay: '3 (96px)', dropdownDisplay: '3 (96px)' },
-                      { value: 4, inputDisplay: '4 (128px)', dropdownDisplay: '4 (128px)' },
-                      { value: 5, inputDisplay: '5 (160px)', dropdownDisplay: '5 (160px)' },
-                      { value: 6, inputDisplay: '6 (192px)', dropdownDisplay: '6 (192px)' },
-                      { value: 7, inputDisplay: '7 (224px)', dropdownDisplay: '7 (224px)' },
-                      { value: 8, inputDisplay: '8 (256px)', dropdownDisplay: '8 (256px)' },
-                      { value: 9, inputDisplay: '9 (288px)', dropdownDisplay: '9 (288px)' },
-                      { value: 10, inputDisplay: '10 (320px)', dropdownDisplay: '10 (320px)' },
-                    ]}
-                    valueOfSelected={sizeMultiplier}
-                    onChange={(value) => setSizeMultiplier(Number(value))}
-                    fullWidth
-                    hasDividers
-                  />
-                </EuiFormRow>
-              </EuiFlexItem>
-            </EuiFlexGroup>
-          </div>
+          <FieldSelectorDropdown
+            displayFields={displayFields}
+            displayField={displayField}
+            setDisplayField={setDisplayField}
+            sizeMultiplier={sizeMultiplier}
+            setSizeMultiplier={setSizeMultiplier}
+          />
 
           {/* Summary section with Venn diagram style using CSS classes */}
           <div className="mb-6">{vennDiagram}</div>
@@ -442,9 +599,11 @@ export const VisualComparison = ({
             <div className="flex">
               {/* Result 1 ranks - with refs to capture positions */}
               <div className="w-2/5 relative">
-                <ResultItems
+                <ResultPanel
                   items={result1}
                   resultNum={1}
+                  isConfigured={true}
+                  setupLabel="Setup 1"
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
@@ -475,9 +634,11 @@ export const VisualComparison = ({
 
               {/* Result 2 ranks */}
               <div className="w-2/5 relative">
-                <ResultItems
+                <ResultPanel
                   items={result2}
                   resultNum={2}
+                  isConfigured={true}
+                  setupLabel="Setup 2"
                   imageFieldName={imageFieldName}
                   displayField={displayField}
                   getStatusColor={getStatusColor}
@@ -526,7 +687,7 @@ export const VisualComparison = ({
           <ItemDetailHoverPane
             item={selectedItem}
             mousePosition={mousePosition}
-            onMouseEnter={() => {}}
+            onMouseEnter={() => { }}
             onMouseLeave={() => setSelectedItem(null)}
             imageFieldName={imageFieldName}
             highlightPreTags={selectedItem?.resultNum === 1 ? highlightPreTags1 : highlightPreTags2}

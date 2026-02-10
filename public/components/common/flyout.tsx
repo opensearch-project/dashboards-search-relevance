@@ -94,7 +94,7 @@ export const Flyout = () => {
           <br />
           <p>1. Enter the search text in the search bar.</p>
           <p>
-            2. Select an index for <strong>Query 1</strong> and enter a query.
+            2. Select an index for <strong>Setup 1</strong> and enter a query.
           </p>
           <p>
             The following example searches the <EuiCode>speaker</EuiCode> and{' '}
@@ -105,7 +105,7 @@ export const Flyout = () => {
             {query1}
           </EuiCodeBlock>
           <p>
-            3. Select an index for <strong>Query 2</strong> and enter a query.
+            3. Select an index for <strong>Setup 2</strong> and enter a query.
           </p>
           <p>
             You can see how boosting a field affects the results. The following query boosts the

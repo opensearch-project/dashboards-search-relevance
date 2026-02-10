@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { validateQuery, rewriteQuery, prepareQueries } from './query_processor';
+import { validateQuery, rewriteQuery, prepareQueries, isSetupConfigured } from './query_processor';
 import { QueryError, SelectIndexError, QueryStringError, initialQueryErrorState } from '../../../../types/index';
 
 describe('query_processor', () => {
@@ -50,6 +50,28 @@ describe('query_processor', () => {
     });
   });
 
+  describe('isSetupConfigured', () => {
+    it('should return true when index is selected', () => {
+      expect(isSetupConfigured('my-index', '{}')).toBe(true);
+    });
+
+    it('should return true when query is modified from default', () => {
+      expect(isSetupConfigured('', '{"query": {"match_all": {}}}')).toBe(true);
+    });
+
+    it('should return true when both index and query are set', () => {
+      expect(isSetupConfigured('my-index', '{"query": {"match_all": {}}}')).toBe(true);
+    });
+
+    it('should return false when neither index nor query is set', () => {
+      expect(isSetupConfigured('', '{}')).toBe(false);
+    });
+
+    it('should return false for default query with whitespace', () => {
+      expect(isSetupConfigured('', '  {}  ')).toBe(false);
+    });
+  });
+
   describe('prepareQueries', () => {
     it('should prepare both queries correctly', () => {
       const result = prepareQueries(
@@ -64,5 +86,40 @@ describe('query_processor', () => {
       expect(result.jsonQueries[1].query.term.status).toBe('search-term');
       expect(result.queryErrors).toHaveLength(2);
     });
+
+    it('should skip validation for unconfigured setup 2', () => {
+      const result = prepareQueries(
+        'search-term',
+        'index1',
+        '',        // no index selected for setup 2
+        '{"query": {"match_all": {}}}',
+        '{}'       // default query for setup 2
+      );
+
+      // Setup 1 should be validated and rewritten
+      expect(result.jsonQueries[0]).toEqual({ query: { match_all: {} } });
+      // Setup 2 should be skipped — no errors, empty query
+      expect(result.queryErrors[1].selectIndex).toBe('');
+      expect(result.queryErrors[1].queryString).toBe('');
+      expect(result.jsonQueries[1]).toEqual({});
+    });
+
+    it('should skip validation for unconfigured setup 1', () => {
+      const result = prepareQueries(
+        'search-term',
+        '',        // no index selected for setup 1
+        'index2',
+        '{}',      // default query for setup 1
+        '{"query": {"match_all": {}}}'
+      );
+
+      // Setup 1 should be skipped — no errors, empty query
+      expect(result.queryErrors[0].selectIndex).toBe('');
+      expect(result.queryErrors[0].queryString).toBe('');
+      expect(result.jsonQueries[0]).toEqual({});
+      // Setup 2 should be validated and rewritten
+      expect(result.jsonQueries[1]).toEqual({ query: { match_all: {} } });
+    });
   });
 });
+

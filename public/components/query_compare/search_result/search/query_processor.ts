@@ -29,6 +29,15 @@ export const rewriteQuery = (value: string, queryString: string, queryError: Que
   }
 };
 
+// A setup is considered "configured" if the user has selected an index OR modified the query
+// from its default value '{}'. Unconfigured setups are skipped during validation to avoid
+// generating confusing validation errors in single-setup mode.
+const DEFAULT_QUERY_BODY = '{}';
+
+export const isSetupConfigured = (selectedIndex: string, queryString: string): boolean => {
+  return selectedIndex.length > 0 || queryString.trim() !== DEFAULT_QUERY_BODY;
+};
+
 export const prepareQueries = (
   searchBarValue: string,
   selectedIndex1: string,
@@ -42,11 +51,16 @@ export const prepareQueries = (
   ];
   const jsonQueries = [{}, {}];
 
-  validateQuery(selectedIndex1, queryString1, queryErrors[0]);
-  jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
+  // Only validate and rewrite queries for configured setups
+  if (isSetupConfigured(selectedIndex1, queryString1)) {
+    validateQuery(selectedIndex1, queryString1, queryErrors[0]);
+    jsonQueries[0] = rewriteQuery(searchBarValue, queryString1, queryErrors[0]);
+  }
 
-  validateQuery(selectedIndex2, queryString2, queryErrors[1]);
-  jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
+  if (isSetupConfigured(selectedIndex2, queryString2)) {
+    validateQuery(selectedIndex2, queryString2, queryErrors[1]);
+    jsonQueries[1] = rewriteQuery(searchBarValue, queryString2, queryErrors[1]);
+  }
 
   return { queryErrors, jsonQueries };
 };

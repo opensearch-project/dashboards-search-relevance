@@ -68,6 +68,7 @@ interface SearchConfigProps {
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   dataSourceOptions: DataSourceOption[];
+  optional?: boolean;
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -87,6 +88,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   navigation,
   setActionMenu,
   dataSourceOptions,
+  optional = false,
 }) => {
   const [searchConfigOptions, setSearchConfigOptions] = React.useState<any[]>([]);
   const [selectedSearchConfig, setSelectedSearchConfig] = React.useState<any[]>([]);
@@ -197,7 +199,8 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   // Select index on blur
   const selectIndexOnBlur = () => {
     // If Index Select on blur without selecting an index, show error
-    if (!selectedIndex.length) {
+    // Skip validation if this config is optional
+    if (!selectedIndex.length && !optional) {
       setQueryError((error: QueryError) => ({
         ...error,
         selectIndex: SelectIndexError.unselected,
@@ -254,7 +257,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   return (
     <>
       <EuiTitle size="xs">
-        <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Query {queryNumber}</h2>
+        <h2 style={{ fontWeight: '300', fontSize: '21px' }}>Setup {queryNumber}</h2>
       </EuiTitle>
       <EuiSpacer size="m" />
       <EuiFlexGroup>

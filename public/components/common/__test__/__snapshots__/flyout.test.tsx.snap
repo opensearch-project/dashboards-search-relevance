@@ -196,7 +196,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           <p>
                             2. Select an index for 
                             <strong>
-                              Query 1
+                              Setup 1
                             </strong>
                              and enter a query.
                           </p>
@@ -455,7 +455,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           <p>
                             3. Select an index for 
                             <strong>
-                              Query 2
+                              Setup 2
                             </strong>
                              and enter a query.
                           </p>
@@ -999,7 +999,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <p>
                                     2. Select an index for 
                                     <strong>
-                                      Query 1
+                                      Setup 1
                                     </strong>
                                      and enter a query.
                                   </p>
@@ -1258,7 +1258,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <p>
                                     3. Select an index for 
                                     <strong>
-                                      Query 2
+                                      Setup 2
                                     </strong>
                                      and enter a query.
                                   </p>
@@ -1734,7 +1734,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     <p>
                                       2. Select an index for 
                                       <strong>
-                                        Query 1
+                                        Setup 1
                                       </strong>
                                        and enter a query.
                                     </p>
@@ -1993,7 +1993,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     <p>
                                       3. Select an index for 
                                       <strong>
-                                        Query 2
+                                        Setup 2
                                       </strong>
                                        and enter a query.
                                     </p>
@@ -2469,7 +2469,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         2. Select an index for 
                                         <strong>
-                                          Query 1
+                                          Setup 1
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -2728,7 +2728,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         3. Select an index for 
                                         <strong>
-                                          Query 2
+                                          Setup 2
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -3192,7 +3192,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <p>
                                           2. Select an index for 
                                           <strong>
-                                            Query 1
+                                            Setup 1
                                           </strong>
                                            and enter a query.
                                         </p>
@@ -3451,7 +3451,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <p>
                                           3. Select an index for 
                                           <strong>
-                                            Query 2
+                                            Setup 2
                                           </strong>
                                            and enter a query.
                                         </p>
@@ -4061,7 +4061,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         2. Select an index for 
                                         <strong>
-                                          Query 1
+                                          Setup 1
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -4443,7 +4443,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         3. Select an index for 
                                         <strong>
-                                          Query 2
+                                          Setup 2
                                         </strong>
                                          and enter a query.
                                       </p>

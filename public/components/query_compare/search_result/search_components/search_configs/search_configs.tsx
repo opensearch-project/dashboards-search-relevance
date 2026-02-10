@@ -97,6 +97,7 @@ export const SearchConfigsPanel = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            optional={true}
           />
         </EuiFlexItem>
         <EuiFlexItem className="search-relevance-config">
@@ -118,6 +119,7 @@ export const SearchConfigsPanel = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            optional={true}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
