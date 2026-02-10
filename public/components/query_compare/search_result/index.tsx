@@ -38,7 +38,7 @@ import { AgentHandler } from './agent/agent_handler';
 import { AgentInfo } from './agent/agent_info_component';
 import { createConversationHandlers } from './agent/conversation_handlers';
 import { SearchHandler } from './search/search_handler';
-import { prepareQueries } from './search/query_processor';
+import { prepareQueries, isSetupConfigured } from './search/query_processor';
 import { updateUrlWithConfig } from './search/url_config';
 import { extractHighlightTags } from './highlight/highlight_utils';
 import {
@@ -316,25 +316,31 @@ export const SearchResult = ({
   };
 
   const handleSearch = (jsonQueries: any, queryErrors: QueryError[]) => {
-    const requestBody1 = handleQuery(
-      queryErrors[0],
-      selectedIndex1,
-      pipeline1,
-      jsonQueries[0],
-      updateComparedResult1,
-      setQueryResult1,
-      setQueryError1
-    );
+    // Only call handleQuery for configured setups to avoid sending
+    // requests with empty index/query to processQuery
+    const requestBody1 = isSetupConfigured(selectedIndex1, queryString1)
+      ? handleQuery(
+        queryErrors[0],
+        selectedIndex1,
+        pipeline1,
+        jsonQueries[0],
+        updateComparedResult1,
+        setQueryResult1,
+        setQueryError1
+      )
+      : undefined;
 
-    const requestBody2 = handleQuery(
-      queryErrors[1],
-      selectedIndex2,
-      pipeline2,
-      jsonQueries[1],
-      updateComparedResult2,
-      setQueryResult2,
-      setQueryError2
-    );
+    const requestBody2 = isSetupConfigured(selectedIndex2, queryString2)
+      ? handleQuery(
+        queryErrors[1],
+        selectedIndex2,
+        pipeline2,
+        jsonQueries[1],
+        updateComparedResult2,
+        setQueryResult2,
+        setQueryError2
+      )
+      : undefined;
 
     // Check if we have valid request bodies (handle undefined)
     const hasRequestBody1 = requestBody1 && Object.keys(requestBody1).length > 0;
@@ -450,16 +456,14 @@ export const SearchResult = ({
           dataSourceOptions={dataSourceOptions}
           notifications={notifications}
         />
-        {/* Only show error panel if Setup 1 has a real API error (not just validation) */}
-        {(queryError1.errorResponse.statusCode !== 200 && queryError1.errorResponse.body) ? (
+        {(queryError1.errorResponse.statusCode !== 200 || queryError1.queryString.length > 0) ||
+          (queryError2.errorResponse.statusCode !== 200 || queryError2.queryString.length > 0) ? (
           <EuiSplitPanel.Outer direction="row" hasShadow={false} hasBorder={false}>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
               <ErrorMessage queryError={queryError1} />
             </EuiSplitPanel.Inner>
             <EuiSplitPanel.Inner className="search-relevance-result-panel">
-              {/* Only show Setup 2 error if it's a real API error, not a validation error */}
-              {(queryError2.errorResponse.statusCode !== 200 && queryError2.errorResponse.body) &&
-                <ErrorMessage queryError={queryError2} />}
+              <ErrorMessage queryError={queryError2} />
             </EuiSplitPanel.Inner>
           </EuiSplitPanel.Outer>
         ) : (
