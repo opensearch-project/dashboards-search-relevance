@@ -241,6 +241,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
               })
             )
           ),
+          ubiEventsIndex: schema.maybe(schema.string()),
         }),
       },
     },
