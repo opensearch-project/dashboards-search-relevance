@@ -105,6 +105,7 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           options={[
             { value: JudgmentType.LLM, text: 'Explicit (LLM Judge)' },
             { value: JudgmentType.UBI, text: 'Implicit (Click based)' },
+            { value: JudgmentType.IMPORT, text: 'Explicit (Imported)' },
           ]}
           value={formData.type}
           onChange={(e) => updateFormData({ type: e.target.value as JudgmentType })}
