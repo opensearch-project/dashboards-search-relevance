@@ -7,6 +7,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
+* Add UI support for uploading Judgment Sets via CSV, including parsing and preview before creating the judgment list. ([#715](https://github.com/opensearch-project/dashboards-search-relevance/pull/715))
 
 ### Enhancements
 
