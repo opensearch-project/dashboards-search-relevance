@@ -33,6 +33,7 @@ interface SearchConfigsPanelProps {
   navigation: NavigationPublicPluginStart;
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   dataSourceOptions: DataSourceOption[];
+  http: CoreStart['http'];
 }
 
 export const SearchConfigsPanel = ({
@@ -51,6 +52,7 @@ export const SearchConfigsPanel = ({
   navigation,
   dataSourceOptions,
   notifications,
+  http,
 }: SearchConfigsPanelProps) => {
   const {
     selectedIndex1,
@@ -95,6 +97,7 @@ export const SearchConfigsPanel = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            optional={true}
           />
         </EuiFlexItem>
         <EuiFlexItem className="search-relevance-config">
@@ -116,6 +119,7 @@ export const SearchConfigsPanel = ({
             setActionMenu={setActionMenu}
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
+            optional={true}
           />
         </EuiFlexItem>
       </EuiFlexGroup>

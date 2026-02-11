@@ -4,7 +4,7 @@
  */
 
 import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import Adapter from '@cfaester/enzyme-adapter-react-18';
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { CreateIndex } from '../create_index';

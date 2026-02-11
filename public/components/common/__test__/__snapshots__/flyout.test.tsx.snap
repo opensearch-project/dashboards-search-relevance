@@ -153,6 +153,39 @@ exports[`Flyout component Renders flyout component 1`] = `
                              
                             endpoint.
                           </p>
+                          <p>
+                            For AI-powered search, see
+                             
+                            <a
+                              class="euiLink euiLink--primary"
+                              href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              Agentic Search Documentation
+                              <svg
+                                aria-hidden="true"
+                                aria-label="External link"
+                                class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                focusable="false"
+                                height="16"
+                                role="img"
+                                viewBox="0 0 16 16"
+                                width="16"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                />
+                              </svg>
+                              <span
+                                class="euiScreenReaderOnly"
+                              >
+                                (opens in a new tab or window)
+                              </span>
+                            </a>
+                            .
+                          </p>
                           <h3>
                             Example
                           </h3>
@@ -163,7 +196,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           <p>
                             2. Select an index for 
                             <strong>
-                              Query 1
+                              Setup 1
                             </strong>
                              and enter a query.
                           </p>
@@ -220,7 +253,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -374,7 +406,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -385,9 +416,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 </span>
                                 <span
                                   class="euiCodeBlock__line"
-                                >
-                                  
-                                </span>
+                                />
                               </code>
                             </pre>
                             <div
@@ -426,7 +455,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                           <p>
                             3. Select an index for 
                             <strong>
-                              Query 2
+                              Setup 2
                             </strong>
                              and enter a query.
                           </p>
@@ -462,7 +491,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -616,7 +644,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 <span
                                   class="euiCodeBlock__line"
                                 >
-                                  
                                   <span
                                     class="token punctuation"
                                   >
@@ -627,9 +654,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                 </span>
                                 <span
                                   class="euiCodeBlock__line"
-                                >
-                                  
-                                </span>
+                                />
                               </code>
                             </pre>
                             <div
@@ -931,6 +956,39 @@ exports[`Flyout component Renders flyout component 1`] = `
                                      
                                     endpoint.
                                   </p>
+                                  <p>
+                                    For AI-powered search, see
+                                     
+                                    <a
+                                      class="euiLink euiLink--primary"
+                                      href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                      rel="noopener noreferrer"
+                                      target="_blank"
+                                    >
+                                      Agentic Search Documentation
+                                      <svg
+                                        aria-hidden="true"
+                                        aria-label="External link"
+                                        class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                        focusable="false"
+                                        height="16"
+                                        role="img"
+                                        viewBox="0 0 16 16"
+                                        width="16"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                        />
+                                      </svg>
+                                      <span
+                                        class="euiScreenReaderOnly"
+                                      >
+                                        (opens in a new tab or window)
+                                      </span>
+                                    </a>
+                                    .
+                                  </p>
                                   <h3>
                                     Example
                                   </h3>
@@ -941,7 +999,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <p>
                                     2. Select an index for 
                                     <strong>
-                                      Query 1
+                                      Setup 1
                                     </strong>
                                      and enter a query.
                                   </p>
@@ -998,7 +1056,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1152,7 +1209,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1163,9 +1219,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         </span>
                                         <span
                                           class="euiCodeBlock__line"
-                                        >
-                                          
-                                        </span>
+                                        />
                                       </code>
                                     </pre>
                                     <div
@@ -1204,7 +1258,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <p>
                                     3. Select an index for 
                                     <strong>
-                                      Query 2
+                                      Setup 2
                                     </strong>
                                      and enter a query.
                                   </p>
@@ -1240,7 +1294,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1394,7 +1447,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <span
                                           class="euiCodeBlock__line"
                                         >
-                                          
                                           <span
                                             class="token punctuation"
                                           >
@@ -1405,9 +1457,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         </span>
                                         <span
                                           class="euiCodeBlock__line"
-                                        >
-                                          
-                                        </span>
+                                        />
                                       </code>
                                     </pre>
                                     <div
@@ -1641,6 +1691,39 @@ exports[`Flyout component Renders flyout component 1`] = `
                                        
                                       endpoint.
                                     </p>
+                                    <p>
+                                      For AI-powered search, see
+                                       
+                                      <a
+                                        class="euiLink euiLink--primary"
+                                        href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                        rel="noopener noreferrer"
+                                        target="_blank"
+                                      >
+                                        Agentic Search Documentation
+                                        <svg
+                                          aria-hidden="true"
+                                          aria-label="External link"
+                                          class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                          focusable="false"
+                                          height="16"
+                                          role="img"
+                                          viewBox="0 0 16 16"
+                                          width="16"
+                                          xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                          <path
+                                            d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                          />
+                                        </svg>
+                                        <span
+                                          class="euiScreenReaderOnly"
+                                        >
+                                          (opens in a new tab or window)
+                                        </span>
+                                      </a>
+                                      .
+                                    </p>
                                     <h3>
                                       Example
                                     </h3>
@@ -1651,7 +1734,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     <p>
                                       2. Select an index for 
                                       <strong>
-                                        Query 1
+                                        Setup 1
                                       </strong>
                                        and enter a query.
                                     </p>
@@ -1708,7 +1791,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -1862,7 +1944,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -1873,9 +1954,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           </span>
                                           <span
                                             class="euiCodeBlock__line"
-                                          >
-                                            
-                                          </span>
+                                          />
                                         </code>
                                       </pre>
                                       <div
@@ -1914,7 +1993,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                     <p>
                                       3. Select an index for 
                                       <strong>
-                                        Query 2
+                                        Setup 2
                                       </strong>
                                        and enter a query.
                                     </p>
@@ -1950,7 +2029,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -2104,7 +2182,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="euiCodeBlock__line"
                                           >
-                                            
                                             <span
                                               class="token punctuation"
                                             >
@@ -2115,9 +2192,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           </span>
                                           <span
                                             class="euiCodeBlock__line"
-                                          >
-                                            
-                                          </span>
+                                          />
                                         </code>
                                       </pre>
                                       <div
@@ -2351,6 +2426,39 @@ exports[`Flyout component Renders flyout component 1`] = `
                                          
                                         endpoint.
                                       </p>
+                                      <p>
+                                        For AI-powered search, see
+                                         
+                                        <a
+                                          class="euiLink euiLink--primary"
+                                          href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                          rel="noopener noreferrer"
+                                          target="_blank"
+                                        >
+                                          Agentic Search Documentation
+                                          <svg
+                                            aria-hidden="true"
+                                            aria-label="External link"
+                                            class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                            focusable="false"
+                                            height="16"
+                                            role="img"
+                                            viewBox="0 0 16 16"
+                                            width="16"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                          >
+                                            <path
+                                              d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                            />
+                                          </svg>
+                                          <span
+                                            class="euiScreenReaderOnly"
+                                          >
+                                            (opens in a new tab or window)
+                                          </span>
+                                        </a>
+                                        .
+                                      </p>
                                       <h3>
                                         Example
                                       </h3>
@@ -2361,7 +2469,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         2. Select an index for 
                                         <strong>
-                                          Query 1
+                                          Setup 1
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -2418,7 +2526,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2572,7 +2679,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2583,9 +2689,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             </span>
                                             <span
                                               class="euiCodeBlock__line"
-                                            >
-                                              
-                                            </span>
+                                            />
                                           </code>
                                         </pre>
                                         <div
@@ -2624,7 +2728,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         3. Select an index for 
                                         <strong>
-                                          Query 2
+                                          Setup 2
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -2660,7 +2764,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2814,7 +2917,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="euiCodeBlock__line"
                                             >
-                                              
                                               <span
                                                 class="token punctuation"
                                               >
@@ -2825,9 +2927,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             </span>
                                             <span
                                               class="euiCodeBlock__line"
-                                            >
-                                              
-                                            </span>
+                                            />
                                           </code>
                                         </pre>
                                         <div
@@ -3049,6 +3149,39 @@ exports[`Flyout component Renders flyout component 1`] = `
                                            
                                           endpoint.
                                         </p>
+                                        <p>
+                                          For AI-powered search, see
+                                           
+                                          <a
+                                            class="euiLink euiLink--primary"
+                                            href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                          >
+                                            Agentic Search Documentation
+                                            <svg
+                                              aria-hidden="true"
+                                              aria-label="External link"
+                                              class="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                              focusable="false"
+                                              height="16"
+                                              role="img"
+                                              viewBox="0 0 16 16"
+                                              width="16"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                              <path
+                                                d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                              />
+                                            </svg>
+                                            <span
+                                              class="euiScreenReaderOnly"
+                                            >
+                                              (opens in a new tab or window)
+                                            </span>
+                                          </a>
+                                          .
+                                        </p>
                                         <h3>
                                           Example
                                         </h3>
@@ -3059,7 +3192,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <p>
                                           2. Select an index for 
                                           <strong>
-                                            Query 1
+                                            Setup 1
                                           </strong>
                                            and enter a query.
                                         </p>
@@ -3116,7 +3249,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3270,7 +3402,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3281,9 +3412,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               </span>
                                               <span
                                                 class="euiCodeBlock__line"
-                                              >
-                                                
-                                              </span>
+                                              />
                                             </code>
                                           </pre>
                                           <div
@@ -3322,7 +3451,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <p>
                                           3. Select an index for 
                                           <strong>
-                                            Query 2
+                                            Setup 2
                                           </strong>
                                            and enter a query.
                                         </p>
@@ -3358,7 +3487,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3512,7 +3640,6 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="euiCodeBlock__line"
                                               >
-                                                
                                                 <span
                                                   class="token punctuation"
                                                 >
@@ -3523,9 +3650,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               </span>
                                               <span
                                                 class="euiCodeBlock__line"
-                                              >
-                                                
-                                              </span>
+                                              />
                                             </code>
                                           </pre>
                                           <div
@@ -3864,6 +3989,68 @@ exports[`Flyout component Renders flyout component 1`] = `
                                          
                                         endpoint.
                                       </p>
+                                      <p>
+                                        For AI-powered search, see
+                                         
+                                        <EuiLink
+                                          href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                          target="_blank"
+                                        >
+                                          <a
+                                            className="euiLink euiLink--primary"
+                                            href="https://docs.opensearch.org/latest/vector-search/ai-search/agentic-search/index/"
+                                            rel="noopener noreferrer"
+                                            target="_blank"
+                                          >
+                                            Agentic Search Documentation
+                                            <EuiIcon
+                                              aria-label="External link"
+                                              className="euiLink__externalIcon"
+                                              size="s"
+                                              type="popout"
+                                            >
+                                              <EuiIconBeaker
+                                                aria-hidden={true}
+                                                aria-label="External link"
+                                                className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                                focusable="false"
+                                                role="img"
+                                                style={null}
+                                              >
+                                                <svg
+                                                  aria-hidden={true}
+                                                  aria-label="External link"
+                                                  className="euiIcon euiIcon--small euiIcon-isLoading euiLink__externalIcon"
+                                                  focusable="false"
+                                                  height={16}
+                                                  role="img"
+                                                  style={null}
+                                                  viewBox="0 0 16 16"
+                                                  width={16}
+                                                  xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                  <path
+                                                    d="M5.277 10.088c.02.014.04.03.057.047.582.55 1.134.812 1.666.812.586 0 1.84-.293 3.713-.88L9 6.212V2H7v4.212l-1.723 3.876Zm-.438.987L3.539 14h8.922l-1.32-2.969C9.096 11.677 7.733 12 7 12c-.74 0-1.463-.315-2.161-.925ZM6 2H5V1h6v1h-1v4l3.375 7.594A1 1 0 0 1 12.461 15H3.54a1 1 0 0 1-.914-1.406L6 6V2Z"
+                                                  />
+                                                </svg>
+                                              </EuiIconBeaker>
+                                            </EuiIcon>
+                                            <EuiScreenReaderOnly>
+                                              <span
+                                                className="euiScreenReaderOnly"
+                                              >
+                                                <EuiI18n
+                                                  default="(opens in a new tab or window)"
+                                                  token="euiLink.newTarget.screenReaderOnlyText"
+                                                >
+                                                  (opens in a new tab or window)
+                                                </EuiI18n>
+                                              </span>
+                                            </EuiScreenReaderOnly>
+                                          </a>
+                                        </EuiLink>
+                                        .
+                                      </p>
                                       <h3>
                                         Example
                                       </h3>
@@ -3874,7 +4061,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         2. Select an index for 
                                         <strong>
-                                          Query 1
+                                          Setup 1
                                         </strong>
                                          and enter a query.
                                       </p>
@@ -4256,7 +4443,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <p>
                                         3. Select an index for 
                                         <strong>
-                                          Query 2
+                                          Setup 2
                                         </strong>
                                          and enter a query.
                                       </p>

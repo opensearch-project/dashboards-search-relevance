@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { AppMountParameters, CoreStart } from '../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../src/plugins/data_source_management/public';
 import { SearchRelevanceApp } from './components/app';
@@ -32,7 +32,8 @@ export const renderApp = (
     uiSettings,
   };
 
-  ReactDOM.render(
+  const root = createRoot(element);
+  root.render(
     <OpenSearchDashboardsContextProvider services={{ ...coreStart, share }}>
       <ConfigProvider
         uiSettings={uiSettings}
@@ -43,9 +44,8 @@ export const renderApp = (
       >
         <SearchRelevanceApp {...props} />
       </ConfigProvider>
-    </OpenSearchDashboardsContextProvider>,
-    element
+    </OpenSearchDashboardsContextProvider>
   );
 
-  return () => ReactDOM.unmountComponentAtNode(element);
+  return () => root.unmount();
 };

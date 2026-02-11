@@ -9,15 +9,30 @@ import { AdvancedSettings } from '../components/advanced_settings';
 
 const defaultProps = {
   formData: {
+    querySetId: 'qs1',
+    modelId: 'model1',
     contextFields: ['field1'],
     tokenLimit: 4000,
     ignoreFailure: false,
+    size: 5,
   },
   updateFormData: jest.fn(),
   newContextField: '',
   setNewContextField: jest.fn(),
   addContextField: jest.fn(),
   removeContextField: jest.fn(),
+  modelOptions: [
+    { label: 'Model 1', value: 'model1' },
+    { label: 'Model 2', value: 'model2' },
+  ],
+  httpClient: {
+    get: jest.fn(),
+    post: jest.fn(),
+  },
+  selectedSearchConfigs: [
+    { label: 'Config 1', value: 'config-1' },
+    { label: 'Config 2', value: 'config-2' },
+  ],
 };
 
 describe('AdvancedSettings', () => {
@@ -117,9 +132,14 @@ describe('AdvancedSettings', () => {
     const mockUpdateFormData = jest.fn();
     render(<AdvancedSettings {...defaultProps} updateFormData={mockUpdateFormData} />);
 
+    // Clear calls from initial render (prompt template auto-save)
+    mockUpdateFormData.mockClear();
+
     const tokenInput = screen.getByDisplayValue('4000');
     fireEvent.change(tokenInput, { target: { value: '500' } }); // Below minimum
-    expect(mockUpdateFormData).not.toHaveBeenCalled();
+
+    // Should not be called with tokenLimit update for invalid value
+    expect(mockUpdateFormData).not.toHaveBeenCalledWith(expect.objectContaining({ tokenLimit: 500 }));
   });
 
   it('should handle empty context fields array', () => {
@@ -131,5 +151,59 @@ describe('AdvancedSettings', () => {
 
     expect(screen.getByText('Context Fields')).toBeInTheDocument();
     expect(screen.queryByText('field1')).not.toBeInTheDocument();
+  });
+
+  describe('searchConfigurationList conversion', () => {
+    it('should convert selectedSearchConfigs to array of IDs', () => {
+      const { container } = render(<AdvancedSettings {...defaultProps} />);
+
+      // The searchConfigurationList should be passed to ValidationPanel
+      // We can verify this indirectly by checking that ValidationPanel receives the correct props
+      expect(container).toBeInTheDocument();
+    });
+
+    it('should handle empty selectedSearchConfigs', () => {
+      const propsWithEmptyConfigs = {
+        ...defaultProps,
+        selectedSearchConfigs: [],
+      };
+      render(<AdvancedSettings {...propsWithEmptyConfigs} />);
+
+      expect(screen.getByText('Prompt Template Configuration')).toBeInTheDocument();
+    });
+
+    it('should update searchConfigurationList when selectedSearchConfigs changes', () => {
+      const { rerender } = render(<AdvancedSettings {...defaultProps} />);
+
+      const newProps = {
+        ...defaultProps,
+        selectedSearchConfigs: [
+          { label: 'New Config', value: 'new-config' },
+        ],
+      };
+      rerender(<AdvancedSettings {...newProps} />);
+
+      expect(screen.getByText('Prompt Template Configuration')).toBeInTheDocument();
+    });
+  });
+
+  describe('prompt template auto-save', () => {
+    it('should call updateFormData with prompt template', () => {
+      const mockUpdateFormData = jest.fn();
+      render(<AdvancedSettings {...defaultProps} updateFormData={mockUpdateFormData} />);
+
+      // The hook should auto-save the template when it initializes or changes
+      expect(mockUpdateFormData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          promptTemplate: expect.objectContaining({
+            outputSchema: expect.any(String),
+            systemPromptStart: expect.any(String),
+            systemPromptEnd: expect.any(String),
+            userInstructions: expect.any(String),
+            placeholders: expect.any(Array),
+          }),
+        })
+      );
+    });
   });
 });

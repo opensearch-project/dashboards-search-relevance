@@ -12,14 +12,10 @@ import {
   EuiFlexItem,
   EuiPanel,
   EuiPageHeader,
-  EuiText,
 } from '@elastic/eui';
 import { JudgmentCreateProps } from '../types';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
 import { JudgmentForm } from '../components/judgment_form';
-import { JudgmentPreview } from '../components/judgment_preview';
-import { JudgmentType } from '../types';
-
 
 export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notifications, history }) => {
   const {
@@ -34,9 +30,11 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     querySetOptions,
     searchConfigOptions,
     modelOptions,
+    indexOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
+    isLoadingIndexes,
     nameError,
     newContextField,
     setNewContextField,
@@ -46,6 +44,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     handleJudgmentFileContent,
     dateRangeError,
     parsedJudgments,
+    parseSummary,
   } = useJudgmentForm(http, notifications);
 
   const handleSubmit = useCallback(() => {
@@ -100,19 +99,22 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             querySetOptions={querySetOptions}
             searchConfigOptions={searchConfigOptions}
             modelOptions={modelOptions}
+            indexOptions={indexOptions}
             isLoadingQuerySets={isLoadingQuerySets}
             isLoadingSearchConfigs={isLoadingSearchConfigs}
             isLoadingModels={isLoadingModels}
+            isLoadingIndexes={isLoadingIndexes}
             newContextField={newContextField}
             setNewContextField={setNewContextField}
             addContextField={addContextField}
             removeContextField={removeContextField}
             dateRangeError={dateRangeError}
             handleJudgmentFileContent={handleJudgmentFileContent}
+            httpClient={http}
           />
 
           {formData.type === JudgmentType.IMPORT && (
-              <JudgmentPreview parsedJudgments={parsedJudgments} />
+              <JudgmentPreview parsedJudgments={parsedJudgments} parseSummary={parseSummary} />
           )}
 
         </EuiFlexItem>

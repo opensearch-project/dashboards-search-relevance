@@ -31,7 +31,7 @@ export const JudgmentsComboBox = ({
     let isMounted = true;
     const fetchJudgments = async () => {
       try {
-        const data = await http.get(ServiceEndpoints.Judgments);
+        const data = await http.get(ServiceEndpoints.Judgments, { query: { status: 'COMPLETED' } });
         const options = data.hits.hits.map((judgment: any) => ({
           label: judgment._source.name,
           value: judgment._source.id,

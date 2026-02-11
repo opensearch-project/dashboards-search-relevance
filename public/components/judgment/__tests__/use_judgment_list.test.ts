@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useJudgmentList } from '../hooks/use_judgment_list';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
@@ -76,6 +76,7 @@ describe('useJudgmentList', () => {
       expect(response.hits[0].name).toBe('Test Judgment');
     });
 
+    // Existing hook should still request full judgments without status filter
     expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments);
   });
 

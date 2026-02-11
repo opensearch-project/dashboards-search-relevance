@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
 import { JudgmentType } from '../types';
 
@@ -12,6 +12,7 @@ const mockService = {
   fetchQuerySets: jest.fn().mockResolvedValue([]),
   fetchSearchConfigs: jest.fn().mockResolvedValue([]),
   fetchModels: jest.fn().mockResolvedValue([]),
+  fetchUbiIndexes: jest.fn().mockResolvedValue([]),
   createJudgment: jest.fn().mockResolvedValue({}),
 };
 

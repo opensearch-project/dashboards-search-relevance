@@ -73,6 +73,7 @@ describe('QuerySetCreate', () => {
       toasts: {
         addSuccess: jest.fn(),
         addError: jest.fn(),
+        addDanger: jest.fn(),
       },
     };
     history = createMemoryHistory();

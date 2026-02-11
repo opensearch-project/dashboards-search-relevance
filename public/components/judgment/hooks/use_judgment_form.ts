@@ -26,9 +26,11 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     endDate: moment().format('YYYY-MM-DD'),
   });
 
+  // import states
   const [importedRatings, setImportedRatings] = useState<any[]>([]);
   const [parsedJudgments, setParsedJudgments] = useState<string[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [parseSummary, setParseSummary] = useState<any>(null);
 
   // Selection states
   const [selectedQuerySet, setSelectedQuerySet] = useState<ComboBoxOption[]>([]);
@@ -39,11 +41,13 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const [querySetOptions, setQuerySetOptions] = useState<ComboBoxOption[]>([]);
   const [searchConfigOptions, setSearchConfigOptions] = useState<ComboBoxOption[]>([]);
   const [modelOptions, setModelOptions] = useState<ModelOption[]>([]);
+  const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
 
   // Loading states
   const [isLoadingQuerySets, setIsLoadingQuerySets] = useState(false);
   const [isLoadingSearchConfigs, setIsLoadingSearchConfigs] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
+  const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
   // UI states
   const [nameError, setNameError] = useState('');
@@ -54,43 +58,46 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const service = new JudgmentService(http);
 
   const fetchData = useCallback(async () => {
-    if (formData.type === JudgmentType.LLM) {
-      // Fetch query sets
-      setIsLoadingQuerySets(true);
+    const fetchIndexes = async () => {
+      setIsLoadingIndexes(true);
       try {
-        const querySets = await service.fetchQuerySets();
-        setQuerySetOptions(querySets);
+        setIndexOptions(await service.fetchUbiIndexes());
       } catch (error) {
+        notifications.toasts.addDanger('Failed to fetch indexes');
+        setIndexOptions([]);
+      } finally {
+        setIsLoadingIndexes(false);
+      }
+    };
+
+    if (formData.type !== JudgmentType.LLM) {
+      await fetchIndexes();
+      return;
+    }
+
+    setIsLoadingIndexes(true);
+    setIsLoadingQuerySets(true);
+    setIsLoadingSearchConfigs(true);
+    setIsLoadingModels(true);
+
+    await Promise.all([
+      service.fetchUbiIndexes().then(setIndexOptions).catch(() => {
+        notifications.toasts.addDanger('Failed to fetch indexes');
+        setIndexOptions([]);
+      }).finally(() => setIsLoadingIndexes(false)),
+      service.fetchQuerySets().then(setQuerySetOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch query sets');
         setQuerySetOptions([]);
-      } finally {
-        setIsLoadingQuerySets(false);
-      }
-
-      // Fetch search configurations
-      setIsLoadingSearchConfigs(true);
-      try {
-        const searchConfigs = await service.fetchSearchConfigs();
-        setSearchConfigOptions(searchConfigs);
-      } catch (error) {
+      }).finally(() => setIsLoadingQuerySets(false)),
+      service.fetchSearchConfigs().then(setSearchConfigOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch search configurations');
         setSearchConfigOptions([]);
-      } finally {
-        setIsLoadingSearchConfigs(false);
-      }
-
-      // Fetch models
-      setIsLoadingModels(true);
-      try {
-        const models = await service.fetchModels();
-        setModelOptions(models);
-      } catch (error) {
+      }).finally(() => setIsLoadingSearchConfigs(false)),
+      service.fetchModels().then(setModelOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch models');
         setModelOptions([]);
-      } finally {
-        setIsLoadingModels(false);
-      }
-    }
+      }).finally(() => setIsLoadingModels(false)),
+    ]);
   }, [formData.type, http, notifications.toasts]);
 
   useEffect(() => {
@@ -129,22 +136,34 @@ export const useJudgmentForm = (http: any, notifications: any) => {
         setImportedRatings([]);
         setParsedJudgments([]);
         setFiles([]);
+        setParseSummary(null);
         return;
       }
 
       setImportedRatings(result.judgments);
       setParsedJudgments(result.judgments.map((j) => JSON.stringify(j)));
-      console.log('✅ ImportedRatings:', result.judgments);
-      console.log('✅ ParsedJudgments:', result.judgments.map((j) => JSON.stringify(j)));
+      setParseSummary(result.summary || null);
+
       setFiles([file]);
       setImportError('');
+
+      if (result.summary?.failedRecords > 0) {
+        notifications.toasts.addWarning(
+          `Parsed with warnings: ${result.summary.failedRecords} failed records`
+        );
+      } else {
+        notifications.toasts.addSuccess(
+          `Successfully parsed ${result.summary?.successfulRecords ?? result.judgments.length} records`
+        );
+      }
     } else {
       setImportedRatings([]);
       setParsedJudgments([]);
       setFiles([]);
       setImportError('');
+      setParseSummary(null);
     }
-  }, []);
+  }, [notifications.toasts]);
 
   const validateAndSubmit = useCallback(
     async (onSuccess: () => void) => {
@@ -206,9 +225,11 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     querySetOptions,
     searchConfigOptions,
     modelOptions,
+    indexOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
+    isLoadingIndexes,
     nameError,
     newContextField,
     setNewContextField,
@@ -223,5 +244,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     handleJudgmentFileContent,
     validateAndSubmit,
     dateRangeError,
+    importError,
+    parseSummary,
   };
 };
