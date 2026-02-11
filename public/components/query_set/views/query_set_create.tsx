@@ -62,9 +62,28 @@ export const QuerySetCreate = ({ http, notifications, history }: QuerySetCreateP
         description: formState.description,
         sampling: formState.sampling,
         querySetSize: formState.querySetSize,
-        querySetQueries: formState.manualQueries ? JSON.parse(formState.manualQueries) : undefined,
+        querySetQueries: (() => {
+          if (!formState.manualQueries) return undefined;
+          try {
+            const parsed = JSON.parse(formState.manualQueries);
+            if (Array.isArray(parsed)) {
+              const queries = parsed.map((q: any) => ({
+                queryText: q.queryText,
+                referenceAnswer: q.referenceAnswer,
+              }));
+              console.log('Constructed querySetQueries (Array of Objects):', queries);
+              return queries;
+            }
+            return undefined;
+          } catch (e) {
+            console.error('Failed to parse manualQueries:', e);
+            return undefined;
+          }
+        })() as any,
         ...(formState.ubiQueriesIndex && { ubiQueriesIndex: formState.ubiQueriesIndex }),
       };
+
+      console.log('Creating Query Set with data:', querySetData);
 
       await querySetService.createQuerySet(querySetData, formState.isManualInput);
       notifications.toasts.addSuccess(`Query set "${formState.name}" created successfully`);

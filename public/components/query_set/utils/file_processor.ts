@@ -28,50 +28,25 @@ export const parseQueryFromLine = (line: string): QueryItem | null => {
       };
     }
   } catch (e) {
-    // Not valid JSON, continue to CSV/Text parsing
+    // Not valid JSON, continue to text parsing
   }
 
-  // Simple CSV parser: separate by comma, respect double quotes
-  const parts: string[] = [];
-  let current = '';
-  let inQuote = false;
-
-  for (let i = 0; i < trimmedLine.length; i++) {
-    const char = trimmedLine[i];
-    if (char === '"') {
-      // Handle escaped quotes ("")
-      if (i + 1 < trimmedLine.length && trimmedLine[i + 1] === '"') {
-        current += '"';
-        i++;
-      } else {
-        inQuote = !inQuote;
-      }
-    } else if (char === ',' && !inQuote) {
-      parts.push(current.trim());
-      current = '';
-    } else {
-      current += char;
+  // Plain text format: queryText#referenceAnswer
+  // The '#' character is the separator between query and reference answer
+  const hashIndex = trimmedLine.indexOf('#');
+  if (hashIndex > 0) {
+    const queryText = trimmedLine.substring(0, hashIndex).trim();
+    const referenceAnswer = trimmedLine.substring(hashIndex + 1).trim();
+    if (queryText) {
+      return { queryText, referenceAnswer };
     }
   }
-  parts.push(current.trim());
 
-  // If we have at least 2 parts, treat as query + reference
-  // If we have 1 part, treat as just query
-  if (parts.length >= 2) {
-    // If the first part is empty, it's invalid
-    if (!parts[0]) return null;
-    return {
-      queryText: parts[0],
-      referenceAnswer: parts[1]
-    };
-  } else if (parts.length === 1 && parts[0]) {
-    return {
-      queryText: parts[0],
-      referenceAnswer: ''
-    };
-  }
-
-  return null;
+  // No '#' separator — treat entire line as query text
+  return {
+    queryText: trimmedLine,
+    referenceAnswer: ''
+  };
 };
 
 export const processQueryFile = async (file: File): Promise<FileProcessResult> => {
@@ -101,4 +76,3 @@ export const processQueryFile = async (file: File): Promise<FileProcessResult> =
     return { queries: [], error: 'Error reading file content' };
   }
 };
-

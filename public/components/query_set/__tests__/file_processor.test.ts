@@ -79,11 +79,11 @@ describe('file_processor', () => {
       expect(result.queries[2].queryText).toBe('another valid query');
     });
 
-    it('should parsed CSV/Text formatted queries correctly', async () => {
+    it('should parse text queries with # separator correctly', async () => {
       const fileContent = `simple query
-query with ref, reference
-"query, with comma", reference
-"query, with comma and no ref"`;
+query with ref#reference
+query with, comma#reference answer
+query with, comma no reference`;
 
       const mockFile = ({
         text: jest.fn().mockResolvedValue(fileContent),
@@ -103,11 +103,11 @@ query with ref, reference
         referenceAnswer: 'reference',
       });
       expect(result.queries[2]).toEqual({
-        queryText: 'query, with comma',
-        referenceAnswer: 'reference',
+        queryText: 'query with, comma',
+        referenceAnswer: 'reference answer',
       });
       expect(result.queries[3]).toEqual({
-        queryText: 'query, with comma and no ref',
+        queryText: 'query with, comma no reference',
         referenceAnswer: '',
       });
     });

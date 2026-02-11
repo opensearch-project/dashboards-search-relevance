@@ -17,7 +17,7 @@ export interface QuerySetData {
 }
 
 export class QuerySetService {
-  constructor(private http: CoreStart['http']) {}
+  constructor(private http: CoreStart['http']) { }
 
 
   /**
@@ -38,18 +38,20 @@ export class QuerySetService {
 
     const body = isManualInput
       ? {
-          name: data.name,
-          description: data.description,
-          sampling: 'manual',
-          querySetQueries: data.querySetQueries,
-        }
+        name: data.name,
+        description: data.description,
+        sampling: 'manual',
+        querySetQueries: data.querySetQueries,
+      }
       : {
-          name: data.name,
-          description: data.description,
-          sampling: data.sampling,
-          querySetSize: data.querySetSize,
-          ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),
-        };
+        name: data.name,
+        description: data.description,
+        sampling: data.sampling,
+        querySetSize: data.querySetSize,
+        ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),
+      };
+
+    console.log('Sending QuerySet Request Body:', JSON.stringify(body, null, 2));
 
     return this.http[method](endpoint, {
       body: JSON.stringify(body),
