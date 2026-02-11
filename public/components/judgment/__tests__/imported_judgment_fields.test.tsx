@@ -55,7 +55,12 @@ describe('ImportedJudgmentFields', () => {
     });
 
     expect(handleJudgmentFileContent).toHaveBeenCalledTimes(1);
-    expect(handleJudgmentFileContent).toHaveBeenCalledWith(expect.any(FileList));
+    expect(handleJudgmentFileContent).toHaveBeenCalledTimes(1);
+
+    const arg = handleJudgmentFileContent.mock.calls[0][0];
+    expect(arg).toBeDefined();
+    expect(arg.length).toBe(1);
+    expect(arg[0]).toBeInstanceOf(File);
   });
 
   it('should not crash if handleJudgmentFileContent is not provided', () => {

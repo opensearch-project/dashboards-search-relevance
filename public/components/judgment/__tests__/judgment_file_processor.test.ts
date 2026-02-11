@@ -5,10 +5,33 @@
 
 import { processJudgmentFile } from '../utils/judgment_file_processor';
 
-const makeFile = (content: string) => {
-  // JSDOM supports File
-  return new File([content], 'judgments.csv', { type: 'text/csv' });
+type MockedFile = File & { __mockText?: string };
+
+const makeFile = (content: string): MockedFile => {
+  const file = new File([content], 'judgments.csv', { type: 'text/csv' }) as MockedFile;
+
+  // Store text so our mocked file.text() can return it.
+  file.__mockText = content;
+
+  return file;
 };
+
+beforeAll(() => {
+  /**
+   * In JSDOM, File exists, but the `text()` API is not always implemented
+   * consistently across versions.
+   *
+   * Our production code likely calls `await file.text()`.
+   * So we mock that to always return our test content.
+   */
+  Object.defineProperty(File.prototype, 'text', {
+    configurable: true,
+    writable: true,
+    value: function (this: MockedFile) {
+      return Promise.resolve(this.__mockText ?? '');
+    },
+  });
+});
 
 describe('judgment_file_processor', () => {
   beforeEach(() => {
@@ -34,12 +57,14 @@ describe('judgment_file_processor', () => {
   });
 
   it('should parse valid CSV with header row', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      laptop charger,doc1,1
-      laptop charger,doc2,0
-      iphone case,doc9,2
-    `);
+    const file = makeFile(
+      [
+        'query,docid,rating',
+        'laptop charger,doc1,1',
+        'laptop charger,doc2,0',
+        'iphone case,doc9,2',
+      ].join('\n')
+    );
 
     const result = await processJudgmentFile(file);
 
@@ -75,11 +100,13 @@ describe('judgment_file_processor', () => {
   });
 
   it('should handle quoted values with commas', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      "laptop charger, 65w",doc1,1
-      "laptop charger, 65w",doc2,0
-    `);
+    const file = makeFile(
+      [
+        'query,docid,rating',
+        '"laptop charger, 65w",doc1,1',
+        '"laptop charger, 65w",doc2,0',
+      ].join('\n')
+    );
 
     const result = await processJudgmentFile(file);
 
@@ -100,10 +127,7 @@ describe('judgment_file_processor', () => {
   });
 
   it('should handle escaped quotes inside quoted field', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      "iphone ""pro"" case",doc1,2
-    `);
+    const file = makeFile(['query,docid,rating', '"iphone ""pro"" case",doc1,2'].join('\n'));
 
     const result = await processJudgmentFile(file);
 
@@ -120,11 +144,7 @@ describe('judgment_file_processor', () => {
   });
 
   it('should count invalid column length as failed record', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      laptop,doc1
-      iphone,doc2,1
-    `);
+    const file = makeFile(['query,docid,rating', 'laptop,doc1', 'iphone,doc2,1'].join('\n'));
 
     const result = await processJudgmentFile(file);
 
@@ -140,11 +160,7 @@ describe('judgment_file_processor', () => {
   });
 
   it('should count missing values as failed record', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      laptop,doc1,
-      iphone,doc2,1
-    `);
+    const file = makeFile(['query,docid,rating', 'laptop,doc1,', 'iphone,doc2,1'].join('\n'));
 
     const result = await processJudgmentFile(file);
 
@@ -157,11 +173,7 @@ describe('judgment_file_processor', () => {
   });
 
   it('should count invalid rating as failed record', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      laptop,doc1,abc
-      iphone,doc2,1
-    `);
+    const file = makeFile(['query,docid,rating', 'laptop,doc1,abc', 'iphone,doc2,1'].join('\n'));
 
     const result = await processJudgmentFile(file);
 
@@ -174,13 +186,9 @@ describe('judgment_file_processor', () => {
   });
 
   it('should ignore blank lines and still compute correct line numbers', async () => {
-    const file = makeFile(`
-      query,docid,rating
-
-      laptop,doc1,1
-
-      iphone,doc2,2
-    `);
+    const file = makeFile(
+      ['query,docid,rating', '', 'laptop,doc1,1', '', 'iphone,doc2,2'].join('\n')
+    );
 
     const result = await processJudgmentFile(file);
 
@@ -191,12 +199,9 @@ describe('judgment_file_processor', () => {
   });
 
   it('should normalize numeric ratings consistently', async () => {
-    const file = makeFile(`
-      query,docid,rating
-      laptop,doc1,1.0
-      laptop,doc2,1
-      laptop,doc3,01
-    `);
+    const file = makeFile(
+      ['query,docid,rating', 'laptop,doc1,1.0', 'laptop,doc2,1', 'laptop,doc3,01'].join('\n')
+    );
 
     const result = await processJudgmentFile(file);
 

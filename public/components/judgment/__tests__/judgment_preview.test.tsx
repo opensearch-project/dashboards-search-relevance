@@ -21,6 +21,18 @@ const makeParsedJudgments = () => [
   }),
 ];
 
+const getByTextContent = (textToMatch: string) =>
+  screen.getByText((_, node) => {
+    const hasText = (n: Element | null) =>
+      (n?.textContent ?? '').replace(/\s+/g, ' ').trim().includes(textToMatch);
+
+    const nodeHasText = hasText(node as Element);
+    const childrenDontHaveText = Array.from(node?.children ?? []).every((child) => !hasText(child));
+
+    return nodeHasText && childrenDontHaveText;
+  });
+
+
 describe('JudgmentPreview', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -101,7 +113,9 @@ describe('JudgmentPreview', () => {
 
     fireEvent.change(input, { target: { value: 'zzzzzz' } });
 
-    expect(screen.getByText('No matches found for')).toBeInTheDocument();
+    expect(
+      screen.getByText((content) => content.includes('No matches found for'))
+    ).toBeInTheDocument();
   });
 
   it('should render parseSummary info and sample errors', () => {
@@ -124,22 +138,33 @@ describe('JudgmentPreview', () => {
     );
 
     expect(screen.getByText('Parsed with warnings')).toBeInTheDocument();
-    expect(screen.getByText('8')).toBeInTheDocument();
-    expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByText('2 unique queries')).toBeInTheDocument();
 
-    expect(screen.getByText(/Total lines read:/i)).toBeInTheDocument();
-    expect(screen.getByText(/headers skipped:/i)).toBeInTheDocument();
+    // Summary line
+    getByTextContent('8 successful records');
+    getByTextContent('2 failed records');
+    getByTextContent('2 unique queries');
 
+    // Total lines / headers
+    getByTextContent('Total lines read: 10');
+    getByTextContent('headers skipped: 1');
+
+    // Rating distribution
     expect(screen.getByText(/Rating Distribution:/i)).toBeInTheDocument();
-    expect(screen.getByText(/1: 3/i)).toBeInTheDocument();
-    expect(screen.getByText(/0: 2/i)).toBeInTheDocument();
+    getByTextContent('1: 3');
+    getByTextContent('0: 2');
 
+    // Errors
     expect(screen.getByText('Sample Errors:')).toBeInTheDocument();
-    expect(screen.getByText(/Line 2:/i)).toBeInTheDocument();
+    getByTextContent('Line 2:');
     expect(screen.getByText(/Invalid format/i)).toBeInTheDocument();
     expect(screen.getByText(/bad,line/i)).toBeInTheDocument();
+
+    getByTextContent('Line 6:');
+    expect(screen.getByText(/Missing values/i)).toBeInTheDocument();
+    expect(screen.getByText(/missing,rating,/i)).toBeInTheDocument();
   });
+
+
 
   it('should show "Showing 10 of X errors" when errors exceed MAX_ERROR_PREVIEW', () => {
     const errors = Array.from({ length: 15 }).map((_, i) => ({
