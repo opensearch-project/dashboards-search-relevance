@@ -183,6 +183,10 @@ export const useJudgmentForm = (http: any, notifications: any) => {
         });
         return;
       }
+      if (formData.type === JudgmentType.IMPORT && importedRatings.length === 0) {
+        notifications.toasts.addDanger('No valid judgments found in uploaded CSV.');
+        return;
+      }
 
       try {
         const payload = buildJudgmentPayload(
