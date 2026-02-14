@@ -179,4 +179,122 @@ describe('useJudgmentForm', () => {
     );
     expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith('Please select a model id');
   });
+
+  it('should fetch only indexes for UBI type', async () => {
+    mockService.fetchUbiIndexes.mockResolvedValue([
+      { label: 'ubi-index-1', value: 'ubi-1' },
+    ]);
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    act(() => {
+      result.current.updateFormData({ type: JudgmentType.UBI });
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    // For UBI, only index fetch should be called, not query sets, configs, or models
+    expect(mockService.fetchUbiIndexes).toHaveBeenCalled();
+  });
+
+  it('should handle index fetch error for UBI type', async () => {
+    mockService.fetchUbiIndexes.mockRejectedValue(new Error('Index fetch error'));
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    act(() => {
+      result.current.updateFormData({ type: JudgmentType.UBI });
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith('Failed to fetch indexes');
+  });
+
+  it('should handle LLM fetch errors for query sets', async () => {
+    mockService.fetchQuerySets.mockRejectedValue(new Error('Query set error'));
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith('Failed to fetch query sets');
+  });
+
+  it('should handle LLM fetch errors for search configs', async () => {
+    mockService.fetchSearchConfigs.mockRejectedValue(new Error('Search config error'));
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith(
+      'Failed to fetch search configurations'
+    );
+  });
+
+  it('should handle LLM fetch errors for models', async () => {
+    mockService.fetchModels.mockRejectedValue(new Error('Model error'));
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith('Failed to fetch models');
+  });
+
+  it('should handle date range validation error for UBI', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+    const mockOnSuccess = jest.fn();
+
+    act(() => {
+      result.current.updateFormData({
+        name: 'test',
+        type: JudgmentType.UBI,
+        startDate: '2023-12-31',
+        endDate: '2023-01-01',
+      });
+    });
+
+    await act(async () => {
+      await result.current.validateAndSubmit(mockOnSuccess);
+    });
+
+    expect(result.current.dateRangeError).toBe('End Date cannot be earlier than Start Date.');
+    expect(mockNotifications.toasts.addDanger).toHaveBeenCalledWith(
+      'End Date cannot be earlier than Start Date.'
+    );
+    expect(mockOnSuccess).not.toHaveBeenCalled();
+  });
+
+  it('should set loading states during LLM data fetch', async () => {
+    // Delay service responses to observe loading states
+    let resolveIndexes: (value: any) => void;
+    mockService.fetchUbiIndexes.mockReturnValue(
+      new Promise((resolve) => {
+        resolveIndexes = resolve;
+      })
+    );
+
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Initially loading states should be set
+    expect(result.current.isLoadingIndexes).toBe(true);
+
+    // Resolve the promise
+    await act(async () => {
+      resolveIndexes!([]);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
 });
