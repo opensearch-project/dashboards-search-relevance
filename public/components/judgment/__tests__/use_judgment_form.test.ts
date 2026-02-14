@@ -297,4 +297,78 @@ describe('useJudgmentForm', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
     });
   });
+
+  it('should add a context field when newContextField is set', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Set newContextField
+    act(() => {
+      result.current.setNewContextField('title');
+    });
+
+    // Call addContextField
+    act(() => {
+      result.current.addContextField();
+    });
+
+    expect(result.current.formData.contextFields).toContain('title');
+    expect(result.current.newContextField).toBe('');
+  });
+
+  it('should not add duplicate context field', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Add a field first
+    act(() => {
+      result.current.setNewContextField('title');
+    });
+    act(() => {
+      result.current.addContextField();
+    });
+
+    // Try to add the same field again
+    act(() => {
+      result.current.setNewContextField('title');
+    });
+    act(() => {
+      result.current.addContextField();
+    });
+
+    // Should only appear once
+    const titleCount = result.current.formData.contextFields?.filter((f) => f === 'title').length;
+    expect(titleCount).toBe(1);
+  });
+
+  it('should not add empty context field', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // newContextField is empty by default
+    act(() => {
+      result.current.addContextField();
+    });
+
+    expect(result.current.formData.contextFields || []).toHaveLength(0);
+  });
+
+  it('should remove a context field', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Add a field first
+    act(() => {
+      result.current.setNewContextField('title');
+    });
+    act(() => {
+      result.current.addContextField();
+    });
+
+    expect(result.current.formData.contextFields).toContain('title');
+
+    // Remove it
+    act(() => {
+      result.current.removeContextField('title');
+    });
+
+    expect(result.current.formData.contextFields).not.toContain('title');
+  });
 });
+

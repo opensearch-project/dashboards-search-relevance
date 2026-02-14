@@ -622,7 +622,8 @@ describe('useJudgmentList', () => {
   });
 
   it('should show completion toast when judgment transitions from PROCESSING to COMPLETED', async () => {
-    jest.useRealTimers();
+    // Helper to flush microtask queue with fake timers
+    const flushPromises = () => new Promise((r) => jest.requireActual('timers').setImmediate(r));
 
     const processingResponse = {
       hits: {
@@ -656,8 +657,13 @@ describe('useJudgmentList', () => {
       },
     };
 
-    // Initial fetch returns PROCESSING
-    mockHttp.get.mockResolvedValueOnce(processingResponse);
+    // findJudgments returns PROCESSING (triggers startPolling via useEffect)
+    // First poll also returns PROCESSING (populates previousJudgments.current)
+    // Second poll returns COMPLETED (detects transition, fires toast)
+    mockHttp.get
+      .mockResolvedValueOnce(processingResponse)   // findJudgments
+      .mockResolvedValueOnce(processingResponse)    // 1st poll — populates previousJudgments
+      .mockResolvedValue(completedResponse);         // 2nd poll — detects transition
 
     const { result } = renderHook(() => useJudgmentList(mockHttp as any));
 
@@ -667,13 +673,31 @@ describe('useJudgmentList', () => {
 
     expect(result.current.hasProcessing).toBe(true);
 
-    // Verify the hook detected the PROCESSING status and would start polling
-    // The polling mechanism is tested through state transitions
-    expect(result.current.hasProcessing).toBe(true);
+    // 1st poll: populates previousJudgments.current with PROCESSING data
+    await act(async () => {
+      jest.advanceTimersByTime(15000);
+      await flushPromises();
+      await flushPromises();
+    });
+
+    // 2nd poll: detects PROCESSING→COMPLETED transition, fires toast
+    await act(async () => {
+      jest.advanceTimersByTime(15000);
+      await flushPromises();
+      await flushPromises();
+    });
+
+    expect(mockAddSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Judgment Completed',
+      })
+    );
   });
 
+
+
   it('should handle polling error and increment error count', async () => {
-    jest.useRealTimers();
+    const flushPromises = () => new Promise((r) => jest.requireActual('timers').setImmediate(r));
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
 
     const processingResponse = {
@@ -700,9 +724,56 @@ describe('useJudgmentList', () => {
       await result.current.findJudgments();
     });
 
-    // Verify the hook properly handled the fetch and detected PROCESSING status
-    expect(result.current.hasProcessing).toBe(true);
+    // Polling fetch fails
+    mockHttp.get.mockRejectedValue(new Error('Network error'));
 
+    await act(async () => {
+      jest.advanceTimersByTime(15000);
+      await flushPromises();
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith('Background refresh failed:', expect.any(Error));
     consoleSpy.mockRestore();
   });
+
+  it('should stop polling after MAX_POLLING_DURATION', async () => {
+    const flushPromises = () => new Promise((r) => jest.requireActual('timers').setImmediate(r));
+
+    const processingResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Timeout Test',
+              type: 'LLM',
+              status: 'PROCESSING',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(processingResponse);
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(result.current.hasProcessing).toBe(true);
+
+    // Advance past MAX_POLLING_DURATION (10 minutes) to trigger the timeout guard
+    await act(async () => {
+      jest.advanceTimersByTime(10 * 60 * 1000 + 15000);
+      await flushPromises();
+    });
+
+    // After timeout, isBackgroundRefreshing should be false
+    expect(result.current.isBackgroundRefreshing).toBe(false);
+  });
 });
+
+
