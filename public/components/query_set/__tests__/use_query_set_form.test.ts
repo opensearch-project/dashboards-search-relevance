@@ -25,6 +25,10 @@ describe('useQuerySetForm', () => {
       queries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
       error: undefined,
     });
+    (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+      queries: [{ queryText: 'test query', referenceAnswer: '' }],
+      error: undefined,
+    });
   });
 
   it('initializes with default values', () => {
@@ -35,6 +39,7 @@ describe('useQuerySetForm', () => {
     expect(result.current.sampling).toBe('random');
     expect(result.current.querySetSize).toBe(10);
     expect(result.current.isManualInput).toBe(false);
+    expect(result.current.manualInputMethod).toBe('file');
     expect(result.current.manualQueries).toBe('');
     expect(result.current.files).toEqual([]);
     expect(result.current.parsedQueries).toEqual([]);
@@ -94,6 +99,16 @@ describe('useQuerySetForm', () => {
     });
 
     expect(result.current.isManualInput).toBe(true);
+  });
+
+  it('updates manualInputMethod correctly', () => {
+    const { result } = renderHook(() => useQuerySetForm());
+
+    act(() => {
+      result.current.setManualInputMethod('text');
+    });
+
+    expect(result.current.manualInputMethod).toBe('text');
   });
 
   it('validates fields correctly', () => {
@@ -237,5 +252,186 @@ describe('useQuerySetForm', () => {
     expect(result.current.files).toEqual([]);
     expect(result.current.manualQueries).toBe('');
     expect(result.current.parsedQueries).toEqual([]);
+  });
+
+  describe('handleTextChange', () => {
+    it('parses valid multi-line text input', () => {
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [
+          { queryText: 'red bluejeans', referenceAnswer: '' },
+          { queryText: 'acid wash blue jeans', referenceAnswer: '' },
+        ],
+      });
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.handleTextChange('red bluejeans\nacid wash blue jeans');
+      });
+
+      expect(fileProcessor.parseTextQueries).toHaveBeenCalledWith('red bluejeans\nacid wash blue jeans');
+      expect(result.current.manualQueries).toBe(
+        JSON.stringify([
+          { queryText: 'red bluejeans', referenceAnswer: '' },
+          { queryText: 'acid wash blue jeans', referenceAnswer: '' },
+        ])
+      );
+      expect(result.current.parsedQueries).toHaveLength(2);
+    });
+
+    it('parses text input with reference answers via NDJSON', () => {
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [
+          { queryText: 'red blue jeans', referenceAnswer: 'fashion query' },
+        ],
+      });
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.handleTextChange('{"queryText":"red blue jeans","referenceAnswer":"fashion query"}');
+      });
+
+      expect(result.current.manualQueries).toBe(
+        JSON.stringify([{ queryText: 'red blue jeans', referenceAnswer: 'fashion query' }])
+      );
+      expect(result.current.parsedQueries).toEqual([
+        JSON.stringify({ queryText: 'red blue jeans', referenceAnswer: 'fashion query' }),
+      ]);
+    });
+
+    it('clears state when text is empty or whitespace', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // First set some data
+      act(() => {
+        result.current.setManualQueries('some data');
+        result.current.setParsedQueries(['query1']);
+      });
+
+      // Then clear with empty input
+      act(() => {
+        result.current.handleTextChange('   ');
+      });
+
+      expect(fileProcessor.parseTextQueries).not.toHaveBeenCalled();
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('sets error when parseTextQueries returns error', () => {
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [],
+        error: 'No queries provided. Enter at least one query.',
+      });
+
+      const { result } = renderHook(() => useQuerySetForm());
+
+      act(() => {
+        result.current.handleTextChange('some text');
+      });
+
+      expect(result.current.errors.manualQueriesError).toBe(
+        'No queries provided. Enter at least one query.'
+      );
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+    });
+
+    it('clears previous errors on successful parse', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // First, set an error
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [],
+        error: 'Some error',
+      });
+
+      act(() => {
+        result.current.handleTextChange('bad input');
+      });
+
+      expect(result.current.errors.manualQueriesError).toBe('Some error');
+
+      // Then, provide good input
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [{ queryText: 'good query', referenceAnswer: '' }],
+      });
+
+      act(() => {
+        result.current.handleTextChange('good query');
+      });
+
+      expect(result.current.errors.manualQueriesError).toBe('');
+    });
+  });
+
+  describe('handleManualInputMethodChange', () => {
+    it('switches to text mode and clears all data', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // Set some initial file data
+      act(() => {
+        result.current.setFiles([new File(['test'], 'test.txt')]);
+        result.current.setManualQueries('test queries');
+        result.current.setParsedQueries(['query1', 'query2']);
+      });
+
+      // Switch to text mode
+      act(() => {
+        result.current.handleManualInputMethodChange('text');
+      });
+
+      expect(result.current.manualInputMethod).toBe('text');
+      expect(result.current.files).toEqual([]);
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+      expect(result.current.errors.manualQueriesError).toBe('');
+    });
+
+    it('switches back to file mode and clears all data', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // Set text mode with some data
+      act(() => {
+        result.current.setManualInputMethod('text');
+        result.current.setManualQueries('some queries');
+        result.current.setParsedQueries(['query1']);
+      });
+
+      // Switch back to file mode
+      act(() => {
+        result.current.handleManualInputMethodChange('file');
+      });
+
+      expect(result.current.manualInputMethod).toBe('file');
+      expect(result.current.files).toEqual([]);
+      expect(result.current.manualQueries).toBe('');
+      expect(result.current.parsedQueries).toEqual([]);
+      expect(result.current.errors.manualQueriesError).toBe('');
+    });
+
+    it('clears errors when switching input methods', () => {
+      const { result } = renderHook(() => useQuerySetForm());
+
+      // Set an error on manual queries
+      (fileProcessor.parseTextQueries as jest.Mock).mockReturnValue({
+        queries: [],
+        error: 'Some error',
+      });
+
+      act(() => {
+        result.current.handleTextChange('bad input');
+      });
+
+      expect(result.current.errors.manualQueriesError).toBe('Some error');
+
+      // Switch method should clear the error
+      act(() => {
+        result.current.handleManualInputMethodChange('file');
+      });
+
+      expect(result.current.errors.manualQueriesError).toBe('');
+    });
   });
 });
