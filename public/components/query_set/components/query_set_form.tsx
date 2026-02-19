@@ -7,10 +7,8 @@ import React from 'react';
 import {
   EuiButton,
   EuiFieldNumber,
-  EuiFlexGroup,
   EuiCompressedFormRow,
   EuiCompressedTextArea,
-  EuiFlexItem,
   EuiSelect,
   EuiFormRow,
   EuiForm,
@@ -136,10 +134,10 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
               <EuiFilePicker
                 id={filePickerId}
                 initialPromptText="Select or drag and drop a query file"
-                onChange={(files) => { if (files) handleFileContent(files); }}
+                onChange={handleFileContent}
                 display="large"
                 aria-label="Upload query file"
-                accept=".txt"
+                accept=".ndjson,.json,.jsonl,.txt"
                 data-test-subj="manualQueriesFilePicker"
                 fullWidth
               />

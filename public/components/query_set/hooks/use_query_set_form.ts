@@ -40,7 +40,7 @@ export interface UseQuerySetFormReturn {
   isFormValid: () => boolean;
 
   // File handling
-  handleFileContent: (files: FileList) => Promise<void>;
+  handleFileContent: (files: FileList | null) => Promise<void>;
   clearFileData: () => void;
 
   // Text input handling
@@ -98,7 +98,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     return !hasValidationErrors(validationErrors);
   }, [name, description, querySetSize, manualQueries, isManualInput]);
 
-  const handleFileContent = useCallback(async (files: FileList) => {
+  const handleFileContent = useCallback(async (files: FileList | null) => {
     if (files && files.length > 0) {
       const file = files[0];
       const result = await processQueryFile(file);
@@ -122,6 +122,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     if (!text.trim()) {
       setManualQueries('');
       setParsedQueries([]);
+      setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
       return;
     }
     const result = parseTextQueries(text);

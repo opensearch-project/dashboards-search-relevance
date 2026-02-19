@@ -23,7 +23,10 @@ const tryParseJsonLine = (line: string): QueryItem | null => {
     if (parsed && typeof parsed.queryText === 'string' && parsed.queryText.trim()) {
       return {
         queryText: String(parsed.queryText).trim(),
-        referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : '',
+        referenceAnswer:
+          parsed.referenceAnswer !== undefined && parsed.referenceAnswer !== null
+            ? String(parsed.referenceAnswer).trim()
+            : '',
       };
     }
     return null;
@@ -50,10 +53,10 @@ const extractValue = (raw: string): string => {
  */
 const tryParseKeyValueLine = (line: string): QueryItem | null => {
   // Match: query: <value> [, answer: <value>]
-  const kvRegex = /^query:\s*(.+?)(?:,\s*answer:\s*(.+))?$/i;
+  const kvRegex = /^query:\s*([\s\S]*?)(?:,\s*answer:\s*([\s\S]*?))?\s*$/i;
   const match = line.match(kvRegex);
   if (match) {
-    const queryText = extractValue(match[1].replace(/,\s*$/, ''));
+    const queryText = extractValue(match[1]);
     if (queryText.length > 0) {
       return {
         queryText,
@@ -110,9 +113,7 @@ export const parseTextQueries = (text: string): FileProcessResult => {
     });
   }
 
-  if (queryList.length === 0) {
-    return { queries: [], error: 'No valid queries found.' };
-  }
+
 
   return { queries: queryList };
 };
@@ -129,7 +130,10 @@ export const processQueryFile = async (file: File): Promise<FileProcessResult> =
         if (parsed.queryText) {
           queryList.push({
             queryText: String(parsed.queryText).trim(),
-            referenceAnswer: parsed.referenceAnswer ? String(parsed.referenceAnswer).trim() : '',
+            referenceAnswer:
+              parsed.referenceAnswer !== undefined && parsed.referenceAnswer !== null
+                ? String(parsed.referenceAnswer).trim()
+                : '',
           });
         }
       } catch (e) {
