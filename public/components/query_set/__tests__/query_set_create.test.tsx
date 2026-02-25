@@ -40,12 +40,18 @@ const mockFormState = {
   setQuerySetSize: jest.fn(),
   isManualInput: false,
   setIsManualInput: jest.fn(),
+  manualInputMethod: 'file' as const,
+  setManualInputMethod: jest.fn(),
   manualQueries: '',
   setManualQueries: jest.fn(),
   files: [],
   setFiles: jest.fn(),
   parsedQueries: [],
   setParsedQueries: jest.fn(),
+  ubiQueriesIndex: '',
+  setUbiQueriesIndex: jest.fn(),
+  ubiEventsIndex: '',
+  setUbiEventsIndex: jest.fn(),
   errors: {
     nameError: '',
     descriptionError: '',
@@ -56,6 +62,8 @@ const mockFormState = {
   isFormValid: jest.fn().mockReturnValue(true),
   handleFileContent: jest.fn(),
   clearFileData: jest.fn(),
+  handleTextChange: jest.fn(),
+  handleManualInputMethodChange: jest.fn(),
 };
 
 const mockQuerySetServiceInstance = {

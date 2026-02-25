@@ -7,17 +7,17 @@ import React from 'react';
 import {
   EuiButton,
   EuiFieldNumber,
-  EuiFlexGroup,
   EuiCompressedFormRow,
   EuiCompressedTextArea,
-  EuiFlexItem,
   EuiSelect,
   EuiFormRow,
   EuiForm,
   EuiFilePicker,
   EuiComboBox,
+  EuiTextArea,
 } from '@elastic/eui';
 import { UseQuerySetFormReturn } from '../hooks/use_query_set_form';
+import { ManualInputMethod } from '../hooks/use_query_set_form';
 
 interface QuerySetFormProps {
   formState: UseQuerySetFormReturn;
@@ -32,6 +32,11 @@ const samplingOptions = [
   { value: 'topn', text: 'Top N' },
 ];
 
+const manualInputMethodOptions = [
+  { value: 'file', text: 'Upload JSON File' },
+  { value: 'text', text: 'Text Input' },
+];
+
 export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePickerId, indexOptions, isLoadingIndexes }) => {
   const {
     name,
@@ -44,6 +49,9 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
     setQuerySetSize,
     isManualInput,
     setIsManualInput,
+    manualInputMethod,
+    handleManualInputMethodChange,
+    handleTextChange,
     ubiQueriesIndex,
     setUbiQueriesIndex,
     errors,
@@ -100,28 +108,59 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
       </EuiCompressedFormRow>
 
       {isManualInput ? (
-        <EuiFormRow
-          label="Manual Queries"
-          error={errors.manualQueriesError}
-          isInvalid={Boolean(errors.manualQueriesError)}
-          helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
-          fullWidth
-        >
-          <EuiFlexGroup>
-            <EuiFlexItem>
+        <>
+          <EuiFormRow
+            label="Input Method"
+            helpText="Choose how to provide queries for this query set."
+            fullWidth
+          >
+            <EuiSelect
+              options={manualInputMethodOptions}
+              value={manualInputMethod}
+              onChange={(e) => handleManualInputMethodChange(e.target.value as ManualInputMethod)}
+              data-test-subj="manualInputMethodSelect"
+              fullWidth
+            />
+          </EuiFormRow>
+
+          {manualInputMethod === 'file' ? (
+            <EuiFormRow
+              label="Upload Queries"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+              fullWidth
+            >
               <EuiFilePicker
                 id={filePickerId}
                 initialPromptText="Select or drag and drop a query file"
-                onChange={(files) => handleFileContent(files)}
+                onChange={handleFileContent}
                 display="large"
                 aria-label="Upload query file"
-                accept=".txt"
+                accept=".ndjson,.json,.jsonl,.txt"
                 data-test-subj="manualQueriesFilePicker"
-                compressed
+                fullWidth
               />
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiFormRow>
+            </EuiFormRow>
+          ) : (
+            <EuiFormRow
+              label="Enter Queries"
+              error={errors.manualQueriesError}
+              isInvalid={Boolean(errors.manualQueriesError)}
+              helpText='Enter queries in any format: plain text (one per line), key-value (query: "...", answer: "..."), or NDJSON ({"queryText":"...","referenceAnswer":"..."}).'
+              fullWidth
+            >
+              <EuiTextArea
+                placeholder={'red bluejeans\nquery: "capital of France?", answer: "Paris"\n{"queryText":"acid wash jeans","referenceAnswer":"denim"}'}
+                onChange={(e) => handleTextChange(e.target.value)}
+                rows={10}
+                fullWidth
+                data-test-subj="manualQueriesTextInput"
+                aria-label="Enter queries manually"
+              />
+            </EuiFormRow>
+          )}
+        </>
       ) : (
         <>
           <EuiFormRow
