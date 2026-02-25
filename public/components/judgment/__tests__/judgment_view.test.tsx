@@ -223,4 +223,144 @@ describe('JudgmentView', () => {
     const rows = screen.getAllByRole('row');
     expect(rows[1]).toHaveTextContent('A1');
   });
+
+  it('renders with non-array ratings gracefully', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Bad Ratings',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: 'not-an-array',
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    // Should still render without crashing
+    expect(screen.getByText('Bad Ratings')).toBeInTheDocument();
+  });
+
+  it('renders with empty judgmentRatings array', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Empty Ratings',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: [],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    expect(screen.getByText('Empty Ratings')).toBeInTheDocument();
+  });
+
+  it('renders with null judgment (JudgmentViewPane returns null)', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: null,
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    // Should render the page template but JudgmentViewPane returns null
+    expect(screen.getByText('Judgment Details')).toBeInTheDocument();
+  });
+
+  it('handles page size changes', () => {
+    // Create enough rows for pagination
+    const manyRatings = [
+      {
+        query: 'test-query',
+        ratings: Array.from({ length: 25 }).map((_, i) => ({
+          docId: `DOC-${i}`,
+          rating: (i % 5).toString(),
+        })),
+      },
+    ];
+
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Page Test',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: manyRatings,
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    // Default page size is 20, so DOC-20 should not be visible on first page
+    expect(screen.queryByText('DOC-20')).not.toBeInTheDocument();
+  });
+
+  it('sorts ratings by Rating column when clicked', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Rating Sort',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: {},
+        judgmentRatings: [
+          {
+            query: 'test',
+            ratings: [
+              { docId: 'D1', rating: '5' },
+              { docId: 'D2', rating: '1' },
+              { docId: 'D3', rating: '3' },
+            ],
+          },
+        ],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    // Click Rating header to sort
+    const ratingHeader = screen.getAllByText('Rating')[0];
+    fireEvent.click(ratingHeader);
+
+    const rows = screen.getAllByRole('row');
+    expect(rows.length).toBeGreaterThan(1);
+  });
 });

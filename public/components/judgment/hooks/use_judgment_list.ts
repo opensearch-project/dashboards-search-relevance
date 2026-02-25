@@ -121,9 +121,9 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       if (tableData.length > 0) {
         const filteredList = search
           ? tableData.filter((item) => {
-              const q = search.toLowerCase();
-              return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-            })
+            const q = search.toLowerCase();
+            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+          })
           : tableData;
         return {
           total: filteredList.length,
@@ -138,9 +138,9 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
         const filteredList = search
           ? list.filter((item: JudgmentItem) => {
-              const q = search.toLowerCase();
-              return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-            })
+            const q = search.toLowerCase();
+            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
+          })
           : list;
 
         setJudgments(filteredList);
@@ -171,6 +171,11 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       try {
         await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
         setError(null);
+        // remove deleted item from all cached state so the list
+        // reflects the deletion immediately without requiring a re-fetch.
+        setJudgments((prev) => prev.filter((j) => j.id !== id));
+        setTableData((prev) => prev.filter((j) => j.id !== id));
+        previousJudgments.current = previousJudgments.current.filter((j) => j.id !== id);
         setRefreshKey((prev) => prev + 1);
         return true;
       } catch (err) {

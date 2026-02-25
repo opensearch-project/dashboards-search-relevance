@@ -81,5 +81,45 @@ describe('form_processor', () => {
         ignoreFailure: true,
       });
     });
+
+    it('should build UBI payload with ubiEventsIndex', () => {
+      const formData = {
+        name: 'test judgment',
+        type: JudgmentType.UBI,
+        clickModel: 'coec',
+        maxRank: 20,
+        startDate: '2023-01-01',
+        endDate: '2023-12-31',
+        ubiEventsIndex: 'my_custom_ubi_events',
+      };
+
+      const result = buildJudgmentPayload(formData, [], [], []);
+
+      expect(result).toEqual({
+        name: 'test judgment',
+        type: JudgmentType.UBI,
+        clickModel: 'coec',
+        maxRank: 20,
+        startDate: '2023-01-01',
+        endDate: '2023-12-31',
+        ubiEventsIndex: 'my_custom_ubi_events',
+      });
+    });
+
+    it('should not include ubiEventsIndex when empty string', () => {
+      const formData = {
+        name: 'test judgment',
+        type: JudgmentType.UBI,
+        clickModel: 'coec',
+        maxRank: 20,
+        startDate: '2023-01-01',
+        endDate: '2023-12-31',
+        ubiEventsIndex: '',
+      };
+
+      const result = buildJudgmentPayload(formData, [], [], []);
+
+      expect(result.ubiEventsIndex).toBeUndefined();
+    });
   });
 });
