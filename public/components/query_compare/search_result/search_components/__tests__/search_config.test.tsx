@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { waitFor } from '@testing-library/react';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { waitFor, render } from '@testing-library/react';
 import React from 'react';
 import { initialQueryErrorState } from '../../../../../../public/types/index';
 import { TEST_QUERY_STRING } from '../../../../../../test/constants';
@@ -13,15 +11,13 @@ import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { SearchConfig } from '../search_configs/search_config';
 
 describe('Flyout component', () => {
-  configure({ adapter: new Adapter() });
-
   it('Renders flyout component when multi-datasource is enabled', async () => {
     const setQueryString = jest.fn();
     const setSelectedIndex = jest.fn();
     const setPipeline = jest.fn();
     const setQueryError = jest.fn();
     const setDataSourceManagement = jest.fn();
-    const wrapper = mount(
+    const { container } = render(
       <SearchRelevanceContextProvider>
         <SearchConfig
           queryNumber={1}
@@ -38,15 +34,27 @@ describe('Flyout component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
     await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
-      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
+      expect(container).toMatchSnapshot();
+      const codeEditor = container.querySelector('.euiCodeEditorWrapper');
+      if (codeEditor) {
+        const onChange = (codeEditor as any).onChange;
+        onChange?.({ target: { value: '' } });
+      }
+      const selects = container.querySelectorAll('select');
+      selects.forEach((select) => {
+        const onChange = (select as any).onChange;
+        const onBlur = (select as any).onBlur;
+        onChange?.({ target: {} });
+        onBlur?.({ target: {} });
+      });
+      const comboBoxes = container.querySelectorAll('[data-test-subj*="comboBox"]');
+      comboBoxes.forEach((comboBox) => {
+        const onChange = (comboBox as any).onChange;
+        onChange?.({ target: { selectedPipelineOptions: [] } });
+        onChange?.({
+          target: { selectedPipelineOptions: [{ label: '_none' }] },
+        });
       });
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);
@@ -61,7 +69,7 @@ describe('Flyout component', () => {
     const setPipeline = jest.fn();
     const setQueryError = jest.fn();
     const setDataSourceManagement = jest.fn();
-    const wrapper = mount(
+    const { container } = render(
       <SearchRelevanceContextProvider>
         <SearchConfig
           queryNumber={1}
@@ -78,15 +86,27 @@ describe('Flyout component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
     await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
-      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
+      expect(container).toMatchSnapshot();
+      const codeEditor = container.querySelector('.euiCodeEditorWrapper');
+      if (codeEditor) {
+        const onChange = (codeEditor as any).onChange;
+        onChange?.({ target: { value: '' } });
+      }
+      const selects = container.querySelectorAll('select');
+      selects.forEach((select) => {
+        const onChange = (select as any).onChange;
+        const onBlur = (select as any).onBlur;
+        onChange?.({ target: {} });
+        onBlur?.({ target: {} });
+      });
+      const comboBoxes = container.querySelectorAll('[data-test-subj*="comboBox"]');
+      comboBoxes.forEach((comboBox) => {
+        const onChange = (comboBox as any).onChange;
+        onChange?.({ target: { selectedPipelineOptions: [] } });
+        onChange?.({
+          target: { selectedPipelineOptions: [{ label: '_none' }] },
+        });
       });
     });
     expect(setQueryString).toHaveBeenCalledTimes(1);

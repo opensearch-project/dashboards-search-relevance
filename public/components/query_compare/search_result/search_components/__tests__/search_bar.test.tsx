@@ -3,18 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render } from '@testing-library/react';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { SearchInputBar } from '../search_bar';
 import { TEST_SEARCH_TEXT } from '../../../../../../test/constants';
 
 describe('Search bar component', () => {
-  configure({ adapter: new Adapter() });
-
   it('Renders search bar component', async () => {
-    const wrapper = mount(
+    const { container } = render(
       <SearchInputBar
         searchBarValue={TEST_SEARCH_TEXT}
         setSearchBarValue={() => {}}
@@ -22,10 +19,8 @@ describe('Search bar component', () => {
       />
     );
 
-    wrapper.update();
-
     await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
+      expect(container).toMatchSnapshot();
     });
   });
 });

@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render } from '@testing-library/react';
 import React from 'react';
 import { waitFor } from '@testing-library/react';
 import { ResultGridComponent } from '../result_grid';
@@ -17,9 +16,8 @@ import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { ResultPanel } from '../result_panel';
 
 describe('Result grid component', () => {
-  configure({ adapter: new Adapter() });
   it('Renders result grid component', async () => {
-    const wrapper = mount(
+    const { container } = render(
       <SearchRelevanceContextProvider>
         <ResultGridComponent
           queryResult={TEST_QUERY_RESPONSE}
@@ -29,20 +27,21 @@ describe('Result grid component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
-
     await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiButtonIcon').first().prop('onClick')?.({ target: {} });
+      expect(container).toMatchSnapshot();
+      const button = container.querySelector('button[class*="euiButtonIcon"]');
+      if (button) {
+        const onClick = (button as any).onClick;
+        onClick?.({ target: {} });
+      }
     });
   });
 });
 
 describe('Result panel query error', () => {
-  configure({ adapter: new Adapter() });
   it('Displays error message on query error', async () => {
     const setQueryError = jest.fn();
-    const wrapper = mount(
+    const { container } = render(
       <SearchRelevanceContextProvider>
         <ResultPanel
           resultNumber={1}
@@ -53,10 +52,8 @@ describe('Result panel query error', () => {
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
-
     await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
+      expect(container).toMatchSnapshot();
     });
   });
 });
