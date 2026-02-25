@@ -82,7 +82,8 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
             style={{ 
               display: '-webkit-box',
               WebkitLineClamp: maxLines,
-              WebkitBoxOrient: 'vertical'
+              WebkitBoxOrient: 'vertical',
+              textAlign: resultNum === 1 ? 'right' : 'left',
             }}
           >
             {item.highlight && item.highlight[displayField] ? (
