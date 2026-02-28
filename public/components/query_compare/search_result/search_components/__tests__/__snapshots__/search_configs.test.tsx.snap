@@ -844,7 +844,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -1088,7 +1088,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
@@ -1891,7 +1891,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -2135,7 +2135,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
@@ -2988,7 +2988,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -3232,7 +3232,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
@@ -4032,7 +4032,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -4276,7 +4276,7 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
@@ -5129,7 +5129,7 @@ exports[`Flyout component handles search configuration selection without crashin
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -5373,7 +5373,7 @@ exports[`Flyout component handles search configuration selection without crashin
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
@@ -6173,7 +6173,7 @@ exports[`Flyout component handles search configuration selection without crashin
                         >
                           OpenSearch Query DSL
                         </a>
-                        . Use %SearchText% to refer to the text in the search bar
+                        . Use %queryText% to refer to the text in the search bar
                       </p>
                     }
                     isInvalid={false}
@@ -6417,7 +6417,7 @@ exports[`Flyout component handles search configuration selection without crashin
                               >
                                 OpenSearch Query DSL
                               </a>
-                              . Use %SearchText% to refer to the text in the search bar
+                              . Use %queryText% to refer to the text in the search bar
                             </p>
                           </div>
                         </EuiFormHelpText>
