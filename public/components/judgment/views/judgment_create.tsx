@@ -13,9 +13,11 @@ import {
   EuiPanel,
   EuiPageHeader,
 } from '@elastic/eui';
-import { JudgmentCreateProps } from '../types';
+import { JudgmentCreateProps, JudgmentType } from '../types';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
+import { JudgmentPreview } from '../components/judgment_preview';
 import { JudgmentForm } from '../components/judgment_form';
+
 
 export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notifications, history }) => {
   const {
@@ -41,7 +43,10 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     addContextField,
     removeContextField,
     validateAndSubmit,
+    handleJudgmentFileContent,
     dateRangeError,
+    parsedJudgments,
+    parseSummary,
   } = useJudgmentForm(http, notifications);
 
   const handleSubmit = useCallback(() => {
@@ -106,8 +111,14 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             addContextField={addContextField}
             removeContextField={removeContextField}
             dateRangeError={dateRangeError}
+            handleJudgmentFileContent={handleJudgmentFileContent}
             httpClient={http}
           />
+
+          {formData.type === JudgmentType.IMPORT && (
+              <JudgmentPreview parsedJudgments={parsedJudgments} parseSummary={parseSummary} />
+          )}
+
         </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>
