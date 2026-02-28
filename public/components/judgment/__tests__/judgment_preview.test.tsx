@@ -127,6 +127,7 @@ describe('JudgmentPreview', () => {
           headerLinesSkipped: 1,
           successfulRecords: 8,
           failedRecords: 2,
+          duplicateRecords: 0,
           uniqueQueries: 2,
           ratingDistribution: { '1': 3, '0': 2 },
           errors: [
@@ -181,6 +182,7 @@ describe('JudgmentPreview', () => {
           headerLinesSkipped: 1,
           successfulRecords: 1,
           failedRecords: 15,
+          duplicateRecords: 0,
           uniqueQueries: 1,
           ratingDistribution: {},
           errors,

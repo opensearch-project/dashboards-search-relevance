@@ -22,6 +22,7 @@ export interface JudgmentParseSummary {
   headerLinesSkipped: number;
   successfulRecords: number;
   failedRecords: number;
+  duplicateRecords: number;
   errors: JudgmentParseError[];
   ratingDistribution: Record<string, number>;
   uniqueQueries: number;
@@ -84,6 +85,11 @@ export const processJudgmentFile = async (
     const text = await file.text();
 
     const rawLines = text.split(/\r?\n/);
+
+    // Intentionally filter out empty/whitespace-only lines before counting.
+    // totalLinesRead reflects meaningful data lines, not blank lines from
+    // editors or trailing newlines. Showing "12 lines (1 empty)" would be
+    // noise — users only care about how many records were processed.
     const lines = rawLines.map((line) => line.trim()).filter((l) => l.length > 0);
 
     const summary: JudgmentParseSummary = {
@@ -91,6 +97,7 @@ export const processJudgmentFile = async (
       headerLinesSkipped: 0,
       successfulRecords: 0,
       failedRecords: 0,
+      duplicateRecords: 0,
       errors: [],
       ratingDistribution: {},
       uniqueQueries: 0,
@@ -147,6 +154,17 @@ export const processJudgmentFile = async (
 
       if (!grouped[query]) grouped[query] = [];
 
+      const isDuplicate = grouped[query].some((r) => r.docId === docId);
+      if (isDuplicate) {
+        summary.duplicateRecords++;
+        summary.errors.push({
+          line: lineNo,
+          raw: line,
+          error: `Duplicate entry for query "${query}" and docId "${docId}". Skipped.`,
+        });
+        continue;
+      }
+
       const normalizedRating = String(Number(rating));
 
       grouped[query].push({
@@ -177,6 +195,7 @@ export const processJudgmentFile = async (
         headerLinesSkipped: 0,
         successfulRecords: 0,
         failedRecords: 0,
+        duplicateRecords: 0,
         errors: [],
         ratingDistribution: {},
         uniqueQueries: 0,

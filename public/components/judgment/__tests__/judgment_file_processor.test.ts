@@ -50,6 +50,7 @@ describe('judgment_file_processor', () => {
       headerLinesSkipped: 0,
       successfulRecords: 0,
       failedRecords: 0,
+      duplicateRecords: 0,
       errors: [],
       ratingDistribution: {},
       uniqueQueries: 0,
@@ -75,6 +76,7 @@ describe('judgment_file_processor', () => {
     expect(result.summary?.headerLinesSkipped).toBe(1);
     expect(result.summary?.successfulRecords).toBe(3);
     expect(result.summary?.failedRecords).toBe(0);
+    expect(result.summary?.duplicateRecords).toBe(0);
     expect(result.summary?.uniqueQueries).toBe(2);
 
     expect(result.summary?.ratingDistribution).toEqual({
@@ -192,10 +194,42 @@ describe('judgment_file_processor', () => {
 
     const result = await processJudgmentFile(file);
 
-    // after trimming+filtering, total lines should be 3
+    // Empty lines are intentionally filtered; totalLinesRead reflects data lines only
     expect(result.summary?.totalLinesRead).toBe(3);
     expect(result.summary?.successfulRecords).toBe(2);
     expect(result.summary?.failedRecords).toBe(0);
+  });
+
+  it('should detect and skip duplicate (query, docId) entries', async () => {
+    const file = makeFile(
+      [
+        'query,docid,rating',
+        'laptop,doc1,1',
+        'laptop,doc2,2',
+        'laptop,doc1,3',
+        'iphone,doc1,1',
+      ].join('\n')
+    );
+
+    const result = await processJudgmentFile(file);
+
+    expect(result.summary?.successfulRecords).toBe(3);
+    expect(result.summary?.duplicateRecords).toBe(1);
+    expect(result.summary?.failedRecords).toBe(0);
+    expect(result.summary?.uniqueQueries).toBe(2);
+
+    // The duplicate error should be recorded
+    expect(result.summary?.errors.length).toBe(1);
+    expect(result.summary?.errors[0].error).toContain('Duplicate entry');
+    expect(result.summary?.errors[0].error).toContain('laptop');
+    expect(result.summary?.errors[0].error).toContain('doc1');
+
+    // Only the first occurrence should be kept
+    const laptopJudgment = result.judgments.find((j) => j.query === 'laptop');
+    expect(laptopJudgment?.ratings).toEqual([
+      { docId: 'doc1', rating: '1' },
+      { docId: 'doc2', rating: '2' },
+    ]);
   });
 
   it('should normalize numeric ratings consistently', async () => {

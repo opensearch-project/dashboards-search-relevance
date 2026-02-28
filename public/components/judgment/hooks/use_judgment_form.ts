@@ -147,7 +147,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       setFiles([file]);
       setImportError('');
 
-      if (result.summary?.failedRecords > 0) {
+      if (result.summary && result.summary.failedRecords > 0) {
         notifications.toasts.addWarning(
           `Parsed with warnings: ${result.summary.failedRecords} failed records`
         );
@@ -160,10 +160,10 @@ export const useJudgmentForm = (http: any, notifications: any) => {
       setImportedRatings([]);
       setParsedJudgments([]);
       setFiles([]);
-      setImportError('');
+      setImportError('No file selected. Please upload a CSV file.');
       setParseSummary(null);
     }
-  }, [notifications.toasts]);
+  }, []);
 
   const validateAndSubmit = useCallback(
     async (onSuccess: () => void) => {

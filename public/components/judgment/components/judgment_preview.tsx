@@ -8,35 +8,18 @@ import {
   EuiFormRow,
   EuiPanel,
   EuiText,
-  EuiButton,
   EuiFlexGroup,
   EuiFlexItem,
-  EuiFieldSearch,
-  EuiSpacer,
-  EuiBadge,
-  EuiHorizontalRule,
 } from '@elastic/eui';
+import { JudgmentParseSummaryData, RatingItem, MAX_QUERIES_PREVIEW } from './preview/preview_types';
+import { PreviewSummaryPanel } from './preview/preview_summary_panel';
+import { PreviewSearchToolbar } from './preview/preview_search_toolbar';
+import { PreviewQueryRow } from './preview/preview_query_row';
 
 interface JudgmentPreviewProps {
   parsedJudgments: string[];
-  parseSummary?: {
-    totalLinesRead: number;
-    headerLinesSkipped: number;
-    successfulRecords: number;
-    failedRecords: number;
-    errors: {
-      line: number;
-      raw: string;
-      error: string;
-    }[];
-    ratingDistribution: Record<string, number>;
-    uniqueQueries: number;
-  };
+  parseSummary?: JudgmentParseSummaryData;
 }
-
-const MAX_QUERIES_PREVIEW = 200;
-const MAX_RATINGS_PER_QUERY_PREVIEW = 50;
-const MAX_ERROR_PREVIEW = 10;
 
 export const JudgmentPreview: React.FC<JudgmentPreviewProps> = ({
   parsedJudgments,
@@ -58,7 +41,7 @@ export const JudgmentPreview: React.FC<JudgmentPreviewProps> = ({
   }, [parsedJudgments]);
 
   const grouped = useMemo(() => {
-    const map: Record<string, { docId: string; rating: string }[]> = {};
+    const map: Record<string, RatingItem[]> = {};
     for (const item of parsedObjects as any[]) {
       if (!item?.query) continue;
       if (!map[item.query]) map[item.query] = [];
@@ -130,103 +113,17 @@ export const JudgmentPreview: React.FC<JudgmentPreviewProps> = ({
 
           {parseSummary && (
             <EuiFlexItem grow={false}>
-              <EuiPanel paddingSize="s" color="subdued">
-                <EuiFlexGroup gutterSize="s" alignItems="center" wrap>
-                  <EuiFlexItem grow={false}>
-                    <EuiBadge color={parseSummary.failedRecords > 0 ? 'warning' : 'success'}>
-                      {parseSummary.failedRecords > 0
-                        ? 'Parsed with warnings'
-                        : 'Successfully parsed'}
-                    </EuiBadge>
-                  </EuiFlexItem>
-
-                  <EuiFlexItem grow={false}>
-                    <EuiText size="s">
-                      <strong>{parseSummary.successfulRecords}</strong> successful records •{' '}
-                      <strong>{parseSummary.failedRecords}</strong> failed records •{' '}
-                      <strong>{parseSummary.uniqueQueries}</strong> unique queries
-                    </EuiText>
-                  </EuiFlexItem>
-
-                  <EuiFlexItem grow={false}>
-                    <EuiText size="s">
-                      Total lines read: <strong>{parseSummary.totalLinesRead}</strong>
-                      {parseSummary.headerLinesSkipped > 0 ? (
-                        <>
-                          {' '}
-                          • headers skipped: <strong>{parseSummary.headerLinesSkipped}</strong>
-                        </>
-                      ) : null}
-                    </EuiText>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-
-                <EuiSpacer size="s" />
-
-                <EuiText size="s">
-                  <strong>Rating Distribution:</strong>{' '}
-                  {Object.keys(parseSummary.ratingDistribution || {}).length === 0
-                    ? 'N/A'
-                    : Object.entries(parseSummary.ratingDistribution)
-                        .sort(([a], [b]) => Number(b) - Number(a))
-                        .map(([k, v]) => `${k}: ${v}`)
-                        .join(' • ')}
-                </EuiText>
-
-                {parseSummary.failedRecords > 0 && parseSummary.errors?.length > 0 && (
-                  <>
-                    <EuiHorizontalRule margin="s" />
-                    <EuiText size="s">
-                      <strong>Sample Errors:</strong>
-                      <ul style={{ marginTop: 8 }}>
-                        {parseSummary.errors.slice(0, MAX_ERROR_PREVIEW).map((e, idx) => (
-                          <li key={idx}>
-                            <strong>Line {e.line}:</strong> {e.error}
-                            <br />
-                            <code style={{ opacity: 0.9 }}>{e.raw}</code>
-                          </li>
-                        ))}
-                      </ul>
-                      {parseSummary.errors.length > MAX_ERROR_PREVIEW ? (
-                        <div style={{ opacity: 0.8 }}>
-                          Showing {MAX_ERROR_PREVIEW} of {parseSummary.errors.length} errors.
-                        </div>
-                      ) : null}
-                    </EuiText>
-                  </>
-                )}
-              </EuiPanel>
+              <PreviewSummaryPanel parseSummary={parseSummary} />
             </EuiFlexItem>
           )}
 
           <EuiFlexItem grow={false}>
-            <EuiFlexGroup gutterSize="s" alignItems="center" justifyContent="spaceBetween">
-              <EuiFlexItem grow={true}>
-                <EuiFieldSearch
-                  fullWidth
-                  compressed
-                  placeholder="Search query, doc ID, or rating (Ctrl+F also works)"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </EuiFlexItem>
-
-              <EuiFlexItem grow={false}>
-                <EuiFlexGroup gutterSize="s">
-                  <EuiFlexItem grow={false}>
-                    <EuiButton size="s" onClick={expandAll}>
-                      Expand All
-                    </EuiButton>
-                  </EuiFlexItem>
-
-                  <EuiFlexItem grow={false}>
-                    <EuiButton size="s" onClick={collapseAll}>
-                      Collapse All
-                    </EuiButton>
-                  </EuiFlexItem>
-                </EuiFlexGroup>
-              </EuiFlexItem>
-            </EuiFlexGroup>
+            <PreviewSearchToolbar
+              search={search}
+              onSearchChange={setSearch}
+              onExpandAll={expandAll}
+              onCollapseAll={collapseAll}
+            />
           </EuiFlexItem>
 
           {isQueryListTruncated && (
@@ -243,61 +140,15 @@ export const JudgmentPreview: React.FC<JudgmentPreviewProps> = ({
             <div style={{ maxHeight: 360, overflowY: 'auto', paddingRight: 8 }}>
               <EuiText size="s">
                 <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0 }}>
-                  {cappedQueries.map((query) => {
-                    const ratings = grouped[query] || [];
-                    const isExpanded = !!expandedQueries[query];
-
-                    const shownRatings = ratings.slice(0, MAX_RATINGS_PER_QUERY_PREVIEW);
-                    const isRatingsTruncated = ratings.length > MAX_RATINGS_PER_QUERY_PREVIEW;
-
-                    return (
-                      <li
-                        key={query}
-                        style={{
-                          borderBottom: '1px solid rgba(0,0,0,0.08)',
-                          padding: '10px 0',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            cursor: 'pointer',
-                            userSelect: 'none',
-                          }}
-                          onClick={() => toggleQuery(query)}
-                        >
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <span style={{ width: 18, display: 'inline-block' }}>
-                              {isExpanded ? '▼' : '▶'}
-                            </span>
-                            <strong>{query}</strong>
-                          </div>
-
-                          <EuiBadge color="hollow">{ratings.length} ratings</EuiBadge>
-                        </div>
-
-                        {isExpanded && (
-                          <div style={{ marginLeft: 26, marginTop: 8 }}>
-                            <ul style={{ margin: 0 }}>
-                              {shownRatings.map((r, idx) => (
-                                <li key={idx}>
-                                  Doc ID: {r.docId} • Rating: {r.rating}
-                                </li>
-                              ))}
-                            </ul>
-
-                            {isRatingsTruncated ? (
-                              <div style={{ marginTop: 6, opacity: 0.85 }}>
-                                Showing first {MAX_RATINGS_PER_QUERY_PREVIEW} of {ratings.length}{' '}
-                                ratings for this query.
-                              </div>
-                            ) : null}
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
+                  {cappedQueries.map((query) => (
+                    <PreviewQueryRow
+                      key={query}
+                      query={query}
+                      ratings={grouped[query] || []}
+                      isExpanded={!!expandedQueries[query]}
+                      onToggle={() => toggleQuery(query)}
+                    />
+                  ))}
                 </ul>
 
                 {filteredQueries.length === 0 ? (

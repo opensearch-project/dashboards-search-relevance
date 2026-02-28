@@ -25,6 +25,7 @@ const mockNotifications = {
   toasts: {
     addDanger: jest.fn(),
     addSuccess: jest.fn(),
+    addWarning: jest.fn(),
     addError: jest.fn(),
   },
 };
@@ -369,6 +370,25 @@ describe('useJudgmentForm', () => {
     });
 
     expect(result.current.formData.contextFields).not.toContain('title');
+  });
+
+  it('should set importError when no file is selected', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Create an empty FileList-like object
+    const emptyFileList = {
+      length: 0,
+      item: () => null,
+      [Symbol.iterator]: function* () { },
+    } as unknown as FileList;
+
+    await act(async () => {
+      await result.current.handleJudgmentFileContent(emptyFileList);
+    });
+
+    expect(result.current.importError).toBe('No file selected. Please upload a CSV file.');
+    expect(result.current.parsedJudgments).toEqual([]);
+    expect(result.current.importedRatings).toEqual([]);
   });
 });
 
