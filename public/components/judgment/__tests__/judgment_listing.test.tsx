@@ -181,4 +181,55 @@ describe('JudgmentListing', () => {
 
     expect(mockDelete).toHaveBeenCalledWith('1');
   });
+
+  it('handles delete cancel', async () => {
+    const mockDelete = jest.fn().mockResolvedValue(true);
+    const mockFindJudgments = jest.fn().mockResolvedValue({
+      total: 1,
+      hits: [
+        {
+          id: '1',
+          name: 'Test Judgment',
+          type: 'LLM',
+          status: 'COMPLETED',
+          timestamp: '2023-01-01T00:00:00Z',
+        },
+      ],
+    });
+
+    mockUseJudgmentList.mockReturnValue({
+      isLoading: false,
+      error: null,
+      judgments: [],
+      hasProcessing: false,
+      isBackgroundRefreshing: false,
+      refreshKey: 0,
+      findJudgments: mockFindJudgments,
+      deleteJudgment: mockDelete,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentListing {...defaultProps} />
+      </Router>
+    );
+
+    // Wait for table to load and click delete button to open modal
+    await waitFor(() => {
+      const deleteButtons = screen.getAllByLabelText('Delete');
+      expect(deleteButtons.length).toBeGreaterThan(0);
+      fireEvent.click(deleteButtons[0]);
+    });
+
+    expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
+
+    // Click Cancel — modal should close and delete should NOT be called
+    fireEvent.click(screen.getByText('Cancel'));
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('delete-modal')).not.toBeInTheDocument();
+    });
+
+    expect(mockDelete).not.toHaveBeenCalled();
+  });
 });

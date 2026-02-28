@@ -5,7 +5,9 @@
 
 import { useState, useCallback } from 'react';
 import { validateForm, ValidationErrors, hasValidationErrors } from '../utils/validation';
-import { processQueryFile, QueryItem } from '../utils/file_processor';
+import { processQueryFile, parseTextQueries, QueryItem } from '../utils/file_processor';
+
+export type ManualInputMethod = 'file' | 'text';
 
 export interface UseQuerySetFormReturn {
   // Form state
@@ -19,6 +21,8 @@ export interface UseQuerySetFormReturn {
   setQuerySetSize: (size: number) => void;
   isManualInput: boolean;
   setIsManualInput: (manual: boolean) => void;
+  manualInputMethod: ManualInputMethod;
+  setManualInputMethod: (method: ManualInputMethod) => void;
   manualQueries: string;
   setManualQueries: (queries: string) => void;
   files: File[];
@@ -36,8 +40,12 @@ export interface UseQuerySetFormReturn {
   isFormValid: () => boolean;
 
   // File handling
-  handleFileContent: (files: FileList) => Promise<void>;
+  handleFileContent: (files: FileList | null) => Promise<void>;
   clearFileData: () => void;
+
+  // Text input handling
+  handleTextChange: (text: string) => void;
+  handleManualInputMethodChange: (method: ManualInputMethod) => void;
 }
 
 export const useQuerySetForm = (): UseQuerySetFormReturn => {
@@ -46,6 +54,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
   const [sampling, setSampling] = useState('random');
   const [querySetSize, setQuerySetSize] = useState<number>(10);
   const [isManualInput, setIsManualInput] = useState(false);
+  const [manualInputMethod, setManualInputMethod] = useState<ManualInputMethod>('file');
   const [manualQueries, setManualQueries] = useState('');
   const [files, setFiles] = useState<File[]>([]);
   const [parsedQueries, setParsedQueries] = useState<string[]>([]);
@@ -89,7 +98,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     return !hasValidationErrors(validationErrors);
   }, [name, description, querySetSize, manualQueries, isManualInput]);
 
-  const handleFileContent = useCallback(async (files: FileList) => {
+  const handleFileContent = useCallback(async (files: FileList | null) => {
     if (files && files.length > 0) {
       const file = files[0];
       const result = await processQueryFile(file);
@@ -109,6 +118,33 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     }
   }, []);
 
+  const handleTextChange = useCallback((text: string) => {
+    if (!text.trim()) {
+      setManualQueries('');
+      setParsedQueries([]);
+      setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+      return;
+    }
+    const result = parseTextQueries(text);
+    if (result.error) {
+      setErrors((prev) => ({ ...prev, manualQueriesError: result.error! }));
+      setManualQueries('');
+      setParsedQueries([]);
+      return;
+    }
+    setManualQueries(JSON.stringify(result.queries));
+    setParsedQueries(result.queries.map((q) => JSON.stringify(q)));
+    setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+  }, []);
+
+  const handleManualInputMethodChange = useCallback((method: ManualInputMethod) => {
+    setManualInputMethod(method);
+    setFiles([]);
+    setManualQueries('');
+    setParsedQueries([]);
+    setErrors((prev) => ({ ...prev, manualQueriesError: '' }));
+  }, []);
+
   const clearFileData = useCallback(() => {
     setFiles([]);
     setManualQueries('');
@@ -126,6 +162,8 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     setQuerySetSize,
     isManualInput,
     setIsManualInput,
+    manualInputMethod,
+    setManualInputMethod,
     manualQueries,
     setManualQueries,
     files,
@@ -141,5 +179,7 @@ export const useQuerySetForm = (): UseQuerySetFormReturn => {
     isFormValid,
     handleFileContent,
     clearFileData,
+    handleTextChange,
+    handleManualInputMethodChange,
   };
 };

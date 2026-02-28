@@ -78,6 +78,22 @@ describe('ResultItems', () => {
     expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
   });
 
+  it('right-aligns text content for resultNum 1', () => {
+    const { container } = render(<ResultItems {...defaultProps} resultNum={1} />);
+    const textDivs = container.querySelectorAll('.font-mono.text-xs');
+    textDivs.forEach((div) => {
+      expect(div).toHaveStyle('text-align: right');
+    });
+  });
+
+  it('left-aligns text content for resultNum 2', () => {
+    const { container } = render(<ResultItems {...defaultProps} resultNum={2} />);
+    const textDivs = container.querySelectorAll('.font-mono.text-xs');
+    textDivs.forEach((div) => {
+      expect(div).toHaveStyle('text-align: left');
+    });
+  });
+
   it('applies correct size multiplier', () => {
     const propsWithImage = {
       ...defaultProps,
