@@ -13,7 +13,7 @@ import {
 describe('query_processor', () => {
   describe('processQuery', () => {
     it('should replace placeholder with search text', () => {
-      const query = '{"query": {"match": {"title": "%SearchText%"}}}';
+      const query = '{"query": {"match": {"title": "%queryText%"}}}';
       const searchText = 'test search';
 
       const result = processQuery(query, searchText);
@@ -23,7 +23,7 @@ describe('query_processor', () => {
 
     it('should handle multiple placeholders', () => {
       const query =
-        '{"query": {"bool": {"must": [{"match": {"title": "%SearchText%"}}, {"match": {"content": "%SearchText%"}}]}}}';
+        '{"query": {"bool": {"must": [{"match": {"title": "%queryText%"}}, {"match": {"content": "%SearchText%"}}]}}}';
       const searchText = 'test';
 
       const result = processQuery(query, searchText);
@@ -43,7 +43,7 @@ describe('query_processor', () => {
     });
 
     it('should handle empty search text', () => {
-      const query = '{"query": {"match": {"title": "%SearchText%"}}}';
+      const query = '{"query": {"match": {"title": "%queryText%"}}}';
       const searchText = '';
 
       const result = processQuery(query, searchText);
