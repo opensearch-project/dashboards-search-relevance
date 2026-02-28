@@ -90,7 +90,7 @@ const TEMPLATE_STEPS: Record<TemplateType, Step[]> = {
       description: 'Look at the tabular result data to understand which variant performed best.',
     },
   ],
-  [TemplateType.SingleQueryComparison]: [
+  [TemplateType.QueryAnalysis]: [
     {
       title: '1. Define Your Query',
       description: 'Specify a single query that you want to compare results for.',

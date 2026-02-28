@@ -28,7 +28,7 @@ describe('TemplateCards', () => {
   it('renders all template cards', () => {
     render(<TemplateCards history={mockHistory} />);
 
-    expect(screen.getByText('Single Query Comparison')).toBeInTheDocument();
+    expect(screen.getByText('Query Analysis')).toBeInTheDocument();
     expect(screen.getByText('Query Set Comparison')).toBeInTheDocument();
     expect(screen.getByText('Search Evaluation')).toBeInTheDocument();
     expect(screen.getByText('Hybrid Search Optimizer')).toBeInTheDocument();
@@ -37,8 +37,8 @@ describe('TemplateCards', () => {
   it('navigates to correct routes when cards are clicked', () => {
     render(<TemplateCards history={mockHistory} />);
 
-    fireEvent.click(screen.getByText('Single Query Comparison'));
-    expect(mockHistory.push).toHaveBeenCalledWith(Routes.ExperimentCreateSingleQueryComparison);
+    fireEvent.click(screen.getByText('Query Analysis'));
+    expect(mockHistory.push).toHaveBeenCalledWith(Routes.ExperimentCreateQueryAnalysis);
 
     fireEvent.click(screen.getByText('Query Set Comparison'));
     expect(mockHistory.push).toHaveBeenCalledWith(Routes.ExperimentCreateQuerySetComparison);
