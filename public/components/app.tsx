@@ -46,7 +46,7 @@ enum Navigation {
   SRW = 'Search Relevance Workbench',
   Overview = 'Overview',
   Experiments = 'Experiments',
-  ExperimentsSingleQueryComparison = 'Single Query Comparison',
+  ExperimentsQueryAnalysis = 'Query Analysis',
   ExperimentsQuerySetComparison = 'Query Set Comparison',
   ExperimentsSearchEvaluation = 'Search Evaluation',
   ExperimentsHybridOptimizer = 'Hybrid Optimizer',
@@ -120,13 +120,13 @@ const SearchRelevancePage = ({
           forceOpen: true,
           items: [
             {
-              name: Navigation.ExperimentsSingleQueryComparison,
-              id: Navigation.ExperimentsSingleQueryComparison,
+              name: Navigation.ExperimentsQueryAnalysis,
+              id: Navigation.ExperimentsQueryAnalysis,
               onClick: () => {
-                history.push(Routes.ExperimentCreateSingleQueryComparison);
+                history.push(Routes.ExperimentCreateQueryAnalysis);
               },
               isSelected: location.pathname.startsWith(
-                Routes.ExperimentCreateSingleQueryComparison
+                Routes.ExperimentCreateQueryAnalysis
               ),
             },
             {
@@ -208,9 +208,9 @@ const SearchRelevancePage = ({
               const configParam = urlParams.get('config');
 
               if (configParam) {
-                // Redirect to single query comparison with the config parameter as search param
+                // Redirect to query analysis with the config parameter as search param
                 history.push(
-                  `${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`
+                  `${Routes.ExperimentCreateQueryAnalysis}?config=${configParam}`
                 );
                 return null;
               } else {
@@ -286,7 +286,7 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const templateId = routeToTemplateType(props.match.params.templateId);
-              if (templateId === TemplateType.SingleQueryComparison) {
+              if (templateId === TemplateType.QueryAnalysis) {
                 return (
                   <QueryCompareHome
                     application={application}
@@ -321,7 +321,7 @@ const SearchRelevancePage = ({
                     onBack={() => {
                       history.goBack();
                     }}
-                    onClose={() => {}}
+                    onClose={() => { }}
                   />
                 );
               }
