@@ -15,6 +15,7 @@ import {
   EuiPageTemplate,
   EuiText,
   EuiHealth,
+  EuiToolTip,
 } from '@elastic/eui';
 import moment from 'moment';
 import { CoreStart } from '../../../../../../src/core/public';
@@ -107,15 +108,17 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => {
-            setJudgmentToDelete(item);
-            setShowDeleteModal(true);
-          }}
-        />
+        <EuiToolTip content="Delete">
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => {
+              setJudgmentToDelete(item);
+              setShowDeleteModal(true);
+            }}
+          />
+        </EuiToolTip>
       ),
     },
   ];
@@ -124,9 +127,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Judgments"
-        description={`View and manage your existing judgments. Click on a judgment list name to view details.${
-          hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
-        }`}
+        description={`View and manage your existing judgments. Click on a judgment list name to view details.${hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
+          }`}
         rightSideItems={[
           <EuiButton
             onClick={() => history.push(Routes.JudgmentCreate)}
