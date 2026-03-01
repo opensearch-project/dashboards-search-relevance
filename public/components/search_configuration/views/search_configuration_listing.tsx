@@ -12,6 +12,7 @@ import {
   EuiPageHeader,
   EuiPageTemplate,
   EuiText,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -114,15 +115,17 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => {
-            setConfigToDelete(item);
-            setShowDeleteModal(true);
-          }}
-        />
+        <EuiToolTip content="Delete">
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => {
+              setConfigToDelete(item);
+              setShowDeleteModal(true);
+            }}
+          />
+        </EuiToolTip>
       ),
     },
   ];

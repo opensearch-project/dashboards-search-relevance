@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { EuiButtonEmpty, EuiText, EuiButtonIcon } from '@elastic/eui';
+import { EuiButtonEmpty, EuiText, EuiButtonIcon, EuiToolTip } from '@elastic/eui';
 import { RouteComponentProps } from 'react-router-dom';
 import moment from 'moment';
 import {
@@ -83,12 +83,14 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
       width: '10%',
       align: 'center',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => onDelete(item)}
-        />
+        <EuiToolTip content="Delete">
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => onDelete(item)}
+          />
+        </EuiToolTip>
       ),
     },
   ];
