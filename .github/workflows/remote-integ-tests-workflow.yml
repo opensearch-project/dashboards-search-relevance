@@ -66,20 +66,17 @@ jobs:
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
 
-      # It doesn't matter what plugin we use, but by launching OpenSearch
-      # from a plugin repo, we don't need to checkout and build
-      # OpenSearch itself.
-      - name: Checkout ml-commons
+      - name: Checkout OpenSearch
         uses: actions/checkout@v4
         with:
-          path: ml-commons
-          repository: opensearch-project/ml-commons
-          ref: 2.19
+          path: OpenSearch
+          repository: opensearch-project/OpenSearch
+          ref: ${{ env.OPENSEARCH_VERSION }}
 
-      - name: Run OpenSearch with plugin
+      - name: Run OpenSearch
         run: |
-          cd ml-commons
-          ./gradlew run -Dopensearch.version=${{ env.ML_COMMONS_VERSION }} &
+          cd OpenSearch
+          ./gradlew run &
           t=0
           while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do
             sleep 5
