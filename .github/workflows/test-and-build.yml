@@ -30,7 +30,7 @@ jobs:
         shell: bash
         run: |
           OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
-          if [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "${{ github.event_name }}" == "push" ]]; then 
             pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
                 | jq -r '.[0].number')
@@ -43,7 +43,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
             BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
-          fi
+          fi  
           echo "Target branch: $BRANCH_NAME"
           echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
@@ -63,19 +63,11 @@ jobs:
       - name: Move Search Relevance to Plugins Dir
         run: mv dashboards-search-relevance OpenSearch-Dashboards/plugins/dashboards-search-relevance
 
-      - name: Setup Node
-        run: |
-          source $NVM_DIR/nvm.sh
-          nvm install 18
-          nvm use 18
-          YARN_VERSION=$(node -p "require('./OpenSearch-Dashboards/package.json').engines.yarn")
-          npm install -g yarn@$YARN_VERSION
-
       - name: Plugin Bootstrap / test
         run: |
           chown -R 1000:1000 `pwd`
           cd ./OpenSearch-Dashboards/
-          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use 18 && node -v && yarn -v &&
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
                                cd ./plugins/dashboards-search-relevance &&
                                whoami && yarn osd bootstrap && yarn test --coverage"
 
@@ -90,7 +82,7 @@ jobs:
         run: |
           chown -R 1000:1000 `pwd`
           cd ./OpenSearch-Dashboards/
-          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use 18 && node -v && yarn -v &&
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
                                cd ./plugins/dashboards-search-relevance &&
                                whoami && yarn build && mv -v ./build/*.zip ./build/${{ env.PLUGIN_NAME }}-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip"
 
@@ -112,7 +104,7 @@ jobs:
         shell: bash
         run: |
           OPENSEARCH_PLUGIN_VERSION=$(node -p "require('./package.json').version")
-          if [[ "${{ github.event_name }}" == "push" ]]; then
+          if [[ "${{ github.event_name }}" == "push" ]]; then 
             pr_number=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
                 "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
                 | jq -r '.[0].number')
@@ -125,7 +117,7 @@ jobs:
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "Base branch name is "${{ github.event.pull_request.base.ref }}""
             BRANCH_NAME="${{ github.event.pull_request.base.ref }}"
-          fi
+          fi  
           echo "Target branch: $BRANCH_NAME"
           echo "OPENSEARCH_PLUGIN_VERSION=$OPENSEARCH_PLUGIN_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
@@ -149,7 +141,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version-file: './OpenSearch-Dashboards/.nvmrc'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install Yarn
