@@ -10,6 +10,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Support manually creating a Query Set using plain text, key-value, or NDJSON input directly in the UI. ([#754](https://github.com/opensearch-project/dashboards-search-relevance/pull/754))
 
 ### Enhancements
+* Add resizable query editor boxes with drag handles for vertical expansion in Query Compare view. ([#791](https://github.com/opensearch-project/dashboards-search-relevance/pull/791))
 
 ### Bug Fixes
 * Bug bugs on pairwise comparison experiment view page. ([#735]https://github.com/opensearch-project/dashboards-search-relevance/pull/735)
