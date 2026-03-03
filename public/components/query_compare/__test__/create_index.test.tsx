@@ -3,10 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { fireEvent, render } from '@testing-library/react';
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
 import { CreateIndex } from '../create_index';
 
 const coreMockStart = {
@@ -21,25 +19,18 @@ const coreMockStart = {
 };
 
 describe('Create index component', () => {
-  configure({ adapter: new Adapter() });
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('Renders create index component', async () => {
-    const wrapper = mount(
+  it('Renders create index component', () => {
+    const { container } = render(
       <CreateIndex chrome={coreMockStart.chrome} application={coreMockStart.application} />
     );
-
-    wrapper.update();
-
-    await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-    });
+    expect(container).toMatchSnapshot();
   });
 
-  it('should call application.navigateToApp', async () => {
+  it('should call application.navigateToApp', () => {
     coreMockStart.chrome.navGroup.getNavGroupEnabled.mockReturnValue(true);
     const { getByText } = render(
       <CreateIndex chrome={coreMockStart.chrome} application={coreMockStart.application} />

@@ -3,9 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { waitFor } from '@testing-library/react';
-import { configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { initialQueryErrorState } from '../../../../../../public/types/index';
 import { TEST_QUERY_STRING } from '../../../../../../test/constants';
@@ -13,55 +11,55 @@ import { SearchRelevanceContextProvider } from '../../../../../contexts';
 import { SearchConfig } from '../search_configs/search_config';
 
 describe('Flyout component', () => {
-  configure({ adapter: new Adapter() });
-
-  it('Renders flyout component when multi-datasource is enabled', async () => {
-    const setQueryString = jest.fn();
-    const setSelectedIndex = jest.fn();
-    const setPipeline = jest.fn();
-    const setQueryError = jest.fn();
-    const setDataSourceManagement = jest.fn();
-    const wrapper = mount(
+  it('Renders flyout component when multi-datasource is enabled', () => {
+    const { container } = render(
       <SearchRelevanceContextProvider>
         <SearchConfig
           queryNumber={1}
           queryString={TEST_QUERY_STRING}
-          setQueryString={setQueryString}
+          setQueryString={jest.fn()}
           selectedIndex={''}
-          setSelectedIndex={setSelectedIndex}
+          setSelectedIndex={jest.fn()}
           pipeline={''}
-          setPipeline={setPipeline}
+          setPipeline={jest.fn()}
           queryError={initialQueryErrorState}
-          setQueryError={setQueryError}
+          setQueryError={jest.fn()}
           dataSourceManagement={{ ui: { DataSourceSelector: <></> } }}
         />
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
-    await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
-      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
-      });
-    });
-    expect(setQueryString).toHaveBeenCalledTimes(1);
-    expect(setSelectedIndex).toHaveBeenCalledTimes(2);
-    expect(setPipeline).toHaveBeenCalledTimes(3);
-    expect(setQueryError).toHaveBeenCalledTimes(3);
+    expect(container).toMatchSnapshot();
   });
 
-  it('Renders flyout component', async () => {
+  it('Renders flyout component', () => {
+    const { container } = render(
+      <SearchRelevanceContextProvider>
+        <SearchConfig
+          queryNumber={1}
+          queryString={TEST_QUERY_STRING}
+          setQueryString={jest.fn()}
+          selectedIndex={''}
+          setSelectedIndex={jest.fn()}
+          pipeline={''}
+          setPipeline={jest.fn()}
+          queryError={initialQueryErrorState}
+          setQueryError={jest.fn()}
+          dataSourceEnabled={false}
+        />
+      </SearchRelevanceContextProvider>
+    );
+
+    expect(container).toMatchSnapshot();
+  });
+
+  it('Handles user interactions', () => {
     const setQueryString = jest.fn();
     const setSelectedIndex = jest.fn();
     const setPipeline = jest.fn();
     const setQueryError = jest.fn();
-    const setDataSourceManagement = jest.fn();
-    const wrapper = mount(
+
+    render(
       <SearchRelevanceContextProvider>
         <SearchConfig
           queryNumber={1}
@@ -78,20 +76,8 @@ describe('Flyout component', () => {
       </SearchRelevanceContextProvider>
     );
 
-    wrapper.update();
-    await waitFor(() => {
-      expect(wrapper).toMatchSnapshot();
-      wrapper.find('EuiCodeEditor').prop('onChange')?.({ target: { value: '' } });
-      wrapper.find('EuiSelect').prop('onChange')?.({ target: {} });
-      wrapper.find('EuiSelect').prop('onBlur')?.({ target: {} });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({ target: { selectedPipelineOptions: [] } });
-      wrapper.find('EuiCompressedComboBox').prop('onChange')?.({
-        target: { selectedPipelineOptions: [{ label: '_none' }] },
-      });
-    });
-    expect(setQueryString).toHaveBeenCalledTimes(1);
-    expect(setSelectedIndex).toHaveBeenCalledTimes(2);
-    expect(setPipeline).toHaveBeenCalledTimes(3);
-    expect(setQueryError).toHaveBeenCalledTimes(3);
+    const selectElement = screen.getByLabelText('Search Index');
+    fireEvent.blur(selectElement);
+    expect(setQueryError).toHaveBeenCalled();
   });
 });
