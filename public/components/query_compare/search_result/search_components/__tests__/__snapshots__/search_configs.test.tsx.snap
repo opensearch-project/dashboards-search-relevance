@@ -65,6 +65,8 @@ exports[`Flyout component Renders flyout component 1`] = `
                       },
                     }
                   }
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -934,143 +936,178 @@ exports[`Flyout component Renders flyout component 1`] = `
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor1"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor1"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor1-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
@@ -1112,6 +1149,8 @@ exports[`Flyout component Renders flyout component 1`] = `
                       },
                     }
                   }
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -1981,143 +2020,178 @@ exports[`Flyout component Renders flyout component 1`] = `
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor2"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor2"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor2-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
@@ -2206,6 +2280,8 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -3078,143 +3154,178 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor1"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor1"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor1-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
@@ -3250,6 +3361,8 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -4122,143 +4235,178 @@ exports[`Flyout component Renders flyout component when multi dataSource enabled
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor2"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor2"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor2-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
@@ -4347,6 +4495,8 @@ exports[`Flyout component handles search configuration selection without crashin
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -5219,143 +5369,178 @@ exports[`Flyout component handles search configuration selection without crashin
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor1"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor1"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor1-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
@@ -5391,6 +5576,8 @@ exports[`Flyout component handles search configuration selection without crashin
               >
                 <SearchConfig
                   dataSourceEnabled={false}
+                  editorHeight={160}
+                  onEditorHeightChange={[Function]}
                   optional={true}
                   pipeline=""
                   queryError={
@@ -6263,143 +6450,178 @@ exports[`Flyout component handles search configuration selection without crashin
                       <div
                         className="euiFormRow__fieldWrapper"
                       >
-                        <EuiCodeEditor
+                        <ResizableQueryEditor
                           aria-describedby="random_html_id-help-0"
                           aria-label="Code Editor"
-                          height="10rem"
+                          data-test-subj="queryEditor2"
+                          height={160}
                           id="random_html_id"
-                          mode="json"
                           onBlur={[Function]}
                           onChange={[Function]}
                           onFocus={[Function]}
-                          setOptions={
-                            Object {
-                              "enableBasicAutocompletion": true,
-                              "enableLiveAutocompletion": true,
-                              "fontSize": "14px",
-                            }
-                          }
-                          showPrintMargin={false}
-                          tabSize={2}
-                          theme="textmate"
+                          onHeightChange={[Function]}
                           value="{}"
-                          width="100%"
                         >
                           <div
-                            className="euiCodeEditorWrapper"
-                            data-test-subj="codeEditorContainer"
-                            style={
-                              Object {
-                                "height": "10rem",
-                                "width": "100%",
-                              }
-                            }
+                            className="resizableQueryEditor"
+                            data-test-subj="queryEditor2"
                           >
-                            <button
-                              className="euiCodeEditorKeyboardHint"
-                              data-test-subj="codeEditorHint"
-                              id="random_html_id"
-                              onClick={[Function]}
+                            <div
+                              className="resizableQueryEditor__editorWrapper"
                             >
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="Press Enter to start editing."
-                                  token="euiCodeEditor.startEditing"
-                                >
-                                  Press Enter to start editing.
-                                </EuiI18n>
-                              </p>
-                              <p
-                                className="euiText"
-                              >
-                                <EuiI18n
-                                  default="When you're done, press Escape to stop editing."
-                                  token="euiCodeEditor.stopEditing"
-                                >
-                                  When you're done, press Escape to stop editing.
-                                </EuiI18n>
-                              </p>
-                            </button>
-                            <ReactAce
-                              aria-describedby="random_html_id-help-0"
-                              aria-label="Code Editor"
-                              commands={
-                                Array [
+                              <EuiCodeEditor
+                                aria-label="Code Editor"
+                                height="160px"
+                                mode="json"
+                                onBlur={[Function]}
+                                onChange={[Function]}
+                                setOptions={
                                   Object {
-                                    "bindKey": Object {
-                                      "mac": "Esc",
-                                      "win": "Esc",
-                                    },
-                                    "exec": [Function],
-                                    "name": "stopEditingOnEsc",
-                                  },
-                                ]
-                              }
-                              cursorStart={1}
-                              editorProps={
-                                Object {
-                                  "$blockScrolling": Infinity,
-                                }
-                              }
-                              enableBasicAutocompletion={false}
-                              enableLiveAutocompletion={false}
-                              enableSnippets={false}
-                              focus={false}
-                              fontSize={12}
-                              height="10rem"
-                              highlightActiveLine={true}
-                              id="random_html_id"
-                              maxLines={null}
-                              minLines={null}
-                              mode="json"
-                              name="random_html_id"
-                              navigateToFileEnd={true}
-                              onBlur={[Function]}
-                              onChange={[Function]}
-                              onFocus={[Function]}
-                              onLoad={null}
-                              onPaste={null}
-                              onScroll={null}
-                              placeholder={null}
-                              readOnly={false}
-                              scrollMargin={
-                                Array [
-                                  0,
-                                  0,
-                                  0,
-                                  0,
-                                ]
-                              }
-                              setOptions={
-                                Object {
-                                  "enableBasicAutocompletion": true,
-                                  "enableLiveAutocompletion": true,
-                                  "fontSize": "14px",
-                                }
-                              }
-                              showGutter={true}
-                              showPrintMargin={false}
-                              style={Object {}}
-                              tabSize={2}
-                              theme="textmate"
-                              value="{}"
-                              width="100%"
-                              wrapEnabled={false}
-                            >
-                              <div
-                                id="random_html_id"
-                                style={
-                                  Object {
-                                    "height": "10rem",
-                                    "width": "100%",
+                                    "enableBasicAutocompletion": true,
+                                    "enableLiveAutocompletion": true,
+                                    "fontSize": "14px",
                                   }
                                 }
+                                showPrintMargin={false}
+                                tabSize={2}
+                                theme="textmate"
+                                value="{}"
+                                width="100%"
+                              >
+                                <div
+                                  className="euiCodeEditorWrapper"
+                                  data-test-subj="codeEditorContainer"
+                                  style={
+                                    Object {
+                                      "height": "160px",
+                                      "width": "100%",
+                                    }
+                                  }
+                                >
+                                  <button
+                                    className="euiCodeEditorKeyboardHint"
+                                    data-test-subj="codeEditorHint"
+                                    id="random_html_id"
+                                    onClick={[Function]}
+                                  >
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="Press Enter to start editing."
+                                        token="euiCodeEditor.startEditing"
+                                      >
+                                        Press Enter to start editing.
+                                      </EuiI18n>
+                                    </p>
+                                    <p
+                                      className="euiText"
+                                    >
+                                      <EuiI18n
+                                        default="When you're done, press Escape to stop editing."
+                                        token="euiCodeEditor.stopEditing"
+                                      >
+                                        When you're done, press Escape to stop editing.
+                                      </EuiI18n>
+                                    </p>
+                                  </button>
+                                  <ReactAce
+                                    aria-label="Code Editor"
+                                    commands={
+                                      Array [
+                                        Object {
+                                          "bindKey": Object {
+                                            "mac": "Esc",
+                                            "win": "Esc",
+                                          },
+                                          "exec": [Function],
+                                          "name": "stopEditingOnEsc",
+                                        },
+                                      ]
+                                    }
+                                    cursorStart={1}
+                                    editorProps={
+                                      Object {
+                                        "$blockScrolling": Infinity,
+                                      }
+                                    }
+                                    enableBasicAutocompletion={false}
+                                    enableLiveAutocompletion={false}
+                                    enableSnippets={false}
+                                    focus={false}
+                                    fontSize={12}
+                                    height="160px"
+                                    highlightActiveLine={true}
+                                    maxLines={null}
+                                    minLines={null}
+                                    mode="json"
+                                    name="random_html_id"
+                                    navigateToFileEnd={true}
+                                    onBlur={[Function]}
+                                    onChange={[Function]}
+                                    onFocus={[Function]}
+                                    onLoad={null}
+                                    onPaste={null}
+                                    onScroll={null}
+                                    placeholder={null}
+                                    readOnly={false}
+                                    scrollMargin={
+                                      Array [
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                      ]
+                                    }
+                                    setOptions={
+                                      Object {
+                                        "enableBasicAutocompletion": true,
+                                        "enableLiveAutocompletion": true,
+                                        "fontSize": "14px",
+                                      }
+                                    }
+                                    showGutter={true}
+                                    showPrintMargin={false}
+                                    style={Object {}}
+                                    tabSize={2}
+                                    theme="textmate"
+                                    value="{}"
+                                    width="100%"
+                                    wrapEnabled={false}
+                                  >
+                                    <div
+                                      id="random_html_id"
+                                      style={
+                                        Object {
+                                          "height": "160px",
+                                          "width": "100%",
+                                        }
+                                      }
+                                    />
+                                  </ReactAce>
+                                </div>
+                              </EuiCodeEditor>
+                            </div>
+                            <div
+                              aria-label="Resize query editor"
+                              aria-orientation="vertical"
+                              aria-valuemax={600}
+                              aria-valuemin={160}
+                              aria-valuenow={160}
+                              className="resizableQueryEditor__resizeHandle "
+                              data-test-subj="queryEditor2-resizeHandle"
+                              onKeyDown={[Function]}
+                              onMouseDown={[Function]}
+                              onTouchStart={[Function]}
+                              role="slider"
+                              tabIndex={0}
+                            >
+                              <div
+                                className="resizableQueryEditor__resizeHandleBar"
                               />
-                            </ReactAce>
+                            </div>
                           </div>
-                        </EuiCodeEditor>
+                        </ResizableQueryEditor>
                         <EuiFormHelpText
                           className="euiFormRow__text"
                           id="random_html_id-help-0"
