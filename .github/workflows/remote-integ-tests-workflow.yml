@@ -59,28 +59,23 @@ jobs:
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_PLUGIN_VERSION=$MAJOR_VERSION.$MINOR_VERSION" >> $GITHUB_ENV
-          echo "SEARCH_PROCESSOR_VERSION=$MAJOR_VERSION.$MINOR_VERSION.0" >> $GITHUB_ENV
         shell: bash
 
       - name: Enable longer filenames
         if: ${{ matrix.os == 'windows-latest' }}
         run: git config --system core.longpaths true
 
-      # It doesn't matter what plugin we use, but by launching OpenSearch
-      # from a plugin repo, we don't need to checkout and build
-      # OpenSearch itself.
-      - name: Checkout search-processor
+      - name: Checkout OpenSearch
         uses: actions/checkout@v4
         with:
-          path: search-processor
-          repository: opensearch-project/search-processor
-          ref: 2.x
+          path: OpenSearch
+          repository: opensearch-project/OpenSearch
+          ref: 2.19
 
-      - name: Run OpenSearch with plugin
+      - name: Run OpenSearch
         run: |
-          cd search-processor
-          ./gradlew run -Dopensearch.version=${{ env.SEARCH_PROCESSOR_VERSION }} &
+          cd OpenSearch
+          ./gradlew run &
           t=0
           while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:9200)" != "200" ]]; do
             sleep 5
