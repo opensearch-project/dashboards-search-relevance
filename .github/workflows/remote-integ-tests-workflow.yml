@@ -71,7 +71,7 @@ jobs:
         with:
           path: OpenSearch
           repository: opensearch-project/OpenSearch
-          ref: ${{ env.OPENSEARCH_VERSION }}
+          ref: 2.19
 
       - name: Run OpenSearch
         run: |
