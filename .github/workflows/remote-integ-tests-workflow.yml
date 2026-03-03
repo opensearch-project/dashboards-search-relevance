@@ -59,7 +59,6 @@ jobs:
           echo "OPENSEARCH_VERSION=$OPENSEARCH_VERSION" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
           echo "OPENSEARCH_DASHBOARDS_FTREPO_VERSION=$BRANCH_NAME" >> $GITHUB_ENV
-          echo "ML_COMMONS_VERSION=$MAJOR_VERSION.$MINOR_VERSION.0" >> $GITHUB_ENV
         shell: bash
 
       - name: Enable longer filenames
