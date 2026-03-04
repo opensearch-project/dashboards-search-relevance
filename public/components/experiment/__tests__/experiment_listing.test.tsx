@@ -34,6 +34,18 @@ jest.mock('../../../contexts/date_format_context', () => ({
   useConfig: () => ({ dateFormat: 'YYYY-MM-DD' }),
 }));
 
+jest.mock('@elastic/eui', () => {
+  const originalModule = jest.requireActual('@elastic/eui');
+  return {
+    ...originalModule,
+    EuiToolTip: ({ children, content }: any) => (
+      <div data-test-subj="eui-tooltip" data-tooltip-content={content}>
+        {children}
+      </div>
+    ),
+  };
+});
+
 jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', () => {
   const React = require('react');
   return {
@@ -43,12 +55,26 @@ jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', ()
         share: {},
       },
     }),
-    TableListView: ({ findItems }) => {
+    TableListView: ({ tableColumns, findItems }: any) => {
       capturedFindItems = findItems;
+      const [items, setItems] = React.useState<any[]>([]);
       React.useEffect(() => {
-        findItems('');
+        findItems('').then((res: any) => setItems(res.hits));
       }, []);
-      return React.createElement('div', { 'data-testid': 'table-list-view' }, 'Table List View');
+      return (
+        <div data-testid="table-list-view">
+          Table List View
+          {items.map((item, rowIdx) => (
+            <div key={rowIdx} data-testid={`row-${item.id}`}>
+              {tableColumns.map((col: any, colIdx: number) => (
+                <div key={colIdx} data-testid={`column-${col.field || colIdx}`}>
+                  {col.render ? col.render(item[col.field], item) : item[col.field]}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
     },
     reactRouterNavigate: () => ({}),
   };
@@ -147,5 +173,45 @@ describe('ExperimentListing', () => {
     result = await capturedFindItems("completed");
     expect(result.hits.length).toBe(1);
     expect(result.hits[0].status).toBe("COMPLETED");
+  });
+
+  it('renders correct tooltips for experiment actions', async () => {
+    const mockData = [
+      { id: "exp-1", type: "POINTWISE_EVALUATION", status: "COMPLETED", isScheduled: false }
+    ];
+
+    mockGetExperiments.mockResolvedValue({
+      success: true,
+      data: mockData
+    });
+
+    render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+    await waitFor(() => {
+      const tooltips = screen.getAllByTestId('eui-tooltip');
+      const contents = tooltips.map(t => t.getAttribute('data-tooltip-content'));
+      expect(contents).toContain('View Visualization');
+      expect(contents).toContain('Delete');
+      expect(contents).toContain('Schedule Experiment');
+    });
+  });
+
+  it('renders "Delete Schedule" tooltip when an experiment is scheduled', async () => {
+    const mockData = [
+      { id: "exp-2", type: "POINTWISE_EVALUATION", status: "COMPLETED", isScheduled: true }
+    ];
+
+    mockGetExperiments.mockResolvedValue({
+      success: true,
+      data: mockData
+    });
+
+    render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+    await waitFor(() => {
+      const tooltips = screen.getAllByTestId('eui-tooltip');
+      const contents = tooltips.map(t => t.getAttribute('data-tooltip-content'));
+      expect(contents).toContain('Delete Schedule');
+    });
   });
 });
