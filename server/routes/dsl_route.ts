@@ -42,16 +42,16 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         const params: RequestParams.Search =
           pipeline !== ''
             ? {
-                index,
-                size,
-                body: rest,
-                search_pipeline: pipeline,
-              }
+              index,
+              size,
+              body: rest,
+              search_pipeline: pipeline,
+            }
             : {
-                index,
-                size,
-                body: rest,
-              };
+              index,
+              size,
+              body: rest,
+            };
         const start = performance.now();
         try {
           let resp;
@@ -118,16 +118,16 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
         const params: RequestParams.Search =
           pipeline !== ''
             ? {
-                index,
-                size,
-                body: rest,
-                search_pipeline: pipeline,
-              }
+              index,
+              size,
+              body: rest,
+              search_pipeline: pipeline,
+            }
             : {
-                index,
-                size,
-                body: rest,
-              };
+              index,
+              size,
+              body: rest,
+            };
 
         const start = performance.now();
         try {
@@ -411,6 +411,50 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       return response.ok({
         body: resBody,
       });
+    }
+  );
+
+  // Get Mappings for an index
+  router.get(
+    {
+      path: `${ServiceEndpoints.GetMappings}/{indexName}`,
+      validate: {
+        params: schema.object({
+          indexName: schema.string(),
+        }),
+      },
+    },
+    async (context, request, response) => {
+      const start = performance.now();
+      try {
+        const resp = await context.core.opensearch.legacy.client.callAsCurrentUser(
+          'indices.getMapping',
+          { index: request.params.indexName }
+        );
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_MAPPING,
+          200,
+          end - start
+        );
+        return response.ok({
+          body: resp,
+        });
+      } catch (error) {
+        const end = performance.now();
+        context.searchRelevance.metricsService.addMetric(
+          METRIC_NAME.SEARCH_RELEVANCE,
+          METRIC_ACTION.FETCH_MAPPING,
+          error.statusCode,
+          end - start
+        );
+        if (error.statusCode !== 404) console.error(error);
+        return response.custom({
+          statusCode: error.statusCode || 400,
+          body: error.message,
+        });
+      }
     }
   );
 

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
 import { SearchConfigurationService } from '../services/search_configuration_service';
 import { validateName, validateQuery, validateForm } from '../utils/validation';
@@ -13,6 +13,7 @@ import {
   buildValidationRequestBody,
   processSearchResults,
 } from '../utils/query_processor';
+import { extractFieldNames } from '../utils/field_extractor';
 
 export interface UseSearchConfigurationFormProps {
   http: CoreStart['http'];
@@ -53,6 +54,9 @@ export interface UseSearchConfigurationFormReturn {
   isValidating: boolean;
   searchResults: any;
 
+  // Autocomplete state
+  fieldSuggestions: string[];
+
   // Actions
   validateSearchQuery: () => Promise<void>;
   createSearchConfiguration: () => Promise<void>;
@@ -85,8 +89,12 @@ export const useSearchConfigurationForm = ({
   const [isValidating, setIsValidating] = useState(false);
   const [searchResults, setSearchResults] = useState(null);
 
+  // Autocomplete state
+  const [fieldSuggestions, setFieldSuggestions] = useState<string[]>([]);
+
   // Create service instance
-  const searchConfigService = new SearchConfigurationService(http);
+  const searchConfigServiceRef = useRef(new SearchConfigurationService(http));
+  const searchConfigService = searchConfigServiceRef.current;
 
   // Fetch indexes on component mount
   useEffect(() => {
@@ -128,6 +136,37 @@ export const useSearchConfigurationForm = ({
 
     fetchPipelines();
   }, []);
+
+  // Fetch mappings when index changes (for autocomplete)
+  useEffect(() => {
+    if (selectedIndex.length === 0) {
+      setFieldSuggestions([]);
+      return;
+    }
+
+    const indexName = selectedIndex[0].label;
+    let cancelled = false;
+
+    const fetchMappings = async () => {
+      try {
+        const mappings = await searchConfigService.fetchMappings(indexName);
+        if (!cancelled) {
+          setFieldSuggestions(extractFieldNames(mappings));
+        }
+      } catch (error) {
+        console.error('Failed to fetch index mappings for autocomplete', error);
+        if (!cancelled) {
+          setFieldSuggestions([]);
+        }
+      }
+    };
+
+    fetchMappings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedIndex]);
 
   // Validate name field on blur
   const validateNameField = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
@@ -260,6 +299,9 @@ export const useSearchConfigurationForm = ({
     setTestSearchText,
     isValidating,
     searchResults,
+
+    // Autocomplete state
+    fieldSuggestions,
 
     // Actions
     validateSearchQuery,

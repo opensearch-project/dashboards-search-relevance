@@ -79,4 +79,36 @@ describe('SearchConfigurationService', () => {
       expect(result).toEqual(mockResponse.result);
     });
   });
+
+  describe('fetchMappings', () => {
+    it('should fetch mappings for a given index', async () => {
+      const mockMappings = {
+        'test-index': {
+          mappings: {
+            properties: {
+              title: { type: 'text' },
+            },
+          },
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockMappings);
+
+      const result = await service.fetchMappings('test-index');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/api/relevancy/search/mappings/test-index'
+      );
+      expect(result).toEqual(mockMappings);
+    });
+
+    it('should encode special characters in index name', async () => {
+      mockHttp.get.mockResolvedValue({});
+
+      await service.fetchMappings('my index/special');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/api/relevancy/search/mappings/my%20index%2Fspecial'
+      );
+    });
+  });
 });

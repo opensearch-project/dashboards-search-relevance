@@ -51,6 +51,7 @@ const mockProps = {
   selectedPipeline: [],
   setSelectedPipeline: jest.fn(),
   isLoadingPipelines: false,
+  fieldSuggestions: [],
 };
 
 describe('SearchConfigurationForm', () => {

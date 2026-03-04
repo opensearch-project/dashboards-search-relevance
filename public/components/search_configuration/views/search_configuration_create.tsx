@@ -60,6 +60,9 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     isValidating,
     searchResults,
 
+    // Autocomplete state
+    fieldSuggestions,
+
     // Actions
     validateSearchQuery,
     createSearchConfiguration,
@@ -122,6 +125,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               selectedPipeline={selectedPipeline}
               setSelectedPipeline={setSelectedPipeline}
               isLoadingPipelines={isLoadingPipelines}
+              fieldSuggestions={fieldSuggestions}
             />
           </EuiPanel>
         </EuiFlexItem>

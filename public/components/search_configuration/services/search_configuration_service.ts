@@ -15,7 +15,7 @@ export interface SearchConfigurationData {
 }
 
 export class SearchConfigurationService {
-  constructor(private readonly http: CoreStart['http']) {}
+  constructor(private readonly http: CoreStart['http']) { }
 
   /**
    * Fetches available indexes from the API
@@ -72,5 +72,14 @@ export class SearchConfigurationService {
     });
 
     return response.result;
+  }
+
+  /**
+   * Fetches field mappings for a given index
+   * @param indexName The name of the index
+   * @returns Promise with the raw mapping response
+   */
+  async fetchMappings(indexName: string): Promise<Record<string, any>> {
+    return await this.http.get(`${ServiceEndpoints.GetMappings}/${encodeURIComponent(indexName)}`);
   }
 }

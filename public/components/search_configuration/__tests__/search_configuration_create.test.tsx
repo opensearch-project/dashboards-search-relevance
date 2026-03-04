@@ -33,6 +33,7 @@ const mockHookReturn = {
   searchResults: null,
   validateSearchQuery: jest.fn(),
   createSearchConfiguration: jest.fn(),
+  fieldSuggestions: [],
 };
 
 jest.mock('../hooks/use_search_configuration_form', () => ({
