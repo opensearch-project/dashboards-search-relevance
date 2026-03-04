@@ -12,32 +12,58 @@ import {
 
 describe('QUERY_DSL_KEYWORDS', () => {
     it('should contain essential query types', () => {
-        expect(QUERY_DSL_KEYWORDS).toContain('query');
-        expect(QUERY_DSL_KEYWORDS).toContain('match');
-        expect(QUERY_DSL_KEYWORDS).toContain('bool');
-        expect(QUERY_DSL_KEYWORDS).toContain('term');
-        expect(QUERY_DSL_KEYWORDS).toContain('range');
-        expect(QUERY_DSL_KEYWORDS).toContain('match_all');
+        const names = QUERY_DSL_KEYWORDS.map((k) => k.name);
+        expect(names).toContain('query');
+        expect(names).toContain('match');
+        expect(names).toContain('bool');
+        expect(names).toContain('term');
+        expect(names).toContain('range');
+        expect(names).toContain('match_all');
     });
 
     it('should contain compound query clauses', () => {
-        expect(QUERY_DSL_KEYWORDS).toContain('must');
-        expect(QUERY_DSL_KEYWORDS).toContain('must_not');
-        expect(QUERY_DSL_KEYWORDS).toContain('should');
-        expect(QUERY_DSL_KEYWORDS).toContain('filter');
+        const names = QUERY_DSL_KEYWORDS.map((k) => k.name);
+        expect(names).toContain('must');
+        expect(names).toContain('must_not');
+        expect(names).toContain('should');
+        expect(names).toContain('filter');
     });
 
     it('should contain neural/ML query types', () => {
-        expect(QUERY_DSL_KEYWORDS).toContain('neural');
-        expect(QUERY_DSL_KEYWORDS).toContain('knn');
-        expect(QUERY_DSL_KEYWORDS).toContain('hybrid');
+        const names = QUERY_DSL_KEYWORDS.map((k) => k.name);
+        expect(names).toContain('neural');
+        expect(names).toContain('knn');
+        expect(names).toContain('hybrid');
     });
 
-    it('should not contain duplicates', () => {
-        const uniqueKeywords = new Set(QUERY_DSL_KEYWORDS);
-        // The only known duplicate is 'type' which appears in both term-level and common params
-        // Verify no other accidental duplicates exist beyond expected ones
-        expect(QUERY_DSL_KEYWORDS.length).toBeLessThanOrEqual(uniqueKeywords.size + 1);
+    it('should have template information for each keyword', () => {
+        QUERY_DSL_KEYWORDS.forEach((keyword) => {
+            expect(keyword).toHaveProperty('name');
+            expect(keyword).toHaveProperty('template');
+            expect(['object', 'array', 'string', 'number', 'boolean', 'none']).toContain(
+                keyword.template
+            );
+        });
+    });
+
+    it('should have object templates for query types', () => {
+        const queryKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'query');
+        const matchKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'match');
+        const boolKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'bool');
+
+        expect(queryKeyword?.template).toBe('object');
+        expect(matchKeyword?.template).toBe('object');
+        expect(boolKeyword?.template).toBe('object');
+    });
+
+    it('should have array templates for clause types', () => {
+        const mustKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'must');
+        const shouldKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'should');
+        const fieldsKeyword = QUERY_DSL_KEYWORDS.find((k) => k.name === 'fields');
+
+        expect(mustKeyword?.template).toBe('array');
+        expect(shouldKeyword?.template).toBe('array');
+        expect(fieldsKeyword?.template).toBe('array');
     });
 });
 
@@ -58,13 +84,14 @@ describe('buildCompletions', () => {
 
     it('should return keyword completions matching prefix', () => {
         const completions = buildCompletions(fieldNames, 'mat');
-        const keywordResults = completions.filter((c) => c.meta === 'keyword');
+        // Keywords now have specific meta values like 'query', 'clause', 'param'
+        const matchCompletions = completions.filter((c) => c.caption.startsWith('match'));
 
-        expect(keywordResults.length).toBeGreaterThan(0);
-        expect(keywordResults).toEqual(
+        expect(matchCompletions.length).toBeGreaterThan(0);
+        expect(matchCompletions).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ caption: 'match', meta: 'keyword' }),
-                expect.objectContaining({ caption: 'match_phrase', meta: 'keyword' }),
+                expect.objectContaining({ caption: 'match' }),
+                expect.objectContaining({ caption: 'match_phrase' }),
             ])
         );
     });
@@ -74,7 +101,7 @@ describe('buildCompletions', () => {
         const fieldsWithRan = [...fieldNames, 'brand'];
         const completions = buildCompletions(fieldsWithRan, 'ran');
         const fieldResults = completions.filter((c) => c.meta === 'field');
-        const keywordResults = completions.filter((c) => c.meta === 'keyword');
+        const keywordResults = completions.filter((c) => c.meta !== 'field');
 
         expect(fieldResults.length).toBeGreaterThan(0); // 'brand' contains 'ran'
         expect(keywordResults.length).toBeGreaterThan(0); // 'range' contains 'ran'
@@ -100,7 +127,7 @@ describe('buildCompletions', () => {
     it('should give fields higher score than keywords', () => {
         const completions = buildCompletions(fieldNames, '');
         const fieldScores = completions.filter((c) => c.meta === 'field').map((c) => c.score);
-        const keywordScores = completions.filter((c) => c.meta === 'keyword').map((c) => c.score);
+        const keywordScores = completions.filter((c) => c.meta !== 'field').map((c) => c.score);
 
         const minFieldScore = Math.min(...fieldScores);
         const maxKeywordScore = Math.max(...keywordScores);
@@ -108,13 +135,21 @@ describe('buildCompletions', () => {
         expect(minFieldScore).toBeGreaterThan(maxKeywordScore);
     });
 
-    it('should wrap values in double quotes', () => {
+    it('should include completer with insertMatch for each completion', () => {
         const completions = buildCompletions(['title'], 'title');
         const titleCompletion = completions.find(
             (c) => c.caption === 'title' && c.meta === 'field'
         );
 
-        expect(titleCompletion?.value).toBe('"title"');
+        expect(titleCompletion?.completer).toBeDefined();
+        expect(typeof titleCompletion?.completer?.insertMatch).toBe('function');
+    });
+
+    it('should include template information for keywords', () => {
+        const completions = buildCompletions([], 'query');
+        const queryCompletion = completions.find((c) => c.caption === 'query');
+
+        expect(queryCompletion?.template).toBe('object');
     });
 
     it('should return empty field completions for non-matching prefix', () => {
@@ -127,7 +162,7 @@ describe('buildCompletions', () => {
     it('should handle empty field names array', () => {
         const completions = buildCompletions([], 'mat');
         const fieldResults = completions.filter((c) => c.meta === 'field');
-        const keywordResults = completions.filter((c) => c.meta === 'keyword');
+        const keywordResults = completions.filter((c) => c.meta !== 'field');
 
         expect(fieldResults).toEqual([]);
         expect(keywordResults.length).toBeGreaterThan(0);
@@ -146,85 +181,341 @@ describe('buildCompletions', () => {
 });
 
 describe('setupAceAutocomplete', () => {
-    it('should add a custom completer to the editor', () => {
-        const mockEditor = {
-            completers: [],
+    let mockEditor: any;
+    let mockSession: any;
+    let mockSelection: any;
+
+    beforeEach(() => {
+        // Reset mocks
+        jest.clearAllMocks();
+
+        // Create mock selection object
+        mockSelection = {
+            on: jest.fn(),
+            off: jest.fn(),
         };
 
-        setupAceAutocomplete(mockEditor, ['title', 'description']);
-
-        expect(mockEditor.completers.length).toBe(1);
-        expect(mockEditor.completers[0].__searchRelevanceCompleter).toBe(true);
-    });
-
-    it('should replace previous custom completer', () => {
-        const mockEditor = {
-            completers: [{ __searchRelevanceCompleter: true }],
+        // Create mock session object
+        mockSession = {
+            selection: mockSelection,
+            getLine: jest.fn().mockReturnValue(''),
+            getTokenAt: jest.fn().mockReturnValue(null),
         };
 
-        setupAceAutocomplete(mockEditor, ['title']);
-
-        expect(mockEditor.completers.length).toBe(1);
-        expect(mockEditor.completers[0].__searchRelevanceCompleter).toBe(true);
-    });
-
-    it('should preserve non-custom completers', () => {
-        const existingCompleter = { getCompletions: jest.fn() };
-        const mockEditor = {
-            completers: [existingCompleter],
+        // Create a mock editor
+        mockEditor = {
+            setOptions: jest.fn(),
+            getSession: jest.fn().mockReturnValue(mockSession),
+            getCursorPosition: jest.fn().mockReturnValue({ row: 0, column: 0 }),
+            execCommand: jest.fn(),
+            completer: null,
         };
-
-        setupAceAutocomplete(mockEditor, ['title']);
-
-        expect(mockEditor.completers.length).toBe(2);
-        expect(mockEditor.completers[0]).toBe(existingCompleter);
     });
 
     it('should do nothing when editor is null', () => {
         expect(() => setupAceAutocomplete(null, ['title'])).not.toThrow();
     });
 
-    it('should do nothing when editor has no completers', () => {
-        expect(() => setupAceAutocomplete({}, ['title'])).not.toThrow();
+    it('should enable autocomplete options on the editor', () => {
+        setupAceAutocomplete(mockEditor, ['title', 'description']);
+
+        expect(mockEditor.setOptions).toHaveBeenCalledWith({
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+        });
     });
 
-    it('should strip quotes from prefix in getCompletions callback', () => {
-        const mockEditor = {
-            completers: [] as any[],
-        };
-
+    it('should add a changeCursor listener to trigger autocomplete', () => {
         setupAceAutocomplete(mockEditor, ['title']);
 
-        const completer = mockEditor.completers[0];
-        const callback = jest.fn();
-
-        completer.getCompletions(null, null, null, '"tit', callback);
-
-        expect(callback).toHaveBeenCalled();
-        const completions = callback.mock.calls[0][1];
-        const titleCompletion = completions.find(
-            (c: CompletionItem) => c.caption === 'title' && c.meta === 'field'
-        );
-        expect(titleCompletion).toBeDefined();
+        expect(mockSelection.on).toHaveBeenCalledWith('changeCursor', expect.any(Function));
     });
 
-    it('should return completions via callback', () => {
-        const mockEditor = {
-            completers: [] as any[],
+    it('should remove previous listener when called multiple times', () => {
+        setupAceAutocomplete(mockEditor, ['title']);
+        setupAceAutocomplete(mockEditor, ['description']);
+
+        expect(mockSelection.off).toHaveBeenCalledWith('changeCursor', expect.any(Function));
+    });
+
+    it('should trigger autocomplete when cursor is inside a string after quote', () => {
+        jest.useFakeTimers();
+        setupAceAutocomplete(mockEditor, ['title']);
+
+        // Get the changeCursor listener
+        const listener = mockSelection.on.mock.calls.find(
+            (call: any[]) => call[0] === 'changeCursor'
+        )?.[1];
+        expect(listener).toBeDefined();
+
+        // Mock cursor position after typing a quote: {"|
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 2 });
+        mockSession.getLine.mockReturnValue('{"');
+
+        // Trigger the listener
+        listener();
+
+        // Fast-forward timers
+        jest.advanceTimersByTime(100);
+
+        expect(mockEditor.execCommand).toHaveBeenCalledWith('startAutocomplete');
+        jest.useRealTimers();
+    });
+
+    it('should not trigger autocomplete when not inside a string', () => {
+        jest.useFakeTimers();
+        setupAceAutocomplete(mockEditor, ['title']);
+
+        // Get the changeCursor listener
+        const listener = mockSelection.on.mock.calls.find(
+            (call: any[]) => call[0] === 'changeCursor'
+        )?.[1];
+
+        // Mock cursor position outside quotes: {|
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 1 });
+        mockSession.getLine.mockReturnValue('{');
+
+        // Trigger the listener
+        listener();
+
+        // Fast-forward timers
+        jest.advanceTimersByTime(100);
+
+        expect(mockEditor.execCommand).not.toHaveBeenCalled();
+        jest.useRealTimers();
+    });
+
+    it('should not trigger when completer is already active', () => {
+        jest.useFakeTimers();
+        mockEditor.completer = { activated: true };
+        setupAceAutocomplete(mockEditor, ['title']);
+
+        // Get the changeCursor listener
+        const listener = mockSelection.on.mock.calls.find(
+            (call: any[]) => call[0] === 'changeCursor'
+        )?.[1];
+
+        // Mock cursor position inside quotes
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 2 });
+        mockSession.getLine.mockReturnValue('{"');
+
+        // Trigger the listener
+        listener();
+
+        // Fast-forward timers
+        jest.advanceTimersByTime(100);
+
+        expect(mockEditor.execCommand).not.toHaveBeenCalled();
+        jest.useRealTimers();
+    });
+});
+
+describe('createInsertMatch (via buildCompletions)', () => {
+    let mockEditor: any;
+    let mockSession: any;
+
+    beforeEach(() => {
+        mockSession = {
+            getLine: jest.fn(),
+            replace: jest.fn(),
+        };
+        mockEditor = {
+            getSession: jest.fn().mockReturnValue(mockSession),
+            getCursorPosition: jest.fn(),
+            moveCursorTo: jest.fn(),
+            clearSelection: jest.fn(),
+            execCommand: jest.fn(),
+        };
+    });
+
+    it('should insert object template and position cursor inside braces', () => {
+        jest.useFakeTimers();
+        // Cursor after "que" in {"que|"}
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 5 });
+        mockSession.getLine.mockReturnValue('{"que"}');
+
+        const completions = buildCompletions([], 'que');
+        const queryCompletion = completions.find((c) => c.caption === 'query');
+        expect(queryCompletion?.completer).toBeDefined();
+
+        queryCompletion!.completer!.insertMatch(mockEditor, queryCompletion);
+
+        // Should replace from after opening quote (col 2) to closing quote (col 6)
+        expect(mockSession.replace).toHaveBeenCalledWith(
+            { start: { row: 0, column: 2 }, end: { row: 0, column: 6 } },
+            'query": {}'
+        );
+        // Cursor should be inside {} (at position 2 + 10 - 1 = 11)
+        expect(mockEditor.moveCursorTo).toHaveBeenCalledWith(0, 11);
+        expect(mockEditor.clearSelection).toHaveBeenCalled();
+
+        // Should trigger autocomplete again for object templates
+        jest.advanceTimersByTime(150);
+        expect(mockEditor.execCommand).toHaveBeenCalledWith('startAutocomplete');
+        jest.useRealTimers();
+    });
+
+    it('should insert string template and position cursor inside quotes', () => {
+        // Cursor after "ana" in {"ana|"}
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 5 });
+        mockSession.getLine.mockReturnValue('{"ana"}');
+
+        const completions = buildCompletions([], 'ana');
+        const analyzerCompletion = completions.find((c) => c.caption === 'analyzer');
+        expect(analyzerCompletion?.completer).toBeDefined();
+
+        analyzerCompletion!.completer!.insertMatch(mockEditor, analyzerCompletion);
+
+        // String template: analyzer": ""
+        expect(mockSession.replace).toHaveBeenCalledWith(
+            { start: { row: 0, column: 2 }, end: { row: 0, column: 6 } },
+            'analyzer": ""'
+        );
+        // Cursor inside the quotes (column 2 + 13 - 1 = 14)
+        expect(mockEditor.moveCursorTo).toHaveBeenCalledWith(0, 14);
+    });
+
+    it('should insert number template and position cursor at end', () => {
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 4 });
+        mockSession.getLine.mockReturnValue('{"si"}');
+
+        const completions = buildCompletions([], 'si');
+        const sizeCompletion = completions.find((c) => c.caption === 'size');
+        expect(sizeCompletion?.completer).toBeDefined();
+
+        sizeCompletion!.completer!.insertMatch(mockEditor, sizeCompletion);
+
+        // Number template: size": (with trailing space for typing)
+        expect(mockSession.replace).toHaveBeenCalledWith(
+            { start: { row: 0, column: 2 }, end: { row: 0, column: 5 } },
+            'size": '
+        );
+        // Cursor at end (column 2 + 7 + 0 = 9)
+        expect(mockEditor.moveCursorTo).toHaveBeenCalledWith(0, 9);
+    });
+
+    it('should handle field completion with no closing quote', () => {
+        // Cursor after "tit" in {"tit|  (no closing quote)
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 5 });
+        mockSession.getLine.mockReturnValue('{"tit');
+
+        const completions = buildCompletions(['title'], 'tit');
+        const titleCompletion = completions.find(
+            (c) => c.caption === 'title' && c.meta === 'field'
+        );
+        expect(titleCompletion?.completer).toBeDefined();
+
+        titleCompletion!.completer!.insertMatch(mockEditor, titleCompletion);
+
+        // tokenEnd should equal pos.column since no closing quote
+        expect(mockSession.replace).toHaveBeenCalledWith(
+            { start: { row: 0, column: 2 }, end: { row: 0, column: 5 } },
+            'title": {}'
+        );
+    });
+
+    it('should not trigger autocomplete for non-object/array templates', () => {
+        jest.useFakeTimers();
+        mockEditor.getCursorPosition.mockReturnValue({ row: 0, column: 4 });
+        mockSession.getLine.mockReturnValue('{"si"}');
+
+        const completions = buildCompletions([], 'si');
+        const sizeCompletion = completions.find((c) => c.caption === 'size');
+        sizeCompletion!.completer!.insertMatch(mockEditor, sizeCompletion);
+
+        jest.advanceTimersByTime(150);
+        expect(mockEditor.execCommand).not.toHaveBeenCalled();
+        jest.useRealTimers();
+    });
+});
+
+describe('completer getCompletions callback', () => {
+    let mockEditor: any;
+    let mockSession: any;
+    let mockSelection: any;
+    let capturedCompleter: any;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        mockSelection = { on: jest.fn(), off: jest.fn() };
+        mockSession = {
+            selection: mockSelection,
+            getLine: jest.fn().mockReturnValue(''),
+            getTokenAt: jest.fn().mockReturnValue(null),
+        };
+        mockEditor = {
+            setOptions: jest.fn(),
+            getSession: jest.fn().mockReturnValue(mockSession),
+            getCursorPosition: jest.fn().mockReturnValue({ row: 0, column: 0 }),
+            execCommand: jest.fn(),
+            completer: null,
         };
 
-        setupAceAutocomplete(mockEditor, ['price', 'description']);
+        // Capture the completer that gets registered via setCompleters
+        jest.spyOn(
+            require('brace').acequire('ace/ext/language_tools'),
+            'setCompleters'
+        ).mockImplementation((...args: any[]) => {
+            capturedCompleter = args[0][0];
+        });
 
-        const completer = mockEditor.completers[0];
+        setupAceAutocomplete(mockEditor, ['title', 'description']);
+    });
+
+    afterEach(() => {
+        jest.restoreAllMocks();
+    });
+
+    it('should return completions when cursor is inside a string', () => {
         const callback = jest.fn();
+        mockSession.getLine.mockReturnValue('{"');
+        const pos = { row: 0, column: 2 };
 
-        completer.getCompletions(null, null, null, 'pri', callback);
+        capturedCompleter.getCompletions(mockEditor, mockSession, pos, '', callback);
 
         expect(callback).toHaveBeenCalledWith(null, expect.any(Array));
         const completions = callback.mock.calls[0][1];
-        const priceCompletion = completions.find(
-            (c: CompletionItem) => c.caption === 'price' && c.meta === 'field'
+        expect(completions.length).toBeGreaterThan(0);
+    });
+
+    it('should return empty when cursor is outside a string and no prefix', () => {
+        const callback = jest.fn();
+        mockSession.getLine.mockReturnValue('{');
+        const pos = { row: 0, column: 1 };
+
+        capturedCompleter.getCompletions(mockEditor, mockSession, pos, '', callback);
+
+        expect(callback).toHaveBeenCalledWith(null, []);
+    });
+
+    it('should strip quotes from prefix for filtering', () => {
+        const callback = jest.fn();
+        // Inside string, typing "tit
+        mockSession.getLine.mockReturnValue('{"tit');
+        const pos = { row: 0, column: 5 };
+
+        capturedCompleter.getCompletions(mockEditor, mockSession, pos, '"tit', callback);
+
+        expect(callback).toHaveBeenCalledWith(null, expect.any(Array));
+        const completions = callback.mock.calls[0][1];
+        const fieldResults = completions.filter((c: any) => c.meta === 'field');
+        expect(fieldResults).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ caption: 'title' }),
+            ])
         );
-        expect(priceCompletion).toBeDefined();
+    });
+
+    it('should return completions when prefix exists but not inside string', () => {
+        const callback = jest.fn();
+        mockSession.getLine.mockReturnValue('{query');
+        const pos = { row: 0, column: 6 };
+
+        capturedCompleter.getCompletions(mockEditor, mockSession, pos, 'query', callback);
+
+        expect(callback).toHaveBeenCalledWith(null, expect.any(Array));
+        const completions = callback.mock.calls[0][1];
+        expect(completions.length).toBeGreaterThan(0);
     });
 });
+

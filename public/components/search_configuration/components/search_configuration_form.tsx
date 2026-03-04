@@ -56,6 +56,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
     const editorRef = useRef<any>(null);
 
     // Register autocomplete completer when field suggestions or editor change
+    // Always set up autocomplete, even without field suggestions (for Query DSL keywords)
     useEffect(() => {
       if (editorRef.current) {
         setupAceAutocomplete(editorRef.current, fieldSuggestions);
@@ -127,9 +128,9 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
             }}
             onLoad={(editor) => {
               editorRef.current = editor;
-              if (fieldSuggestions.length > 0) {
-                setupAceAutocomplete(editor, fieldSuggestions);
-              }
+              // Always set up autocomplete for Query DSL keywords
+              // Field suggestions will be added when available
+              setupAceAutocomplete(editor, fieldSuggestions);
             }}
             onBlur={() => {
               if (disabled) return;

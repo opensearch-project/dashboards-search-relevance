@@ -110,5 +110,52 @@ describe('SearchConfigurationService', () => {
         '/api/relevancy/search/mappings/my%20index%2Fspecial'
       );
     });
+
+    it('should propagate errors from the API', async () => {
+      const error = new Error('Network error');
+      mockHttp.get.mockRejectedValue(error);
+
+      await expect(service.fetchMappings('test-index')).rejects.toThrow('Network error');
+    });
+  });
+
+  describe('fetchIndexes - edge cases', () => {
+    it('should return empty array when all indexes are system indexes', async () => {
+      const mockIndexes = [
+        { index: '.system-1', uuid: 'uuid-1' },
+        { index: '.kibana', uuid: 'uuid-2' },
+      ];
+      mockHttp.get.mockResolvedValue(mockIndexes);
+
+      const result = await service.fetchIndexes();
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array when response is empty', async () => {
+      mockHttp.get.mockResolvedValue([]);
+
+      const result = await service.fetchIndexes();
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('fetchPipelines - edge cases', () => {
+    it('should return empty array when no pipelines exist', async () => {
+      mockHttp.get.mockResolvedValue({});
+
+      const result = await service.fetchPipelines();
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('getSearchConfigurations', () => {
+    it('should fetch search configurations', async () => {
+      const mockConfigs = [{ id: '1', name: 'config1' }];
+      mockHttp.get.mockResolvedValue(mockConfigs);
+
+      const result = await service.getSearchConfigurations();
+      expect(result).toEqual(mockConfigs);
+      expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/search_configurations');
+    });
   });
 });
