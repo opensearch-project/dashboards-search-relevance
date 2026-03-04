@@ -128,7 +128,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Set up default useLocation mock
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: window.location.search || '',
         hash: window.location.hash || '',
       });
@@ -348,7 +348,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Set up default useLocation mock
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: window.location.search || '',
         hash: window.location.hash || '',
       });
@@ -382,7 +382,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${base64Config}`,
         hash: '',
       });
@@ -444,7 +444,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the search parameters (which should take priority)
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${base64QueryConfig}`,
         hash: `#/?config=${base64HashConfig}`,
       });
@@ -479,7 +479,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the malformed search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: '?config=malformed_base64',
         hash: '',
       });
@@ -509,7 +509,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the valid search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${validBase64Config}`,
         hash: '#/?config=invalid_hash_config',
       });
