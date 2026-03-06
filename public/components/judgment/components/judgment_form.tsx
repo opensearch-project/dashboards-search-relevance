@@ -15,6 +15,8 @@ import {
 import { JudgmentType } from '../types';
 import { LLMJudgmentFields } from './llm_judgment_fields';
 import { UBIJudgmentFields } from './ubi_judgment_fields';
+import { ImportedJudgmentFields } from './imported_judgment_fields';
+
 
 interface JudgmentFormProps {
   formData: any;
@@ -63,6 +65,7 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
   addContextField,
   removeContextField,
   dateRangeError,
+  handleJudgmentFileContent,
   indexOptions,
   isLoadingIndexes,
   httpClient,
@@ -102,6 +105,7 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           options={[
             { value: JudgmentType.LLM, text: 'Explicit (LLM Judge)' },
             { value: JudgmentType.UBI, text: 'Implicit (Click based)' },
+            { value: JudgmentType.IMPORT, text: 'Explicit (Imported)' },
           ]}
           value={formData.type}
           onChange={(e) => updateFormData({ type: e.target.value as JudgmentType })}
@@ -129,6 +133,10 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           addContextField={addContextField}
           removeContextField={removeContextField}
           httpClient={httpClient}
+        />
+      ) : formData.type === JudgmentType.IMPORT ? (
+         <ImportedJudgmentFields
+          handleJudgmentFileContent={handleJudgmentFileContent}
         />
       ) : (
         <UBIJudgmentFields
