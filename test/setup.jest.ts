@@ -6,6 +6,19 @@
 import '@testing-library/jest-dom/extend-expect';
 import { configure } from '@testing-library/react';
 
+// Mock brace and its extensions for tests
+// brace/ext/language_tools requires window.ace to be defined
+const mockSetCompleters = jest.fn();
+const mockLangTools = {
+    setCompleters: mockSetCompleters,
+};
+(window as any).ace = {
+    acequire: jest.fn().mockReturnValue(mockLangTools),
+    require: jest.fn().mockReturnValue(mockLangTools),
+};
+// Expose the mock for tests to access
+(window as any).__mockSetCompleters = mockSetCompleters;
+
 configure({ testIdAttribute: 'data-test-subj' });
 
 window.URL.createObjectURL = () => '';

@@ -7,12 +7,13 @@ import { renderHook, act } from '@testing-library/react';
 import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => { });
 
 // Mock the service
 const mockService = {
   fetchIndexes: jest.fn(),
   fetchPipelines: jest.fn(),
+  fetchMappings: jest.fn(),
   validateSearchQuery: jest.fn(),
   createSearchConfiguration: jest.fn(),
 };
@@ -40,6 +41,16 @@ describe('useSearchConfigurationForm', () => {
       hits: { hits: [{ _id: '1', _source: { title: 'test' } }] },
     });
     mockService.createSearchConfiguration.mockResolvedValue({});
+    mockService.fetchMappings.mockResolvedValue({
+      index1: {
+        mappings: {
+          properties: {
+            title: { type: 'text', fields: { keyword: { type: 'keyword' } } },
+            description: { type: 'text' },
+          },
+        },
+      },
+    });
   });
 
   it('should initialize with default values', () => {
@@ -56,6 +67,7 @@ describe('useSearchConfigurationForm', () => {
     expect(result.current.selectedIndex).toEqual([]);
     expect(result.current.selectedPipeline).toEqual([]);
     expect(result.current.isValidating).toBe(false);
+    expect(result.current.fieldSuggestions).toEqual([]);
   });
 
   it('should update name', () => {
@@ -381,5 +393,68 @@ describe('useSearchConfigurationForm', () => {
       query: '{"query": {"match_all": {}}}',
       searchPipeline: 'pipeline1',
     });
+  });
+
+  it('should fetch field suggestions when index is selected', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    act(() => {
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(mockService.fetchMappings).toHaveBeenCalledWith('index1');
+    expect(result.current.fieldSuggestions).toEqual([
+      'description',
+      'title',
+      'title.keyword',
+    ]);
+  });
+
+  it('should clear field suggestions when index is deselected', async () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    // First select an index
+    act(() => {
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current.fieldSuggestions.length).toBeGreaterThan(0);
+
+    // Then deselect
+    act(() => {
+      result.current.setSelectedIndex([]);
+    });
+
+    expect(result.current.fieldSuggestions).toEqual([]);
+  });
+
+  it('should handle fetchMappings error gracefully', async () => {
+    mockService.fetchMappings.mockRejectedValue(new Error('Mapping error'));
+
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    act(() => {
+      result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
+    });
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    expect(result.current.fieldSuggestions).toEqual([]);
   });
 });
