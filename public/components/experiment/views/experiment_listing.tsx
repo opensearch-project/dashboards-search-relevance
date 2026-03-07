@@ -16,6 +16,7 @@ import {
   EuiSpacer,
   EuiBadge,
   EuiHealth,
+  EuiToolTip,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
@@ -209,7 +210,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
     await handleVisualizationClick(experiment, dashboardId, indexPatternId);
   };
-  
+
   const handlePointwiseExperimentScheduledRunsVisualizationClick = async (experiment: any) => {
     const dashboardId = SavedObjectIds.PointwiseExperimentScheduledRuns;
     const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
@@ -377,30 +378,36 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       render: (id: string, item: any) => (
         <>
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Visualization"
-              iconType="dashboardApp"
-              color="primary"
-              onClick={() => handleEvaluationVisualizationClick(item)}
-            />
+            <EuiToolTip content="View Visualization">
+              <EuiButtonIcon
+                aria-label="Visualization"
+                iconType="dashboardApp"
+                color="primary"
+                onClick={() => handleEvaluationVisualizationClick(item)}
+              />
+            </EuiToolTip>
           )}
           {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Visualization"
-              iconType="dashboardApp"
-              color="primary"
-              onClick={() => handleHybridVisualizationClick(item)}
-            />
+            <EuiToolTip content="View Visualization">
+              <EuiButtonIcon
+                aria-label="Visualization"
+                iconType="dashboardApp"
+                color="primary"
+                onClick={() => handleHybridVisualizationClick(item)}
+              />
+            </EuiToolTip>
           )}
-          <EuiButtonIcon
-            aria-label="Delete"
-            iconType="trash"
-            color="danger"
-            onClick={() => {
-              setExperimentToDelete(item);
-              setShowDeleteExperimentModal(true);
-            }}
-          />
+          <EuiToolTip content="Delete">
+            <EuiButtonIcon
+              aria-label="Delete"
+              iconType="trash"
+              color="danger"
+              onClick={() => {
+                setExperimentToDelete(item);
+                setShowDeleteExperimentModal(true);
+              }}
+            />
+          </EuiToolTip>
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
             displayScheduleIcon(item)
           )}
@@ -410,6 +417,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           {item.type === 'POINTWISE_EVALUATION' && item.isScheduled === true && (
             <EuiButtonIcon
               aria-label="Visualization"
+              title="View Scheduled Runs"
               iconType="dashboardApp"
               color="primary"
               onClick={() => handlePointwiseExperimentScheduledRunsVisualizationClick(item)}
@@ -428,26 +436,34 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   const displayScheduleIcon = (item: any) => {
     if (item.isScheduled === true) {
-      return (<EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="primary"
-              onClick={() => {
-                handleDeleteScheduleIconClick(item.id);
-              }}
-            />);
+      return (
+        <EuiToolTip content="Delete Schedule">
+          <EuiButtonIcon
+            aria-label="Schedule"
+            iconType="clock"
+            color="primary"
+            onClick={() => {
+              handleDeleteScheduleIconClick(item.id);
+            }}
+          />
+        </EuiToolTip>
+      );
     } else {
-      return (<EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="text"
-              onClick={() => {
-                setExperimentToSchedule(item);
-                setShowScheduleExperimentModal(true);
-              }}
-            />);
+      return (
+        <EuiToolTip content="Schedule Experiment">
+          <EuiButtonIcon
+            aria-label="Schedule"
+            iconType="clock"
+            color="text"
+            onClick={() => {
+              setExperimentToSchedule(item);
+              setShowScheduleExperimentModal(true);
+            }}
+          />
+        </EuiToolTip>
+      );
     }
-  }
+  };
 
   // Data fetching function
   const findExperiments = async (search: any) => {
@@ -455,13 +471,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     if (tableData.length > 0) {
       const filteredList = search
         ? tableData.filter((item) => {
-            const term = search.toLowerCase();
-            return (
-              item.id?.toLowerCase().includes(term) ||
-              item.type?.toLowerCase().includes(term) ||
-              item.status?.toLowerCase().includes(term)
-            );
-          })
+          const term = search.toLowerCase();
+          return (
+            item.id?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.status?.toLowerCase().includes(term)
+          );
+        })
         : tableData;
       return {
         total: filteredList.length,
@@ -487,13 +503,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       const list = parseResults.data;
       const filteredList = search
         ? list.filter((item) => {
-            const term = search.toLowerCase();
-            return (
-              item.id?.toLowerCase().includes(term) ||
-              item.type?.toLowerCase().includes(term) ||
-              item.status?.toLowerCase().includes(term)
-            );
-          })
+          const term = search.toLowerCase();
+          return (
+            item.id?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.status?.toLowerCase().includes(term)
+          );
+        })
         : list;
 
       setExperiments(filteredList);
@@ -520,9 +536,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Experiments"
-        description={`Manage your existing experiments and create new ones. Click on a card to create an experiment.${
-          hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
-        }`}
+        description={`Manage your existing experiments and create new ones. Click on a card to create an experiment.${hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
+          }`}
         rightSideItems={[
           <EuiButton
             onClick={() => setRefreshKey((prev) => prev + 1)}
@@ -545,7 +560,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       <EuiSpacer size="m" />
 
-      <TemplateCards history={history} onClose={() => {}} />
+      <TemplateCards history={history} onClose={() => { }} />
 
       <EuiSpacer size="m" />
 

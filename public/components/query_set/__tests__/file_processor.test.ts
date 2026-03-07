@@ -83,7 +83,7 @@ describe('file_processor', () => {
     expect(result.queries).toHaveLength(0);
   });
 
-  it('should handle malformed JSON gracefully', async () => {
+  it('should return error for malformed JSON', async () => {
     const fileContent = `{"queryText": "valid query"}
 {invalid json}
 {"queryText": "another valid query"}`;
@@ -94,10 +94,8 @@ describe('file_processor', () => {
 
     const result = await processQueryFile(mockFile);
 
-    expect(result.error).toBeUndefined();
-    expect(result.queries).toHaveLength(2);
-    expect(result.queries[0].queryText).toBe('valid query');
-    expect(result.queries[1].queryText).toBe('another valid query');
+    expect(result.error).toMatch(/^Invalid JSON format at line 2: /);
+    expect(result.queries).toHaveLength(0);
   });
 
   it('should handle file read errors', async () => {
