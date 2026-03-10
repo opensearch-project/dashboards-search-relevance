@@ -14,6 +14,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Proper support of .ndjson or .jsonl for Query Sets file uploads. ([#775](https://github.com/opensearch-project/dashboards-search-relevance/pull/775))
 * Add resizable query editor boxes with drag handles for vertical expansion in Query Compare view. ([#791](https://github.com/opensearch-project/dashboards-search-relevance/pull/791))
 * Standardize Action button tooltips across all listing pages (Search Configurations, Experiments, Judgments, Query Sets) using `EuiToolTip` for improved UX and accessibility. ([#782](https://github.com/opensearch-project/dashboards-search-relevance/pull/782))
+* Remove milliseconds from timestamp display format across all listing tables. ([#799](https://github.com/opensearch-project/dashboards-search-relevance/pull/799))
 
 ### Bug Fixes
 * Bug bugs on pairwise comparison experiment view page. ([#735]https://github.com/opensearch-project/dashboards-search-relevance/pull/735)
