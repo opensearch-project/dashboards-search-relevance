@@ -10,6 +10,7 @@
 
 - [ ] New functionality includes testing.
   - [ ] All tests pass, including unit test, integration test
+  - [ ] Integration tests pass: `yarn cypress:run-without-security --config "baseUrl=http://localhost:5601" --spec "cypress/integration/plugins/search-relevance-dashboards/*.js"` (see [Developer Guide](DEVELOPER_GUIDE.md#integration-tests))
 - [ ] New functionality has been documented.
 - [ ] Commits are signed per the DCO using `--signoff`
 
