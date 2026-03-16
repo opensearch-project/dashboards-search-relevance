@@ -77,6 +77,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     notifications,
     onSuccess: () => history.push('/searchConfiguration'),
     dataSourceId: selectedDataSource || undefined,
+    dataSourceEnabled,
   });
 
   // Handle cancel action

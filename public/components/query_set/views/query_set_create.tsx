@@ -58,9 +58,11 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
         setIsLoadingIndexes(false);
       }
     };
+    setIndexOptions([]);
     fetchIndexes();
+    formState.setUbiQueriesIndex('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [querySetService]);
+  }, [querySetService, selectedDataSource]);
 
   const createQuerySet = useCallback(async () => {
     if (!formState.isFormValid()) {

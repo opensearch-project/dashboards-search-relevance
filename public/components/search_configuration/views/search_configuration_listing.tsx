@@ -188,7 +188,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
           </EuiCallOut>
         ) : (
           <TableListView
-            key={refreshKey} // force refresh
+            key={`${refreshKey}-${selectedDataSource}`}
             headingId="searchConfigurationListingHeading"
             entityName="Search Configuration"
             entityNamePlural="Search Configurations"

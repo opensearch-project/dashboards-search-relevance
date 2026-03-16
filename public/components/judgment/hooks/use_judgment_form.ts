@@ -10,7 +10,7 @@ import { validateJudgmentForm } from '../utils/validation';
 import { buildJudgmentPayload } from '../utils/form_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string) => {
+export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string, dataSourceEnabled = false) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -50,6 +50,15 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
   const service = new JudgmentService(http);
 
   const fetchData = useCallback(async () => {
+    // Clear stale options and selections before fetching for the new data source
+    setIndexOptions([]);
+    setQuerySetOptions([]);
+    setSearchConfigOptions([]);
+    setModelOptions([]);
+    setSelectedQuerySet([]);
+    setSelectedSearchConfigs([]);
+    setSelectedModel([]);
+
     const fetchIndexes = async () => {
       setIsLoadingIndexes(true);
       try {
@@ -90,7 +99,7 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
         setModelOptions([]);
       }).finally(() => setIsLoadingModels(false)),
     ]);
-  }, [formData.type, http, notifications.toasts, dataSourceId]);
+  }, [formData.type, http, notifications.toasts, dataSourceId, dataSourceEnabled]);
 
   useEffect(() => {
     fetchData();

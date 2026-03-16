@@ -172,7 +172,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
           </EuiCallOut>
         ) : (
           <TableListView
-            key={refreshKey}
+            key={`${refreshKey}-${selectedDataSource}`}
             headingId="judgmentListingHeading"
             entityName="Judgment"
             entityNamePlural="Judgments"

@@ -85,6 +85,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   const { services } = useOpenSearchDashboards();
   const share = services.share;
 
+  // Clear cached table data when data source changes so findExperiments re-fetches
+  useEffect(() => {
+    setTableData([]);
+    setRefreshKey((prev) => prev + 1);
+  }, [selectedDataSource]);
+
   // Custom hook for experiment polling
   const useExperimentPolling = () => {
     const [experiments, setExperiments] = useState<any[]>([]);
@@ -597,7 +603,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
         )}
         {!error && (
           <TableListView
-            key={refreshKey}
+            key={`${refreshKey}-${selectedDataSource}`}
             headingId="experimentListingHeading"
             entityName="Experiment"
             entityNamePlural="Experiments"

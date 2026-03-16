@@ -51,7 +51,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
     removeContextField,
     validateAndSubmit,
     dateRangeError,
-  } = useJudgmentForm(http, notifications, selectedDataSource || undefined);
+  } = useJudgmentForm(http, notifications, selectedDataSource || undefined, dataSourceEnabled);
 
   const handleSubmit = useCallback(() => {
     validateAndSubmit(() => {

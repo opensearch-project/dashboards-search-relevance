@@ -27,6 +27,14 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
 
   const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
 
+  // Clear cached data when dataSourceId changes so findJudgments re-fetches
+  useEffect(() => {
+    setJudgments([]);
+    setTableData([]);
+    previousJudgments.current = [];
+    setRefreshKey((prev) => prev + 1);
+  }, [dataSourceId]);
+
   // Polling state
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const previousJudgments = useRef<JudgmentItem[]>([]);

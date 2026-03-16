@@ -105,7 +105,7 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
 
   return (
     <TableListView
-      key={refreshKey}
+      key={`${refreshKey}-${dataSourceId ?? ''}`}
       headingId="querySetListingHeading"
       entityName="Query Set"
       entityNamePlural="Query Sets"

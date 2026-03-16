@@ -200,7 +200,7 @@ describe('JudgmentService', () => {
 
       await service.fetchModels('my-ds');
 
-      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.stringContaining('my-ds'), { body: '{}' });
     });
 
     it('createJudgment should pass dataSourceId as query param', async () => {

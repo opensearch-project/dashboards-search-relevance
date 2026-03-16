@@ -57,10 +57,10 @@ export class JudgmentService {
   }
 
   async fetchModels(dataSourceId?: string | null): Promise<ModelOption[]> {
-    const opts = this.queryOpts(dataSourceId);
-    const response = opts
-      ? await this.http.post(ServiceEndpoints.GetModels, opts)
-      : await this.http.post(ServiceEndpoints.GetModels);
+    const url = dataSourceId
+      ? `${ServiceEndpoints.GetModels}/${dataSourceId}`
+      : ServiceEndpoints.GetModels;
+    const response = await this.http.post(url, { body: '{}' });
     return response.hits.hits
       .filter(
         (model: any) =>

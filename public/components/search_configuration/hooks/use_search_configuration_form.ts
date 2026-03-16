@@ -19,6 +19,7 @@ export interface UseSearchConfigurationFormProps {
   notifications: NotificationsStart;
   onSuccess?: () => void;
   dataSourceId?: string;
+  dataSourceEnabled?: boolean;
 }
 
 export interface UseSearchConfigurationFormReturn {
@@ -64,6 +65,7 @@ export const useSearchConfigurationForm = ({
   notifications,
   onSuccess,
   dataSourceId,
+  dataSourceEnabled = false,
 }: UseSearchConfigurationFormProps): UseSearchConfigurationFormReturn => {
   // Form state
   const [name, setName] = useState('');
@@ -92,6 +94,9 @@ export const useSearchConfigurationForm = ({
 
   // Fetch indexes on component mount
   useEffect(() => {
+    setIndexOptions([]);
+    setSelectedIndex([]);
+    setIsLoadingIndexes(true);
     const fetchIndexes = async () => {
       try {
         const options = await searchConfigService.fetchIndexes(dataSourceId);
@@ -101,17 +106,18 @@ export const useSearchConfigurationForm = ({
         notifications.toasts.addError(error?.body || error, {
           title: 'Failed to fetch indexes',
         });
-        setIndexOptions([]);
       } finally {
         setIsLoadingIndexes(false);
       }
     };
 
     fetchIndexes();
-  }, [dataSourceId]);
+  }, [dataSourceId, dataSourceEnabled]);
 
   // Fetch pipelines on component mount
   useEffect(() => {
+    setPipelineOptions([]);
+    setSelectedPipeline([]);
     const fetchPipelines = async () => {
       setIsLoadingPipelines(true);
       try {
@@ -129,7 +135,7 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchPipelines();
-  }, [dataSourceId]);
+  }, [dataSourceId, dataSourceEnabled]);
 
   // Validate name field on blur
   const validateNameField = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
