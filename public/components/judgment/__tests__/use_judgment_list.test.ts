@@ -77,7 +77,7 @@ describe('useJudgmentList', () => {
     });
 
     // Existing hook should still request full judgments without status filter
-    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments);
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments, {});
   });
 
   it('should delete judgment successfully', async () => {
@@ -90,7 +90,7 @@ describe('useJudgmentList', () => {
       expect(success).toBe(true);
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`);
+    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`, {});
   });
 
   it('should handle delete error', async () => {
@@ -773,6 +773,47 @@ describe('useJudgmentList', () => {
 
     // After timeout, isBackgroundRefreshing should be false
     expect(result.current.isBackgroundRefreshing).toBe(false);
+  });
+
+  it('should pass dataSourceId when fetching judgments', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any, 'my-ds'));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments, {
+      query: { dataSourceId: 'my-ds' },
+    });
+  });
+
+  it('should pass dataSourceId when deleting a judgment', async () => {
+    mockHttp.delete.mockResolvedValue({});
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any, 'my-ds'));
+
+    await act(async () => {
+      await result.current.deleteJudgment('abc');
+    });
+
+    expect(mockHttp.delete).toHaveBeenCalledWith(
+      `${ServiceEndpoints.Judgments}/abc`,
+      { query: { dataSourceId: 'my-ds' } }
+    );
+  });
+
+  it('should omit dataSourceId query param when not provided', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findJudgments();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.Judgments, {});
   });
 });
 

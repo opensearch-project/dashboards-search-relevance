@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   EuiButton,
@@ -16,8 +16,17 @@ import {
 import { JudgmentCreateProps } from '../types';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
 import { JudgmentForm } from '../components/judgment_form';
+import { DataSourceSelector } from '../../common/datasource_selector';
 
-export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notifications, history }) => {
+export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
+  http,
+  notifications,
+  history,
+  savedObjects,
+  dataSourceEnabled = false,
+  dataSourceManagement,
+}) => {
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     formData,
     updateFormData,
@@ -42,7 +51,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     removeContextField,
     validateAndSubmit,
     dateRangeError,
-  } = useJudgmentForm(http, notifications);
+  } = useJudgmentForm(http, notifications, selectedDataSource || undefined, dataSourceEnabled);
 
   const handleSubmit = useCallback(() => {
     validateAndSubmit(() => {
@@ -83,6 +92,15 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
+          {dataSourceEnabled && dataSourceManagement && savedObjects && (
+            <DataSourceSelector
+              dataSourceEnabled={dataSourceEnabled}
+              dataSourceManagement={dataSourceManagement}
+              savedObjects={savedObjects}
+              selectedDataSource={selectedDataSource}
+              setSelectedDataSource={setSelectedDataSource}
+            />
+          )}
           <JudgmentForm
             formData={formData}
             updateFormData={updateFormData}

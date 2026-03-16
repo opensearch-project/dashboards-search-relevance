@@ -157,4 +157,35 @@ describe('SearchConfigurationCreate', () => {
 
     expect(screen.getByTestId('createSearchConfigurationButton')).toBeInTheDocument();
   });
+
+  it('should handle create button click', () => {
+    render(
+      <SearchConfigurationCreate
+        http={mockHttp}
+        notifications={mockNotifications}
+        history={mockHistory}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('createSearchConfigurationButton'));
+    // Just verify the button exists and can be clicked
+    expect(screen.getByTestId('createSearchConfigurationButton')).toBeInTheDocument();
+  });
+
+  it('should render with data source enabled', () => {
+    render(
+      <SearchConfigurationCreate
+        http={mockHttp}
+        notifications={mockNotifications}
+        history={mockHistory}
+        dataSourceEnabled={true}
+        dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+        savedObjects={{ client: {} } as any}
+        navigation={{} as any}
+        setActionMenu={jest.fn()}
+      />
+    );
+
+    expect(screen.getByText('DataSourceSelector')).toBeInTheDocument();
+  });
 });

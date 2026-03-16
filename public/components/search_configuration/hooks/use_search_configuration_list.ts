@@ -15,9 +15,11 @@ export interface SearchConfigurationItem {
   timestamp: string;
 }
 
-export const useSearchConfigurationList = (http: CoreStart['http']) => {
+export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
 
   const mapSearchConfigurationFields = (obj: any): SearchConfigurationItem => {
     return {
@@ -34,7 +36,7 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.SearchConfigurations);
+        const response = await http.get(ServiceEndpoints.SearchConfigurations, queryParams);
         const list: SearchConfigurationItem[] = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
         const filteredList = search
           ? list.filter((item) => {
@@ -61,14 +63,14 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   const deleteSearchConfiguration = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`);
+        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`, queryParams);
         setError(null);
         return true;
       } catch (err) {
@@ -79,7 +81,7 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   return {

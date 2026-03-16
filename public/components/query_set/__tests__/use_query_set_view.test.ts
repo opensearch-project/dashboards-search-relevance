@@ -106,6 +106,34 @@ describe('useQuerySetView', () => {
     expect(mockHttp.get).not.toHaveBeenCalled();
   });
 
+  it('passes dataSourceId when fetching a query set', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: 'test-id', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id', 'my-datasource'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/querySets/test-id', {
+      query: { dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('omits dataSourceId query param when not provided', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: 'test-id', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/querySets/test-id', {});
+  });
+
   it('refetches when id changes', async () => {
     const mockResponse1 = {
       hits: {

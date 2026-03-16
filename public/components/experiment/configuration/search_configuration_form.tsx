@@ -15,6 +15,7 @@ interface SearchConfigFormProps {
   http: CoreStart['http'];
   maxNumberOfOptions: number;
   hideLabel?: boolean;
+  dataSourceId?: string;
 }
 
 export const SearchConfigForm = ({
@@ -23,6 +24,7 @@ export const SearchConfigForm = ({
   http,
   maxNumberOfOptions,
   hideLabel,
+  dataSourceId,
 }: SearchConfigFormProps) => {
   const [searchConfigOptions, setSearchConfigOptions] = useState<OptionLabel[]>([]);
   const [isLoadingConfigs, setIsLoadingConfigs] = useState<boolean>(true);
@@ -31,7 +33,8 @@ export const SearchConfigForm = ({
     let isMounted = true;
     const fetchSearchConfigurations = async () => {
       try {
-        const data = await http.get(ServiceEndpoints.SearchConfigurations);
+        const query = dataSourceId ? { dataSourceId } : {};
+        const data = await http.get(ServiceEndpoints.SearchConfigurations, { query });
         const options = data.hits.hits.map((search_config: any) => ({
           label: search_config._source.name,
           value: search_config._source.id,
@@ -56,7 +59,7 @@ export const SearchConfigForm = ({
     return () => {
       isMounted = false;
     };
-  }, [http]);
+  }, [http, dataSourceId]);
 
   const comboBoxComponent = (
     <EuiComboBox

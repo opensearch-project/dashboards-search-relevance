@@ -25,6 +25,8 @@ const ConfigContext = createContext<ConfigContextProps>({
   navigation: {} as NavigationPublicPluginStart,
 });
 
+export { ConfigContext };
+
 export const useConfig = () => useContext(ConfigContext);
 
 export const ConfigProvider: React.FC<{

@@ -70,7 +70,7 @@ describe('useSearchConfigurationList', () => {
       expect(response.hits[0].search_configuration_name).toBe('Test Config');
     });
 
-    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations);
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations, {});
   });
 
   it('should delete search configuration successfully', async () => {
@@ -83,7 +83,7 @@ describe('useSearchConfigurationList', () => {
       expect(success).toBe(true);
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`);
+    expect(mockHttp.delete).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`, {});
   });
 
   it('should handle delete error', async () => {
@@ -201,5 +201,46 @@ describe('useSearchConfigurationList', () => {
       expect(response.total).toBe(0);
       expect(response.hits).toEqual([]);
     });
+  });
+
+  it('should pass dataSourceId when fetching search configurations', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useSearchConfigurationList(mockHttp as any, 'my-ds'));
+
+    await act(async () => {
+      await result.current.findSearchConfigurations();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations, {
+      query: { dataSourceId: 'my-ds' },
+    });
+  });
+
+  it('should pass dataSourceId when deleting a search configuration', async () => {
+    mockHttp.delete.mockResolvedValue({});
+
+    const { result } = renderHook(() => useSearchConfigurationList(mockHttp as any, 'my-ds'));
+
+    await act(async () => {
+      await result.current.deleteSearchConfiguration('abc');
+    });
+
+    expect(mockHttp.delete).toHaveBeenCalledWith(
+      `${ServiceEndpoints.SearchConfigurations}/abc`,
+      { query: { dataSourceId: 'my-ds' } }
+    );
+  });
+
+  it('should omit dataSourceId query param when not provided', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useSearchConfigurationList(mockHttp as any));
+
+    await act(async () => {
+      await result.current.findSearchConfigurations();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith(ServiceEndpoints.SearchConfigurations, {});
   });
 });

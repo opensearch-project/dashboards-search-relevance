@@ -142,4 +142,40 @@ describe('useSearchConfigurationView', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe('Error loading search configuration data');
   });
+
+  it('should pass dataSourceId when fetching a search configuration', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: '1', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() =>
+      useSearchConfigurationView(mockHttp as any, '1', 'my-ds')
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith(
+      `${ServiceEndpoints.SearchConfigurations}/1`,
+      { query: { dataSourceId: 'my-ds' } }
+    );
+  });
+
+  it('should omit dataSourceId query param when not provided', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: '1', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() =>
+      useSearchConfigurationView(mockHttp as any, '1')
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith(
+      `${ServiceEndpoints.SearchConfigurations}/1`,
+      {}
+    );
+  });
 });

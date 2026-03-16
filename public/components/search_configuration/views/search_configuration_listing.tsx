@@ -22,26 +22,35 @@ import {
   TableListView,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { Routes } from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
+import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { useSearchConfigurationList } from '../hooks/use_search_configuration_list';
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects?: CoreStart['savedObjects'];
+  dataSourceEnabled?: boolean;
+  dataSourceManagement?: DataSourceManagementPluginSetup;
 }
 
 export const SearchConfigurationListing: React.FC<SearchConfigurationListingProps> = ({
   http,
   history,
+  savedObjects,
+  dataSourceEnabled = false,
+  dataSourceManagement,
 }) => {
   const { dateFormat } = useConfig();
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     isLoading,
     error,
     findSearchConfigurations,
     deleteSearchConfiguration,
-  } = useSearchConfigurationList(http);
+  } = useSearchConfigurationList(http, selectedDataSource || undefined);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [configToDelete, setConfigToDelete] = useState<any>(null);
@@ -68,7 +77,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
             size="xs"
             {...reactRouterNavigate(
               history,
-              `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}`
+              `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`
             )}
           >
             {name}
@@ -162,6 +171,16 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
         ]}
       />
 
+      {dataSourceEnabled && dataSourceManagement && savedObjects && (
+        <DataSourceSelector
+          dataSourceEnabled={dataSourceEnabled}
+          dataSourceManagement={dataSourceManagement}
+          savedObjects={savedObjects}
+          selectedDataSource={selectedDataSource}
+          setSelectedDataSource={setSelectedDataSource}
+        />
+      )}
+
       <EuiFlexItem>
         {error ? (
           <EuiCallOut title="Error" color="danger">
@@ -169,7 +188,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
           </EuiCallOut>
         ) : (
           <TableListView
-            key={refreshKey} // force refresh
+            key={`${refreshKey}-${selectedDataSource}`}
             headingId="searchConfigurationListingHeading"
             entityName="Search Configuration"
             entityNamePlural="Search Configurations"

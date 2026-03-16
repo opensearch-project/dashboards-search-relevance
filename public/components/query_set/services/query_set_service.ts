@@ -19,20 +19,18 @@ export interface QuerySetData {
 export class QuerySetService {
   constructor(private http: CoreStart['http']) {}
 
-
-  /**
-   * Fetches available ubi indexes from the API
-   * @returns Promise with index options
-   */
-  async fetchUbiIndexes(): Promise<Array<{ label: string; value: string }>> {
-    const res = await this.http.get(`${ServiceEndpoints.GetIndexesByPattern}/*ubi_queries*`);
+  async fetchUbiIndexes(dataSourceId?: string | null): Promise<Array<{ label: string; value: string }>> {
+    const url = dataSourceId
+      ? `${ServiceEndpoints.GetIndexesByPattern}/*ubi_queries*/${dataSourceId}`
+      : `${ServiceEndpoints.GetIndexesByPattern}/*ubi_queries*`;
+    const res = await this.http.get(url);
     return res.map((index: DocumentsIndex) => ({
       label: index.index,
       value: index.uuid,
     }));
   }
 
-  async createQuerySet(data: QuerySetData, isManualInput: boolean): Promise<any> {
+  async createQuerySet(data: QuerySetData, isManualInput: boolean, dataSourceId?: string | null): Promise<any> {
     const endpoint = ServiceEndpoints.QuerySets;
     const method = isManualInput ? 'put' : 'post';
 
@@ -51,11 +49,14 @@ export class QuerySetService {
           ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),
         };
 
-    return this.http[method](endpoint, {
+    const opts: any = {
       body: JSON.stringify(body),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+      headers: { 'Content-Type': 'application/json' },
+    };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+
+    return this.http[method](endpoint, opts);
   }
 }
