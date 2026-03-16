@@ -102,7 +102,7 @@ export class SearchRelevancePlugin
 
     // Register server side APIs
     defineRoutes(router, core.opensearch, dataSourceEnabled);
-    registerSearchRelevanceRoutes(router);
+    registerSearchRelevanceRoutes(router, dataSourceEnabled);
     registerMLRoutes(router, dataSourceEnabled);
 
     // Add UBI sample data if home plugin is available

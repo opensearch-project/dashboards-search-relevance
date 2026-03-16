@@ -149,7 +149,7 @@ describe('useQuerySetList', () => {
       await result.current.deleteQuerySet('1');
     });
 
-    expect(mockHttp.delete).toHaveBeenCalledWith('/api/relevancy/querySets/1');
+    expect(mockHttp.delete).toHaveBeenCalledWith('/api/relevancy/querySets/1', {});
     expect(result.current.refreshKey).toBe(initialRefreshKey + 1);
     expect(result.current.error).toBe(null);
   });
@@ -179,6 +179,46 @@ describe('useQuerySetList', () => {
     });
 
     expect(result.current.error).toBe('Custom error');
+  });
+
+  it('passes dataSourceId when fetching query sets', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useQuerySetList(mockHttp, 'my-datasource'));
+
+    await act(async () => {
+      await result.current.findQuerySets();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/querySets', {
+      query: { dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('passes dataSourceId when deleting a query set', async () => {
+    mockHttp.delete.mockResolvedValue({});
+
+    const { result } = renderHook(() => useQuerySetList(mockHttp, 'my-datasource'));
+
+    await act(async () => {
+      await result.current.deleteQuerySet('abc');
+    });
+
+    expect(mockHttp.delete).toHaveBeenCalledWith('/api/relevancy/querySets/abc', {
+      query: { dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('omits dataSourceId query param when not provided', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useQuerySetList(mockHttp));
+
+    await act(async () => {
+      await result.current.findQuerySets();
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/querySets', {});
   });
 
   it('handles GUID filtering', async () => {

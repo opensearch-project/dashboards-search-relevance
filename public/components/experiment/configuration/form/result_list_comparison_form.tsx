@@ -24,12 +24,13 @@ interface ResultListComparisonFormProps {
   formData: ResultListComparisonFormData;
   onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export const ResultListComparisonForm = forwardRef<
   ResultListComparisonFormRef,
   ResultListComparisonFormProps
->(({ formData, onChange, http }, ref) => {
+>(({ formData, onChange, http, dataSourceId }, ref) => {
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
@@ -157,6 +158,7 @@ export const ResultListComparisonForm = forwardRef<
                 selectedOptions={querySetOptions}
                 onChange={handleQuerySetsChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 hideLabel={true}
               />
             </EuiFormRow>
@@ -193,6 +195,7 @@ export const ResultListComparisonForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
+            dataSourceId={dataSourceId}
             maxNumberOfOptions={2}
             hideLabel={true}
           />

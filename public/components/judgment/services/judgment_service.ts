@@ -10,41 +10,57 @@ import { DocumentsIndex } from '../../../types';
 export class JudgmentService {
   constructor(private http: any) {}
 
-  /**
-   * Fetches available ubi indexes from the API
-   * @returns Promise with index options
-   */
-  async fetchUbiIndexes(): Promise<Array<{ label: string; value: string }>> {
-    const res = await this.http.get(`${ServiceEndpoints.GetIndexesByPattern}/*ubi_events*`);
+  private queryOpts(dataSourceId?: string | null) {
+    return dataSourceId ? { query: { dataSourceId } } : undefined;
+  }
+
+  async fetchUbiIndexes(dataSourceId?: string | null): Promise<Array<{ label: string; value: string }>> {
+    const url = dataSourceId
+      ? `${ServiceEndpoints.GetIndexesByPattern}/*ubi_events*/${dataSourceId}`
+      : `${ServiceEndpoints.GetIndexesByPattern}/*ubi_events*`;
+    const res = await this.http.get(url);
     return res.map((index: DocumentsIndex) => ({
       label: index.index,
       value: index.uuid,
     }));
   }
 
-  async fetchQuerySets(): Promise<ComboBoxOption[]> {
-    const response = await this.http.get(ServiceEndpoints.QuerySets);
+  async fetchQuerySets(dataSourceId?: string | null): Promise<ComboBoxOption[]> {
+    const opts = this.queryOpts(dataSourceId);
+    const response = opts
+      ? await this.http.get(ServiceEndpoints.QuerySets, opts)
+      : await this.http.get(ServiceEndpoints.QuerySets);
     return response.hits.hits.map((qs: any) => ({
       label: qs._source.name,
       value: qs._source.id,
     }));
   }
 
-  async fetchQuerySetById(id: string): Promise<any> {
-    const response = await this.http.get(`${ServiceEndpoints.QuerySets}/${id}`);
+  async fetchQuerySetById(id: string, dataSourceId?: string | null): Promise<any> {
+    const url = `${ServiceEndpoints.QuerySets}/${id}`;
+    const opts = this.queryOpts(dataSourceId);
+    const response = opts
+      ? await this.http.get(url, opts)
+      : await this.http.get(url);
     return response._source;
   }
 
-  async fetchSearchConfigs(): Promise<ComboBoxOption[]> {
-    const response = await this.http.get(ServiceEndpoints.SearchConfigurations);
+  async fetchSearchConfigs(dataSourceId?: string | null): Promise<ComboBoxOption[]> {
+    const opts = this.queryOpts(dataSourceId);
+    const response = opts
+      ? await this.http.get(ServiceEndpoints.SearchConfigurations, opts)
+      : await this.http.get(ServiceEndpoints.SearchConfigurations);
     return response.hits.hits.map((sc: any) => ({
       label: sc._source.name,
       value: sc._source.id,
     }));
   }
 
-  async fetchModels(): Promise<ModelOption[]> {
-    const response = await this.http.post(ServiceEndpoints.GetModels);
+  async fetchModels(dataSourceId?: string | null): Promise<ModelOption[]> {
+    const opts = this.queryOpts(dataSourceId);
+    const response = opts
+      ? await this.http.post(ServiceEndpoints.GetModels, opts)
+      : await this.http.post(ServiceEndpoints.GetModels);
     return response.hits.hits
       .filter(
         (model: any) =>
@@ -58,9 +74,11 @@ export class JudgmentService {
       }));
   }
 
-  async createJudgment(data: JudgmentFormData): Promise<void> {
-    await this.http.put(ServiceEndpoints.Judgments, {
-      body: JSON.stringify(data),
-    });
+  async createJudgment(data: JudgmentFormData, dataSourceId?: string | null): Promise<void> {
+    const opts: any = { body: JSON.stringify(data) };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+    await this.http.put(ServiceEndpoints.Judgments, opts);
   }
 }

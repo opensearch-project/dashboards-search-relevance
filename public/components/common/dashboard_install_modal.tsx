@@ -25,6 +25,7 @@ interface DashboardInstallModalProps {
   title?: string;
   http: CoreStart['http'];
   setError: (error: string | null) => void;
+  dataSourceId?: string;
 }
 
 export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
@@ -33,6 +34,7 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
   title = 'Install Dashboards',
   http,
   setError,
+  dataSourceId,
 }) => {
   const [isInstalling, setIsInstalling] = useState(false);
   const [dashboardsInstalled, setDashboardsInstalled] = useState<boolean | null>(null);
@@ -41,8 +43,9 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
   React.useEffect(() => {
     const checkInstallation = async () => {
       try {
+        const queryParams = dataSourceId ? `?dataSourceId=${dataSourceId}` : '';
         const _ = await http.get(
-          `/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}`
+          `/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}${queryParams}`
         );
         setDashboardsInstalled(true);
       } catch (error) {
@@ -50,7 +53,7 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
       }
     };
     checkInstallation();
-  }, [http]);
+  }, [http, dataSourceId]);
 
   const handleConfirm = async () => {
     setIsInstalling(true);
@@ -62,14 +65,15 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
         new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }),
         'dashboards.ndjson'
       );
+      
+      const queryParams = dataSourceId ? { dataSourceId, overwrite: true } : { overwrite: true };
+      
       await http.post('/api/saved_objects/_import', {
         body: formData,
         headers: {
           'Content-Type': undefined,
         },
-        query: {
-          overwrite: true,
-        },
+        query: queryParams,
       });
       onSuccess?.();
       onClose();

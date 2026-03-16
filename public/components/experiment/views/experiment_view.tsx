@@ -16,12 +16,14 @@ import { HybridOptimizerExperimentViewWithRouter } from './hybrid_optimizer_expe
 interface ExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
   notifications: CoreStart['notifications'];
+  dataSourceId?: string | null;
 }
 
 export const ExperimentView: React.FC<ExperimentViewProps> = ({
   http,
   notifications,
   id,
+  dataSourceId,
   history,
 }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
@@ -31,7 +33,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
-        const response = await experimentService.getExperiment(id);
+        const response = await experimentService.getExperiment(id, dataSourceId);
         const source = response?.hits?.hits?.[0]?._source;
         if (source) {
           const parsedExperiment = toExperiment(source);
@@ -52,7 +54,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
     };
 
     fetchExperiment();
-  }, [http, id]);
+  }, [http, id, dataSourceId]);
 
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="90%">
@@ -63,6 +65,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
           notifications={notifications}
           inputExperiment={experiment}
           history={history}
+          dataSourceId={dataSourceId}
         />
       )}
       {experiment && experiment.type === ExperimentType.POINTWISE_EVALUATION && (
@@ -71,6 +74,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
           notifications={notifications}
           inputExperiment={experiment}
           history={history}
+          dataSourceId={dataSourceId}
         />
       )}
       {experiment && experiment.type === ExperimentType.HYBRID_OPTIMIZER && (
@@ -79,6 +83,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
           notifications={notifications}
           inputExperiment={experiment}
           history={history}
+          dataSourceId={dataSourceId}
         />
       )}
     </EuiPageTemplate>

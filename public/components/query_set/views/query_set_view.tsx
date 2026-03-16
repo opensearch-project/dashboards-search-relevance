@@ -12,10 +12,11 @@ import { QuerySetDetails } from '../components/query_set_details';
 
 interface QuerySetViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  dataSourceId?: string | null;
 }
 
-export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id }) => {
-  const { querySet, loading, error } = useQuerySetView(http, id);
+export const QuerySetView: React.FC<QuerySetViewProps> = ({ http, id, dataSourceId }) => {
+  const { querySet, loading, error } = useQuerySetView(http, id, dataSourceId);
 
   if (loading) {
     return <div>Loading query set data...</div>;

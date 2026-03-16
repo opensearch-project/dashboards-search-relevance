@@ -102,6 +102,6 @@ describe('QuerySetView', () => {
     });
 
     render(<QuerySetView {...defaultProps} />);
-    expect(mockUseQuerySetView).toHaveBeenCalledWith(mockHttp, 'test-id');
+    expect(mockUseQuerySetView).toHaveBeenCalledWith(mockHttp, 'test-id', undefined);
   });
 });

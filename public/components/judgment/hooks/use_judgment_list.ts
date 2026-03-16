@@ -16,7 +16,7 @@ export interface JudgmentItem {
   timestamp: string;
 }
 
-export const useJudgmentList = (http: CoreStart['http']) => {
+export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [judgments, setJudgments] = useState<JudgmentItem[]>([]);
@@ -24,6 +24,8 @@ export const useJudgmentList = (http: CoreStart['http']) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { services } = useOpenSearchDashboards();
+
+  const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
 
   // Polling state
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -65,7 +67,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
 
       setIsBackgroundRefreshing(true);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const response = await http.get(ServiceEndpoints.Judgments, queryParams);
         const updatedList = response ? response.hits.hits.map(mapJudgmentFields) : [];
         errorCount.current = 0;
 
@@ -101,7 +103,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsBackgroundRefreshing(false);
       }
     }, 15000);
-  }, [http, services.notifications]);
+  }, [http, services.notifications, dataSourceId]);
 
   useEffect(() => {
     if (hasProcessing && !intervalRef.current) {
@@ -134,7 +136,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const response = await http.get(ServiceEndpoints.Judgments, queryParams);
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
         const filteredList = search
           ? list.filter((item: JudgmentItem) => {
@@ -162,17 +164,15 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http, tableData]
+    [http, tableData, dataSourceId]
   );
 
   const deleteJudgment = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
+        await http.delete(`${ServiceEndpoints.Judgments}/${id}`, queryParams);
         setError(null);
-        // remove deleted item from all cached state so the list
-        // reflects the deletion immediately without requiring a re-fetch.
         setJudgments((prev) => prev.filter((j) => j.id !== id));
         setTableData((prev) => prev.filter((j) => j.id !== id));
         previousJudgments.current = previousJudgments.current.filter((j) => j.id !== id);
@@ -186,7 +186,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   return {

@@ -17,7 +17,7 @@ export interface SearchConfigurationData {
   timestamp: string;
 }
 
-export const useSearchConfigurationView = (http: CoreStart['http'], id: string) => {
+export const useSearchConfigurationView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
   const [searchConfiguration, setSearchConfiguration] = useState<SearchConfigurationData | null>(
     null
   );
@@ -28,7 +28,8 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string) 
     const fetchSearchConfiguration = async () => {
       try {
         setLoading(true);
-        const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`);
+        const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
+        const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`, queryParams);
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
           setSearchConfiguration(response.hits.hits[0]._source);
@@ -44,7 +45,7 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string) 
     };
 
     fetchSearchConfiguration();
-  }, [http, id]);
+  }, [http, id, dataSourceId]);
 
   const formatJson = (json: string) => {
     try {

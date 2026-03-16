@@ -321,4 +321,102 @@ describe('ExperimentService', () => {
       await expect(service.deleteScheduledExperiment('id')).rejects.toThrow('API Error');
     });
   });
+
+  describe('with dataSourceId', () => {
+    it('getExperiments should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getExperiments('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('getExperiments should omit query param when no dataSourceId', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getExperiments();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String));
+    });
+
+    it('getExperiment should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getExperiment('1', 'my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('1'), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('getExperiment should omit query param when no dataSourceId', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getExperiment('1');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('1'));
+    });
+
+    it('createExperiment should pass dataSourceId as query param', async () => {
+      const formData = { querySetId: '1', searchConfigurationList: ['1'], size: 8, type: 'POINTWISE_EVALUATION' };
+      mockHttp.post.mockResolvedValue({});
+
+      await service.createExperiment(formData, 'my-ds');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(formData),
+        query: { dataSourceId: 'my-ds' },
+      });
+    });
+
+    it('deleteExperiment should pass dataSourceId as query param', async () => {
+      mockHttp.delete.mockResolvedValue({});
+
+      await service.deleteExperiment('1', 'my-ds');
+
+      expect(mockHttp.delete).toHaveBeenCalledWith(expect.stringContaining('1'), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('deleteExperiment should omit query param when no dataSourceId', async () => {
+      mockHttp.delete.mockResolvedValue({});
+
+      await service.deleteExperiment('1');
+
+      expect(mockHttp.delete).toHaveBeenCalledWith(expect.stringContaining('1'));
+    });
+
+    it('getScheduledExperiments should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getScheduledExperiments('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('getScheduledExperiment should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.getScheduledExperiment('1', 'my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('1'), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('createScheduledExperiment should pass dataSourceId as query param', async () => {
+      const formData = { experimentId: '1', cronExpression: '* * * * *' };
+      mockHttp.post.mockResolvedValue({});
+
+      await service.createScheduledExperiment(formData, 'my-ds');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(formData),
+        query: { dataSourceId: 'my-ds' },
+      });
+    });
+
+    it('deleteScheduledExperiment should pass dataSourceId as query param', async () => {
+      mockHttp.delete.mockResolvedValue({});
+
+      await service.deleteScheduledExperiment('1', 'my-ds');
+
+      expect(mockHttp.delete).toHaveBeenCalledWith(expect.stringContaining('1'), { query: { dataSourceId: 'my-ds' } });
+    });
+  });
 });

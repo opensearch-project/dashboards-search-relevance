@@ -50,6 +50,8 @@ describe('ExperimentView', () => {
     notifications: mockNotifications,
     id: 'test-experiment-id',
     history: mockHistory,
+    location: { search: '' },
+    match: { params: { entityId: 'test-experiment-id' } },
   };
 
   beforeEach(() => {

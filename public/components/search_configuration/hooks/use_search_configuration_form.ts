@@ -18,6 +18,7 @@ export interface UseSearchConfigurationFormProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
   onSuccess?: () => void;
+  dataSourceId?: string;
 }
 
 export interface UseSearchConfigurationFormReturn {
@@ -62,6 +63,7 @@ export const useSearchConfigurationForm = ({
   http,
   notifications,
   onSuccess,
+  dataSourceId,
 }: UseSearchConfigurationFormProps): UseSearchConfigurationFormReturn => {
   // Form state
   const [name, setName] = useState('');
@@ -92,7 +94,7 @@ export const useSearchConfigurationForm = ({
   useEffect(() => {
     const fetchIndexes = async () => {
       try {
-        const options = await searchConfigService.fetchIndexes();
+        const options = await searchConfigService.fetchIndexes(dataSourceId);
         setIndexOptions(options);
       } catch (error) {
         console.error('Failed to fetch indexes', error);
@@ -106,14 +108,14 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchIndexes();
-  }, []);
+  }, [dataSourceId]);
 
   // Fetch pipelines on component mount
   useEffect(() => {
     const fetchPipelines = async () => {
       setIsLoadingPipelines(true);
       try {
-        const options = await searchConfigService.fetchPipelines();
+        const options = await searchConfigService.fetchPipelines(dataSourceId);
         setPipelineOptions(options);
       } catch (error) {
         // only log error if it's not a 404, see: https://github.com/opensearch-project/OpenSearch/issues/15917
@@ -127,7 +129,7 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchPipelines();
-  }, []);
+  }, [dataSourceId]);
 
   // Validate name field on blur
   const validateNameField = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
@@ -165,7 +167,7 @@ export const useSearchConfigurationForm = ({
         selectedPipeline.length > 0 ? selectedPipeline[0].label : undefined
       );
 
-      const result = await searchConfigService.validateSearchQuery(requestBody);
+      const result = await searchConfigService.validateSearchQuery(requestBody, dataSourceId);
 
       if (!result || !result.hits?.hits?.length) {
         throw new Error('Search returned no results');
@@ -216,7 +218,7 @@ export const useSearchConfigurationForm = ({
         index: selectedIndex[0].label,
         query,
         searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : undefined,
-      });
+      }, dataSourceId);
 
       notifications.toasts.addSuccess(`Search configuration "${name}" created successfully`);
 
