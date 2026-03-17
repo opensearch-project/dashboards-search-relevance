@@ -19,10 +19,12 @@ import {
 import { registerAllPluginNavGroups } from './plugin_nav';
 import { ContentManagementPluginStart } from '../../../src/plugins/content_management/public';
 import { registerCompareQueryCard } from './components/service_card/compare_query_card';
+import { ChatPluginSetup } from '../../../src/plugins/chat/public';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSource: DataSourcePluginSetup;
   dataSourceManagement: DataSourceManagementPluginSetup;
+  chat?: ChatPluginSetup;
 }
 
 export interface SearchRelevanceStartDependencies {
@@ -34,8 +36,29 @@ export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
   public setup(
     core: CoreSetup,
-    { dataSource, dataSourceManagement }: SearchRelevancePluginSetupDependencies
+    { dataSource, dataSourceManagement, chat }: SearchRelevancePluginSetupDependencies
   ): SearchRelevancePluginSetup {
+    chat?.registerStarterSuggestions(PLUGIN_ID, [
+      {
+        icon: 'visBarVerticalStacked',
+        iconColor: 'primary',
+        text: 'Compare two search configurations',
+        prompt: 'Help me set up a query set comparison between two search configurations',
+      },
+      {
+        icon: 'starFilled',
+        iconColor: 'warning',
+        text: 'Evaluate search quality',
+        prompt: 'How do I evaluate my search quality using NDCG or MAP metrics?',
+      },
+      {
+        icon: 'searchProfilerApp',
+        iconColor: 'accent',
+        text: 'Create a query set',
+        prompt: 'Help me create a query set for search relevance evaluation',
+      },
+    ]);
+
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
