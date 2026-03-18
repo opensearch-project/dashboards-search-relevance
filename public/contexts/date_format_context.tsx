@@ -42,8 +42,9 @@ export const ConfigProvider: React.FC<{
   navigation,
   children,
 }) => {
-  const rawDateFormat = uiSettings.get('dateFormat') || 'MMM D, YYYY @ HH:mm:ss';
-  const dateFormat = rawDateFormat.replace(/[.:]\s*S+/g, '');
+  const rawDateFormat = uiSettings.get('dateFormat');
+  // UI renders to second, not millisecond level of detail so drop any millisecond format rules
+  const dateFormat = rawDateFormat.replace(/\.S{1,3}/g, '');
 
   return (
     <ConfigContext.Provider
