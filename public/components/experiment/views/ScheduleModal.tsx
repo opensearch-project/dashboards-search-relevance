@@ -11,9 +11,22 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
   const [cronExpression, setCronExpression] = useState("");
   const [error, setError] = useState<string | null>(null);
 
+  const isValidCron = (cron: string) => {
+    const parts = cron.trim().split(/\s+/);
+    if (parts.length < 5 || parts.length > 7) return false;
+    
+    return parts.every(part => 
+      /^(\*|\?|L|[a-zA-Z]{3,}|[0-9]{1,4})([/\-,][a-zA-Z0-9]+)*$/.test(part)
+    );
+  };
+
   const handleSubmit = () => {
     if (!cronExpression || cronExpression.trim() === '') {
       setError('Cron expression is required.');
+      return;
+    }
+    if (!isValidCron(cronExpression)) {
+      setError('Invalid cron format. Please use a valid cron expression (e.g., "0 1 * * *").');
       return;
     }
     setError(null);

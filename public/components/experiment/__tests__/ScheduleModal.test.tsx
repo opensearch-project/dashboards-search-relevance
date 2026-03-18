@@ -47,6 +47,30 @@ describe('ScheduleModal', () => {
     expect(screen.getByText('Cron expression is required.')).toBeInTheDocument();
   });
 
+  it('shows an error when submitting an invalid cron format like single characters', () => {
+    render(<ScheduleModal {...defaultProps} />);
+    const input = screen.getByPlaceholderText('To run every morning at 1:00 AM use (0 1 * * *)');
+    const submitButton = screen.getByText('Schedule Experiment to Run');
+    
+    fireEvent.change(input, { target: { value: 'd' } });
+    fireEvent.click(submitButton);
+
+    expect(defaultProps.onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText('Invalid cron format. Please use a valid cron expression (e.g., "0 1 * * *").')).toBeInTheDocument();
+  });
+
+  it('shows an error for cron expressions with incorrect number of parts', () => {
+    render(<ScheduleModal {...defaultProps} />);
+    const input = screen.getByPlaceholderText('To run every morning at 1:00 AM use (0 1 * * *)');
+    const submitButton = screen.getByText('Schedule Experiment to Run');
+    
+    fireEvent.change(input, { target: { value: '0 1 * *' } }); // 4 parts instead of 5
+    fireEvent.click(submitButton);
+
+    expect(defaultProps.onSubmit).not.toHaveBeenCalled();
+    expect(screen.getByText('Invalid cron format. Please use a valid cron expression (e.g., "0 1 * * *").')).toBeInTheDocument();
+  });
+
   it('calls onSubmit with the cron expression and clears error when valid', () => {
     render(<ScheduleModal {...defaultProps} />);
     const input = screen.getByPlaceholderText('To run every morning at 1:00 AM use (0 1 * * *)');
