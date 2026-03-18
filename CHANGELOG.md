@@ -17,6 +17,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Standardize Action button tooltips across all listing pages (Search Configurations, Experiments, Judgments, Query Sets) using `EuiToolTip` for improved UX and accessibility. ([#782](https://github.com/opensearch-project/dashboards-search-relevance/pull/782))
 
 ### Bug Fixes
+* Fix scheduler failure when cron expression is null or empty in SRW experiments by adding proper validation and handling. ([#808](https://github.com/opensearch-project/dashboards-search-relevance/pull/808))
 * Bug bugs on pairwise comparison experiment view page. ([#735]https://github.com/opensearch-project/dashboards-search-relevance/pull/735)
 * Fix link to Pointwise Daily Scheduled Runs dashboard to set date range from first experiment to NOW to include the most recent run. ([#738]https://github.com/opensearch-project/dashboards-search-relevance/pull/738)
 * Fix text alignment and excessive spacing in Query Analysis results view. ([#752](https://github.com/opensearch-project/dashboards-search-relevance/pull/752))
