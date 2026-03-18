@@ -292,7 +292,8 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
 };
 
 export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedule> => {
-  if (!source.id || !source.schedule || !source.schedule.cron.expression) {
+  const cronExpression = source?.schedule?.cron?.expression;
+  if (!source.id || !cronExpression) {
     return parseError('Missing one of required fields: id, schedule.cron.expression');
   }
 
