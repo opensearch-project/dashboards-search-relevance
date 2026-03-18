@@ -194,7 +194,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       validate: {
         body: schema.object({
           experimentId: schema.string(),
-          cronExpression: schema.string({ minLength: 1 })
+          cronExpression: schema.string({ minLength: 9 })
         }),
         query: queryWithDataSource,
       }
