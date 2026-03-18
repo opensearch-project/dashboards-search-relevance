@@ -397,11 +397,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>{experiment?.type ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
 
-        <ScheduleDetails
-          isScheduled={experiment?.isScheduled}
-          scheduledExperimentJob={scheduledExperimentJob}
-        />
-
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -439,6 +434,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
   return (
     <>
       {experimentDetails}
+      <EuiSpacer size="m" />
+      <ScheduleDetails
+        isScheduled={experiment?.isScheduled}
+        scheduledExperimentJob={scheduledExperimentJob}
+      />
       <EuiSpacer size="m" />
       <EuiPanel hasBorder paddingSize="l">
         {error ? (

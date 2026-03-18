@@ -306,13 +306,6 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         <EuiDescriptionListTitle>Experiment Type</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>{experiment ? printType(experiment.type) : ''}</EuiDescriptionListDescription>
        
-        {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && (
-          <ScheduleDetails
-            isScheduled={experiment.isScheduled}
-            scheduledExperimentJob={scheduledExperimentJob}
-          />
-        )}
-    
         <EuiDescriptionListTitle>Query Set</EuiDescriptionListTitle>
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
@@ -397,6 +390,15 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     <>
       {experimentDetails}
       <EuiSpacer size="m" />
+      {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && (
+        <>
+          <ScheduleDetails
+            isScheduled={experiment.isScheduled}
+            scheduledExperimentJob={scheduledExperimentJob}
+          />
+          <EuiSpacer size="m" />
+        </>
+      )}
       <MetricsSummaryPanel metrics={queryEvaluations.map((q) => q.metrics)} />
       <EuiSpacer size="m" />
       {resultsPane}
