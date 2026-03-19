@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { EuiDescriptionListTitle, EuiDescriptionListDescription, EuiSpacer } from '@elastic/eui';
+import { EuiAccordion, EuiPanel, EuiTitle, EuiSpacer, EuiFlexGroup, EuiFlexItem, EuiDescriptionList, EuiText } from '@elastic/eui';
+import cronstrue from 'cronstrue';
 import { ScheduledJob } from '../../types/index';
 
 export interface ScheduleDetailsProps {
@@ -18,15 +19,15 @@ export const ScheduleDetails: React.FC<ScheduleDetailsProps> = ({
 }) => {
   const scheduled = Boolean(isScheduled);
   const cron = scheduledExperimentJob?.schedule?.cron;
+  const isCronEmpty = !cron || !cron.expression || cron.expression.trim() === '';
 
-  const formatTimestamp = (timestamp?: number): string => {
+  const formatTimestamp = (timestamp?: number | string): string => {
     if (!timestamp) return '—';
-    const date = new Date(timestamp);
+    const date = new Date(Number(timestamp));
     if (isNaN(date.getTime())) return '—';
     try {
-      return date.toLocaleString(undefined, {
-        timeZone: cron?.timezone,
-      } as Intl.DateTimeFormatOptions);
+      // Intentionally omitting timeZone override to display in the user's local browser timezone.
+      return date.toLocaleString();
     } catch (e) {
       return date.toString();
     }
@@ -35,22 +36,54 @@ export const ScheduleDetails: React.FC<ScheduleDetailsProps> = ({
   const startedAtDisplay = formatTimestamp(scheduledExperimentJob?.enabledTime);
   const lastRunDisplay = formatTimestamp(scheduledExperimentJob?.lastUpdateTime);
 
+  let cronDescription = '—';
+  if (!isCronEmpty) {
+    try {
+      cronDescription = cronstrue.toString(cron!.expression);
+    } catch (err) {
+      cronDescription = cron!.expression;
+    }
+  }
+
+  const scheduleInfoList = [
+    { title: 'Cron setup', description: `${cron?.expression || '—'} ${cron?.timezone ? `(${cron.timezone})` : ''}` },
+    { title: 'Frequency', description: cronDescription },
+  ];
+
+  const executionInfoList = [
+    { title: 'Started at', description: startedAtDisplay },
+    { title: 'Last run', description: lastRunDisplay },
+  ];
+
   return (
-    <>
-      <EuiDescriptionListTitle>Schedule to Run</EuiDescriptionListTitle>
-      <EuiDescriptionListDescription>
-        {!scheduled ? (
-          'Not Scheduled'
+    <EuiPanel paddingSize="l">
+      <EuiAccordion
+        id="scheduleDetailsAccordion"
+        buttonContent={
+          <EuiTitle size="s">
+            <h3>Schedule</h3>
+          </EuiTitle>
+        }
+        paddingSize="none"
+        initialIsOpen={true}
+      >
+        <EuiSpacer size="m" />
+        {(!scheduled || isCronEmpty) ? (
+          <EuiText size="s" color="subdued">
+            <p>No schedule (Manual run only)</p>
+          </EuiText>
         ) : (
-          <>
-            <div>{cron?.expression || '—'}  {cron?.timezone}</div>
-            <EuiSpacer size="s" />
-            <div>Started at: {startedAtDisplay}</div>
-            <div>Last run at: {lastRunDisplay}</div>
-          </>
+          <EuiFlexGroup>
+            <EuiFlexItem>
+              <EuiDescriptionList type="column" listItems={scheduleInfoList} compressed />
+            </EuiFlexItem>
+            <EuiFlexItem>
+              <EuiDescriptionList type="column" listItems={executionInfoList} compressed />
+            </EuiFlexItem>
+          </EuiFlexGroup>
         )}
-      </EuiDescriptionListDescription>
-    </>
+      </EuiAccordion>
+    </EuiPanel>
   );
 };
 
