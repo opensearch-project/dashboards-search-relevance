@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ExperimentListing } from '../views/experiment_listing';
 
 const mockHttp = {
@@ -193,6 +193,49 @@ describe('ExperimentListing', () => {
       expect(contents).toContain('View Visualization');
       expect(contents).toContain('Delete');
       expect(contents).toContain('Schedule Experiment');
+    });
+  });
+
+  describe('AI callout banner', () => {
+    it('does not show AI callout when onAskAI is not provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Ask AI')).not.toBeInTheDocument();
+    });
+
+    it('shows AI callout when onAskAI is provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+      expect(screen.getByText('Ask AI')).toBeInTheDocument();
+    });
+
+    it('calls onAskAI when Ask AI button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      fireEvent.click(screen.getByText('Ask AI'));
+
+      expect(mockOnAskAI).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides AI callout when dismiss button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText('dismissible_icon'));
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
     });
   });
 

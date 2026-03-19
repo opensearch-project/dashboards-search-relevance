@@ -10,6 +10,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Support manually creating a Query Set using plain text, key-value, or NDJSON input directly in the UI. ([#754](https://github.com/opensearch-project/dashboards-search-relevance/pull/754))
 * Add Help flyout for Query Set creation with format documentation and downloadable sample files. ([#767](https://github.com/opensearch-project/dashboards-search-relevance/pull/767))
 * Support multiple datasource in SRW ([#802](https://github.com/opensearch-project/dashboards-search-relevance/pull/802))
+* Show a dismissible UI element to guide users to the relevance tuning agent if the chat plugin is enabled. ([#810](https://github.com/opensearch-project/dashboards-search-relevance/pull/810))
 
 ### Enhancements
 * Proper support of .ndjson or .jsonl for Query Sets file uploads. ([#775](https://github.com/opensearch-project/dashboards-search-relevance/pull/775))

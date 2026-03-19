@@ -50,10 +50,18 @@ export class SearchRelevancePlugin
         const { renderApp } = await import('./application');
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
+        const onAskAI = coreStart.chat.isAvailable()
+          ? () =>
+              coreStart.chat.sendMessageWithWindow(
+                'Help me improve search relevance',
+                [],
+                { clearConversation: true }
+              )
+          : undefined;
         // Render the application
         return renderApp(
           coreStart,
-          depsStart as AppPluginStartDependencies,
+          { ...(depsStart as AppPluginStartDependencies), onAskAI },
           params,
           dataSourceManagement
         );
