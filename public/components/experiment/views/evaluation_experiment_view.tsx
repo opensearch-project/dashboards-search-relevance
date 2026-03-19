@@ -390,7 +390,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     <>
       {experimentDetails}
       <EuiSpacer size="m" />
-      {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && (
+      {experiment && (experiment.type === ExperimentType.POINTWISE_EVALUATION || experiment.type === ExperimentType.HYBRID_OPTIMIZER) && experiment.isScheduled && scheduledExperimentJob?.schedule?.cron?.expression?.trim() && (
         <>
           <ScheduleDetails
             isScheduled={experiment.isScheduled}

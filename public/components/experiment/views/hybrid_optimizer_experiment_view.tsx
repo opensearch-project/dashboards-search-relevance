@@ -435,11 +435,15 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     <>
       {experimentDetails}
       <EuiSpacer size="m" />
-      <ScheduleDetails
-        isScheduled={experiment?.isScheduled}
-        scheduledExperimentJob={scheduledExperimentJob}
-      />
-      <EuiSpacer size="m" />
+      {experiment?.isScheduled && scheduledExperimentJob?.schedule?.cron?.expression?.trim() && (
+        <>
+          <ScheduleDetails
+            isScheduled={experiment?.isScheduled}
+            scheduledExperimentJob={scheduledExperimentJob}
+          />
+          <EuiSpacer size="m" />
+        </>
+      )}
       <EuiPanel hasBorder paddingSize="l">
         {error ? (
           <EuiCallOut title="Error" color="danger">
