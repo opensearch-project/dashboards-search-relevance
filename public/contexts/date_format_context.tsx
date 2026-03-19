@@ -18,7 +18,7 @@ interface ConfigContextProps {
 }
 
 const ConfigContext = createContext<ConfigContextProps>({
-  dateFormat: 'MMM D, YYYY @ HH:mm:ss.SSS', // Default format
+  dateFormat: 'MMM D, YYYY @ HH:mm:ss', // Default format
   dataSourceEnabled: false,
   dataSourceManagement: {} as DataSourceManagementPluginSetup,
   setHeaderActionMenu: () => {},
@@ -44,7 +44,9 @@ export const ConfigProvider: React.FC<{
   navigation,
   children,
 }) => {
-  const dateFormat = uiSettings.get('dateFormat') || 'MMM D, YYYY @ HH:mm:ss.SSS';
+  const rawDateFormat = uiSettings.get('dateFormat');
+  // UI renders to second, not millisecond level of detail so drop any millisecond format rules
+  const dateFormat = rawDateFormat.replace(/\.S{1,3}/g, '');
 
   return (
     <ConfigContext.Provider
