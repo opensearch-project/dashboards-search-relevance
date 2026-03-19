@@ -5,10 +5,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
+  EuiCallOut,
+  EuiFlexGroup,
   EuiFlexItem,
   EuiButtonEmpty,
+  EuiIcon,
   EuiText,
-  EuiCallOut,
+  EuiPanel,
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
@@ -44,12 +47,15 @@ import {
 import { getStatusColor } from '../../common_utils/status';
 import { ScheduleModal } from './ScheduleModal';
 import { DeleteScheduleModal } from './DeleteScheduleModal';
+import gradientGenerateIcon from '../../../assets/gradient_generate_icon.svg';
+import './experiment_listing.scss';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
   savedObjects?: CoreStart['savedObjects'];
   dataSourceEnabled?: boolean;
   dataSourceManagement?: DataSourceManagementPluginSetup;
+  onAskAI?: () => void;
 }
 
 export const ExperimentListing: React.FC<ExperimentListingProps> = ({
@@ -58,6 +64,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   savedObjects,
   dataSourceEnabled = false,
   dataSourceManagement,
+  onAskAI,
 }) => {
   const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
@@ -81,6 +88,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   >(null);
   // Whether the modal to schedule an experiment is shown
   const [showScheduleExperimentModal, setShowScheduleExperimentModal] = useState(false);
+  const [isAICalloutDismissed, setIsAICalloutDismissed] = useState(false);
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
@@ -589,6 +597,36 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       )}
 
       <EuiSpacer size="m" />
+
+      {onAskAI && !isAICalloutDismissed && (
+        <>
+          <EuiCallOut
+            title={
+              <EuiFlexGroup direction="column" gutterSize="s" alignItems="flexStart" responsive={false}>
+                <EuiFlexItem>Tune your relevance with AI.</EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <div className="chatHeaderButton__borderWrapper">
+                    <EuiButtonEmpty
+                      size="s"
+                      onClick={onAskAI}
+                      color="primary"
+                      className="chatHeaderButton__button"
+                    >
+                      <EuiIcon type={gradientGenerateIcon} size="s" className="chatHeaderButton__icon" />
+                      Ask AI
+                    </EuiButtonEmpty>
+                  </div>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            }
+            color="success"
+            iconType="search"
+            dismissible
+            onDismiss={() => setIsAICalloutDismissed(true)}
+          />
+          <EuiSpacer size="m" />
+        </>
+      )}
 
       <TemplateCards history={history} onClose={() => { }} />
 
