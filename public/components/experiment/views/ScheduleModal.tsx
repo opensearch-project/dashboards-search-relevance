@@ -9,6 +9,16 @@ import { useState } from "react";
 
 export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
   const [cronExpression, setCronExpression] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = () => {
+    if (!cronExpression || cronExpression.trim() === '') {
+      setError('Cron expression is required.');
+      return;
+    }
+    setError(null);
+    onSubmit(cronExpression);
+  };
 
   return (
     <EuiModal onClose={onClose}>
@@ -16,8 +26,22 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
         <EuiModalHeaderTitle>Schedule Experiment to Run Periodically</EuiModalHeaderTitle>
       </EuiModalHeader>
       <EuiModalBody>
-        <EuiFormRow label="Cron Job Schedule" helpText="Please submit a valid cron job such as '0 1 * * *' with single spaces between parts">
-          <EuiFieldText value={cronExpression} onChange={(e) => setCronExpression(e.target.value)} name="cron job" placeholder="To run every morning at 1:00 AM use (0 1 * * *)" />
+        <EuiFormRow
+          label="Cron Job Schedule"
+          helpText="Please submit a valid cron job such as '0 1 * * *' with single spaces between parts"
+          isInvalid={!!error}
+          error={error ? [error] : undefined}
+        >
+          <EuiFieldText
+            value={cronExpression}
+            onChange={(e) => {
+              setCronExpression(e.target.value);
+              if (error) setError(null);
+            }}
+            name="cron job"
+            placeholder="To run every morning at 1:00 AM use (0 1 * * *)"
+            isInvalid={!!error}
+          />
         </EuiFormRow>
         <EuiText>
           <p></p>
@@ -26,9 +50,7 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
 
       <EuiModalFooter>
         <EuiButtonEmpty onClick={onClose}>Cancel</EuiButtonEmpty>
-        <EuiButton onClick={() => {
-          onSubmit(cronExpression);
-        }} color="primary" fill>Schedule Experiment to Run</EuiButton>
+        <EuiButton onClick={handleSubmit} color="primary" fill>Schedule Experiment to Run</EuiButton>
       </EuiModalFooter>
     </EuiModal>
   )
