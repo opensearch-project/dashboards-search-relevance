@@ -144,26 +144,43 @@ export const usePromptTemplate = ({
   }, [modelId]);
 
   const buildFullPrompt = useCallback(
-    (placeholderValues?: Record<string, string>): string => {
-      const systemPrompt = SYSTEM_PROMPTS[outputSchema];
-      const parts: string[] = [];
+      (placeholderValues?: Record<string, string>): string => {
+        const systemPrompt = SYSTEM_PROMPTS[outputSchema];
+        const parts: string[] = [];
 
-      // Add system prompt start
-      parts.push(systemPrompt.start);
+        // Add system prompt start
+        parts.push(systemPrompt.start);
 
-      // Add user instructions if provided
-      if (userInstructions.trim()) {
-        parts.push(userInstructions.trim());
-        parts.push('');
-      }
+        // Add user instructions if provided
+        if (userInstructions.trim()) {
+          parts.push(userInstructions.trim());
+          parts.push('');
+        }
 
-      // Add system prompt end
-      parts.push(systemPrompt.end);
+        // Add system prompt end
+        parts.push(systemPrompt.end);
 
-      return parts.join('\n');
-    },
-    [outputSchema, userInstructions]
-  );
+        // Ensure required template variables are present
+        const assembled = parts.join('\n');
+        const hasQueryVar = assembled.includes('{{queryText}}') || assembled.includes('{{searchText}}');
+        const hasHitsVar = assembled.includes('{{hits}}') || assembled.includes('{{results}}');
+
+        const appendParts: string[] = [];
+        if (!hasQueryVar) {
+          appendParts.push('SearchText: {{queryText}}');
+        }
+        if (!hasHitsVar) {
+          appendParts.push('Hits: {{hits}}');
+        }
+
+        if (appendParts.length > 0) {
+          return assembled + '\n' + appendParts.join('\n');
+        }
+        return assembled;
+      },
+      [outputSchema, userInstructions]
+    );
+
 
   const getPromptTemplate = useCallback((): PromptTemplate => {
     const systemPrompt = SYSTEM_PROMPTS[outputSchema];
@@ -175,6 +192,8 @@ export const usePromptTemplate = ({
       placeholders,
     };
   }, [outputSchema, userInstructions, placeholders]);
+
+
 
   const validatePrompt = useCallback(
     async ({

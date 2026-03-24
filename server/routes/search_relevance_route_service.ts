@@ -248,6 +248,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           tokenLimit: schema.maybe(schema.string()),
           ignoreFailure: schema.maybe(schema.boolean()),
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
+          promptTemplate: schema.maybe(schema.string()),
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),

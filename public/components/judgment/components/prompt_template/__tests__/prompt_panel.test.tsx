@@ -27,93 +27,73 @@ describe('PromptPanel', () => {
 
       expect(screen.getByText('Prompt Configuration')).toBeInTheDocument();
       expect(screen.getByText('Output Schema')).toBeInTheDocument();
-      expect(screen.getByText(/User Input Instructions/)).toBeInTheDocument();
-    });
-  });
-
-  describe('duplicate placeholder detection', () => {
-    it('should show warning when duplicate placeholders exist', () => {
-      const props = {
-        ...defaultProps,
-        userInstructions: '{{query}} and {{query}} and {{category}} and {{category}}',
-        placeholders: ['query', 'query', 'category', 'category'],
-      };
-
-      render(<PromptPanel {...props} />);
-
-      expect(screen.getByText(/Duplicate placeholders detected/)).toBeInTheDocument();
+      expect(screen.getByText('Prompt Template')).toBeInTheDocument();
     });
 
-    it('should not show warning when no duplicate placeholders', () => {
-      const props = {
-        ...defaultProps,
-        userInstructions: '{{query}} and {{category}}',
-        placeholders: ['query', 'category'],
-      };
+    it('should render the contentEditable editor', () => {
+      render(<PromptPanel {...defaultProps} />);
 
-      render(<PromptPanel {...props} />);
-
-      expect(screen.queryByText(/Duplicate placeholders detected/)).not.toBeInTheDocument();
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]');
+      expect(editor).toBeInTheDocument();
+      expect(editor?.getAttribute('contenteditable')).toBe('true');
     });
 
-    it('should handle single duplicate placeholder', () => {
-      const props = {
-        ...defaultProps,
-        userInstructions: '{{query}} and {{query}}',
-        placeholders: ['query', 'query'],
-      };
+    it('should render locked tags in the editor', () => {
+      render(<PromptPanel {...defaultProps} />);
 
-      render(<PromptPanel {...props} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]');
+      const searchTextTag = editor?.querySelector('[data-tag="searchText"]');
+      const hitsTag = editor?.querySelector('[data-tag="hits"]');
 
-      expect(screen.getByText(/Duplicate placeholders detected/)).toBeInTheDocument();
+      expect(searchTextTag).toBeInTheDocument();
+      expect(hitsTag).toBeInTheDocument();
+      expect(searchTextTag?.textContent).toBe('{{searchText}}');
+      expect(hitsTag?.textContent).toBe('{{hits}}');
     });
-  });
 
-  describe('user instructions input', () => {
-    it('should call onUserInstructionsChange when textarea value changes', () => {
+    it('should initialize with default template and notify parent', () => {
       const mockOnChange = jest.fn();
-      const props = {
-        ...defaultProps,
-        onUserInstructionsChange: mockOnChange,
-      };
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
 
-      render(<PromptPanel {...props} />);
-
-      const textarea = screen.getByPlaceholderText(/Focus on semantic similarity/);
-      fireEvent.change(textarea, { target: { value: 'new instructions {{query}}' } });
-
-      expect(mockOnChange).toHaveBeenCalledWith('new instructions {{query}}');
+      expect(mockOnChange).toHaveBeenCalledWith('SearchText: {{searchText}}; Hits: {{hits}}');
     });
+  });
 
-    it('should display current user instructions', () => {
-      const props = {
-        ...defaultProps,
-        userInstructions: 'Evaluate the {{query}} results',
-      };
+  describe('available variables reference', () => {
+    it('should display available variables section', () => {
+      render(<PromptPanel {...defaultProps} />);
 
-      render(<PromptPanel {...props} />);
-
-      const textarea = screen.getByDisplayValue('Evaluate the {{query}} results');
-      expect(textarea).toBeInTheDocument();
+      expect(screen.getByText('Available Variables')).toBeInTheDocument();
+      expect(screen.getByText(/Built-in Variables/)).toBeInTheDocument();
+      expect(screen.getByText(/Custom Query Set Fields/)).toBeInTheDocument();
     });
   });
 
   describe('output schema', () => {
     it('should display SCORE_0_1 schema by default', () => {
       render(<PromptPanel {...defaultProps} />);
-
       expect(screen.getByText('Output Schema')).toBeInTheDocument();
     });
 
     it('should display RELEVANT_IRRELEVANT schema when selected', () => {
-      const props = {
-        ...defaultProps,
-        outputSchema: OutputSchema.RELEVANT_IRRELEVANT,
-      };
-
-      render(<PromptPanel {...props} />);
-
+      render(<PromptPanel {...defaultProps} outputSchema={OutputSchema.RELEVANT_IRRELEVANT} />);
       expect(screen.getByText('Output Schema')).toBeInTheDocument();
+    });
+  });
+
+  describe('character count', () => {
+    it('should display character count', () => {
+      render(<PromptPanel {...defaultProps} />);
+      expect(screen.getByText(/\/ 10,000 characters/)).toBeInTheDocument();
+    });
+  });
+
+  describe('disabled state', () => {
+    it('should set contenteditable to false when disabled', () => {
+      render(<PromptPanel {...defaultProps} disabled />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]');
+      expect(editor?.getAttribute('contenteditable')).toBe('false');
     });
   });
 });

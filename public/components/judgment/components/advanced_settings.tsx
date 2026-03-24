@@ -56,36 +56,26 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     validationModelId,
     setValidationModelId,
     validatePrompt,
-    getPromptTemplate,
   } = usePromptTemplate({
     querySetId: formData.querySetId,
     modelId: formData.modelId,
     httpClient,
   });
 
-  // Auto-save template when it changes
+  // Backend's default prompt template (used when user hasn't customized)
+  const BACKEND_DEFAULT_TEMPLATE = 'SearchText: {{searchText}}; Hits: {{hits}}';
+
+  // Default assembled template from PromptPanel's initial content
+  const DEFAULT_ASSEMBLED_TEMPLATE = BACKEND_DEFAULT_TEMPLATE;
+
+  // Auto-save template — send just the user's template string (not the full system prompt).
+  // The backend handles system prompts separately; promptTemplate is just the user-facing template.
   React.useEffect(() => {
-    const template = getPromptTemplate();
-    updateFormData({ promptTemplate: template });
+    const isDefault =
+      !userInstructions.trim() || userInstructions.trim() === DEFAULT_ASSEMBLED_TEMPLATE;
+    const templateString = isDefault ? BACKEND_DEFAULT_TEMPLATE : userInstructions.trim();
+    updateFormData({ promptTemplate: templateString });
   }, [outputSchema, userInstructions, placeholders]);
-
-  // Convert selectedSearchConfigs to array of IDs
-  const searchConfigurationList = React.useMemo(
-    () => selectedSearchConfigs.map((config) => config.value),
-    [selectedSearchConfigs]
-  );
-
-  // Debug: Log formData to see what's available
-  React.useEffect(() => {
-    console.log('AdvancedSettings - formData:', {
-      selectedSearchConfigs,
-      searchConfigurationList,
-      contextFields: formData.contextFields,
-      size: formData.size,
-      tokenLimit: formData.tokenLimit,
-      ignoreFailure: formData.ignoreFailure,
-    });
-  }, [selectedSearchConfigs, searchConfigurationList, formData.contextFields, formData.size, formData.tokenLimit, formData.ignoreFailure]);
 
   return (
     <>
@@ -115,11 +105,6 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             modelOptions={modelOptions}
             onModelChange={setValidationModelId}
             onValidate={validatePrompt}
-            searchConfigurationList={searchConfigurationList}
-            contextFields={formData.contextFields || []}
-            size={formData.size}
-            tokenLimit={formData.tokenLimit}
-            ignoreFailure={formData.ignoreFailure}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
