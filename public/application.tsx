@@ -14,7 +14,7 @@ import { ConfigProvider } from './contexts/date_format_context';
 
 export const renderApp = (
   coreStart: CoreStart,
-  { navigation, dataSource, share }: AppPluginStartDependencies,
+  { navigation, dataSource, share, onAskAI }: AppPluginStartDependencies,
   { element, setHeaderActionMenu }: AppMountParameters,
   dataSourceManagement: DataSourceManagementPluginSetup
 ) => {
@@ -30,6 +30,7 @@ export const renderApp = (
     setActionMenu: setHeaderActionMenu,
     application,
     uiSettings,
+    onAskAI,
   };
 
   const root = createRoot(element);

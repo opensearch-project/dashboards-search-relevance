@@ -67,6 +67,7 @@ interface SearchRelevanceAppDeps {
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
   uiSettings: CoreStart['uiSettings'];
+  onAskAI?: () => void;
 }
 
 interface SearchRelevancePageProps extends SearchRelevanceAppDeps {
@@ -85,6 +86,7 @@ const SearchRelevancePage = ({
   dataSourceManagement,
   setActionMenu,
   uiSettings,
+  onAskAI,
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
@@ -221,6 +223,7 @@ const SearchRelevancePage = ({
                   savedObjects={savedObjects}
                   dataSourceEnabled={dataSourceEnabled}
                   dataSourceManagement={dataSourceManagement}
+                  onAskAI={onAskAI}
                 />;
               }
             }}
@@ -234,6 +237,7 @@ const SearchRelevancePage = ({
                 savedObjects={savedObjects}
                 dataSourceEnabled={dataSourceEnabled}
                 dataSourceManagement={dataSourceManagement}
+                onAskAI={onAskAI}
               />;
             }}
           />
@@ -424,6 +428,7 @@ export const SearchRelevanceApp = ({
   dataSourceManagement,
   application,
   uiSettings,
+  onAskAI,
 }: SearchRelevanceAppDeps) => {
   // Move all useState declarations to the top
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -462,6 +467,7 @@ export const SearchRelevanceApp = ({
             dataSourceManagement={dataSourceManagement}
             setActionMenu={setActionMenu}
             uiSettings={uiSettings}
+            onAskAI={onAskAI}
           />
         </SearchRelevanceContextProvider>
       </I18nProvider>
