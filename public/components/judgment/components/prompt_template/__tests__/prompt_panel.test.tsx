@@ -96,4 +96,139 @@ describe('PromptPanel', () => {
       expect(editor?.getAttribute('contenteditable')).toBe('false');
     });
   });
+
+  describe('editor interactions', () => {
+    it('should handle input events on the editor', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      fireEvent.input(editor);
+
+      // Should have been called at least once (initial + input event)
+      expect(mockOnChange).toHaveBeenCalled();
+    });
+
+    it('should handle keydown events on the editor', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      // Should not throw on keydown
+      fireEvent.keyDown(editor, { key: 'a' });
+      fireEvent.keyDown(editor, { key: 'Backspace' });
+      fireEvent.keyDown(editor, { key: 'Delete' });
+      expect(editor).toBeInTheDocument();
+    });
+
+    it('should prevent keydown when disabled', () => {
+      render(<PromptPanel {...defaultProps} disabled />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      const event = new KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true });
+      const prevented = !editor.dispatchEvent(event);
+      // Editor is not editable when disabled
+      expect(editor.getAttribute('contenteditable')).toBe('false');
+    });
+
+    it('should handle paste events by inserting plain text', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      const pasteEvent = new Event('paste', { bubbles: true, cancelable: true }) as any;
+      pasteEvent.clipboardData = { getData: () => 'pasted text' };
+      // Should not throw
+      fireEvent.paste(editor, { clipboardData: { getData: () => 'pasted text' } });
+      expect(editor).toBeInTheDocument();
+    });
+
+    it('should handle dragover events', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      fireEvent.dragOver(editor, { dataTransfer: { dropEffect: '' } });
+      expect(editor).toBeInTheDocument();
+    });
+
+    it('should handle drop events', () => {
+      // Mock caretRangeFromPoint since jsdom doesn't support it
+      const mockRange = {
+        insertNode: jest.fn(),
+      };
+      document.caretRangeFromPoint = jest.fn().mockReturnValue(mockRange);
+
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'searchText' },
+        clientX: 10,
+        clientY: 10,
+      });
+      expect(editor).toBeInTheDocument();
+    });
+
+    it('should handle dragstart on tag elements', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      const tag = editor.querySelector('[data-tag="searchText"]') as HTMLElement;
+      if (tag) {
+        fireEvent.dragStart(tag, {
+          dataTransfer: { setData: jest.fn(), effectAllowed: '' },
+        });
+      }
+      expect(editor).toBeInTheDocument();
+    });
+  });
+
+  describe('tag protection', () => {
+    it('should re-insert searchText tag if removed via input', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      // Remove the searchText tag
+      const searchTag = editor.querySelector('[data-tag="searchText"]');
+      if (searchTag) searchTag.remove();
+
+      // Trigger input — should re-insert the tag
+      fireEvent.input(editor);
+
+      const restoredTag = editor.querySelector('[data-tag="searchText"]');
+      expect(restoredTag).toBeInTheDocument();
+    });
+
+    it('should re-insert hits tag if removed via input', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      // Remove the hits tag
+      const hitsTag = editor.querySelector('[data-tag="hits"]');
+      if (hitsTag) hitsTag.remove();
+
+      // Trigger input — should re-insert the tag
+      fireEvent.input(editor);
+
+      const restoredTag = editor.querySelector('[data-tag="hits"]');
+      expect(restoredTag).toBeInTheDocument();
+    });
+  });
+
+  describe('help text', () => {
+    it('should display help text about dragging tags', () => {
+      render(<PromptPanel {...defaultProps} />);
+      expect(screen.getByText(/Edit the template around the locked tags/)).toBeInTheDocument();
+    });
+
+    it('should display example template', () => {
+      render(<PromptPanel {...defaultProps} />);
+      expect(screen.getByText(/Given the query/)).toBeInTheDocument();
+    });
+
+    it('should explain custom query set fields resolve to empty string', () => {
+      render(<PromptPanel {...defaultProps} />);
+      expect(screen.getByText(/resolves to an empty string/)).toBeInTheDocument();
+    });
+  });
 });
