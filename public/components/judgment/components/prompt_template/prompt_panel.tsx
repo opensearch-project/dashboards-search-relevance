@@ -463,13 +463,10 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
           <strong>Example</strong> — template with custom fields:
         </p>
         <pre style={{ fontSize: '12px', padding: '8px', backgroundColor: '#F5F7FA', borderRadius: '4px', whiteSpace: 'pre-wrap' }}>
-{`Given the query: {{searchText}}
-Category: {{category}}
-Reference: {{referenceAnswer}}
+{`Given the query: {{searchText}} and category: {{category}}
+The reference answer is: {{referenceAnswer}}
 
-Rate relevance from 0.0 to 1.0.
-
-Documents: {{hits}}`}
+Please elevate the relevancy for the following documents: {{hits}}`}
         </pre>
       </EuiText>
     </EuiPanel>
