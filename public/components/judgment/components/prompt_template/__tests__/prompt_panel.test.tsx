@@ -215,6 +215,235 @@ describe('PromptPanel', () => {
     });
   });
 
+  describe('cross-browser drop support', () => {
+    afterEach(() => {
+      delete (document as any).caretPositionFromPoint;
+      delete (document as any).caretRangeFromPoint;
+    });
+
+    it('should use Firefox caretPositionFromPoint when available', () => {
+      const mockInsertNode = jest.fn();
+      const origCreateRange = document.createRange;
+      document.createRange = jest.fn().mockReturnValue({
+        setStart: jest.fn(),
+        collapse: jest.fn(),
+        insertNode: mockInsertNode,
+      });
+      (document as any).caretPositionFromPoint = jest.fn().mockReturnValue({
+        offsetNode: document.createTextNode('test'),
+        offset: 2,
+      });
+      delete (document as any).caretRangeFromPoint;
+
+      render(<PromptPanel {...defaultProps} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'searchText' },
+      });
+
+      expect((document as any).caretPositionFromPoint).toHaveBeenCalled();
+      expect(mockInsertNode).toHaveBeenCalled();
+
+      document.createRange = origCreateRange;
+    });
+
+    it('should use Chrome caretRangeFromPoint when Firefox API is unavailable', () => {
+      const mockInsertNode = jest.fn();
+      (document as any).caretRangeFromPoint = jest.fn().mockReturnValue({ insertNode: mockInsertNode });
+      delete (document as any).caretPositionFromPoint;
+
+      render(<PromptPanel {...defaultProps} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'hits' },
+      });
+
+      expect((document as any).caretRangeFromPoint).toHaveBeenCalled();
+      expect(mockInsertNode).toHaveBeenCalled();
+    });
+
+    it('should fall back to appendChild when neither caret API is available', () => {
+      delete (document as any).caretPositionFromPoint;
+      delete (document as any).caretRangeFromPoint;
+
+      render(<PromptPanel {...defaultProps} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      const oldTag = editor.querySelector('[data-tag="searchText"]');
+      if (oldTag) oldTag.remove();
+
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'searchText' },
+      });
+
+      const restoredTag = editor.querySelector('[data-tag="searchText"]');
+      expect(restoredTag).toBeInTheDocument();
+    });
+
+    it('should ignore drop events with invalid tag types', () => {
+      render(<PromptPanel {...defaultProps} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+      const tagsBefore = editor.querySelectorAll('[data-tag]').length;
+
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'invalidType' },
+      });
+
+      expect(editor.querySelectorAll('[data-tag]').length).toBe(tagsBefore);
+    });
+
+    it('should handle Firefox caretPositionFromPoint returning null', () => {
+      (document as any).caretPositionFromPoint = jest.fn().mockReturnValue(null);
+      delete (document as any).caretRangeFromPoint;
+
+      render(<PromptPanel {...defaultProps} />);
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      fireEvent.drop(editor, {
+        dataTransfer: { getData: () => 'searchText' },
+      });
+
+      const tag = editor.querySelector('[data-tag="searchText"]');
+      expect(tag).toBeInTheDocument();
+    });
+  });
+
+  describe('handleKeyDown — range selection protection', () => {
+    const createMockRange = (editor: HTMLDivElement, collapsed: boolean) => {
+      const tags = editor.querySelectorAll('[data-tag]');
+      return {
+        collapsed,
+        commonAncestorContainer: editor,
+        startContainer: editor,
+        startOffset: 0,
+        intersectsNode: (node: Node) => {
+          // Return true for all nodes in the editor (simulating select-all)
+          return editor.contains(node);
+        },
+      };
+    };
+
+    it('should preserve tags when Backspace is pressed with a range selection containing tags', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      // Mock window.getSelection to return a non-collapsed range over the editor
+      const mockRange = createMockRange(editor, false);
+      const mockSelection = {
+        rangeCount: 1,
+        getRangeAt: () => mockRange,
+        removeAllRanges: jest.fn(),
+        addRange: jest.fn(),
+      };
+      jest.spyOn(window, 'getSelection').mockReturnValue(mockSelection as any);
+
+      fireEvent.keyDown(editor, { key: 'Backspace' });
+
+      // Tags should still be present
+      expect(editor.querySelector('[data-tag="searchText"]')).toBeInTheDocument();
+      expect(editor.querySelector('[data-tag="hits"]')).toBeInTheDocument();
+
+      (window.getSelection as jest.Mock).mockRestore();
+    });
+
+    it('should preserve tags when Delete is pressed with a range selection containing tags', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      const mockRange = createMockRange(editor, false);
+      const mockSelection = {
+        rangeCount: 1,
+        getRangeAt: () => mockRange,
+        removeAllRanges: jest.fn(),
+        addRange: jest.fn(),
+      };
+      jest.spyOn(window, 'getSelection').mockReturnValue(mockSelection as any);
+
+      fireEvent.keyDown(editor, { key: 'Delete' });
+
+      expect(editor.querySelector('[data-tag="searchText"]')).toBeInTheDocument();
+      expect(editor.querySelector('[data-tag="hits"]')).toBeInTheDocument();
+
+      (window.getSelection as jest.Mock).mockRestore();
+    });
+
+    it('should remove text nodes but preserve tags on Ctrl+A then Delete', () => {
+      const mockOnChange = jest.fn();
+      render(<PromptPanel {...defaultProps} onUserInstructionsChange={mockOnChange} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      const mockRange = createMockRange(editor, false);
+      const mockSelection = {
+        rangeCount: 1,
+        getRangeAt: () => mockRange,
+        removeAllRanges: jest.fn(),
+        addRange: jest.fn(),
+      };
+      jest.spyOn(window, 'getSelection').mockReturnValue(mockSelection as any);
+
+      fireEvent.keyDown(editor, { key: 'Delete' });
+
+      // Tags should be preserved
+      expect(editor.querySelector('[data-tag="searchText"]')).toBeInTheDocument();
+      expect(editor.querySelector('[data-tag="hits"]')).toBeInTheDocument();
+
+      // Text nodes should be removed
+      const textContent = Array.from(editor.childNodes)
+        .filter((n) => n.nodeType === Node.TEXT_NODE)
+        .map((n) => n.textContent)
+        .join('');
+      expect(textContent.trim()).toBe('');
+
+      (window.getSelection as jest.Mock).mockRestore();
+    });
+
+    it('should allow normal Backspace when no tags are in the selection range', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      // Mock a non-collapsed range that does NOT intersect any tags
+      const mockRange = {
+        collapsed: false,
+        commonAncestorContainer: editor,
+        startContainer: editor,
+        startOffset: 0,
+        intersectsNode: () => false,
+      };
+      const mockSelection = {
+        rangeCount: 1,
+        getRangeAt: () => mockRange,
+        removeAllRanges: jest.fn(),
+        addRange: jest.fn(),
+      };
+      jest.spyOn(window, 'getSelection').mockReturnValue(mockSelection as any);
+
+      // Backspace should NOT be prevented since no tags in selection
+      const event = new KeyboardEvent('keydown', { key: 'Backspace', bubbles: true, cancelable: true });
+      const wasNotPrevented = editor.dispatchEvent(event);
+      expect(wasNotPrevented).toBe(true);
+
+      (window.getSelection as jest.Mock).mockRestore();
+    });
+
+    it('should allow normal typing keys without interference', () => {
+      render(<PromptPanel {...defaultProps} />);
+
+      const editor = document.querySelector('[data-test-subj="promptTemplateEditor"]') as HTMLDivElement;
+
+      const event = new KeyboardEvent('keydown', { key: 'x', bubbles: true, cancelable: true });
+      const wasNotPrevented = editor.dispatchEvent(event);
+      expect(wasNotPrevented).toBe(true);
+    });
+  });
+
   describe('help text', () => {
     it('should display help text about dragging tags', () => {
       render(<PromptPanel {...defaultProps} />);

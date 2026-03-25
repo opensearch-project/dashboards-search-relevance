@@ -33,10 +33,6 @@ const MAX_CHARS = 10000;
 const SEARCH_TEXT_TAG = '{{searchText}}';
 const HITS_TAG = '{{hits}}';
 
-// Marker characters used inside contentEditable to represent locked tags
-const SEARCH_TEXT_MARKER = '\uFFF0';
-const HITS_MARKER = '\uFFF1';
-
 const TAG_STYLE: React.CSSProperties = {
   display: 'inline-block',
   padding: '1px 8px',
@@ -190,13 +186,47 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
       return;
     }
 
+    if (e.key !== 'Backspace' && e.key !== 'Delete') return;
+
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
 
     const range = selection.getRangeAt(0);
 
+    // Check for range selections (e.g., Ctrl+A) that contain tag elements
+    if (!range.collapsed) {
+      const container = range.commonAncestorContainer;
+      const parent = container.nodeType === Node.ELEMENT_NODE
+        ? (container as HTMLElement)
+        : container.parentElement;
+      if (parent) {
+        const tagsInRange = parent.querySelectorAll('[data-tag]');
+        const hasTagInSelection = Array.from(tagsInRange).some((tag) => range.intersectsNode(tag));
+        if (hasTagInSelection) {
+          // Delete only the non-tag text nodes within the selection, preserve tags
+          e.preventDefault();
+          const walker = document.createTreeWalker(
+            editorRef.current!,
+            NodeFilter.SHOW_TEXT,
+            null
+          );
+          const textNodesToRemove: Node[] = [];
+          let node: Node | null = walker.nextNode();
+          while (node) {
+            if (range.intersectsNode(node)) {
+              textNodesToRemove.push(node);
+            }
+            node = walker.nextNode();
+          }
+          textNodesToRemove.forEach((textNode) => textNode.parentNode?.removeChild(textNode));
+          handleInput();
+          return;
+        }
+      }
+    }
+
+    // Collapsed cursor checks — prevent deleting adjacent tags
     if (e.key === 'Backspace') {
-      // Check if the character before cursor is a tag
       const node = range.startContainer;
       if (node.nodeType === Node.TEXT_NODE && range.startOffset === 0) {
         const prev = node.previousSibling as HTMLElement;
@@ -205,7 +235,6 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
           return;
         }
       }
-      // Check if selection is right after a tag element
       if (node.nodeType === Node.ELEMENT_NODE) {
         const children = Array.from((node as HTMLElement).childNodes);
         const idx = range.startOffset - 1;
@@ -237,7 +266,7 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
         }
       }
     }
-  }, [disabled]);
+  }, [disabled, handleInput]);
 
   // Handle drag and drop of tags
   const handleDragStart = useCallback((e: React.DragEvent<HTMLDivElement>) => {
@@ -259,11 +288,32 @@ export const PromptPanel: React.FC<PromptPanelProps> = ({
     const oldTag = editorRef.current.querySelector(`[data-tag="${tagType}"]`);
     if (oldTag) oldTag.remove();
 
-    // Insert at drop position
-    const range = document.caretRangeFromPoint(e.clientX, e.clientY);
-    if (range) {
-      range.insertNode(createTagElement(tagType));
-    } else {
+    // Insert at drop position — cross-browser compatible
+    let inserted = false;
+
+    // Firefox: caretPositionFromPoint
+    if ((document as any).caretPositionFromPoint) {
+      const pos = (document as any).caretPositionFromPoint(e.clientX, e.clientY);
+      if (pos && pos.offsetNode) {
+        const range = document.createRange();
+        range.setStart(pos.offsetNode, pos.offset);
+        range.collapse(true);
+        range.insertNode(createTagElement(tagType));
+        inserted = true;
+      }
+    }
+
+    // Chrome/Safari: caretRangeFromPoint
+    if (!inserted && document.caretRangeFromPoint) {
+      const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+      if (range) {
+        range.insertNode(createTagElement(tagType));
+        inserted = true;
+      }
+    }
+
+    // Fallback: append to end
+    if (!inserted) {
       editorRef.current.appendChild(createTagElement(tagType));
     }
 
