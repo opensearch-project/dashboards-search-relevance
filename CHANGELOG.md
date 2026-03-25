@@ -26,6 +26,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Allow a single query setup to be executed in the search comparison UI. ([#746](https://github.com/opensearch-project/dashboards-search-relevance/pull/746))
 * Fix error when deleting judgment ratings by ensuring the judgments list refreshes correctly and removes deleted entries from UI state. ([#751](https://github.com/opensearch-project/dashboards-search-relevance/pull/751))
 * Fix generic error message when uploading malformed NDJSON query sets by surfacing detailed parsing error with line numbers. ([#776](https://github.com/opensearch-project/dashboards-search-relevance/pull/776))
+* Fix LLM customized prompt template ([#811](https://github.com/opensearch-project/dashboards-search-relevance/pull/811))
 
 ### Infrastructure
 

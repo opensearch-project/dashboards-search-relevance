@@ -26,6 +26,7 @@ export const buildJudgmentPayload = (
       ...(formData.contextFields?.length && { contextFields: formData.contextFields }),
       ...(formData.tokenLimit !== 4000 && { tokenLimit: formData.tokenLimit }),
       ...(formData.ignoreFailure && { ignoreFailure: formData.ignoreFailure }),
+      ...(formData.promptTemplate && { promptTemplate: formData.promptTemplate }),
     };
   }
 
