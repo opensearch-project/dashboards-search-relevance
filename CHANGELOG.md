@@ -7,6 +7,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
+* Improve experiment detail UI for schedule information. ([#809](https://github.com/opensearch-project/dashboards-search-relevance/pull/809))
 * Support manually creating a Query Set using plain text, key-value, or NDJSON input directly in the UI. ([#754](https://github.com/opensearch-project/dashboards-search-relevance/pull/754))
 * Add Help flyout for Query Set creation with format documentation and downloadable sample files. ([#767](https://github.com/opensearch-project/dashboards-search-relevance/pull/767))
 * Support multiple datasource in SRW ([#802](https://github.com/opensearch-project/dashboards-search-relevance/pull/802))
