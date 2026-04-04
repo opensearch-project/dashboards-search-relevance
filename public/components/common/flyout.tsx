@@ -21,7 +21,7 @@ const query1 = `
 {
   "query": {
     "multi_match": {
-      "query": "%SearchText%",
+      "query": "%queryText%",
       "fields": ["speaker", "text_entry"]
     }
   }
@@ -32,7 +32,7 @@ const query2 = `
 {
   "query": {
     "multi_match": {
-      "query": "%SearchText%",
+      "query": "%queryText%",
       "fields": ["speaker^3", "text_entry"]
     }
   }
@@ -43,7 +43,7 @@ const agenticQuery = `
 {
   "query": {
     "agentic": {
-      "question": "%SearchText%"
+      "question": "%queryText%"
     }
   }
 }
@@ -75,7 +75,7 @@ export const Flyout = () => {
             >
               OpenSearch Query DSL
             </EuiLink>
-            . Use the <EuiCode>%SearchText%</EuiCode> variable to refer to the text in the search
+            . Use the <EuiCode>%queryText%</EuiCode> variable to refer to the text in the search
             bar. When you enter <strong>Search</strong>, the queries are sent to the search engine
             using the <EuiCode>GET</EuiCode> HTTP method and the <EuiCode>_search</EuiCode>{' '}
             endpoint.

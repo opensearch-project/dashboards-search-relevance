@@ -224,7 +224,7 @@ describe('SearchConfigurationForm', () => {
           query: {
             bool: {
               must: [
-                { match: { title: '%SearchText%' } },
+                { match: { title: '%queryText%' } },
                 { range: { date: { gte: '2023-01-01' } } },
               ],
               filter: [{ term: { status: 'published' } }],

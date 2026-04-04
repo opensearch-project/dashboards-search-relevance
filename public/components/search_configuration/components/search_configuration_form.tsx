@@ -88,7 +88,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
         label="Query"
         error={queryError}
         isInvalid={Boolean(queryError)}
-        helpText="Define the query in JSON format. Use %SearchText% to represent the specific query text."
+        helpText="Define the query in JSON format. Use %queryText% to represent the specific query text."
         fullWidth
       >
         <EuiCodeEditor

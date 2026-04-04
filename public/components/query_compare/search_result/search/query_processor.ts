@@ -21,7 +21,7 @@ export const validateQuery = (selectedIndex: string, queryString: string, queryE
 export const rewriteQuery = (value: string, queryString: string, queryError: QueryError) => {
   if (queryString.trim().length > 0) {
     try {
-      return JSON.parse(queryString.replace(/%SearchText%/g, value));
+      return JSON.parse(queryString.replace(/%SearchText%|%queryText%/g, value));
     } catch {
       queryError.queryString = QueryStringError.invalid;
       queryError.errorResponse.statusCode = 400;
