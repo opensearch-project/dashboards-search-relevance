@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { EuiPageHeader, EuiPageTemplate } from '@elastic/eui';
-import React, { useCallback, useEffect, useState } from 'react';
+import { EuiPageHeader, EuiPageTemplate, EuiText, EuiSpacer } from '@elastic/eui';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart, ToastsStart } from '../../../../../../src/core/public';
+import { getExperimentDisplayName } from '../../../../common';
 import { ExperimentType, toExperiment } from '../../../types/index';
 import { ExperimentService } from '../services/experiment_service';
 import { PairwiseExperimentViewWithRouter } from './pairwise_experiment_view';
@@ -56,9 +57,25 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
     fetchExperiment();
   }, [http, id, dataSourceId]);
 
+  const pageTitle = experiment ? getExperimentDisplayName(experiment.name) : 'Experiment details';
+  const descriptionText =
+    experiment &&
+    typeof experiment.description === 'string' &&
+    experiment.description.trim() !== ''
+      ? experiment.description.trim()
+      : undefined;
+
   return (
     <EuiPageTemplate paddingSize="l" restrictWidth="90%">
-      <EuiPageHeader pageTitle="Experiment Details" />
+      <EuiPageHeader pageTitle={pageTitle} description={descriptionText} />
+      {experiment && (
+        <>
+          <EuiSpacer size="s" />
+          <EuiText size="s" color="subdued">
+            Experiment ID: {experiment.id}
+          </EuiText>
+        </>
+      )}
       {experiment && experiment.type === ExperimentType.PAIRWISE_COMPARISON && (
         <PairwiseExperimentViewWithRouter
           http={http}
