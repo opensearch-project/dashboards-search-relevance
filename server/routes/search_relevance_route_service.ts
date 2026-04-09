@@ -123,6 +123,8 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           searchConfigurationList: schema.arrayOf(schema.string()),
           size: schema.number(),
           type: schema.string(),
+          name: schema.maybe(schema.string()),
+          description: schema.maybe(schema.string()),
           // TODO: make mandatory conditional on experiment type
           judgmentList: schema.maybe(schema.arrayOf(schema.string())),
         }),

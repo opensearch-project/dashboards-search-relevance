@@ -9,6 +9,7 @@ import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } fro
 import { withRouter } from 'react-router-dom';
 import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm, ConfigurationFormRef } from './configuration_form';
+import { buildExperimentCreateRequestBody } from './build_experiment_create_payload';
 import { TemplateConfigurationProps } from './types';
 import { Routes } from '../../../../common';
 import { ConfigurationActions } from './configuration_action';
@@ -59,7 +60,10 @@ export const TemplateConfiguration = ({
       // If we reach here, `data` is guaranteed to be valid and not null
       try {
         setIsCreating(true);
-        const response = await experimentService.createExperiment(data, selectedDataSource || undefined);
+        const response = await experimentService.createExperiment(
+          buildExperimentCreateRequestBody(data),
+          selectedDataSource || undefined
+        );
 
         if (response.experiment_id) {
           if (isMountedRef.current) {

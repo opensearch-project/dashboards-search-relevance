@@ -100,4 +100,11 @@ export const PRECISION_TOOL_TIP = 'Precision measures the proportion of retrieve
 export const MAP_TOOL_TIP = 'Mean Average Precision (MAP) is a single-figure measure of quality across recall levels. For a single query, Average Precision (AP) is the average of the Precision values calculated at the rank of each relevant document. MAP is the mean of these Average Precision scores across multiple queries.';
 export const COVERAGE_TOOL_TIP = 'Coverage represents the ratio of query-document pairs in the search results for which a relevance judgment exists. It indicates how much of the returned data has been evaluated for relevance.';
 
+export {
+  EXPERIMENT_DESCRIPTION_MAX_LENGTH,
+  EXPERIMENT_NAME_MAX_LENGTH,
+  validateExperimentMetadataForCreate,
+} from './experiment_metadata';
+export type { ExperimentMetadataFieldErrors } from './experiment_metadata';
+
 export { DISABLED_BACKEND_PLUGIN_MESSAGE, extractUserMessageFromError } from './error_handling';

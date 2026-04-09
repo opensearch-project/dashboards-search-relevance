@@ -47,6 +47,10 @@ export interface BaseFormData {
   querySetId: string;
   size: number;
   searchConfigurationList: string[];
+  /** Optional; omitted on create when empty so the backend can auto-generate a name. */
+  name?: string;
+  /** Optional experiment description. */
+  description?: string;
 }
 
 export interface OptionLabel {
