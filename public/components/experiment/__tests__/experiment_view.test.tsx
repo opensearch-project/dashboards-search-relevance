@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { UNNAMED_EXPERIMENT_LABEL } from '../../../../common';
 import { ExperimentView } from '../views/experiment_view';
 
 const ExperimentType = {
@@ -13,12 +14,18 @@ const ExperimentType = {
   HYBRID_OPTIMIZER: 'HYBRID_OPTIMIZER',
 };
 
-jest.mock('../../../types', () => ({
-  toExperiment: (source) => ({ success: true, data: source }),
+jest.mock('../../../types/index', () => ({
+  ExperimentType: {
+    PAIRWISE_COMPARISON: 'PAIRWISE_COMPARISON',
+    POINTWISE_EVALUATION: 'POINTWISE_EVALUATION',
+    HYBRID_OPTIMIZER: 'HYBRID_OPTIMIZER',
+  },
+  toExperiment: (source: any) => ({ success: true, data: source }),
 }));
 
 const mockHttp = {
   get: jest.fn(),
+  patch: jest.fn(),
 };
 
 const mockNotifications = {
@@ -44,6 +51,10 @@ jest.mock('../views/hybrid_optimizer_experiment_view', () => ({
   HybridOptimizerExperimentViewWithRouter: () => <div>Hybrid View</div>,
 }));
 
+jest.mock('../views/experiment_edit_metadata_modal', () => ({
+  ExperimentEditMetadataModal: () => null,
+}));
+
 describe('ExperimentView', () => {
   const defaultProps = {
     http: mockHttp,
@@ -63,7 +74,7 @@ describe('ExperimentView', () => {
 
     render(<ExperimentView {...defaultProps} />);
 
-    expect(screen.getByText('Experiment Details')).toBeInTheDocument();
+    expect(screen.getByText('Experiment details')).toBeInTheDocument();
   });
 
   it('renders experiment views for different types', async () => {
@@ -82,6 +93,24 @@ describe('ExperimentView', () => {
 
     await waitFor(() => {
       expect(mockHttp.get).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText(UNNAMED_EXPERIMENT_LABEL)).toBeInTheDocument();
+    });
+  });
+
+  it('shows a custom experiment name in the page header when provided', async () => {
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [{ _source: { id: 'exp-1', type: ExperimentType.PAIRWISE_COMPARISON, name: 'My experiment' } }],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('My experiment')).toBeInTheDocument();
     });
   });
 

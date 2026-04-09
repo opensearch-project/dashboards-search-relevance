@@ -188,6 +188,22 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
     },
     backendAction('DELETE', BackendEndpoints.Experiments, dataSourceEnabled)
   );
+  router.patch(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          name: schema.maybe(schema.string()),
+          description: schema.maybe(schema.string()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PATCH', BackendEndpoints.Experiments, dataSourceEnabled)
+  );
   router.post(
     {
       path: `${ServiceEndpoints.ScheduledExperiments}`,
@@ -413,6 +429,13 @@ const backendAction = (
         response = await callApi('transport.request', {
           method,
           path: deletePath,
+        });
+      } else if (method === 'PATCH' && req.params.id) {
+        const patchPath = `${path}/${req.params.id}`;
+        response = await callApi('transport.request', {
+          method,
+          path: patchPath,
+          body: req.body,
         });
       } else if (method === 'GET' && req.params.id) {
         const getPath = `${path}/${req.params.id}`;
