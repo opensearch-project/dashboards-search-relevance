@@ -380,8 +380,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       name: 'Name',
       dataType: 'string',
       sortable: true,
-      render: (_name: string | undefined, experiment: { id: string; name?: string; description?: string }) => {
-        const label = getExperimentDisplayName(experiment.name);
+      width: '27%',
+      truncateText: true,
+      render: (
+        _name: string | undefined,
+        experiment: { id: string; name?: string; description?: string }
+      ) => {
+        const fullName = getExperimentDisplayName(experiment.name);
         const description =
           typeof experiment.description === 'string' ? experiment.description.trim() : '';
         const navigateProps = reactRouterNavigate(
@@ -390,19 +395,28 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
             selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''
           }`
         );
+        const tooltipContent = (
+          <div className="srgExperimentListingNameTooltip">
+            <span className="srgExperimentListingNameTooltip__name">{fullName}</span>
+            {description ? (
+              <span className="srgExperimentListingNameTooltip__description">{description}</span>
+            ) : null}
+          </div>
+        );
         const nameButton = (
-          <EuiButtonEmpty size="xs" {...navigateProps}>
-            {label}
+          <EuiButtonEmpty size="xs" className="srgExperimentListingNameButton" {...navigateProps}>
+            <span className="srgExperimentListingNameButton__label">{fullName}</span>
           </EuiButtonEmpty>
         );
-        if (description) {
-          return (
-            <EuiToolTip content={description} delay="regular">
-              <span>{nameButton}</span>
-            </EuiToolTip>
-          );
-        }
-        return nameButton;
+        return (
+          <EuiToolTip
+            content={tooltipContent}
+            delay="regular"
+            anchorClassName="srgExperimentListingNameTooltipAnchor"
+          >
+            {nameButton}
+          </EuiToolTip>
+        );
       },
     },
     {
@@ -424,7 +438,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     {
       field: 'size',
       name: 'Queries Run',
-      width: '20%',
+      width: '10%',
       render: (size: number) => <EuiText size="s">{size}</EuiText>,
     },
     {
