@@ -42,12 +42,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
   history,
 }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [refreshRevision, setRefreshRevision] = useState(0);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const experimentService = new ExperimentService(http);
 
   useEffect(() => {
     const fetchExperiment = async () => {
+      setError(null);
       try {
         const response = await experimentService.getExperiment(id, dataSourceId);
         const source = response?.hits?.hits?.[0]?._source;
@@ -56,24 +58,25 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
           if (parsedExperiment.success) {
             setExperiment(parsedExperiment.data);
           } else {
-            console.error('Invalid experiment data format');
+            setError('Invalid experiment data format');
             setExperiment(null);
           }
         } else {
-          console.error('No matching experiment found');
+          setError('No matching experiment found');
           setExperiment(null);
         }
       } catch (err) {
         console.error('Failed to fetch experiment', err);
         console.error(err);
         setExperiment(null);
+        setError('Error loading experiment data');
       }
     };
 
     fetchExperiment();
   }, [http, id, dataSourceId, refreshRevision]);
 
-  const pageTitle = experiment ? getExperimentDisplayName(experiment.name) : 'Experiment details';
+  const pageTitle = experiment ? getExperimentDisplayName(experiment.name) : 'Experiment Details';
   const descriptionText =
     experiment &&
     typeof experiment.description === 'string' &&
