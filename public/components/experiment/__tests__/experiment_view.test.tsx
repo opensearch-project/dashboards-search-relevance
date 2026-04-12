@@ -69,7 +69,7 @@ describe('ExperimentView', () => {
 
     render(<ExperimentView {...defaultProps} />);
 
-    expect(screen.getByText('Experiment details')).toBeInTheDocument();
+    expect(screen.getByText('Experiment Details')).toBeInTheDocument();
   });
 
   it('renders experiment views for different types', async () => {
