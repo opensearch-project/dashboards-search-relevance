@@ -15,8 +15,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/enzyme-adapter-react-16": "^1.0.6",
-    "eslint": "^6.8.0"
+    "@types/enzyme-adapter-react-16": "^1.0.6"
   },
   "resolutions": {
     "ansi-regex": "^5.0.1",
