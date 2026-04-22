@@ -8,13 +8,28 @@ import {
   prepareQueryBody,
   buildValidationRequestBody,
   processSearchResults,
+  stripMetadata,
 } from '../utils/query_processor';
 
 describe('query_processor', () => {
+  describe('stripMetadata', () => {
+    it('should strip metadata after #', () => {
+      expect(stripMetadata('query#{"ref":""}')).toBe('query');
+    });
+
+    it('should return same text if no # is present', () => {
+      expect(stripMetadata('plain query')).toBe('plain query');
+    });
+
+    it('should handle empty string', () => {
+      expect(stripMetadata('')).toBe('');
+    });
+  });
+
   describe('processQuery', () => {
-    it('should replace placeholder with search text', () => {
+    it('should replace placeholder with clean search text', () => {
       const query = '{"query": {"match": {"title": "%SearchText%"}}}';
-      const searchText = 'test search';
+      const searchText = 'test search#{"referenceAnswer":""}';
 
       const result = processQuery(query, searchText);
 

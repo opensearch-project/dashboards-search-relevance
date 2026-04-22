@@ -4,13 +4,29 @@
  */
 
 /**
+ * Strips metadata from the search text if it contains the # delimiter.
+ * This is used to fix Issue #822 where the backend appends JSON metadata to the query text.
+ * @param searchText The search text that might contain metadata
+ * @returns The search text without metadata
+ */
+export const stripMetadata = (searchText: string): string => {
+  if (!searchText) return '';
+  const hashIndex = searchText.indexOf('#');
+  if (hashIndex !== -1) {
+    return searchText.substring(0, hashIndex);
+  }
+  return searchText;
+};
+
+/**
  * Processes a query by replacing the search text placeholder
  * @param query The original query string
  * @param searchText The search text to replace the placeholder with
  * @returns The processed query with placeholders replaced
  */
 export const processQuery = (query: string, searchText: string = ''): string => {
-  return query.replace(/%SearchText%/g, searchText);
+  const cleanSearchText = stripMetadata(searchText);
+  return query.replace(/%SearchText%/g, cleanSearchText);
 };
 
 /**
