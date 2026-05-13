@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
 import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
-export const useQuerySetView = (http: CoreStart['http'], id: string) => {
+export const useQuerySetView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
   const [querySet, setQuerySet] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,7 +17,8 @@ export const useQuerySetView = (http: CoreStart['http'], id: string) => {
       try {
         setLoading(true);
         setError(null);
-        const response = await http.get(`${ServiceEndpoints.QuerySets}/${id}`);
+        const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
+        const response = await http.get(`${ServiceEndpoints.QuerySets}/${id}`, queryParams);
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
           setQuerySet(response.hits.hits[0]._source);
@@ -36,7 +37,7 @@ export const useQuerySetView = (http: CoreStart['http'], id: string) => {
     if (id) {
       fetchQuerySet();
     }
-  }, [http, id]);
+  }, [http, id, dataSourceId]);
 
   return {
     querySet,

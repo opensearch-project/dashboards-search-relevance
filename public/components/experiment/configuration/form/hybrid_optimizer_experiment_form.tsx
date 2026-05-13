@@ -25,12 +25,13 @@ interface HybridOptimizerExperimentFormProps {
   formData: HybridOptimizerExperimentFormData;
   onChange: (field: keyof HybridOptimizerExperimentFormData, value: any) => void;
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export const HybridOptimizerExperimentForm = forwardRef<
   HybridOptimizerExperimentFormRef,
   HybridOptimizerExperimentFormProps
->(({ formData, onChange, http }, ref) => {
+>(({ formData, onChange, http, dataSourceId }, ref) => {
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
@@ -181,6 +182,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
                 selectedOptions={querySetOptions}
                 onChange={handleQuerySetsChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 hideLabel={true}
               />
             </EuiFormRow>
@@ -215,6 +217,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
+            dataSourceId={dataSourceId}
             maxNumberOfOptions={1} // Set to 1 as per HybridOptimizer requirements
             hideLabel={true}
           />
@@ -226,6 +229,7 @@ export const HybridOptimizerExperimentForm = forwardRef<
             selectedOptions={judgmentOptions}
             onChange={handleJudgmentsChange}
             http={http}
+            dataSourceId={dataSourceId}
             hideLabel={true}
           />
         </EuiFormRow>

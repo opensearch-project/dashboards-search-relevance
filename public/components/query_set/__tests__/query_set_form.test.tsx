@@ -265,4 +265,34 @@ describe('QuerySetForm', () => {
 
     expect(mockFormState.handleManualInputMethodChange).toHaveBeenCalledWith('file');
   });
+
+  it('renders help button in manual input mode with file upload', () => {
+    const manualInputFormState = {
+      ...mockFormState,
+      isManualInput: true,
+      manualInputMethod: 'file' as const,
+    };
+
+    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.getByTestId('querySetHelpButton')).toBeInTheDocument();
+  });
+
+  it('renders help button in manual input mode with text input', () => {
+    const manualInputFormState = {
+      ...mockFormState,
+      isManualInput: true,
+      manualInputMethod: 'text' as const,
+    };
+
+    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.getByTestId('querySetHelpButton')).toBeInTheDocument();
+  });
+
+  it('does not render help button in sampling mode', () => {
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.queryByTestId('querySetHelpButton')).not.toBeInTheDocument();
+  });
 });

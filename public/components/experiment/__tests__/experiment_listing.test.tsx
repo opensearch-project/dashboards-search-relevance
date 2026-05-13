@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ExperimentListing } from '../views/experiment_listing';
 
 const mockHttp = {
@@ -34,6 +34,18 @@ jest.mock('../../../contexts/date_format_context', () => ({
   useConfig: () => ({ dateFormat: 'YYYY-MM-DD' }),
 }));
 
+jest.mock('@elastic/eui', () => {
+  const originalModule = jest.requireActual('@elastic/eui');
+  return {
+    ...originalModule,
+    EuiToolTip: ({ children, content }: any) => (
+      <div data-test-subj="eui-tooltip" data-tooltip-content={content}>
+        {children}
+      </div>
+    ),
+  };
+});
+
 jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', () => {
   const React = require('react');
   return {
@@ -43,12 +55,26 @@ jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', ()
         share: {},
       },
     }),
-    TableListView: ({ findItems }) => {
+    TableListView: ({ tableColumns, findItems }: any) => {
       capturedFindItems = findItems;
+      const [items, setItems] = React.useState<any[]>([]);
       React.useEffect(() => {
-        findItems('');
+        findItems('').then((res: any) => setItems(res.hits));
       }, []);
-      return React.createElement('div', { 'data-testid': 'table-list-view' }, 'Table List View');
+      return (
+        <div data-testid="table-list-view">
+          Table List View
+          {items.map((item, rowIdx) => (
+            <div key={rowIdx} data-testid={`row-${item.id}`}>
+              {tableColumns.map((col: any, colIdx: number) => (
+                <div key={colIdx} data-testid={`column-${col.field || colIdx}`}>
+                  {col.render ? col.render(item[col.field], item) : item[col.field]}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      );
     },
     reactRouterNavigate: () => ({}),
   };
@@ -147,5 +173,88 @@ describe('ExperimentListing', () => {
     result = await capturedFindItems("completed");
     expect(result.hits.length).toBe(1);
     expect(result.hits[0].status).toBe("COMPLETED");
+  });
+
+  it('renders correct tooltips for experiment actions', async () => {
+    const mockData = [
+      { id: "exp-1", type: "POINTWISE_EVALUATION", status: "COMPLETED", isScheduled: false }
+    ];
+
+    mockGetExperiments.mockResolvedValue({
+      success: true,
+      data: mockData
+    });
+
+    render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+    await waitFor(() => {
+      const tooltips = screen.getAllByTestId('eui-tooltip');
+      const contents = tooltips.map(t => t.getAttribute('data-tooltip-content'));
+      expect(contents).toContain('View Visualization');
+      expect(contents).toContain('Delete');
+      expect(contents).toContain('Schedule Experiment');
+    });
+  });
+
+  describe('AI callout banner', () => {
+    it('does not show AI callout when onAskAI is not provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Ask AI')).not.toBeInTheDocument();
+    });
+
+    it('shows AI callout when onAskAI is provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+      expect(screen.getByText('Ask AI')).toBeInTheDocument();
+    });
+
+    it('calls onAskAI when Ask AI button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      fireEvent.click(screen.getByText('Ask AI'));
+
+      expect(mockOnAskAI).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides AI callout when dismiss button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText('dismissible_icon'));
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders "Delete Schedule" tooltip when an experiment is scheduled', async () => {
+    const mockData = [
+      { id: "exp-2", type: "POINTWISE_EVALUATION", status: "COMPLETED", isScheduled: true }
+    ];
+
+    mockGetExperiments.mockResolvedValue({
+      success: true,
+      data: mockData
+    });
+
+    render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+    await waitFor(() => {
+      const tooltips = screen.getAllByTestId('eui-tooltip');
+      const contents = tooltips.map(t => t.getAttribute('data-tooltip-content'));
+      expect(contents).toContain('Delete Schedule');
+    });
   });
 });

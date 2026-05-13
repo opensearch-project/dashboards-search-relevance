@@ -32,6 +32,21 @@ Cd back to `OpenSearch-Dashboards` directory and run `yarn start` to start OpenS
 
 See [CONTRIBUTING](CONTRIBUTING.md).
 
+### Integration Tests
+
+Integration tests live in the [opensearch-dashboards-functional-test](https://github.com/opensearch-project/opensearch-dashboards-functional-test) repo under `cypress/integration/plugins/search-relevance-dashboards/`. These are the same tests triggered by the CI workflow in [`.github/workflows/remote-integ-tests-workflow.yml`](.github/workflows/remote-integ-tests-workflow.yml).
+
+Before submitting a PR, ensure all integration tests pass locally:
+
+1. Start OpenSearch and OpenSearch Dashboards (with the plugin installed) on `localhost:5601`.
+2. From the `opensearch-dashboards-functional-test` repo, run:
+
+```bash
+yarn cypress:run-without-security --config "baseUrl=http://localhost:5601" --spec "cypress/integration/plugins/search-relevance-dashboards/*.js"
+```
+
+All tests must pass before merging.
+
 ### Backports
 
 The Github workflow in [`backport.yml`](.github/workflows/backport.yml) creates backport PRs automatically when the original PR

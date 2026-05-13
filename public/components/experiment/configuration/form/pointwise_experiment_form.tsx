@@ -20,6 +20,7 @@ interface PointwiseExperimentFormProps {
   formData: PointwiseExperimentFormData;
   onChange: (field: keyof PointwiseExperimentFormData, value: any) => void;
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export interface PointwiseExperimentFormRef {
@@ -30,7 +31,7 @@ export interface PointwiseExperimentFormRef {
 export const PointwiseExperimentForm = forwardRef<
   PointwiseExperimentFormRef,
   PointwiseExperimentFormProps
->(({ formData, onChange, http }, ref) => {
+>(({ formData, onChange, http, dataSourceId }, ref) => {
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
@@ -179,6 +180,7 @@ export const PointwiseExperimentForm = forwardRef<
                 selectedOptions={querySetOptions}
                 onChange={handleQuerySetsChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 hideLabel={true}
               />
             </EuiFormRow>
@@ -212,6 +214,7 @@ export const PointwiseExperimentForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
+            dataSourceId={dataSourceId}
             maxNumberOfOptions={1}
             hideLabel={true}
           />
@@ -223,6 +226,7 @@ export const PointwiseExperimentForm = forwardRef<
             selectedOptions={judgmentOptions}
             onChange={handleJudgmentsChange}
             http={http}
+            dataSourceId={dataSourceId}
             hideLabel={true}
           />
         </EuiFormRow>

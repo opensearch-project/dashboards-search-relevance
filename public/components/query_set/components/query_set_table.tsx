@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { EuiButtonEmpty, EuiText, EuiButtonIcon } from '@elastic/eui';
+import { EuiButtonEmpty, EuiText, EuiButtonIcon, EuiToolTip } from '@elastic/eui';
 import { RouteComponentProps } from 'react-router-dom';
 import moment from 'moment';
 import {
@@ -20,6 +20,7 @@ interface QuerySetTableProps {
   findItems: (search: any) => Promise<{ total: number; hits: any[] }>;
   onDelete: (item: any) => void;
   history: RouteComponentProps['history'];
+  dataSourceId?: string;
 }
 
 export const QuerySetTable: React.FC<QuerySetTableProps> = ({
@@ -28,6 +29,7 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
   findItems,
   onDelete,
   history,
+  dataSourceId,
 }) => {
   const { dateFormat } = useConfig();
 
@@ -37,14 +39,20 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
       name: 'Name',
       dataType: 'string',
       sortable: true,
-      render: (name: string, querySet: { id: string }) => (
-        <EuiButtonEmpty
-          size="xs"
-          {...reactRouterNavigate(history, `${Routes.QuerySetViewPrefix}/${querySet.id}`)}
-        >
-          {name}
-        </EuiButtonEmpty>
-      ),
+      render: (name: string, querySet: { id: string }) => {
+        const viewUrl = dataSourceId 
+          ? `${Routes.QuerySetViewPrefix}/${querySet.id}?dataSourceId=${encodeURIComponent(dataSourceId)}`
+          : `${Routes.QuerySetViewPrefix}/${querySet.id}`;
+        
+        return (
+          <EuiButtonEmpty
+            size="xs"
+            {...reactRouterNavigate(history, viewUrl)}
+          >
+            {name}
+          </EuiButtonEmpty>
+        );
+      },
     },
     {
       field: 'sampling',
@@ -83,19 +91,21 @@ export const QuerySetTable: React.FC<QuerySetTableProps> = ({
       width: '10%',
       align: 'center',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => onDelete(item)}
-        />
+        <EuiToolTip content="Delete">
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => onDelete(item)}
+          />
+        </EuiToolTip>
       ),
     },
   ];
 
   return (
     <TableListView
-      key={refreshKey}
+      key={`${refreshKey}-${dataSourceId ?? ''}`}
       headingId="querySetListingHeading"
       entityName="Query Set"
       entityNamePlural="Query Sets"

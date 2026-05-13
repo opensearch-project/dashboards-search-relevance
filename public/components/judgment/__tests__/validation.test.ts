@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { validateJudgmentForm, isValidTokenLimit } from '../utils/validation';
+import { validateJudgmentForm, isValidTokenLimit, validatePromptTemplate } from '../utils/validation';
 import { JudgmentType } from '../types';
 
 describe('validation', () => {
@@ -114,5 +114,84 @@ describe('validation', () => {
       expect(result.isValid).toBe(true);
       expect(result.errors.dateRange).toBeUndefined();
     });
+  });
+});
+
+describe('validatePromptTemplate', () => {
+  it('should return empty array for null/empty template', () => {
+    expect(validatePromptTemplate('')).toEqual([]);
+    expect(validatePromptTemplate(null as any)).toEqual([]);
+    expect(validatePromptTemplate(undefined as any)).toEqual([]);
+  });
+
+  it('should warn when missing hits/results placeholder', () => {
+    const warnings = validatePromptTemplate('Query: {{queryText}}');
+    expect(warnings).toContainEqual(
+      expect.stringContaining('{{hits}} or {{results}}')
+    );
+  });
+
+  it('should not warn when {{hits}} is present', () => {
+    const warnings = validatePromptTemplate('{{queryText}} {{hits}}');
+    expect(warnings.some((w) => w.includes('{{hits}} or {{results}}'))).toBe(false);
+  });
+
+  it('should not warn when {{results}} is present', () => {
+    const warnings = validatePromptTemplate('{{queryText}} {{results}}');
+    expect(warnings.some((w) => w.includes('{{hits}} or {{results}}'))).toBe(false);
+  });
+
+  it('should warn when missing queryText/searchText placeholder', () => {
+    const warnings = validatePromptTemplate('Docs: {{hits}}');
+    expect(warnings).toContainEqual(
+      expect.stringContaining('{{queryText}} or {{searchText}}')
+    );
+  });
+
+  it('should not warn when {{queryText}} is present', () => {
+    const warnings = validatePromptTemplate('{{queryText}} {{hits}}');
+    expect(warnings.some((w) => w.includes('{{queryText}} or {{searchText}}'))).toBe(false);
+  });
+
+  it('should not warn when {{searchText}} is present', () => {
+    const warnings = validatePromptTemplate('{{searchText}} {{hits}}');
+    expect(warnings.some((w) => w.includes('{{queryText}} or {{searchText}}'))).toBe(false);
+  });
+
+  it('should warn when template exceeds 10000 characters', () => {
+    const longTemplate = '{{queryText}} {{hits}} ' + 'a'.repeat(10000);
+    const warnings = validatePromptTemplate(longTemplate);
+    expect(warnings).toContainEqual(
+      expect.stringContaining('maximum length')
+    );
+  });
+
+  it('should not warn when template is exactly 10000 characters', () => {
+    const template = '{{queryText}} {{hits}}';
+    const padded = template + 'a'.repeat(10000 - template.length);
+    const warnings = validatePromptTemplate(padded);
+    expect(warnings.some((w) => w.includes('maximum length'))).toBe(false);
+  });
+
+  it('should warn when template contains # character', () => {
+    const warnings = validatePromptTemplate('{{queryText}} {{hits}} # comment');
+    expect(warnings).toContainEqual(
+      expect.stringContaining("'#'")
+    );
+  });
+
+  it('should not warn when template has no # character', () => {
+    const warnings = validatePromptTemplate('{{queryText}} {{hits}}');
+    expect(warnings.some((w) => w.includes('#'))).toBe(false);
+  });
+
+  it('should return no warnings for a valid template', () => {
+    const warnings = validatePromptTemplate('SearchText: {{searchText}}; Hits: {{hits}}');
+    expect(warnings).toEqual([]);
+  });
+
+  it('should return multiple warnings for multiple violations', () => {
+    const warnings = validatePromptTemplate('no placeholders # bad');
+    expect(warnings.length).toBeGreaterThanOrEqual(3);
   });
 });

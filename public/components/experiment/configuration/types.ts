@@ -5,9 +5,11 @@
 
 import { RouteComponentProps } from 'react-router-dom';
 import { RouteTemplateType } from '../../../../common';
+import { CoreStart } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 
 export enum TemplateType {
-  SingleQueryComparison = 'Single Query Comparison',
+  QueryAnalysis = 'Query Analysis',
   QuerySetComparison = 'Query Set Comparison',
   SearchEvaluation = 'Search Evaluation',
   HybridSearchOptimizer = 'Hybrid Search Optimizer',
@@ -15,8 +17,8 @@ export enum TemplateType {
 
 export const routeToTemplateType = (templateId: string) => {
   switch (templateId) {
-    case RouteTemplateType.SingleQueryComparison:
-      return TemplateType.SingleQueryComparison;
+    case RouteTemplateType.QueryAnalysis:
+      return TemplateType.QueryAnalysis;
     case RouteTemplateType.QuerySetComparison:
       return TemplateType.QuerySetComparison;
     case RouteTemplateType.SearchEvaluation:
@@ -30,6 +32,9 @@ export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;
   onBack: () => void;
   onClose: () => void;
+  savedObjects?: CoreStart['savedObjects'];
+  dataSourceEnabled?: boolean;
+  dataSourceManagement?: DataSourceManagementPluginSetup;
 }
 
 export interface ConfigurationFormProps {

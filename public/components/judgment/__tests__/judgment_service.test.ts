@@ -162,6 +162,68 @@ describe('JudgmentService', () => {
     });
   });
 
+  describe('with dataSourceId', () => {
+    it('fetchUbiIndexes should append dataSourceId to URL', async () => {
+      mockHttp.get.mockResolvedValue([]);
+
+      await service.fetchUbiIndexes('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('my-ds'));
+    });
+
+    it('fetchQuerySets should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.fetchQuerySets('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('fetchQuerySetById should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ _source: {} });
+
+      await service.fetchQuerySetById('qs1', 'my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.stringContaining('qs1'), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('fetchSearchConfigs should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.fetchSearchConfigs('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('fetchModels should pass dataSourceId as query param', async () => {
+      mockHttp.post.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.fetchModels('my-ds');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.stringContaining('my-ds'), { body: '{}' });
+    });
+
+    it('createJudgment should pass dataSourceId as query param', async () => {
+      const formData = { name: 'test', type: 'LLM_JUDGMENT' };
+      mockHttp.put.mockResolvedValue({});
+
+      await service.createJudgment(formData, 'my-ds');
+
+      expect(mockHttp.put).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(formData),
+        query: { dataSourceId: 'my-ds' },
+      });
+    });
+
+    it('fetchQuerySets should omit query param when no dataSourceId', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.fetchQuerySets();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String));
+    });
+  });
+
   describe('error handling', () => {
     it('should handle fetchUbiIndexes error', async () => {
       mockHttp.get.mockRejectedValue(new Error('API Error'));

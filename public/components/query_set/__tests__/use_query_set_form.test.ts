@@ -167,8 +167,32 @@ describe('useQuerySetForm', () => {
     expect(validation.hasValidationErrors).toHaveBeenCalled();
   });
 
-  it('handles file content correctly', async () => {
-    const mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' });
+  it('handles .ndjson file content correctly', async () => {
+    const mockFile = new File(['test content'], 'test.ndjson', { type: 'text/plain' });
+    const mockFileList = ({
+      0: mockFile,
+      length: 1,
+      item: () => mockFile,
+    } as unknown) as FileList;
+
+    const { result } = renderHook(() => useQuerySetForm());
+
+    await act(async () => {
+      await result.current.handleFileContent(mockFileList);
+    });
+
+    expect(fileProcessor.processQueryFile).toHaveBeenCalledWith(mockFile);
+    expect(result.current.manualQueries).toBe(
+      JSON.stringify([{ queryText: 'test query', referenceAnswer: 'test answer' }])
+    );
+    expect(result.current.parsedQueries).toEqual([
+      JSON.stringify({ queryText: 'test query', referenceAnswer: 'test answer' }),
+    ]);
+    expect(result.current.files).toEqual([mockFile]);
+  });
+
+  it('handles .jsonl file content correctly', async () => {
+    const mockFile = new File(['test content'], 'test.jsonl', { type: 'text/plain' });
     const mockFileList = ({
       0: mockFile,
       length: 1,
@@ -197,7 +221,7 @@ describe('useQuerySetForm', () => {
       error: 'Invalid file format',
     });
 
-    const mockFile = new File(['invalid content'], 'test.txt', { type: 'text/plain' });
+    const mockFile = new File(['invalid content'], 'test.ndjson', { type: 'text/plain' });
     const mockFileList = ({
       0: mockFile,
       length: 1,
@@ -239,7 +263,7 @@ describe('useQuerySetForm', () => {
 
     // Set some initial data
     act(() => {
-      result.current.setFiles([new File(['test'], 'test.txt')]);
+      result.current.setFiles([new File(['test'], 'test.ndjson')]);
       result.current.setManualQueries('test queries');
       result.current.setParsedQueries(['query1', 'query2']);
     });
@@ -372,7 +396,7 @@ describe('useQuerySetForm', () => {
 
       // Set some initial file data
       act(() => {
-        result.current.setFiles([new File(['test'], 'test.txt')]);
+        result.current.setFiles([new File(['test'], 'test.ndjson')]);
         result.current.setManualQueries('test queries');
         result.current.setParsedQueries(['query1', 'query2']);
       });

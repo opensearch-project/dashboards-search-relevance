@@ -41,12 +41,13 @@ import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
+import { parseEntityParams } from './common/datasource_utils';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
   Overview = 'Overview',
   Experiments = 'Experiments',
-  ExperimentsSingleQueryComparison = 'Single Query Comparison',
+  ExperimentsQueryAnalysis = 'Query Analysis',
   ExperimentsQuerySetComparison = 'Query Set Comparison',
   ExperimentsSearchEvaluation = 'Search Evaluation',
   ExperimentsHybridOptimizer = 'Hybrid Optimizer',
@@ -66,6 +67,7 @@ interface SearchRelevanceAppDeps {
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
   uiSettings: CoreStart['uiSettings'];
+  onAskAI?: () => void;
 }
 
 interface SearchRelevancePageProps extends SearchRelevanceAppDeps {
@@ -84,6 +86,7 @@ const SearchRelevancePage = ({
   dataSourceManagement,
   setActionMenu,
   uiSettings,
+  onAskAI,
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
@@ -120,13 +123,13 @@ const SearchRelevancePage = ({
           forceOpen: true,
           items: [
             {
-              name: Navigation.ExperimentsSingleQueryComparison,
-              id: Navigation.ExperimentsSingleQueryComparison,
+              name: Navigation.ExperimentsQueryAnalysis,
+              id: Navigation.ExperimentsQueryAnalysis,
               onClick: () => {
-                history.push(Routes.ExperimentCreateSingleQueryComparison);
+                history.push(Routes.ExperimentCreateQueryAnalysis);
               },
               isSelected: location.pathname.startsWith(
-                Routes.ExperimentCreateSingleQueryComparison
+                Routes.ExperimentCreateQueryAnalysis
               ),
             },
             {
@@ -208,14 +211,20 @@ const SearchRelevancePage = ({
               const configParam = urlParams.get('config');
 
               if (configParam) {
-                // Redirect to single query comparison with the config parameter as search param
+                // Redirect to query analysis with the config parameter as search param
                 history.push(
-                  `${Routes.ExperimentCreateSingleQueryComparison}?config=${configParam}`
+                  `${Routes.ExperimentCreateQueryAnalysis}?config=${configParam}`
                 );
                 return null;
               } else {
                 // No config parameter, show experiment listing
-                return <ExperimentListingWithRoute http={http} />;
+                return <ExperimentListingWithRoute
+                  http={http}
+                  savedObjects={savedObjects}
+                  dataSourceEnabled={dataSourceEnabled}
+                  dataSourceManagement={dataSourceManagement}
+                  onAskAI={onAskAI}
+                />;
               }
             }}
           />
@@ -223,28 +232,49 @@ const SearchRelevancePage = ({
             path={Routes.Home}
             exact
             render={() => {
-              return <ExperimentListingWithRoute http={http} />;
+              return <ExperimentListingWithRoute
+                http={http}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+                onAskAI={onAskAI}
+              />;
             }}
           />
           <Route
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListing http={http} />;
+              return <QuerySetListing
+                http={http}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListing http={http} />;
+              return <SearchConfigurationListing
+                http={http}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListing http={http} />;
+              return <JudgmentListing
+                http={http}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
@@ -252,8 +282,14 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
               return (
-                <ExperimentViewWithRouter http={http} notifications={notifications} id={entityId} />
+                <ExperimentViewWithRouter
+                  http={http}
+                  notifications={notifications}
+                  id={cleanEntityId}
+                  dataSourceId={dataSourceId}
+                />
               );
             }}
           />
@@ -262,7 +298,8 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <QuerySetView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              return <QuerySetView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -270,7 +307,8 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <SearchConfigurationView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              return <SearchConfigurationView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -278,7 +316,8 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <JudgmentView http={http} id={entityId} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              return <JudgmentView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -286,7 +325,7 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const templateId = routeToTemplateType(props.match.params.templateId);
-              if (templateId === TemplateType.SingleQueryComparison) {
+              if (templateId === TemplateType.QueryAnalysis) {
                 return (
                   <QueryCompareHome
                     application={application}
@@ -321,7 +360,10 @@ const SearchRelevancePage = ({
                     onBack={() => {
                       history.goBack();
                     }}
-                    onClose={() => {}}
+                    onClose={() => { }}
+                    savedObjects={savedObjects}
+                    dataSourceEnabled={dataSourceEnabled}
+                    dataSourceManagement={dataSourceManagement}
                   />
                 );
               }
@@ -331,21 +373,40 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetCreate}
             exact
             render={() => {
-              return <QuerySetCreate http={http} notifications={notifications} />;
+              return <QuerySetCreate
+                http={http}
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationCreate}
             exact
             render={() => {
-              return <SearchConfigurationCreate http={http} notifications={notifications} />;
+              return <SearchConfigurationCreate
+                http={http}
+                notifications={notifications}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
           <Route
             path={Routes.JudgmentCreate}
             exact
             render={() => {
-              return <JudgmentCreate http={http} notifications={notifications} history={history} />;
+              return <JudgmentCreate
+                http={http}
+                notifications={notifications}
+                history={history}
+                savedObjects={savedObjects}
+                dataSourceEnabled={dataSourceEnabled}
+                dataSourceManagement={dataSourceManagement}
+              />;
             }}
           />
         </Switch>
@@ -367,6 +428,7 @@ export const SearchRelevanceApp = ({
   dataSourceManagement,
   application,
   uiSettings,
+  onAskAI,
 }: SearchRelevanceAppDeps) => {
   // Move all useState declarations to the top
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -405,6 +467,7 @@ export const SearchRelevanceApp = ({
             dataSourceManagement={dataSourceManagement}
             setActionMenu={setActionMenu}
             uiSettings={uiSettings}
+            onAskAI={onAskAI}
           />
         </SearchRelevanceContextProvider>
       </I18nProvider>

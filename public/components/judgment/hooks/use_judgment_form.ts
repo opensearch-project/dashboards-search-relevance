@@ -11,7 +11,7 @@ import { buildJudgmentPayload } from '../utils/form_processor';
 import { processJudgmentFile } from '../utils/judgment_file_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any) => {
+export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string, dataSourceEnabled = false) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -58,10 +58,19 @@ export const useJudgmentForm = (http: any, notifications: any) => {
   const service = new JudgmentService(http);
 
   const fetchData = useCallback(async () => {
+    // Clear stale options and selections before fetching for the new data source
+    setIndexOptions([]);
+    setQuerySetOptions([]);
+    setSearchConfigOptions([]);
+    setModelOptions([]);
+    setSelectedQuerySet([]);
+    setSelectedSearchConfigs([]);
+    setSelectedModel([]);
+
     const fetchIndexes = async () => {
       setIsLoadingIndexes(true);
       try {
-        setIndexOptions(await service.fetchUbiIndexes());
+        setIndexOptions(await service.fetchUbiIndexes(dataSourceId));
       } catch (error) {
         notifications.toasts.addDanger('Failed to fetch indexes');
         setIndexOptions([]);
@@ -81,24 +90,24 @@ export const useJudgmentForm = (http: any, notifications: any) => {
     setIsLoadingModels(true);
 
     await Promise.all([
-      service.fetchUbiIndexes().then(setIndexOptions).catch(() => {
+      service.fetchUbiIndexes(dataSourceId).then(setIndexOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch indexes');
         setIndexOptions([]);
       }).finally(() => setIsLoadingIndexes(false)),
-      service.fetchQuerySets().then(setQuerySetOptions).catch(() => {
+      service.fetchQuerySets(dataSourceId).then(setQuerySetOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch query sets');
         setQuerySetOptions([]);
       }).finally(() => setIsLoadingQuerySets(false)),
-      service.fetchSearchConfigs().then(setSearchConfigOptions).catch(() => {
+      service.fetchSearchConfigs(dataSourceId).then(setSearchConfigOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch search configurations');
         setSearchConfigOptions([]);
       }).finally(() => setIsLoadingSearchConfigs(false)),
-      service.fetchModels().then(setModelOptions).catch(() => {
+      service.fetchModels(dataSourceId).then(setModelOptions).catch(() => {
         notifications.toasts.addDanger('Failed to fetch models');
         setModelOptions([]);
       }).finally(() => setIsLoadingModels(false)),
     ]);
-  }, [formData.type, http, notifications.toasts]);
+  }, [formData.type, http, notifications.toasts, dataSourceId, dataSourceEnabled]);
 
   useEffect(() => {
     fetchData();
@@ -196,8 +205,7 @@ export const useJudgmentForm = (http: any, notifications: any) => {
           selectedModel,
           importedRatings
         );
-
-        await service.createJudgment(payload);
+        await service.createJudgment(payload, dataSourceId);
         notifications.toasts.addSuccess('Judgment created successfully');
         onSuccess();
       } catch (err) {

@@ -192,16 +192,10 @@ describe('AdvancedSettings', () => {
       const mockUpdateFormData = jest.fn();
       render(<AdvancedSettings {...defaultProps} updateFormData={mockUpdateFormData} />);
 
-      // The hook should auto-save the template when it initializes or changes
+      // The hook should auto-save the template as a plain string (not an object)
       expect(mockUpdateFormData).toHaveBeenCalledWith(
         expect.objectContaining({
-          promptTemplate: expect.objectContaining({
-            outputSchema: expect.any(String),
-            systemPromptStart: expect.any(String),
-            systemPromptEnd: expect.any(String),
-            userInstructions: expect.any(String),
-            placeholders: expect.any(Array),
-          }),
+          promptTemplate: expect.any(String),
         })
       );
     });

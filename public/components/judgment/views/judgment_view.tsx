@@ -21,6 +21,7 @@ import { useJudgmentView } from '../hooks/use_judgment_view';
 
 interface JudgmentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  dataSourceId?: string | null;
 }
 
 /**
@@ -137,8 +138,8 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   );
 };
 
-export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id }) => {
-  const { judgment, loading, error } = useJudgmentView(http, id);
+export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id, dataSourceId }) => {
+  const { judgment, loading, error } = useJudgmentView(http, id, dataSourceId);
 
   const JudgmentViewPane: React.FC = () => {
     if (!judgment) return null;

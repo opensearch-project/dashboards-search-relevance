@@ -17,12 +17,15 @@ export interface SearchConfigurationData {
 export class SearchConfigurationService {
   constructor(private readonly http: CoreStart['http']) {}
 
-  /**
-   * Fetches available indexes from the API
-   * @returns Promise with index options
-   */
-  async fetchIndexes(): Promise<Array<{ label: string; value: string }>> {
-    const res = await this.http.get(ServiceEndpoints.GetIndexes);
+  private dsOpts(dataSourceId?: string | null) {
+    return dataSourceId ? { query: { dataSourceId } } : undefined;
+  }
+
+  async fetchIndexes(dataSourceId?: string | null): Promise<Array<{ label: string; value: string }>> {
+    const url = dataSourceId
+      ? `${ServiceEndpoints.GetIndexes}/${dataSourceId}`
+      : ServiceEndpoints.GetIndexes;
+    const res = await this.http.get(url);
     return res
       .filter((index: DocumentsIndex) => !index.index.startsWith('.'))
       .map((index: DocumentsIndex) => ({
@@ -31,46 +34,37 @@ export class SearchConfigurationService {
       }));
   }
 
-  /**
-   * Fetches available search pipelines from the API
-   * @returns Promise with pipeline options
-   */
-  async fetchPipelines(): Promise<Array<{ label: string }>> {
-    const response = await this.http.get(ServiceEndpoints.GetPipelines);
+  async fetchPipelines(dataSourceId?: string | null): Promise<Array<{ label: string }>> {
+    const url = dataSourceId
+      ? `${ServiceEndpoints.GetPipelines}/${dataSourceId}`
+      : ServiceEndpoints.GetPipelines;
+    const response = await this.http.get(url);
     return Object.keys(response).map((pipelineId) => ({
       label: pipelineId,
     }));
   }
 
-  /**
-   * Fetches all search configurations
-   * @returns Promise with search configurations
-   */
-  async getSearchConfigurations(): Promise<any> {
-    return await this.http.get(ServiceEndpoints.SearchConfigurations);
+  async getSearchConfigurations(dataSourceId?: string | null): Promise<any> {
+    const opts = this.dsOpts(dataSourceId);
+    return opts
+      ? await this.http.get(ServiceEndpoints.SearchConfigurations, opts)
+      : await this.http.get(ServiceEndpoints.SearchConfigurations);
   }
 
-  /**
-   * Creates a new search configuration
-   * @param data The search configuration data
-   * @returns Promise with the API response
-   */
-  async createSearchConfiguration(data: SearchConfigurationData): Promise<any> {
-    return await this.http.put(ServiceEndpoints.SearchConfigurations, {
-      body: JSON.stringify(data),
-    });
+  async createSearchConfiguration(data: SearchConfigurationData, dataSourceId?: string | null): Promise<any> {
+    const opts: any = { body: JSON.stringify(data) };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+    return await this.http.put(ServiceEndpoints.SearchConfigurations, opts);
   }
 
-  /**
-   * Validates a search query against the API
-   * @param requestBody The validation request body
-   * @returns Promise with the validation results
-   */
-  async validateSearchQuery(requestBody: any): Promise<any> {
-    const response = await this.http.post(ServiceEndpoints.GetSingleSearchResults, {
-      body: JSON.stringify(requestBody),
-    });
-
+  async validateSearchQuery(requestBody: any, dataSourceId?: string | null): Promise<any> {
+    const opts: any = { body: JSON.stringify(requestBody) };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+    const response = await this.http.post(ServiceEndpoints.GetSingleSearchResults, opts);
     return response.result;
   }
 }

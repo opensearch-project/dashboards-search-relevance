@@ -25,6 +25,7 @@ export function registerMLRoutes(router: IRouter, dataSourceEnabled: boolean) {
         params: schema.object({
           dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
         }),
+        body: schema.maybe(schema.any()),
       },
     },
     backendAction('POST', `${ML_MODEL_ROUTE_PREFIX}${SEARCH_API}`, dataSourceEnabled)

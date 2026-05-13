@@ -200,7 +200,7 @@ describe('useSearchConfigurationForm', () => {
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: undefined,
-    });
+    }, undefined);
     expect(mockNotifications.toasts.addSuccess).toHaveBeenCalledWith(
       'Search configuration "test config" created successfully'
     );
@@ -380,6 +380,6 @@ describe('useSearchConfigurationForm', () => {
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: 'pipeline1',
-    });
+    }, undefined);
   });
 });

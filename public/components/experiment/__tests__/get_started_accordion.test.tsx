@@ -36,8 +36,8 @@ describe('GetStartedAccordion', () => {
     expect(screen.getByText('5. Assess Results')).toBeInTheDocument();
   });
 
-  it('renders SingleQueryComparison content', () => {
-    render(<GetStartedAccordion templateType={TemplateType.SingleQueryComparison} />);
+  it('renders QueryAnalysis content', () => {
+    render(<GetStartedAccordion templateType={TemplateType.QueryAnalysis} />);
 
     expect(screen.getByText('1. Define Your Query')).toBeInTheDocument();
     expect(screen.getByText('2. Configure Search Parameters')).toBeInTheDocument();

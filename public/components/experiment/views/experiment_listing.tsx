@@ -5,10 +5,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
+  EuiCallOut,
+  EuiFlexGroup,
   EuiFlexItem,
   EuiButtonEmpty,
+  EuiIcon,
   EuiText,
-  EuiCallOut,
+  EuiPanel,
   EuiPageTemplate,
   EuiPageHeader,
   EuiButtonIcon,
@@ -16,6 +19,7 @@ import {
   EuiSpacer,
   EuiBadge,
   EuiHealth,
+  EuiToolTip,
 } from '@elastic/eui';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import moment from 'moment';
@@ -25,9 +29,11 @@ import {
   useOpenSearchDashboards,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
+import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
 import { DashboardInstallModal } from '../../common/dashboard_install_modal';
+import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { printType } from '../../../types/index';
 import { ExperimentService } from '../services/experiment_service';
@@ -41,15 +47,29 @@ import {
 import { getStatusColor } from '../../common_utils/status';
 import { ScheduleModal } from './ScheduleModal';
 import { DeleteScheduleModal } from './DeleteScheduleModal';
+import gradientGenerateIcon from '../../../assets/gradient_generate_icon.svg';
+import './experiment_listing.scss';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  savedObjects?: CoreStart['savedObjects'];
+  dataSourceEnabled?: boolean;
+  dataSourceManagement?: DataSourceManagementPluginSetup;
+  onAskAI?: () => void;
 }
 
-export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, history }) => {
+export const ExperimentListing: React.FC<ExperimentListingProps> = ({
+  http,
+  history,
+  savedObjects,
+  dataSourceEnabled = false,
+  dataSourceManagement,
+  onAskAI,
+}) => {
   const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const experimentService = new ExperimentService(http);
 
   const [showDeleteExperimentModal, setShowDeleteExperimentModal] = useState(false);
@@ -68,9 +88,16 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   >(null);
   // Whether the modal to schedule an experiment is shown
   const [showScheduleExperimentModal, setShowScheduleExperimentModal] = useState(false);
+  const [isAICalloutDismissed, setIsAICalloutDismissed] = useState(false);
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
+
+  // Clear cached table data when data source changes so findExperiments re-fetches
+  useEffect(() => {
+    setTableData([]);
+    setRefreshKey((prev) => prev + 1);
+  }, [selectedDataSource]);
 
   // Custom hook for experiment polling
   const useExperimentPolling = () => {
@@ -103,7 +130,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
         setIsBackgroundRefreshing(true);
         try {
-          const parseResults = await experimentService.getExperiments();
+          const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
 
           if (parseResults.success) {
             const updatedList = parseResults.data;
@@ -209,7 +236,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
     await handleVisualizationClick(experiment, dashboardId, indexPatternId);
   };
-  
+
   const handlePointwiseExperimentScheduledRunsVisualizationClick = async (experiment: any) => {
     const dashboardId = SavedObjectIds.PointwiseExperimentScheduledRuns;
     const indexPatternId = SavedObjectIds.SearchEvaluationIndexPattern;
@@ -234,7 +261,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      await experimentService.deleteExperiment(experimentToDelete.id);
+      await experimentService.deleteExperiment(experimentToDelete.id, selectedDataSource || undefined);
 
       // Close modal and clear state first
       setShowDeleteExperimentModal(false);
@@ -262,7 +289,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
     setIsLoading(true);
     try {
-      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id);
+      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, selectedDataSource || undefined);
 
       // Close modal and clear state first
       setShowDeleteScheduleModal(false);
@@ -292,7 +319,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       await experimentService.createScheduledExperiment(JSON.stringify({
         experimentId: experimentToSchedule.id,
         cronExpression: `${cronExpression.trim()}`
-      }));
+      }), selectedDataSource || undefined);
 
       setShowScheduleExperimentModal(false);
       setExperimentToSchedule(null);
@@ -315,7 +342,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
   const getScheduledExperiment = async (experimentId: string) => {
     setIsLoading(true);
     try {
-      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId));
+      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId, selectedDataSource || undefined));
       return scheduledExperiment.data;
     } catch (err) {
       console.error('Failed to retrieve schedule', err);
@@ -340,7 +367,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       ) => (
         <EuiButtonEmpty
           size="xs"
-          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}`)}
+          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
         >
           {printType(type)}
         </EuiButtonEmpty>
@@ -377,30 +404,36 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       render: (id: string, item: any) => (
         <>
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Visualization"
-              iconType="dashboardApp"
-              color="primary"
-              onClick={() => handleEvaluationVisualizationClick(item)}
-            />
+            <EuiToolTip content="View Visualization">
+              <EuiButtonIcon
+                aria-label="Visualization"
+                iconType="dashboardApp"
+                color="primary"
+                onClick={() => handleEvaluationVisualizationClick(item)}
+              />
+            </EuiToolTip>
           )}
           {item.type === 'HYBRID_OPTIMIZER' && item.status === 'COMPLETED' && (
-            <EuiButtonIcon
-              aria-label="Visualization"
-              iconType="dashboardApp"
-              color="primary"
-              onClick={() => handleHybridVisualizationClick(item)}
-            />
+            <EuiToolTip content="View Visualization">
+              <EuiButtonIcon
+                aria-label="Visualization"
+                iconType="dashboardApp"
+                color="primary"
+                onClick={() => handleHybridVisualizationClick(item)}
+              />
+            </EuiToolTip>
           )}
-          <EuiButtonIcon
-            aria-label="Delete"
-            iconType="trash"
-            color="danger"
-            onClick={() => {
-              setExperimentToDelete(item);
-              setShowDeleteExperimentModal(true);
-            }}
-          />
+          <EuiToolTip content="Delete">
+            <EuiButtonIcon
+              aria-label="Delete"
+              iconType="trash"
+              color="danger"
+              onClick={() => {
+                setExperimentToDelete(item);
+                setShowDeleteExperimentModal(true);
+              }}
+            />
+          </EuiToolTip>
           {item.type === 'POINTWISE_EVALUATION' && item.status === 'COMPLETED' && (
             displayScheduleIcon(item)
           )}
@@ -410,6 +443,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
           {item.type === 'POINTWISE_EVALUATION' && item.isScheduled === true && (
             <EuiButtonIcon
               aria-label="Visualization"
+              title="View Scheduled Runs"
               iconType="dashboardApp"
               color="primary"
               onClick={() => handlePointwiseExperimentScheduledRunsVisualizationClick(item)}
@@ -428,26 +462,34 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
   const displayScheduleIcon = (item: any) => {
     if (item.isScheduled === true) {
-      return (<EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="primary"
-              onClick={() => {
-                handleDeleteScheduleIconClick(item.id);
-              }}
-            />);
+      return (
+        <EuiToolTip content="Delete Schedule">
+          <EuiButtonIcon
+            aria-label="Schedule"
+            iconType="clock"
+            color="primary"
+            onClick={() => {
+              handleDeleteScheduleIconClick(item.id);
+            }}
+          />
+        </EuiToolTip>
+      );
     } else {
-      return (<EuiButtonIcon
-              aria-label="Schedule"
-              iconType="clock"
-              color="text"
-              onClick={() => {
-                setExperimentToSchedule(item);
-                setShowScheduleExperimentModal(true);
-              }}
-            />);
+      return (
+        <EuiToolTip content="Schedule Experiment">
+          <EuiButtonIcon
+            aria-label="Schedule"
+            iconType="clock"
+            color="text"
+            onClick={() => {
+              setExperimentToSchedule(item);
+              setShowScheduleExperimentModal(true);
+            }}
+          />
+        </EuiToolTip>
+      );
     }
-  }
+  };
 
   // Data fetching function
   const findExperiments = async (search: any) => {
@@ -455,13 +497,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     if (tableData.length > 0) {
       const filteredList = search
         ? tableData.filter((item) => {
-            const term = search.toLowerCase();
-            return (
-              item.id?.toLowerCase().includes(term) ||
-              item.type?.toLowerCase().includes(term) ||
-              item.status?.toLowerCase().includes(term)
-            );
-          })
+          const term = search.toLowerCase();
+          return (
+            item.id?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.status?.toLowerCase().includes(term)
+          );
+        })
         : tableData;
       return {
         total: filteredList.length,
@@ -473,7 +515,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     setIsLoading(true);
     setError(null);
     try {
-      const parseResults = await experimentService.getExperiments();
+      const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -487,13 +529,13 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
       const list = parseResults.data;
       const filteredList = search
         ? list.filter((item) => {
-            const term = search.toLowerCase();
-            return (
-              item.id?.toLowerCase().includes(term) ||
-              item.type?.toLowerCase().includes(term) ||
-              item.status?.toLowerCase().includes(term)
-            );
-          })
+          const term = search.toLowerCase();
+          return (
+            item.id?.toLowerCase().includes(term) ||
+            item.type?.toLowerCase().includes(term) ||
+            item.status?.toLowerCase().includes(term)
+          );
+        })
         : list;
 
       setExperiments(filteredList);
@@ -520,9 +562,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Experiments"
-        description={`Manage your existing experiments and create new ones. Click on a card to create an experiment.${
-          hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
-        }`}
+        description={`Manage your existing experiments and create new ones. Click on a card to create an experiment.${hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
+          }`}
         rightSideItems={[
           <EuiButton
             onClick={() => setRefreshKey((prev) => prev + 1)}
@@ -545,7 +586,49 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
 
       <EuiSpacer size="m" />
 
-      <TemplateCards history={history} onClose={() => {}} />
+      {dataSourceEnabled && dataSourceManagement && savedObjects && (
+        <DataSourceSelector
+          dataSourceEnabled={dataSourceEnabled}
+          dataSourceManagement={dataSourceManagement}
+          savedObjects={savedObjects}
+          selectedDataSource={selectedDataSource}
+          setSelectedDataSource={setSelectedDataSource}
+        />
+      )}
+
+      <EuiSpacer size="m" />
+
+      {onAskAI && !isAICalloutDismissed && (
+        <>
+          <EuiCallOut
+            title={
+              <EuiFlexGroup direction="column" gutterSize="s" alignItems="flexStart" responsive={false}>
+                <EuiFlexItem>Tune your relevance with AI.</EuiFlexItem>
+                <EuiFlexItem grow={false}>
+                  <div className="chatHeaderButton__borderWrapper">
+                    <EuiButtonEmpty
+                      size="s"
+                      onClick={onAskAI}
+                      color="primary"
+                      className="chatHeaderButton__button"
+                    >
+                      <EuiIcon type={gradientGenerateIcon} size="s" className="chatHeaderButton__icon" />
+                      Ask AI
+                    </EuiButtonEmpty>
+                  </div>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            }
+            color="success"
+            iconType="search"
+            dismissible
+            onDismiss={() => setIsAICalloutDismissed(true)}
+          />
+          <EuiSpacer size="m" />
+        </>
+      )}
+
+      <TemplateCards history={history} onClose={() => { }} />
 
       <EuiSpacer size="m" />
 
@@ -558,7 +641,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({ http, hist
         )}
         {!error && (
           <TableListView
-            key={refreshKey}
+            key={`${refreshKey}-${selectedDataSource}`}
             headingId="experimentListingHeading"
             entityName="Experiment"
             entityNamePlural="Experiments"

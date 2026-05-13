@@ -16,10 +16,12 @@ export interface QuerySetItem {
   numQueries: number;
 }
 
-export const useQuerySetList = (http: CoreStart['http']) => {
+export const useQuerySetList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
 
   const mapQuerySetFields = (obj: any): QuerySetItem => ({
     id: obj._source.id,
@@ -34,7 +36,7 @@ export const useQuerySetList = (http: CoreStart['http']) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await http.get(ServiceEndpoints.QuerySets);
+      const response = await http.get(ServiceEndpoints.QuerySets, queryParams);
       const list: QuerySetItem[] = response ? response.hits.hits.map(mapQuerySetFields) : [];
 
       const filteredList: QuerySetItem[] = search
@@ -63,7 +65,7 @@ export const useQuerySetList = (http: CoreStart['http']) => {
   const deleteQuerySet = async (id: string) => {
     setIsLoading(true);
     try {
-      await http.delete(`${ServiceEndpoints.QuerySets}/${id}`);
+      await http.delete(`${ServiceEndpoints.QuerySets}/${id}`, queryParams);
       setError(null);
       setRefreshKey((prev) => prev + 1);
     } catch (err) {

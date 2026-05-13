@@ -50,7 +50,7 @@ export const QUERY_NUMBER_ONE = '1';
 export const QUERY_NUMBER_TWO = '2';
 
 export enum RouteTemplateType {
-  SingleQueryComparison = 'singleQueryComparison',
+  QueryAnalysis = 'queryAnalysis',
   QuerySetComparison = 'querySetComparison',
   SearchEvaluation = 'searchEvaluation',
   HybridOptimizer = 'hybridOptimizer',
@@ -62,7 +62,7 @@ export enum Routes {
   ExperimentView = '/experiment/view/:entityId',
   ExperimentViewPrefix = '/experiment/view',
   ExperimentCreate = '/experiment/create',
-  ExperimentCreateSingleQueryComparison = `/experiment/create/${RouteTemplateType.SingleQueryComparison}`,
+  ExperimentCreateQueryAnalysis = `/experiment/create/${RouteTemplateType.QueryAnalysis}`,
   ExperimentCreateQuerySetComparison = `/experiment/create/${RouteTemplateType.QuerySetComparison}`,
   ExperimentCreateSearchEvaluation = `/experiment/create/${RouteTemplateType.SearchEvaluation}`,
   ExperimentCreateHybridOptimizer = `/experiment/create/${RouteTemplateType.HybridOptimizer}`,

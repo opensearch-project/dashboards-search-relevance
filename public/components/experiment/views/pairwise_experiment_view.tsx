@@ -46,12 +46,14 @@ import {
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
   inputExperiment: Experiment;
+  dataSourceId?: string | null;
 }
 
 export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
   http,
   inputExperiment,
   history,
+  dataSourceId,
 }) => {
   const [experiment, setExperiment] = useState<Experiment | null>(null);
   const [searchConfigurations, setSearchConfigurations] = useState<any | null>(null);
@@ -70,9 +72,10 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
   const sanitizeResponse = (response) => response?.hits?.hits?.[0]?._source || undefined;
 
   const loadSearchConfigurations = async (searchConfigurationIds: string[]) => {
+    const options = dataSourceId ? { query: { dataSourceId } } : {};
     const promises = searchConfigurationIds.map(async (id) => {
       return await http
-        .get(ServiceEndpoints.SearchConfigurations + '/' + id)
+        .get(ServiceEndpoints.SearchConfigurations + '/' + id, options)
         .then(sanitizeResponse);
     });
     return Promise.all(promises);
@@ -82,15 +85,17 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
     const fetchExperiment = async () => {
       try {
         setLoading(true);
+        const options = dataSourceId ? { query: { dataSourceId } } : {};
+        
         const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id)
+          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
           .then(sanitizeResponse);
         const _searchConfigurations = _experiment
           ? await loadSearchConfigurations(_experiment.searchConfigurationList)
           : [];
         const _querySet = _experiment
           ? await http
-              .get(ServiceEndpoints.QuerySets + '/' + _experiment.querySetId)
+              .get(ServiceEndpoints.QuerySets + '/' + _experiment.querySetId, options)
               .then(sanitizeResponse)
           : null;
 
@@ -260,7 +265,7 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
         <EuiDescriptionListDescription>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `/querySet/view/${querySet?.id}`)}
+            {...reactRouterNavigate(history, `/querySet/view/${querySet?.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {querySet?.name}
           </EuiButtonEmpty>
@@ -271,7 +276,7 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
             <EuiDescriptionListDescription>
               <EuiButtonEmpty
                 size="xs"
-                {...reactRouterNavigate(history, `/searchConfiguration/view/${config.id}`)}
+                {...reactRouterNavigate(history, `/searchConfiguration/view/${config.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
               >
                 {config.name}
               </EuiButtonEmpty>

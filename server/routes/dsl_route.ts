@@ -265,17 +265,24 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   // Get Indices by pattern
   router.get(
     {
-      path: `${ServiceEndpoints.GetIndexesByPattern}/{pattern}`,
+      path: `${ServiceEndpoints.GetIndexesByPattern}/{pattern}/{dataSourceId?}`,
       validate: {
         params: schema.object({
           pattern: schema.string(),
+          dataSourceId: schema.maybe(schema.string({ defaultValue: '' })),
         }),
       },
     },
     async (context, request, response) => {
       const start = performance.now();
       try {
-        const callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        const dataSourceId = request.params.dataSourceId;
+        let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+        if (dataSourceEnabled && dataSourceId) {
+          callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+        } else {
+          callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+        }
         const resp = await callApi('cat.indices', {
           index: request.params.pattern,
           format: 'json',

@@ -26,6 +26,18 @@ jest.mock('../../common/DeleteModal', () => ({
   ),
 }));
 
+jest.mock('@elastic/eui', () => {
+  const originalModule = jest.requireActual('@elastic/eui');
+  return {
+    ...originalModule,
+    EuiToolTip: ({ children, content }: any) => (
+      <div data-test-subj="eui-tooltip" data-tooltip-content={content}>
+        {children}
+      </div>
+    ),
+  };
+});
+
 const mockHttp = {
   get: jest.fn(),
   delete: jest.fn(),
@@ -139,6 +151,38 @@ describe('SearchConfigurationListing', () => {
     });
 
     expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
+  });
+
+  it('renders "Delete" tooltip for the action button', async () => {
+    mockUseSearchConfigurationList.mockReturnValue({
+      isLoading: false,
+      error: null,
+      findSearchConfigurations: jest.fn().mockResolvedValue({
+        total: 1,
+        hits: [
+          {
+            id: '1',
+            search_configuration_name: 'Test Config',
+            index: 'test-index',
+            query: '{"match_all": {}}',
+            timestamp: '2023-01-01T00:00:00Z',
+          },
+        ],
+      }),
+      deleteSearchConfiguration: jest.fn(),
+    });
+
+    render(
+      <Router history={history}>
+        <SearchConfigurationListing {...defaultProps} />
+      </Router>
+    );
+
+    await waitFor(() => {
+      const tooltip = screen.getByTestId('eui-tooltip');
+      expect(tooltip).toBeInTheDocument();
+      expect(tooltip).toHaveAttribute('data-tooltip-content', 'Delete');
+    });
   });
 
   it('handles delete confirmation', async () => {

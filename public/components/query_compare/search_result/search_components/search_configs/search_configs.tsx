@@ -4,7 +4,9 @@
  */
 
 import { EuiFlexGroup, EuiFlexItem, EuiPanel } from '@elastic/eui';
-import React from 'react';
+import React, { useState, useCallback } from 'react';
+
+import { DEFAULT_EDITOR_HEIGHT } from '../resizable_query_editor';
 
 import '../../../../../ace-themes/sql_console';
 import { useSearchRelevanceContext } from '../../../../../contexts';
@@ -69,6 +71,14 @@ export const SearchConfigsPanel = ({
     setDataSource2,
   } = useSearchRelevanceContext();
 
+  // Shared height state for synchronized resizing of both query editors
+  const [editorHeight, setEditorHeight] = useState<number>(DEFAULT_EDITOR_HEIGHT);
+
+  // Handler to update the shared editor height
+  const handleEditorHeightChange = useCallback((newHeight: number) => {
+    setEditorHeight(newHeight);
+  }, []);
+
   return (
     <EuiPanel
       hasShadow={false}
@@ -98,6 +108,8 @@ export const SearchConfigsPanel = ({
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
             optional={true}
+            editorHeight={editorHeight}
+            onEditorHeightChange={handleEditorHeightChange}
           />
         </EuiFlexItem>
         <EuiFlexItem className="search-relevance-config">
@@ -120,6 +132,8 @@ export const SearchConfigsPanel = ({
             dataSourceOptions={dataSourceOptions}
             notifications={notifications}
             optional={true}
+            editorHeight={editorHeight}
+            onEditorHeightChange={handleEditorHeightChange}
           />
         </EuiFlexItem>
       </EuiFlexGroup>

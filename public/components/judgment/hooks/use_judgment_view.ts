@@ -17,7 +17,7 @@ export interface JudgmentData {
   timestamp: string;
 }
 
-export const useJudgmentView = (http: CoreStart['http'], id: string) => {
+export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
   const [judgment, setJudgment] = useState<JudgmentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,8 @@ export const useJudgmentView = (http: CoreStart['http'], id: string) => {
     const fetchJudgment = async () => {
       try {
         setLoading(true);
-        const response = await http.get(`${ServiceEndpoints.Judgments}/${id}`);
+        const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
+        const response = await http.get(`${ServiceEndpoints.Judgments}/${id}`, queryParams);
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
           setJudgment(response.hits.hits[0]._source);
@@ -42,7 +43,7 @@ export const useJudgmentView = (http: CoreStart['http'], id: string) => {
     };
 
     fetchJudgment();
-  }, [http, id]);
+  }, [http, id, dataSourceId]);
 
   const formatJson = (json: string) => {
     try {

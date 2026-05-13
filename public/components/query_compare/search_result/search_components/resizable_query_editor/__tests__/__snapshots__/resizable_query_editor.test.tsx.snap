@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResizableQueryEditor snapshot matches snapshot 1`] = `
+<ResizableQueryEditor
+  aria-label="Test Editor"
+  data-test-subj="testQueryEditor"
+  onBlur={[MockFunction]}
+  onChange={[MockFunction]}
+  value="{\\"query\\": \\"test\\"}"
+>
+  <div
+    className="resizableQueryEditor"
+    data-test-subj="testQueryEditor"
+  >
+    <div
+      className="resizableQueryEditor__editorWrapper"
+    >
+      <EuiCodeEditor
+        aria-label="Test Editor"
+        height="160px"
+        mode="json"
+        onBlur={[MockFunction]}
+        onChange={[MockFunction]}
+        setOptions={
+          Object {
+            "enableBasicAutocompletion": true,
+            "enableLiveAutocompletion": true,
+            "fontSize": "14px",
+          }
+        }
+        showPrintMargin={false}
+        tabSize={2}
+        theme="textmate"
+        value="{\\"query\\": \\"test\\"}"
+        width="100%"
+      >
+        <textarea
+          aria-label="Test Editor"
+          data-test-subj="mockedCodeEditor"
+          onBlur={[MockFunction]}
+          onChange={[Function]}
+          style={
+            Object {
+              "height": "160px",
+            }
+          }
+          value="{\\"query\\": \\"test\\"}"
+        />
+      </EuiCodeEditor>
+    </div>
+    <div
+      aria-label="Resize query editor"
+      aria-orientation="vertical"
+      aria-valuemax={600}
+      aria-valuemin={160}
+      aria-valuenow={160}
+      className="resizableQueryEditor__resizeHandle "
+      data-test-subj="testQueryEditor-resizeHandle"
+      onKeyDown={[Function]}
+      onMouseDown={[Function]}
+      onTouchStart={[Function]}
+      role="slider"
+      tabIndex={0}
+    >
+      <div
+        className="resizableQueryEditor__resizeHandleBar"
+      />
+    </div>
+  </div>
+</ResizableQueryEditor>
+`;
+
+exports[`ResizableQueryEditor snapshot matches snapshot when resizing 1`] = `
+<ResizableQueryEditor
+  aria-label="Test Editor"
+  data-test-subj="testQueryEditor"
+  onBlur={[MockFunction]}
+  onChange={[MockFunction]}
+  value="{\\"query\\": \\"test\\"}"
+>
+  <div
+    className="resizableQueryEditor"
+    data-test-subj="testQueryEditor"
+  >
+    <div
+      className="resizableQueryEditor__editorWrapper"
+    >
+      <EuiCodeEditor
+        aria-label="Test Editor"
+        height="160px"
+        mode="json"
+        onBlur={[MockFunction]}
+        onChange={[MockFunction]}
+        setOptions={
+          Object {
+            "enableBasicAutocompletion": true,
+            "enableLiveAutocompletion": true,
+            "fontSize": "14px",
+          }
+        }
+        showPrintMargin={false}
+        tabSize={2}
+        theme="textmate"
+        value="{\\"query\\": \\"test\\"}"
+        width="100%"
+      >
+        <textarea
+          aria-label="Test Editor"
+          data-test-subj="mockedCodeEditor"
+          onBlur={[MockFunction]}
+          onChange={[Function]}
+          style={
+            Object {
+              "height": "160px",
+            }
+          }
+          value="{\\"query\\": \\"test\\"}"
+        />
+      </EuiCodeEditor>
+    </div>
+    <div
+      aria-label="Resize query editor"
+      aria-orientation="vertical"
+      aria-valuemax={600}
+      aria-valuemin={160}
+      aria-valuenow={160}
+      className="resizableQueryEditor__resizeHandle resizableQueryEditor__resizeHandle--active"
+      data-test-subj="testQueryEditor-resizeHandle"
+      onKeyDown={[Function]}
+      onMouseDown={[Function]}
+      onTouchStart={[Function]}
+      role="slider"
+      tabIndex={0}
+    >
+      <div
+        className="resizableQueryEditor__resizeHandleBar"
+      />
+    </div>
+  </div>
+</ResizableQueryEditor>
+`;
