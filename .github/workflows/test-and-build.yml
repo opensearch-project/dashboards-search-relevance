@@ -64,7 +64,7 @@ jobs:
         run: |
           chown -R 1000:1000 `pwd`
           cd ./OpenSearch-Dashboards/
-          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm install && nvm use && node -v && yarn -v &&
                                cd ./plugins/dashboards-search-relevance &&
                                whoami && yarn osd bootstrap && yarn test --coverage"
 
@@ -79,7 +79,7 @@ jobs:
         run: |
           chown -R 1000:1000 `pwd`
           cd ./OpenSearch-Dashboards/
-          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm use && node -v && yarn -v &&
+          su `id -un 1000` -c "source $NVM_DIR/nvm.sh && nvm install && nvm use && node -v && yarn -v &&
                                cd ./plugins/dashboards-search-relevance &&
                                whoami && yarn build && mv -v ./build/*.zip ./build/${{ env.PLUGIN_NAME }}-${{ env.OPENSEARCH_PLUGIN_VERSION }}.zip"
 
