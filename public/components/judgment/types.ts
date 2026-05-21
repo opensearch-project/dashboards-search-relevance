@@ -6,6 +6,7 @@
 export enum JudgmentType {
   LLM = 'LLM_JUDGMENT',
   UBI = 'UBI_JUDGMENT',
+  IMPORT = 'IMPORT_JUDGMENT'
 }
 
 export interface ComboBoxOption {

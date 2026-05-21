@@ -253,6 +253,19 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
           endDate: schema.maybe(schema.string()),
+          judgmentRatings: schema.maybe(
+            schema.arrayOf(
+              schema.object({
+                query: schema.string(),
+                ratings: schema.arrayOf(
+                  schema.object({
+                    docId: schema.string(),
+                    rating: schema.oneOf([schema.string(), schema.number()]),
+                  })
+                ),
+              })
+            )
+          ),
           ubiEventsIndex: schema.maybe(schema.string()),
         }),
         query: queryWithDataSource,
