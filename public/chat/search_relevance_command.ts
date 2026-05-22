@@ -3,7 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CoreSetup } from '../../../../src/core/public';
+import {
+  CoreSetup,
+  ALL_USE_CASE_ID,
+  SEARCH_USE_CASE_ID,
+  isNavGroupInFeatureConfigs,
+} from '../../../../src/core/public';
 import { ChatPluginSetup } from '../../../../src/plugins/chat/public';
 import { PLUGIN_ID } from '../../common';
 
@@ -16,18 +21,20 @@ export const registerSearchRelevanceCommand = (
     description: 'Navigate to Search Relevance page',
     usage: '/search-relevance',
     handler: async (): Promise<string> => {
+      const [coreStart] = await core.getStartServices();
       const currentWorkspace = core.workspaces.currentWorkspace$.getValue();
-      const workspaceName = currentWorkspace?.name ?? '';
+      const features = currentWorkspace?.features ?? [];
+      const hasSearchFeature =
+        isNavGroupInFeatureConfigs(SEARCH_USE_CASE_ID, features) ||
+        isNavGroupInFeatureConfigs(ALL_USE_CASE_ID, features);
 
-      if (workspaceName !== 'Search') {
-        const [coreStart] = await core.getStartServices();
+      if (!hasSearchFeature) {
         coreStart.notifications.toasts.addInfo(
-          'Please switch to the "Search" workspace to use Search Relevance.'
+          'Please switch to a workspace with the Search use case to use Search Relevance.'
         );
         return '';
       }
 
-      const [coreStart] = await core.getStartServices();
       coreStart.application.navigateToApp(PLUGIN_ID);
       return '';
     },

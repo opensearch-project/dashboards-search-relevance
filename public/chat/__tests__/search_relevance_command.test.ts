@@ -48,14 +48,14 @@ describe('registerSearchRelevanceCommand', () => {
   });
 
   it('shows toast when not in Search workspace', async () => {
-    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({ name: 'Analytics' });
+    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({ name: 'Analytics', features: ['use-case-observability'] });
     registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup);
 
     const handler = mockRegisterCommand.mock.calls[0][0].handler;
     const result = await handler('');
 
     expect(mockAddInfo).toHaveBeenCalledWith(
-      'Please switch to the "Search" workspace to use Search Relevance.'
+      'Please switch to a workspace with the Search use case to use Search Relevance.'
     );
     expect(mockNavigateToApp).not.toHaveBeenCalled();
     expect(result).toBe('');
@@ -73,7 +73,7 @@ describe('registerSearchRelevanceCommand', () => {
   });
 
   it('navigates to searchRelevance when in Search workspace', async () => {
-    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({ name: 'Search' });
+    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({ name: 'My Search', features: ['use-case-search'] });
     registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup);
 
     const handler = mockRegisterCommand.mock.calls[0][0].handler;
@@ -81,6 +81,17 @@ describe('registerSearchRelevanceCommand', () => {
 
     expect(mockNavigateToApp).toHaveBeenCalledWith('searchRelevance');
     expect(mockAddInfo).not.toHaveBeenCalled();
+    expect(result).toBe('');
+  });
+
+  it('navigates when in All use-case workspace', async () => {
+    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({ name: 'Everything', features: ['use-case-all'] });
+    registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup);
+
+    const handler = mockRegisterCommand.mock.calls[0][0].handler;
+    const result = await handler('');
+
+    expect(mockNavigateToApp).toHaveBeenCalledWith('searchRelevance');
     expect(result).toBe('');
   });
 
