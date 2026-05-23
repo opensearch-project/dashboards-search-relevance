@@ -47,7 +47,7 @@ export const VariantDetailsModal: React.FC<VariantDetailsModalProps> = ({
       ? [
           {
             title: 'Rank constant',
-            description: <EuiBadge color="primary">{String(rank_constant)}</EuiBadge>,
+            description: <EuiBadge color="primary">{String(rank_constant ?? 'N/A')}</EuiBadge>,
           },
         ]
       : [
