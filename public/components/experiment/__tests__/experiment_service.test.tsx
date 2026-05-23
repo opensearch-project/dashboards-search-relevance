@@ -15,6 +15,7 @@ describe('ExperimentService', () => {
       post: jest.fn(),
       put: jest.fn(),
       delete: jest.fn(),
+      patch: jest.fn(),
     };
     service = new ExperimentService(mockHttp);
   });
@@ -150,6 +151,29 @@ describe('ExperimentService', () => {
       expect(result).toEqual(
         mockResponse
       );
+    });
+  });
+
+  describe('patchExperiment', () => {
+    it('should patch experiment metadata', async () => {
+      mockHttp.patch.mockResolvedValue({ acknowledged: true });
+
+      await service.patchExperiment('exp-1', { name: 'Updated' });
+
+      expect(mockHttp.patch).toHaveBeenCalledWith('/api/relevancy/experiments/exp-1', {
+        body: JSON.stringify({ name: 'Updated' }),
+      });
+    });
+
+    it('should include data source query param when provided', async () => {
+      mockHttp.patch.mockResolvedValue({ acknowledged: true });
+
+      await service.patchExperiment('exp-1', { description: 'Notes' }, 'ds-1');
+
+      expect(mockHttp.patch).toHaveBeenCalledWith('/api/relevancy/experiments/exp-1', {
+        body: JSON.stringify({ description: 'Notes' }),
+        query: { dataSourceId: 'ds-1' },
+      });
     });
   });
 

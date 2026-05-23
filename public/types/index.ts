@@ -100,6 +100,9 @@ export interface ExperimentBase {
   querySetId: string;
   k: number;
   size: number;
+  /** Optional human-readable label from the search-relevance plugin (may be absent on legacy experiments). */
+  name?: string;
+  description?: string;
 }
 
 export type Experiment =
@@ -305,6 +308,21 @@ export const toExperimentSchedule = (source: any): ParseResult<ExperimentSchedul
   };
 };
 
+const optionalExperimentMetadata = (
+  source: any
+): Pick<ExperimentBase, 'name' | 'description'> => {
+  const name =
+    typeof source.name === 'string' && source.name.trim() !== '' ? source.name.trim() : undefined;
+  const description =
+    typeof source.description === 'string' && source.description.trim() !== ''
+      ? source.description.trim()
+      : undefined;
+  return {
+    ...(name !== undefined ? { name } : {}),
+    ...(description !== undefined ? { description } : {}),
+  };
+};
+
 export const toExperiment = (source: any): ParseResult<Experiment> => {
   // Validate required base fields exist
   if (!source.id || !source.timestamp || !source.querySetId || source.size === undefined) {
@@ -320,6 +338,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
   }
 
   const size = source.results ? Object.keys(source.results).length : 0;
+  const meta = optionalExperimentMetadata(source);
 
   // Handle different experiment types
   switch (source.type) {
@@ -338,6 +357,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           timestamp: source.timestamp,
           searchConfigurationList: source.searchConfigurationList,
           size,
+          ...meta,
         },
       };
 
@@ -364,6 +384,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           isScheduled: source.isScheduled,
           scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
+          ...meta,
         },
       };
 
@@ -390,6 +411,7 @@ export const toExperiment = (source: any): ParseResult<Experiment> => {
           isScheduled: source.isScheduled,
           scheduledExperimentJobId: source.isScheduled ? source.id : '',
           size,
+          ...meta,
         },
       };
 
