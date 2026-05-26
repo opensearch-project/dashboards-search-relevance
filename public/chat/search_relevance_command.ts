@@ -17,9 +17,9 @@ export const registerSearchRelevanceCommand = (
   chatSetup?: ChatPluginSetup
 ): (() => void) | undefined => {
   return chatSetup?.commandRegistry?.registerCommand({
-    command: 'search-relevance',
-    description: 'Navigate to Search Relevance page',
-    usage: '/search-relevance',
+    command: 'srw',
+    description: 'Navigate to Search Relevance Workbench',
+    usage: '/srw',
     handler: async (): Promise<string> => {
       const [coreStart] = await core.getStartServices();
       const currentWorkspace = core.workspaces.currentWorkspace$.getValue();

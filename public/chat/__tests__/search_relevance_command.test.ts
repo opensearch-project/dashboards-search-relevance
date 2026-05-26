@@ -43,7 +43,7 @@ describe('registerSearchRelevanceCommand', () => {
   it('registers the command', () => {
     registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup);
     expect(mockRegisterCommand).toHaveBeenCalledWith(
-      expect.objectContaining({ command: 'search-relevance' })
+      expect.objectContaining({ command: 'srw' })
     );
   });
 
