@@ -21,7 +21,11 @@ export const validateQuery = (selectedIndex: string, queryString: string, queryE
 export const rewriteQuery = (value: string, queryString: string, queryError: QueryError) => {
   if (queryString.trim().length > 0) {
     try {
-      return JSON.parse(queryString.replace(/%SearchText%/g, value));
+      // Strip metadata from the value if it contains the # delimiter (Issue #822)
+      const hashIndex = value.indexOf('#');
+      const cleanValue = hashIndex !== -1 ? value.substring(0, hashIndex) : value;
+
+      return JSON.parse(queryString.replace(/%SearchText%/g, cleanValue));
     } catch {
       queryError.queryString = QueryStringError.invalid;
       queryError.errorResponse.statusCode = 400;
