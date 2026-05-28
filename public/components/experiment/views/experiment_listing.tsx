@@ -30,7 +30,12 @@ import {
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
-import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
+import {
+  Routes,
+  SavedObjectIds,
+  extractUserMessageFromError,
+  getExperimentDisplayName,
+} from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
 import { DashboardInstallModal } from '../../common/dashboard_install_modal';
 import { DataSourceSelector } from '../../common/datasource_selector';
@@ -339,6 +344,22 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     }
   }
 
+  const experimentMatchesSearch = (item: any, rawSearch: string) => {
+    const term = rawSearch.trim().toLowerCase();
+    if (!term) {
+      return true;
+    }
+    const displayName = getExperimentDisplayName(item?.name).toLowerCase();
+    return (
+      item.id?.toLowerCase().includes(term) ||
+      item.type?.toLowerCase().includes(term) ||
+      item.status?.toLowerCase().includes(term) ||
+      (typeof item.name === 'string' && item.name.toLowerCase().includes(term)) ||
+      (typeof item.description === 'string' && item.description.toLowerCase().includes(term)) ||
+      displayName.includes(term)
+    );
+  };
+
   const getScheduledExperiment = async (experimentId: string) => {
     setIsLoading(true);
     try {
@@ -355,23 +376,55 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   // Column definitions
   const tableColumns = [
     {
+      field: 'name',
+      name: 'Name',
+      dataType: 'string',
+      sortable: true,
+      width: '27%',
+      truncateText: true,
+      render: (
+        _name: string | undefined,
+        experiment: { id: string; name?: string; description?: string }
+      ) => {
+        const fullName = getExperimentDisplayName(experiment.name);
+        const description =
+          typeof experiment.description === 'string' ? experiment.description.trim() : '';
+        const navigateProps = reactRouterNavigate(
+          history,
+          `${Routes.ExperimentViewPrefix}/${experiment.id}${
+            selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''
+          }`
+        );
+        const tooltipContent = (
+          <div className="srgExperimentListingNameTooltip">
+            <span className="srgExperimentListingNameTooltip__name">{fullName}</span>
+            {description ? (
+              <span className="srgExperimentListingNameTooltip__description">{description}</span>
+            ) : null}
+          </div>
+        );
+        const nameButton = (
+          <EuiButtonEmpty size="xs" className="srgExperimentListingNameButton" {...navigateProps}>
+            <span className="srgExperimentListingNameButton__label">{fullName}</span>
+          </EuiButtonEmpty>
+        );
+        return (
+          <EuiToolTip
+            content={tooltipContent}
+            delay="regular"
+            anchorClassName="srgExperimentListingNameTooltipAnchor"
+          >
+            {nameButton}
+          </EuiToolTip>
+        );
+      },
+    },
+    {
       field: 'type',
       name: 'Experiment Type',
       dataType: 'string',
       sortable: true,
-      render: (
-        type: string,
-        experiment: {
-          id: string;
-        }
-      ) => (
-        <EuiButtonEmpty
-          size="xs"
-          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
-        >
-          {printType(type)}
-        </EuiButtonEmpty>
-      ),
+      render: (type: string) => <EuiText size="s">{printType(type)}</EuiText>,
     },
     {
       field: 'status',
@@ -385,7 +438,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     {
       field: 'size',
       name: 'Queries Run',
-      width: '20%',
+      width: '10%',
       render: (size: number) => <EuiText size="s">{size}</EuiText>,
     },
     {
@@ -496,14 +549,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     // Use tableData if available (from polling or previous fetch)
     if (tableData.length > 0) {
       const filteredList = search
-        ? tableData.filter((item) => {
-          const term = search.toLowerCase();
-          return (
-            item.id?.toLowerCase().includes(term) ||
-            item.type?.toLowerCase().includes(term) ||
-            item.status?.toLowerCase().includes(term)
-          );
-        })
+        ? tableData.filter((item) => experimentMatchesSearch(item, search))
         : tableData;
       return {
         total: filteredList.length,
@@ -527,16 +573,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       }
 
       const list = parseResults.data;
-      const filteredList = search
-        ? list.filter((item) => {
-          const term = search.toLowerCase();
-          return (
-            item.id?.toLowerCase().includes(term) ||
-            item.type?.toLowerCase().includes(term) ||
-            item.status?.toLowerCase().includes(term)
-          );
-        })
-        : list;
+      const filteredList = search ? list.filter((item) => experimentMatchesSearch(item, search)) : list;
 
       setExperiments(filteredList);
       setTableData(filteredList);
@@ -633,7 +670,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       <EuiSpacer size="m" />
 
       <EuiFlexItem>
-        <EuiText>Click on an experiment id to view details.</EuiText>
+        <EuiText>Click a name to view experiment details.</EuiText>
         {error && (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>
@@ -652,7 +689,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
             search={{
               box: {
                 incremental: true,
-                placeholder: 'Search experiments...',
+                placeholder: 'Search by name, description, id, type, or status...',
                 schema: true,
               },
             }}
