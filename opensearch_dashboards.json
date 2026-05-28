@@ -13,7 +13,8 @@
     "dataSource",
     "dataSourceManagement",
     "contentManagement",
-    "home"
+    "home",
+    "chat"
   ],
   "supportedOSDataSourceVersions": ">=2.8.0"
 }
