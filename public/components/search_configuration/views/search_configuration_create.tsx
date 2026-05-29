@@ -121,6 +121,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
                 savedObjects={savedObjects}
                 selectedDataSource={selectedDataSource}
                 setSelectedDataSource={setSelectedDataSource}
+                excludeEngineTypes={['AnalyticEngine']}
               />
             )}
             <SearchConfigurationForm

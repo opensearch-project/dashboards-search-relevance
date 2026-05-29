@@ -178,6 +178,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
           savedObjects={savedObjects}
           selectedDataSource={selectedDataSource}
           setSelectedDataSource={setSelectedDataSource}
+          excludeEngineTypes={['AnalyticEngine']}
         />
       )}
 

@@ -50,9 +50,19 @@ export const useDataSourceSelection = (setSelectedDataSource: (id: string) => vo
 /**
  * Hook for datasource filter function
  */
-export const useDataSourceFilter = () => {
-  return useCallback((dataSource: SavedObject<DataSourceAttributes>) => {
-    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
-    return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
-  }, []);
+export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
+  return useCallback(
+    (dataSource: SavedObject<DataSourceAttributes>) => {
+      if (
+        excludeEngineTypes?.length &&
+        dataSource?.attributes?.dataSourceEngineType &&
+        excludeEngineTypes.includes(dataSource.attributes.dataSourceEngineType)
+      ) {
+        return false;
+      }
+      const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+      return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+    },
+    [excludeEngineTypes]
+  );
 };
