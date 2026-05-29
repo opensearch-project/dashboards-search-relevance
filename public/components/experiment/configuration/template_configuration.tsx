@@ -111,6 +111,7 @@ export const TemplateConfiguration = ({
               savedObjects={savedObjects}
               selectedDataSource={selectedDataSource}
               setSelectedDataSource={setSelectedDataSource}
+              excludeEngineTypes={['AnalyticEngine']}
             />
           )}
           <EuiSpacer size="m" />

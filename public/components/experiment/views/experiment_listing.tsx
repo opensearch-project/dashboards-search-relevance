@@ -593,6 +593,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
           savedObjects={savedObjects}
           selectedDataSource={selectedDataSource}
           setSelectedDataSource={setSelectedDataSource}
+          excludeEngineTypes={['AnalyticEngine']}
         />
       )}
 

@@ -257,6 +257,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   }
   const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
+    if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
+      return false;
+    }
     const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
     return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
   };
