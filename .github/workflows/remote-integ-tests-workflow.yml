@@ -6,8 +6,6 @@ env:
   CI: 1
   TERM: xterm
   OPENSEARCH_DASHBOARDS_VERSION: 'main'
-  OPENSEARCH_VERSION: '3.5.0'
-  OPENSEARCH_PLUGIN_VERSION: '3.5.0.0'
 
 jobs:
   tests:
@@ -77,26 +75,48 @@ jobs:
           npm uninstall -g yarn
           echo "Installing yarn ${{ steps.tool-versions.outputs.yarn_version }}"
           npm i -g yarn@${{ steps.tool-versions.outputs.yarn_version }}
-          yarn cache clean
-        working-directory: OpenSearch-Dashboards
         shell: bash
+
+      - name: Yarn Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            OpenSearch-Dashboards/**/target
+            OpenSearch-Dashboards/**/node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('OpenSearch-Dashboards/**/yarn.lock') }}
+
+      - name: Configure OpenSearch Dashboards
+        run: |
+          rm -rf ./config/opensearch_dashboards.yml
+          cat << 'EOT' > ./config/opensearch_dashboards.yml
+          server.host: "0.0.0.0"
+          home.disableWelcomeScreen: true
+          home.disableExperienceModal: true
+          EOT
+        working-directory: OpenSearch-Dashboards
 
       - name: Bootstrap OpenSearch Dashboards
         run: |
           yarn osd bootstrap --single-version=loose
         working-directory: OpenSearch-Dashboards
 
-      - name: Run Opensearch Dashboards with SW Installed
+      - name: Compile OpenSearch Dashboards
         run: |
-          nohup yarn start --no-base-path --no-watch --server.host="0.0.0.0" | tee dashboard.log &
+          node scripts/build_opensearch_dashboards_platform_plugins --no-examples --workers=10 --verbose
         working-directory: OpenSearch-Dashboards
 
-      - name: Wait OpenSearch Dashboards Compiled Completed
+      - name: Run Opensearch Dashboards with SW Installed
         run: |
-          if timeout 1500 grep -q "bundles compiled successfully after" <(tail -n0 -f dashboard.log); then
-            echo "OpenSearch Dashboards compiled successfully."
+          nohup yarn start --no-base-path --no-watch | tee dashboard.log &
+        working-directory: OpenSearch-Dashboards
+
+      - name: Check If OpenSearch Dashboards Is Ready
+        run: |
+          if timeout 1200 grep -q "http server running" <(tail -n +1 -f dashboard.log); then
+            echo "OpenSearch Dashboards started successfully."
           else
-            echo "Timeout for 1500 seconds reached. OpenSearch Dashboards did not finish compiling."
+            echo "Timeout of 1200 seconds reached. OpenSearch Dashboards did not start successfully."
+            tail -100 dashboard.log
             exit 1
           fi
         working-directory: OpenSearch-Dashboards
