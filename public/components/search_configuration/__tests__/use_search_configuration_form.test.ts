@@ -382,4 +382,91 @@ describe('useSearchConfigurationForm', () => {
       searchPipeline: 'pipeline1',
     }, undefined);
   });
+
+  describe('dataSourceInitialized gating', () => {
+    it('skips initial index/pipeline fetch when dataSourceInitialized is false', async () => {
+      const { rerender } = renderHook(
+        ({ initialized }: { initialized: boolean }) =>
+          useSearchConfigurationForm({
+            http: mockHttp,
+            notifications: mockNotifications,
+            dataSourceEnabled: true,
+            dataSourceInitialized: initialized,
+          }),
+        { initialProps: { initialized: false } }
+      );
+
+      // Allow effects to flush. With the gate closed, neither fetch must run.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchIndexes).not.toHaveBeenCalled();
+      expect(mockService.fetchPipelines).not.toHaveBeenCalled();
+
+      // Open the gate. Both effects must now fire.
+      rerender({ initialized: true });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchIndexes).toHaveBeenCalledTimes(1);
+      expect(mockService.fetchPipelines).toHaveBeenCalledTimes(1);
+    });
+
+    it('runs the initial fetch when the gate parameter defaults to true (multi-data-source disabled)', async () => {
+      // Default value of the new optional parameter must preserve existing
+      // single-cluster behavior — no caller updates required.
+      renderHook(() =>
+        useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchIndexes).toHaveBeenCalledTimes(1);
+      expect(mockService.fetchPipelines).toHaveBeenCalledTimes(1);
+    });
+
+    it('refetches with the new dataSourceId when the selector reports', async () => {
+      const { rerender } = renderHook(
+        ({
+          dataSourceId,
+          initialized,
+        }: {
+          dataSourceId: string | undefined;
+          initialized: boolean;
+        }) =>
+          useSearchConfigurationForm({
+            http: mockHttp,
+            notifications: mockNotifications,
+            dataSourceEnabled: true,
+            dataSourceId,
+            dataSourceInitialized: initialized,
+          }),
+        { initialProps: { dataSourceId: undefined, initialized: false } }
+      );
+
+      // Closed gate: no fetches yet.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+      expect(mockService.fetchIndexes).not.toHaveBeenCalled();
+
+      // Selector reports a remote cluster id and flips the gate.
+      rerender({ dataSourceId: 'foo-ds', initialized: true });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      // Both calls must be against the resolved id, never against undefined.
+      expect(mockService.fetchIndexes).toHaveBeenCalledWith('foo-ds');
+      expect(mockService.fetchPipelines).toHaveBeenCalledWith('foo-ds');
+      expect(mockService.fetchIndexes).not.toHaveBeenCalledWith(undefined);
+      expect(mockService.fetchPipelines).not.toHaveBeenCalledWith(undefined);
+    });
+  });
 });

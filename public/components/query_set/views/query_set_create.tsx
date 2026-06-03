@@ -41,11 +41,22 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
   const querySetService = useMemo(() => new QuerySetService(http), [http]);
   const filePickerId = useMemo(() => `filePicker-${Math.random().toString(36).substr(2, 9)}`, []);
   const [selectedDataSource, setSelectedDataSource] = useState<string>('');
-  
+  // When multi-data-source is enabled, the OSD DataSourceSelector resolves its
+  // default asynchronously. We must wait for its first onSelectedDataSource
+  // callback before fetching, otherwise we'd query the local cluster with an
+  // empty dataSourceId and show stale UBI indexes from the wrong cluster.
+  const [dataSourceInitialized, setDataSourceInitialized] = useState(!dataSourceEnabled);
+
+  const handleDataSourceChange = useCallback((id: string) => {
+    setSelectedDataSource(id);
+    setDataSourceInitialized(true);
+  }, []);
+
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
   useEffect(() => {
+    if (!dataSourceInitialized) return;
     const fetchIndexes = async () => {
       setIsLoadingIndexes(true);
       try {
@@ -62,7 +73,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
     fetchIndexes();
     formState.setUbiQueriesIndex('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [querySetService, selectedDataSource]);
+  }, [querySetService, selectedDataSource, dataSourceInitialized]);
 
   const createQuerySet = useCallback(async () => {
     if (!formState.isFormValid()) {
@@ -141,7 +152,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
               dataSourceManagement={dataSourceManagement}
               savedObjects={savedObjects}
               selectedDataSource={selectedDataSource}
-              setSelectedDataSource={setSelectedDataSource}
+              setSelectedDataSource={handleDataSourceChange}
             />
           )}
           <QuerySetForm 

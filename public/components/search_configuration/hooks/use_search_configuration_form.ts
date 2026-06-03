@@ -20,6 +20,7 @@ export interface UseSearchConfigurationFormProps {
   onSuccess?: () => void;
   dataSourceId?: string;
   dataSourceEnabled?: boolean;
+  dataSourceInitialized?: boolean;
 }
 
 export interface UseSearchConfigurationFormReturn {
@@ -66,6 +67,7 @@ export const useSearchConfigurationForm = ({
   onSuccess,
   dataSourceId,
   dataSourceEnabled = false,
+  dataSourceInitialized = true,
 }: UseSearchConfigurationFormProps): UseSearchConfigurationFormReturn => {
   // Form state
   const [name, setName] = useState('');
@@ -94,6 +96,10 @@ export const useSearchConfigurationForm = ({
 
   // Fetch indexes on component mount
   useEffect(() => {
+    // When multi-data-source is enabled, defer until DataSourceSelector reports
+    // its resolved default. Otherwise we fetch from the local cluster with an
+    // empty dataSourceId and surface options from the wrong cluster.
+    if (!dataSourceInitialized) return;
     setIndexOptions([]);
     setSelectedIndex([]);
     setIsLoadingIndexes(true);
@@ -112,10 +118,11 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchIndexes();
-  }, [dataSourceId, dataSourceEnabled]);
+  }, [dataSourceId, dataSourceEnabled, dataSourceInitialized]);
 
   // Fetch pipelines on component mount
   useEffect(() => {
+    if (!dataSourceInitialized) return;
     setPipelineOptions([]);
     setSelectedPipeline([]);
     const fetchPipelines = async () => {
@@ -135,7 +142,7 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchPipelines();
-  }, [dataSourceId, dataSourceEnabled]);
+  }, [dataSourceId, dataSourceEnabled, dataSourceInitialized]);
 
   // Validate name field on blur
   const validateNameField = useCallback((e: React.FocusEvent<HTMLInputElement>) => {

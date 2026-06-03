@@ -11,7 +11,13 @@ import { buildJudgmentPayload } from '../utils/form_processor';
 import { processJudgmentFile } from '../utils/judgment_file_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string, dataSourceEnabled = false) => {
+export const useJudgmentForm = (
+  http: any,
+  notifications: any,
+  dataSourceId?: string,
+  dataSourceEnabled = false,
+  dataSourceInitialized = true
+) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -110,8 +116,13 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
   }, [formData.type, http, notifications.toasts, dataSourceId, dataSourceEnabled]);
 
   useEffect(() => {
+    // When multi-data-source is enabled, defer the initial fetch until the
+    // OSD DataSourceSelector has reported its resolved default. Otherwise we
+    // would query the local cluster with an empty dataSourceId and surface
+    // stale options from the wrong cluster.
+    if (!dataSourceInitialized) return;
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, dataSourceInitialized]);
 
   const updateFormData = useCallback((updates: Partial<JudgmentFormData>) => {
     setFormData((prev) => ({ ...prev, ...updates }));

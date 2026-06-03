@@ -390,5 +390,49 @@ describe('useJudgmentForm', () => {
     expect(result.current.parsedJudgments).toEqual([]);
     expect(result.current.importedRatings).toEqual([]);
   });
+
+  describe('dataSourceInitialized gating', () => {
+    it('skips the initial fetch when dataSourceInitialized is false', async () => {
+      const { rerender } = renderHook(
+        ({ initialized }: { initialized: boolean }) =>
+          useJudgmentForm(mockHttp, mockNotifications, undefined, true, initialized),
+        { initialProps: { initialized: false } }
+      );
+
+      // Allow effects to flush. Nothing should have been fetched yet.
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).not.toHaveBeenCalled();
+      expect(mockService.fetchQuerySets).not.toHaveBeenCalled();
+      expect(mockService.fetchSearchConfigs).not.toHaveBeenCalled();
+      expect(mockService.fetchModels).not.toHaveBeenCalled();
+
+      // Flip the gate. The hook must now fetch.
+      rerender({ initialized: true });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalled();
+      expect(mockService.fetchQuerySets).toHaveBeenCalled();
+      expect(mockService.fetchSearchConfigs).toHaveBeenCalled();
+      expect(mockService.fetchModels).toHaveBeenCalled();
+    });
+
+    it('runs the initial fetch when the gate parameter defaults to true (multi-data-source disabled)', async () => {
+      // Default value of the new optional parameter must preserve existing
+      // single-cluster behavior — no caller updates required.
+      renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalled();
+    });
+  });
 });
 

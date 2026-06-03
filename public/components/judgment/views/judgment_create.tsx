@@ -28,6 +28,15 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
   dataSourceManagement,
 }) => {
   const [selectedDataSource, setSelectedDataSource] = useState<string>('');
+  // When multi-data-source is enabled, the OSD DataSourceSelector resolves its
+  // default asynchronously. Defer the initial fetch until it reports.
+  const [dataSourceInitialized, setDataSourceInitialized] = useState(!dataSourceEnabled);
+
+  const handleDataSourceChange = useCallback((id: string) => {
+    setSelectedDataSource(id);
+    setDataSourceInitialized(true);
+  }, []);
+
   const {
     formData,
     updateFormData,
@@ -55,7 +64,13 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
     dateRangeError,
     parsedJudgments,
     parseSummary,
-  } = useJudgmentForm(http, notifications, selectedDataSource || undefined, dataSourceEnabled);
+  } = useJudgmentForm(
+    http,
+    notifications,
+    selectedDataSource || undefined,
+    dataSourceEnabled,
+    dataSourceInitialized
+  );
 
   const handleSubmit = useCallback(() => {
     validateAndSubmit(() => {
@@ -102,7 +117,7 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
               dataSourceManagement={dataSourceManagement}
               savedObjects={savedObjects}
               selectedDataSource={selectedDataSource}
-              setSelectedDataSource={setSelectedDataSource}
+              setSelectedDataSource={handleDataSourceChange}
             />
           )}
           <JudgmentForm

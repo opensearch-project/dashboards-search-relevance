@@ -39,6 +39,23 @@ jest.mock('../hooks/use_search_configuration_form', () => ({
   useSearchConfigurationForm: () => mockHookReturn,
 }));
 
+// Test double for the OSD DataSourceSelector. The button lets the test drive
+// `setSelectedDataSource` synchronously to simulate the real selector
+// resolving its default after mount.
+jest.mock('../../common/datasource_selector', () => ({
+  DataSourceSelector: ({ setSelectedDataSource }: any) => (
+    <div data-test-subj="mock-datasource-selector">
+      <button
+        type="button"
+        data-test-subj="ds-pick-foo"
+        onClick={() => setSelectedDataSource('foo-ds')}
+      >
+        pick-foo
+      </button>
+    </div>
+  ),
+}));
+
 const mockHttp = {};
 const mockNotifications = {
   toasts: {
@@ -179,13 +196,71 @@ describe('SearchConfigurationCreate', () => {
         notifications={mockNotifications}
         history={mockHistory}
         dataSourceEnabled={true}
-        dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
+        dataSourceManagement={{ ui: { DataSourceSelector: () => null } } as any}
         savedObjects={{ client: {} } as any}
         navigation={{} as any}
         setActionMenu={jest.fn()}
       />
     );
 
-    expect(screen.getByText('DataSourceSelector')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-datasource-selector')).toBeInTheDocument();
+  });
+
+  describe('multi-data-source initialization gating', () => {
+    // Capture every props object the view passes into useSearchConfigurationForm
+    // so we can assert on dataSourceEnabled / dataSourceInitialized directly.
+    const installCapturingHook = (): any[] => {
+      const captured: any[] = [];
+      const useFormMock = jest.requireMock('../hooks/use_search_configuration_form');
+      useFormMock.useSearchConfigurationForm = jest.fn((props: any) => {
+        captured.push(props);
+        return mockHookReturn;
+      });
+      return captured;
+    };
+
+    it('passes dataSourceInitialized=true to the form hook when multi-data-source is disabled', () => {
+      const captured = installCapturingHook();
+
+      render(
+        <SearchConfigurationCreate
+          http={mockHttp}
+          notifications={mockNotifications}
+          history={mockHistory}
+        />
+      );
+
+      const lastCall = captured[captured.length - 1];
+      expect(lastCall.dataSourceEnabled).toBe(false);
+      expect(lastCall.dataSourceInitialized).toBe(true);
+    });
+
+    it('starts with dataSourceInitialized=false when multi-data-source is enabled and flips to true after the selector reports', () => {
+      const captured = installCapturingHook();
+
+      render(
+        <SearchConfigurationCreate
+          http={mockHttp}
+          notifications={mockNotifications}
+          history={mockHistory}
+          dataSourceEnabled={true}
+          dataSourceManagement={{ ui: { DataSourceSelector: () => null } } as any}
+          savedObjects={{ client: {} } as any}
+        />
+      );
+
+      // First render: gate is closed.
+      expect(captured[0].dataSourceEnabled).toBe(true);
+      expect(captured[0].dataSourceInitialized).toBe(false);
+
+      // Selector reports a data source — gate opens, hook re-runs with both
+      // the new dataSourceId and dataSourceInitialized=true.
+      fireEvent.click(screen.getByTestId('ds-pick-foo'));
+
+      const lastCall = captured[captured.length - 1];
+      expect(lastCall.dataSourceId).toBe('foo-ds');
+      expect(lastCall.dataSourceEnabled).toBe(true);
+      expect(lastCall.dataSourceInitialized).toBe(true);
+    });
   });
 });

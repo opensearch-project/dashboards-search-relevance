@@ -38,6 +38,15 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
   dataSourceManagement,
 }) => {
   const [selectedDataSource, setSelectedDataSource] = useState<string>('');
+  // When multi-data-source is enabled, the OSD DataSourceSelector resolves its
+  // default asynchronously. Defer initial fetches until it reports.
+  const [dataSourceInitialized, setDataSourceInitialized] = useState(!dataSourceEnabled);
+
+  const handleDataSourceChange = useCallback((id: string) => {
+    setSelectedDataSource(id);
+    setDataSourceInitialized(true);
+  }, []);
+
   const {
     // Form state
     name,
@@ -78,6 +87,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     onSuccess: () => history.push('/searchConfiguration'),
     dataSourceId: selectedDataSource || undefined,
     dataSourceEnabled,
+    dataSourceInitialized,
   });
 
   // Handle cancel action
@@ -120,7 +130,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
                 dataSourceManagement={dataSourceManagement}
                 savedObjects={savedObjects}
                 selectedDataSource={selectedDataSource}
-                setSelectedDataSource={setSelectedDataSource}
+                setSelectedDataSource={handleDataSourceChange}
                 excludeEngineTypes={['AnalyticEngine']}
               />
             )}

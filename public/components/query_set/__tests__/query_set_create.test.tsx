@@ -28,6 +28,29 @@ jest.mock('../components/query_preview', () => ({
     <div data-test-subj="query-preview">{parsedQueries.length} queries</div>
   ),
 }));
+// Test double for the OSD DataSourceSelector. The component lets the test
+// drive `setSelectedDataSource` synchronously to simulate the selector's
+// asynchronous resolution.
+jest.mock('../../common/datasource_selector', () => ({
+  DataSourceSelector: ({ setSelectedDataSource }: any) => (
+    <div data-test-subj="mock-datasource-selector">
+      <button
+        type="button"
+        data-test-subj="ds-pick-foo"
+        onClick={() => setSelectedDataSource('foo-ds')}
+      >
+        pick-foo
+      </button>
+      <button
+        type="button"
+        data-test-subj="ds-pick-empty"
+        onClick={() => setSelectedDataSource('')}
+      >
+        pick-empty
+      </button>
+    </div>
+  ),
+}));
 
 const mockFormState = {
   name: 'Test Query Set',
@@ -68,6 +91,7 @@ const mockFormState = {
 
 const mockQuerySetServiceInstance = {
   createQuerySet: jest.fn(),
+  fetchUbiIndexes: jest.fn(),
 };
 
 describe('QuerySetCreate', () => {
@@ -88,6 +112,7 @@ describe('QuerySetCreate', () => {
 
     // Reset mocks
     jest.clearAllMocks();
+    mockQuerySetServiceInstance.fetchUbiIndexes.mockResolvedValue([]);
 
     // Mock the hook return value
     (require('../hooks/use_query_set_form').useQuerySetForm as jest.Mock).mockReturnValue(
@@ -192,5 +217,67 @@ describe('QuerySetCreate', () => {
 
     expect(screen.getByTestId('query-preview')).toBeInTheDocument();
     expect(screen.getByText('2 queries')).toBeInTheDocument();
+  });
+
+  describe('UBI index fetch gating with multi-data-source', () => {
+    const renderWithDataSource = (dataSourceEnabled: boolean) =>
+      render(
+        <Router history={history}>
+          <QuerySetCreate
+            http={mockHttp}
+            notifications={mockNotifications}
+            history={history}
+            location={history.location}
+            match={{ params: {}, isExact: true, path: '', url: '' }}
+            dataSourceEnabled={dataSourceEnabled}
+            dataSourceManagement={
+              { ui: { DataSourceSelector: () => null } } as any
+            }
+            savedObjects={{ client: {} } as any}
+          />
+        </Router>
+      );
+
+    it('fetches UBI indexes immediately when multi-data-source is disabled', async () => {
+      renderWithDataSource(false);
+
+      await waitFor(() => {
+        expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledTimes(1);
+      });
+      // Single-cluster: no dataSourceId argument.
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledWith(undefined);
+    });
+
+    it('defers UBI index fetch until selector reports when multi-data-source is enabled', async () => {
+      renderWithDataSource(true);
+
+      // Allow effects to flush; the gate must keep the fetch from firing.
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).not.toHaveBeenCalled();
+
+      // Selector reports a chosen data source — fetch must run with that id.
+      fireEvent.click(screen.getByTestId('ds-pick-foo'));
+
+      await waitFor(() => {
+        expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledTimes(1);
+      });
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledWith('foo-ds');
+    });
+
+    it('fetches against the local cluster when the selector resolves to local (empty id)', async () => {
+      renderWithDataSource(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).not.toHaveBeenCalled();
+
+      // Selector picks the local cluster — empty id is a legitimate selection,
+      // not a "not initialized yet" state. The fetch must still fire.
+      fireEvent.click(screen.getByTestId('ds-pick-empty'));
+
+      await waitFor(() => {
+        expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledTimes(1);
+      });
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledWith(undefined);
+    });
   });
 });
