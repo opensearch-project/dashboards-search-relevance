@@ -4,7 +4,6 @@
  */
 
 import {
-  EuiBadge,
   EuiButtonEmpty,
   EuiCallOut,
   EuiPanel,
@@ -12,6 +11,7 @@ import {
   EuiDescriptionList,
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
+  EuiHealth,
   EuiSpacer,
   EuiToolTip,
 } from '@elastic/eui';
@@ -296,29 +296,30 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     fetchExperiment();
   }, [http, inputExperiment, dataSourceId]);
 
-  const getStatusBadge = (status: QueryEvaluationStatus, statusMessage?: string) => {
-    const badgeConfig: Record<
+  const getStatusIndicator = (status: QueryEvaluationStatus, statusMessage?: string) => {
+    // EuiHealth matches experiment listing status styling (see common_utils/status.ts).
+    const statusConfig: Record<
       QueryEvaluationStatus,
-      { color: 'success' | 'warning' | 'danger' | 'default'; label: string }
+      { color: 'success' | 'warning' | 'danger' | 'subdued'; label: string }
     > = {
       success: { color: 'success', label: 'Evaluated' },
       zero_results: { color: 'warning', label: 'Zero results' },
       failed: { color: 'danger', label: 'Failed' },
-      not_run: { color: 'default', label: 'Not run' },
+      not_run: { color: 'subdued', label: 'Not run' },
     };
-    const config = badgeConfig[status];
+    const config = statusConfig[status];
 
-    const badge = (
-      <EuiBadge color={config.color} data-test-subj={`queryStatus-${status}`}>
-        {config.label}
-      </EuiBadge>
+    const indicator = (
+      <span data-test-subj={`queryStatus-${status}`}>
+        <EuiHealth color={config.color}>{config.label}</EuiHealth>
+      </span>
     );
 
     if (statusMessage) {
-      return <EuiToolTip content={statusMessage}>{badge}</EuiToolTip>;
+      return <EuiToolTip content={statusMessage}>{indicator}</EuiToolTip>;
     }
 
-    return badge;
+    return indicator;
   };
 
   function extractMetricNames(evaluations: QueryEvaluationRow[]): string[] {
@@ -365,7 +366,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           dataType: 'string',
           sortable: true,
           render: (_status: QueryEvaluationStatus, row: QueryEvaluationRow) =>
-            getStatusBadge(row.status, row.statusMessage),
+            getStatusIndicator(row.status, row.statusMessage),
         },
       ];
       metricNames.forEach((metricName) => {
