@@ -5,7 +5,7 @@
 
 import { EuiGlobalToastList } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
 import {
   EuiPageSideBar,
@@ -41,7 +41,8 @@ import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
-import { parseEntityParams } from './common/datasource_utils';
+import { parseEntityParams, useDataSourceUrlSync } from './common/datasource_utils';
+import { DataSourceMenu } from './common/data_source_menu';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -90,6 +91,12 @@ const SearchRelevancePage = ({
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
+
+  const [dataSourceId, setDataSourceId] = useDataSourceUrlSync(
+    dataSourceEnabled,
+    history,
+    location
+  );
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
   const parentBreadCrumbs = getNavGroupEnabled
@@ -188,6 +195,15 @@ const SearchRelevancePage = ({
 
   return (
     <EuiPage restrictWidth={'100%'}>
+      <DataSourceMenu
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        notifications={notifications}
+        setActionMenu={setActionMenu}
+        dataSourceId={dataSourceId}
+        setDataSourceId={setDataSourceId}
+      />
       <EuiPageSideBar style={{ minWidth: 200 }}>
         <EuiSideNav style={{ width: 200 }} items={sideNavItems} />
       </EuiPageSideBar>
@@ -220,9 +236,7 @@ const SearchRelevancePage = ({
                 // No config parameter, show experiment listing
                 return <ExperimentListingWithRoute
                   http={http}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
+                  dataSourceId={dataSourceId}
                   onAskAI={onAskAI}
                 />;
               }
@@ -234,9 +248,7 @@ const SearchRelevancePage = ({
             render={() => {
               return <ExperimentListingWithRoute
                 http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
                 onAskAI={onAskAI}
               />;
             }}
@@ -245,36 +257,21 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <QuerySetListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <SearchConfigurationListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <JudgmentListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -361,9 +358,7 @@ const SearchRelevancePage = ({
                       history.goBack();
                     }}
                     onClose={() => { }}
-                    savedObjects={savedObjects}
-                    dataSourceEnabled={dataSourceEnabled}
-                    dataSourceManagement={dataSourceManagement}
+                    dataSourceId={dataSourceId}
                   />
                 );
               }
@@ -376,9 +371,7 @@ const SearchRelevancePage = ({
               return <QuerySetCreate
                 http={http}
                 notifications={notifications}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />
@@ -389,9 +382,7 @@ const SearchRelevancePage = ({
               return <SearchConfigurationCreate
                 http={http}
                 notifications={notifications}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />
@@ -403,9 +394,7 @@ const SearchRelevancePage = ({
                 http={http}
                 notifications={notifications}
                 history={history}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />

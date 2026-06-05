@@ -28,7 +28,6 @@ jest.mock('../components/query_preview', () => ({
     <div data-test-subj="query-preview">{parsedQueries.length} queries</div>
   ),
 }));
-
 const mockFormState = {
   name: 'Test Query Set',
   setName: jest.fn(),
@@ -68,6 +67,7 @@ const mockFormState = {
 
 const mockQuerySetServiceInstance = {
   createQuerySet: jest.fn(),
+  fetchUbiIndexes: jest.fn(),
 };
 
 describe('QuerySetCreate', () => {
@@ -88,6 +88,7 @@ describe('QuerySetCreate', () => {
 
     // Reset mocks
     jest.clearAllMocks();
+    mockQuerySetServiceInstance.fetchUbiIndexes.mockResolvedValue([]);
 
     // Mock the hook return value
     (require('../hooks/use_query_set_form').useQuerySetForm as jest.Mock).mockReturnValue(
@@ -192,5 +193,38 @@ describe('QuerySetCreate', () => {
 
     expect(screen.getByTestId('query-preview')).toBeInTheDocument();
     expect(screen.getByText('2 queries')).toBeInTheDocument();
+  });
+
+  describe('UBI index fetch with dataSourceId prop', () => {
+    const renderWithDataSourceId = (dataSourceId?: string) =>
+      render(
+        <Router history={history}>
+          <QuerySetCreate
+            http={mockHttp}
+            notifications={mockNotifications}
+            history={history}
+            location={history.location}
+            match={{ params: {}, isExact: true, path: '', url: '' }}
+            dataSourceId={dataSourceId}
+          />
+        </Router>
+      );
+
+    it('fetches UBI indexes against the local cluster when no dataSourceId is supplied', async () => {
+      renderWithDataSourceId(undefined);
+
+      await waitFor(() => {
+        expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledTimes(1);
+      });
+      expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledWith(undefined);
+    });
+
+    it('forwards dataSourceId to fetchUbiIndexes', async () => {
+      renderWithDataSourceId('foo-ds');
+
+      await waitFor(() => {
+        expect(mockQuerySetServiceInstance.fetchUbiIndexes).toHaveBeenCalledWith('foo-ds');
+      });
+    });
   });
 });

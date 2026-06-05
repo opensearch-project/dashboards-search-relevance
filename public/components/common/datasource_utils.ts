@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { SavedObject } from '../../../../../src/core/public';
 import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
 import semver from 'semver';
@@ -45,6 +45,39 @@ export const useDataSourceSelection = (setSelectedDataSource: (id: string) => vo
     const dataConnectionId = dataSources[0] ? dataSources[0].id : '';
     setSelectedDataSource(dataConnectionId);
   }, [setSelectedDataSource]);
+};
+
+/**
+ * Hook that owns the active dataSourceId and keeps it in sync with the URL
+ * `?dataSourceId=…` query param. Seeded from the URL on mount (only when MDS
+ * is enabled, so a stale param from a prior session is ignored when the
+ * dataSource plugin isn't loaded), then re-stamped on every navigation so
+ * tab clicks via `history.push(pathname)` don't drop the param.
+ */
+export const useDataSourceUrlSync = (
+  dataSourceEnabled: boolean,
+  history: { replace: (location: any) => void },
+  location: { search?: string; pathname?: string; hash?: string }
+): [string | undefined, (id: string | undefined) => void] => {
+  const [dataSourceId, setDataSourceId] = useState<string | undefined>(() =>
+    dataSourceEnabled ? parseDataSourceIdFromUrl(location) : undefined
+  );
+
+  useEffect(() => {
+    if (!dataSourceEnabled) return;
+    const params = new URLSearchParams(location.search);
+    const current = params.get('dataSourceId') || undefined;
+    if (current === dataSourceId) return;
+    if (dataSourceId === undefined) {
+      params.delete('dataSourceId');
+    } else {
+      params.set('dataSourceId', dataSourceId);
+    }
+    const search = params.toString();
+    history.replace({ ...location, search: search ? `?${search}` : '' });
+  }, [dataSourceId, dataSourceEnabled, location, history]);
+
+  return [dataSourceId, setDataSourceId];
 };
 
 /**

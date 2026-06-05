@@ -20,8 +20,6 @@ import ExperimentListingWithRoute from '../experiment/views/experiment_listing';
 import { useOpenSearchDashboards } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { JudgmentCreateWithRouter } from '../judgment';
 import { JudgmentListing, JudgmentView } from '../judgment';
-import { useContext } from 'react';
-import { ConfigContext } from '../../contexts/date_format_context';
 
 const TAB_STYLES = {
   mainTabs: {
@@ -59,8 +57,7 @@ export const ResourceManagementTabs = ({
   entityAction,
   entityId,
 }: ResourceManagementTabsProps) => {
-  const { http, notifications, savedObjects } = useOpenSearchDashboards().services;
-  const { dataSourceEnabled, dataSourceManagement } = useContext(ConfigContext);
+  const { http, notifications } = useOpenSearchDashboards().services;
 
   const selectedMainTabId = entity ? entity : 'experiment';
   // HACK: we map view to list, because we show the view pane under the list tab
@@ -133,12 +130,9 @@ export const ResourceManagementTabs = ({
               )}
               {entityAction === 'view' ? <QuerySetView http={http} id={entityId} /> : <></>}
               {selectedSubTabs === 'create' ? (
-                <QuerySetCreate 
-                  http={http} 
+                <QuerySetCreate
+                  http={http}
                   notifications={notifications}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
                 />
               ) : (
                 <></>
@@ -167,12 +161,9 @@ export const ResourceManagementTabs = ({
                 <></>
               )}
               {selectedSubTabs === 'create' ? (
-                <SearchConfigurationCreate 
-                  http={http} 
+                <SearchConfigurationCreate
+                  http={http}
                   notifications={notifications}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
                 />
               ) : (
                 <></>
@@ -201,9 +192,6 @@ export const ResourceManagementTabs = ({
                   http={http}
                   notifications={notifications}
                   history={history}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
                 />
               ) : (
                 <></>
