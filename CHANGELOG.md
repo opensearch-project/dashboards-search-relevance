@@ -20,3 +20,4 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Maintenance
 
 ### Refactoring
+* Remove unused `resource_management_home` component directory ([#779](https://github.com/opensearch-project/dashboards-search-relevance/issues/779))

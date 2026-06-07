@@ -50,7 +50,6 @@ module.exports = {
 
     '!public/components/common/**',
     '!public/components/common_utils/**',
-    '!public/components/resource_management_home/**',
     '!public/components/service_card/**',
     '!public/components/app.tsx',
   ],
