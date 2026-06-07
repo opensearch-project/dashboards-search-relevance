@@ -67,6 +67,31 @@ describe('JudgmentView', () => {
     expect(screen.getByText('Failed to load judgment')).toBeInTheDocument();
   });
 
+  it('renders processing callout when judgment status is PROCESSING', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Processing Judgment',
+        type: 'UBI',
+        status: 'PROCESSING',
+        metadata: {},
+        judgmentRatings: [],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    expect(screen.getByTestId('judgmentProcessingCallOut')).toBeInTheDocument();
+    expect(screen.getByText('PROCESSING')).toBeInTheDocument();
+  });
+
   it('renders judgment metadata & flattened ratings table', () => {
     mockUseJudgmentView.mockReturnValue({
       judgment: {
