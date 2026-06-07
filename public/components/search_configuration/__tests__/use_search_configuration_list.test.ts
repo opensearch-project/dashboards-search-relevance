@@ -113,6 +113,73 @@ describe('useSearchConfigurationList', () => {
     expect(result.current.error).toContain('Failed to load search configurations');
   });
 
+  it('should map description from response', async () => {
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Test Config',
+              description: 'Baseline algorithm',
+              index: 'test-index',
+              query: '{}',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useSearchConfigurationList(mockHttp as any));
+
+    await act(async () => {
+      const response = await result.current.findSearchConfigurations();
+      expect(response.hits[0].description).toBe('Baseline algorithm');
+    });
+  });
+
+  it('should filter search configurations by description', async () => {
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Config One',
+              description: 'Baseline algorithm',
+              index: 'index-one',
+              query: '{}',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+          {
+            _source: {
+              id: '2',
+              name: 'Config Two',
+              description: 'Experimental variant',
+              index: 'index-two',
+              query: '{}',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useSearchConfigurationList(mockHttp as any));
+
+    await act(async () => {
+      const response = await result.current.findSearchConfigurations('baseline');
+      expect(response.total).toBe(1);
+      expect(response.hits[0].search_configuration_name).toBe('Config One');
+    });
+  });
+
   it('should filter search configurations by search term', async () => {
     const mockResponse = {
       hits: {

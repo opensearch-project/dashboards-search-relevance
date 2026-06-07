@@ -6,7 +6,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
 import { SearchConfigurationService } from '../services/search_configuration_service';
-import { validateName, validateQuery, validateForm } from '../utils/validation';
+import { validateName, validateQuery, validateDescription, validateForm } from '../utils/validation';
 import {
   processQuery,
   prepareQueryBody,
@@ -28,6 +28,11 @@ export interface UseSearchConfigurationFormReturn {
   setName: (name: string) => void;
   nameError: string;
   validateNameField: (e: React.FocusEvent<HTMLInputElement>) => void;
+
+  description: string;
+  setDescription: (description: string) => void;
+  descriptionError: string;
+  validateDescriptionField: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
 
   query: string;
   setQuery: (query: string) => void;
@@ -70,6 +75,8 @@ export const useSearchConfigurationForm = ({
   // Form state
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
+  const [description, setDescription] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
   const [query, setQuery] = useState('');
   const [queryError, setQueryError] = useState('');
   const [searchTemplate, setSearchTemplate] = useState('');
@@ -144,6 +151,12 @@ export const useSearchConfigurationForm = ({
     setNameError(error);
   }, []);
 
+  const validateDescriptionField = useCallback((e: React.FocusEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const error = validateDescription(value);
+    setDescriptionError(error);
+  }, []);
+
   // Validate search query
   const validateSearchQuery = useCallback(async () => {
     if (!selectedIndex.length) {
@@ -203,10 +216,16 @@ export const useSearchConfigurationForm = ({
 
   // Create search configuration
   const createSearchConfiguration = useCallback(async () => {
-    const { isValid, nameError, queryError, indexError } = validateForm(name, query, selectedIndex);
+    const { isValid, nameError, queryError, indexError, descriptionError } = validateForm(
+      name,
+      query,
+      selectedIndex,
+      description
+    );
 
     setNameError(nameError);
     setQueryError(queryError);
+    setDescriptionError(descriptionError);
 
     if (!isValid) {
       if (indexError) {
@@ -221,6 +240,7 @@ export const useSearchConfigurationForm = ({
     try {
       await searchConfigService.createSearchConfiguration({
         name,
+        description,
         index: selectedIndex[0].label,
         query,
         searchPipeline: selectedPipeline.length > 0 ? selectedPipeline[0].label : undefined,
@@ -236,7 +256,7 @@ export const useSearchConfigurationForm = ({
         title: 'Failed to create search configuration',
       });
     }
-  }, [name, query, searchTemplate, selectedIndex, selectedPipeline, onSuccess]);
+  }, [name, description, query, searchTemplate, selectedIndex, selectedPipeline, onSuccess, dataSourceId]);
 
   return {
     // Form state
@@ -244,6 +264,10 @@ export const useSearchConfigurationForm = ({
     setName,
     nameError,
     validateNameField,
+    description,
+    setDescription,
+    descriptionError,
+    validateDescriptionField,
     query,
     setQuery,
     queryError,

@@ -96,6 +96,58 @@ describe('SearchConfigurationView', () => {
     expect(mockFormatJson).toHaveBeenCalledWith('{"match_all": {}}');
   });
 
+  it('renders description when available', () => {
+    const mockFormatJson = jest.fn().mockReturnValue('{\n  "match_all": {}\n}');
+    mockUseSearchConfigurationView.mockReturnValue({
+      searchConfiguration: {
+        id: '1',
+        name: 'Test Config',
+        description: 'Current production algorithm',
+        index: 'test-index',
+        query: '{"match_all": {}}',
+        timestamp: '2023-01-01T00:00:00Z',
+      },
+      loading: false,
+      error: null,
+      formatJson: mockFormatJson,
+    });
+
+    render(
+      <Router history={history}>
+        <SearchConfigurationView {...defaultProps} />
+      </Router>
+    );
+
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getByText('Current production algorithm')).toBeInTheDocument();
+  });
+
+  it('renders "None" when description is not available', () => {
+    const mockFormatJson = jest.fn().mockReturnValue('{\n  "match_all": {}\n}');
+    mockUseSearchConfigurationView.mockReturnValue({
+      searchConfiguration: {
+        id: '1',
+        name: 'Test Config',
+        index: 'test-index',
+        query: '{"match_all": {}}',
+        searchPipeline: 'test-pipeline',
+        timestamp: '2023-01-01T00:00:00Z',
+      },
+      loading: false,
+      error: null,
+      formatJson: mockFormatJson,
+    });
+
+    render(
+      <Router history={history}>
+        <SearchConfigurationView {...defaultProps} />
+      </Router>
+    );
+
+    expect(screen.getByText('Description')).toBeInTheDocument();
+    expect(screen.getAllByText('None')).toHaveLength(1);
+  });
+
   it('renders search pipeline when available', () => {
     const mockFormatJson = jest.fn().mockReturnValue('{\n  "match_all": {}\n}');
     mockUseSearchConfigurationView.mockReturnValue({
@@ -146,7 +198,7 @@ describe('SearchConfigurationView', () => {
     );
 
     expect(screen.getByText('Search Pipeline')).toBeInTheDocument();
-    expect(screen.getByText('None')).toBeInTheDocument();
+    expect(screen.getAllByText('None')).toHaveLength(2);
     expect(screen.queryByText('Search Template')).not.toBeInTheDocument();
   });
 });
