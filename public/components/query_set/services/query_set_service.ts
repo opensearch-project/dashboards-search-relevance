@@ -9,7 +9,7 @@ import { DocumentsIndex } from '../../../types';
 
 export interface QuerySetData {
   name: string;
-  description: string;
+  description?: string;
   sampling: string;
   querySetSize?: number;
   querySetQueries?: Array<{ queryText: string; referenceAnswer: string }>;
@@ -33,17 +33,18 @@ export class QuerySetService {
   async createQuerySet(data: QuerySetData, isManualInput: boolean, dataSourceId?: string | null): Promise<any> {
     const endpoint = ServiceEndpoints.QuerySets;
     const method = isManualInput ? 'put' : 'post';
+    const descriptionField = data.description?.trim() ? { description: data.description } : {};
 
     const body = isManualInput
       ? {
           name: data.name,
-          description: data.description,
+          ...descriptionField,
           sampling: 'manual',
           querySetQueries: data.querySetQueries,
         }
       : {
           name: data.name,
-          description: data.description,
+          ...descriptionField,
           sampling: data.sampling,
           querySetSize: data.querySetSize,
           ...(data.ubiQueriesIndex && { ubiQueriesIndex: data.ubiQueriesIndex }),

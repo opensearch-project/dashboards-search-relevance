@@ -148,6 +148,26 @@ describe('QuerySetCreate', () => {
     expect(history.location.pathname).toBe('/querySet');
   });
 
+  it('should submit when description is empty', async () => {
+    mockFormState.description = '';
+    mockQuerySetServiceInstance.createQuerySet.mockResolvedValue({ success: true });
+
+    renderComponent();
+
+    fireEvent.click(screen.getByTestId('createQuerySetButton'));
+
+    await waitFor(() => {
+      expect(mockQuerySetServiceInstance.createQuerySet).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Test Query Set',
+          description: '',
+        }),
+        false,
+        undefined
+      );
+    });
+  });
+
   it('should handle form submission errors', async () => {
     const error = new Error('API Error');
     mockQuerySetServiceInstance.createQuerySet.mockRejectedValue(error);
