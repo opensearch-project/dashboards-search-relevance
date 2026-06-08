@@ -15,6 +15,7 @@ import {
   EuiText,
   EuiFieldSearch,
   EuiBasicTable,
+  EuiCallOut,
 } from '@elastic/eui';
 import { CoreStart } from '../../../../../../src/core/public';
 import { useJudgmentView } from '../hooks/use_judgment_view';
@@ -153,6 +154,24 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id, dataSource
         <EuiFormRow label="Type" fullWidth>
           <EuiText>{judgment.type}</EuiText>
         </EuiFormRow>
+
+        <EuiFormRow label="Status" fullWidth>
+          <EuiText>{judgment.status}</EuiText>
+        </EuiFormRow>
+
+        {judgment.status === 'PROCESSING' && (
+          <>
+            <EuiSpacer size="m" />
+            <EuiCallOut
+              title="Judgment processing"
+              color="primary"
+              iconType="clock"
+              data-test-subj="judgmentProcessingCallOut"
+            >
+              <p>Judgment ratings are being generated. This page will update automatically.</p>
+            </EuiCallOut>
+          </>
+        )}
 
         <EuiFormRow label="Metadata" fullWidth>
           <EuiText>
