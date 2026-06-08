@@ -18,7 +18,6 @@ export interface JudgmentData {
 }
 
 const POLL_INTERVAL_MS = 5000;
-const MAX_POLLING_DURATION_MS = 10 * 60 * 1000;
 const MAX_POLL_ERRORS = 3;
 
 export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
@@ -27,7 +26,6 @@ export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceI
   const [error, setError] = useState<string | null>(null);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pollingStartTime = useRef<number>(0);
   const pollErrorCount = useRef<number>(0);
 
   const stopPolling = useCallback(() => {
@@ -103,14 +101,7 @@ export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceI
       return undefined;
     }
 
-    pollingStartTime.current = Date.now();
-
     intervalRef.current = setInterval(() => {
-      if (Date.now() - pollingStartTime.current > MAX_POLLING_DURATION_MS) {
-        stopPolling();
-        return;
-      }
-
       fetchJudgment();
     }, POLL_INTERVAL_MS);
 
