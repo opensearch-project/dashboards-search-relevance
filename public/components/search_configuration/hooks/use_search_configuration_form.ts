@@ -19,7 +19,6 @@ export interface UseSearchConfigurationFormProps {
   notifications: NotificationsStart;
   onSuccess?: () => void;
   dataSourceId?: string;
-  dataSourceEnabled?: boolean;
 }
 
 export interface UseSearchConfigurationFormReturn {
@@ -65,7 +64,6 @@ export const useSearchConfigurationForm = ({
   notifications,
   onSuccess,
   dataSourceId,
-  dataSourceEnabled = false,
 }: UseSearchConfigurationFormProps): UseSearchConfigurationFormReturn => {
   // Form state
   const [name, setName] = useState('');
@@ -112,7 +110,7 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchIndexes();
-  }, [dataSourceId, dataSourceEnabled]);
+  }, [dataSourceId]);
 
   // Fetch pipelines on component mount
   useEffect(() => {
@@ -135,7 +133,7 @@ export const useSearchConfigurationForm = ({
     };
 
     fetchPipelines();
-  }, [dataSourceId, dataSourceEnabled]);
+  }, [dataSourceId]);
 
   // Validate name field on blur
   const validateNameField = useCallback((e: React.FocusEvent<HTMLInputElement>) => {

@@ -29,11 +29,9 @@ import {
   useOpenSearchDashboards,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
 import { DashboardInstallModal } from '../../common/dashboard_install_modal';
-import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { printType } from '../../../types/index';
 import { ExperimentService } from '../services/experiment_service';
@@ -52,24 +50,19 @@ import './experiment_listing.scss';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
   onAskAI?: () => void;
 }
 
 export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   http,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
   onAskAI,
 }) => {
   const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const experimentService = new ExperimentService(http);
 
   const [showDeleteExperimentModal, setShowDeleteExperimentModal] = useState(false);
@@ -97,7 +90,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   useEffect(() => {
     setTableData([]);
     setRefreshKey((prev) => prev + 1);
-  }, [selectedDataSource]);
+  }, [dataSourceId]);
 
   // Custom hook for experiment polling
   const useExperimentPolling = () => {
@@ -130,7 +123,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
         setIsBackgroundRefreshing(true);
         try {
-          const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+          const parseResults = await experimentService.getExperiments(dataSourceId);
 
           if (parseResults.success) {
             const updatedList = parseResults.data;
@@ -261,7 +254,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
     setIsLoading(true);
     try {
-      await experimentService.deleteExperiment(experimentToDelete.id, selectedDataSource || undefined);
+      await experimentService.deleteExperiment(experimentToDelete.id, dataSourceId);
 
       // Close modal and clear state first
       setShowDeleteExperimentModal(false);
@@ -289,7 +282,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
     setIsLoading(true);
     try {
-      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, selectedDataSource || undefined);
+      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, dataSourceId);
 
       // Close modal and clear state first
       setShowDeleteScheduleModal(false);
@@ -319,7 +312,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       await experimentService.createScheduledExperiment(JSON.stringify({
         experimentId: experimentToSchedule.id,
         cronExpression: `${cronExpression.trim()}`
-      }), selectedDataSource || undefined);
+      }), dataSourceId);
 
       setShowScheduleExperimentModal(false);
       setExperimentToSchedule(null);
@@ -342,7 +335,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   const getScheduledExperiment = async (experimentId: string) => {
     setIsLoading(true);
     try {
-      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId, selectedDataSource || undefined));
+      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId, dataSourceId));
       return scheduledExperiment.data;
     } catch (err) {
       console.error('Failed to retrieve schedule', err);
@@ -367,7 +360,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       ) => (
         <EuiButtonEmpty
           size="xs"
-          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
+          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
         >
           {printType(type)}
         </EuiButtonEmpty>
@@ -515,7 +508,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+      const parseResults = await experimentService.getExperiments(dataSourceId);
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -586,19 +579,6 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
       <EuiSpacer size="m" />
 
-      {dataSourceEnabled && dataSourceManagement && savedObjects && (
-        <DataSourceSelector
-          dataSourceEnabled={dataSourceEnabled}
-          dataSourceManagement={dataSourceManagement}
-          savedObjects={savedObjects}
-          selectedDataSource={selectedDataSource}
-          setSelectedDataSource={setSelectedDataSource}
-          excludeEngineTypes={['AnalyticEngine']}
-        />
-      )}
-
-      <EuiSpacer size="m" />
-
       {onAskAI && !isAICalloutDismissed && (
         <>
           <EuiCallOut
@@ -642,7 +622,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
         )}
         {!error && (
           <TableListView
-            key={`${refreshKey}-${selectedDataSource}`}
+            key={`${refreshKey}-${dataSourceId ?? ''}`}
             headingId="experimentListingHeading"
             entityName="Experiment"
             entityNamePlural="Experiments"

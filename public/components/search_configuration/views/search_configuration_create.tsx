@@ -12,32 +12,25 @@ import {
   EuiFlexGroup,
   EuiFlexItem,
 } from '@elastic/eui';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart, NotificationsStart } from '../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { SearchConfigurationForm } from '../components/search_configuration_form';
 import { ValidationPanel } from '../components/validation_panel';
 import { useSearchConfigurationForm } from '../hooks/use_search_configuration_form';
-import { DataSourceSelector } from '../../common/datasource_selector';
 
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
 }
 
 export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps> = ({
   http,
   notifications,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
 }) => {
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     // Form state
     name,
@@ -76,8 +69,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     http,
     notifications,
     onSuccess: () => history.push('/searchConfiguration'),
-    dataSourceId: selectedDataSource || undefined,
-    dataSourceEnabled,
+    dataSourceId,
   });
 
   // Handle cancel action
@@ -114,16 +106,6 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
       <EuiFlexGroup>
         <EuiFlexItem grow={7}>
           <EuiPanel hasBorder={true}>
-            {dataSourceEnabled && dataSourceManagement && savedObjects && (
-              <DataSourceSelector
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-                savedObjects={savedObjects}
-                selectedDataSource={selectedDataSource}
-                setSelectedDataSource={setSelectedDataSource}
-                excludeEngineTypes={['AnalyticEngine']}
-              />
-            )}
             <SearchConfigurationForm
               name={name}
               setName={setName}

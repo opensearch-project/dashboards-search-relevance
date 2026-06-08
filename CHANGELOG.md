@@ -20,3 +20,4 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Maintenance
 
 ### Refactoring
+* Replace per-page data source selectors with a single global data source menu in the OSD chrome header, backed by URL-synced state ([#850](https://github.com/opensearch-project/dashboards-search-relevance/pull/850))

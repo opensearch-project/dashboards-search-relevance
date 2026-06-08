@@ -5,8 +5,6 @@
 
 import { RouteComponentProps } from 'react-router-dom';
 import { RouteTemplateType } from '../../../../common';
-import { CoreStart } from '../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 
 export enum TemplateType {
   QueryAnalysis = 'Query Analysis',
@@ -32,9 +30,7 @@ export interface TemplateConfigurationProps extends RouteComponentProps {
   templateType: string;
   onBack: () => void;
   onClose: () => void;
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
 }
 
 export interface ConfigurationFormProps {

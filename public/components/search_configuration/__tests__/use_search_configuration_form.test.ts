@@ -382,4 +382,46 @@ describe('useSearchConfigurationForm', () => {
       searchPipeline: 'pipeline1',
     }, undefined);
   });
+
+  describe('dataSourceId propagation', () => {
+    it('runs the initial fetch with no dataSourceId when none is supplied', async () => {
+      renderHook(() =>
+        useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchIndexes).toHaveBeenCalledTimes(1);
+      expect(mockService.fetchIndexes).toHaveBeenCalledWith(undefined);
+      expect(mockService.fetchPipelines).toHaveBeenCalledTimes(1);
+      expect(mockService.fetchPipelines).toHaveBeenCalledWith(undefined);
+    });
+
+    it('refetches when dataSourceId changes', async () => {
+      const { rerender } = renderHook(
+        ({ dataSourceId }: { dataSourceId: string | undefined }) =>
+          useSearchConfigurationForm({
+            http: mockHttp,
+            notifications: mockNotifications,
+            dataSourceId,
+          }),
+        { initialProps: { dataSourceId: undefined as string | undefined } }
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      rerender({ dataSourceId: 'foo-ds' });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchIndexes).toHaveBeenCalledWith('foo-ds');
+      expect(mockService.fetchPipelines).toHaveBeenCalledWith('foo-ds');
+    });
+  });
 });
