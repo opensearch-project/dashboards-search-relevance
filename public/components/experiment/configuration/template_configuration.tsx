@@ -14,22 +14,18 @@ import { Routes } from '../../../../common';
 import { ConfigurationActions } from './configuration_action';
 import { ExperimentService } from '../services/experiment_service';
 import { useOpenSearchDashboards } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
-import { DataSourceSelector } from '../../common/datasource_selector';
 
 export const TemplateConfiguration = ({
   templateType,
   onBack,
   onClose,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
 }: TemplateConfigurationProps) => {
   const [experimentId, setExperimentId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
   const [showEvaluation, setShowEvaluation] = useState(false);
   const [showTemplateConfigError, setShowTemplateConfigError] = useState<boolean>(false);
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
 
   const configurationFormRef = useRef<ConfigurationFormRef>(null);
   const isMountedRef = useRef(true);
@@ -59,7 +55,7 @@ export const TemplateConfiguration = ({
       // If we reach here, `data` is guaranteed to be valid and not null
       try {
         setIsCreating(true);
-        const response = await experimentService.createExperiment(data, selectedDataSource || undefined);
+        const response = await experimentService.createExperiment(data, dataSourceId);
 
         if (response.experiment_id) {
           if (isMountedRef.current) {
@@ -104,18 +100,7 @@ export const TemplateConfiguration = ({
             <h2>{templateType} Experiment</h2>
           </EuiTitle>
           <EuiSpacer size="m" />
-          {dataSourceEnabled && dataSourceManagement && savedObjects && (
-            <DataSourceSelector
-              dataSourceEnabled={dataSourceEnabled}
-              dataSourceManagement={dataSourceManagement}
-              savedObjects={savedObjects}
-              selectedDataSource={selectedDataSource}
-              setSelectedDataSource={setSelectedDataSource}
-              excludeEngineTypes={['AnalyticEngine']}
-            />
-          )}
-          <EuiSpacer size="m" />
-          <ConfigurationForm templateType={templateType} dataSourceId={selectedDataSource || undefined} ref={configurationFormRef} />
+          <ConfigurationForm templateType={templateType} dataSourceId={dataSourceId} ref={configurationFormRef} />
         </EuiFlexItem>
 
         <EuiFlexItem>

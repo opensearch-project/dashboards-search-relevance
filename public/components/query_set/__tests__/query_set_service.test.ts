@@ -174,5 +174,68 @@ describe('QuerySetService', () => {
         query: { dataSourceId: 'test-datasource' }
       });
     });
+
+    it('should omit description from POST body when empty', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '',
+        sampling: 'random',
+        querySetSize: 10,
+      };
+
+      mockHttp.post.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, false);
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/query_sets', {
+        body: JSON.stringify({
+          name: 'Test Query Set',
+          sampling: 'random',
+          querySetSize: 10,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
+
+    it('should omit description from POST body when whitespace only', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '   ',
+        sampling: 'random',
+        querySetSize: 10,
+      };
+
+      mockHttp.post.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, false);
+
+      expect(JSON.parse(mockHttp.post.mock.calls[0][1].body)).not.toHaveProperty('description');
+    });
+
+    it('should omit description from PUT body when empty', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '',
+        sampling: 'manual',
+        querySetQueries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
+      };
+
+      mockHttp.put.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, true);
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/query_sets', {
+        body: JSON.stringify({
+          name: 'Test Query Set',
+          sampling: 'manual',
+          querySetQueries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
   });
 });

@@ -14,34 +14,27 @@ import {
 import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart, NotificationsStart } from '../../../../../../core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import { QuerySetService } from '../services/query_set_service';
 import { useQuerySetForm } from '../hooks/use_query_set_form';
 import { QuerySetForm } from '../components/query_set_form';
 import { QueryPreview } from '../components/query_preview';
-import { DataSourceSelector } from '../../common/datasource_selector';
 
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
 }
 
 export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
   http,
   notifications,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
 }) => {
   const formState = useQuerySetForm();
   const querySetService = useMemo(() => new QuerySetService(http), [http]);
   const filePickerId = useMemo(() => `filePicker-${Math.random().toString(36).substr(2, 9)}`, []);
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
-  
+
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
@@ -49,7 +42,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
     const fetchIndexes = async () => {
       setIsLoadingIndexes(true);
       try {
-        const indexes = await querySetService.fetchUbiIndexes(selectedDataSource || undefined);
+        const indexes = await querySetService.fetchUbiIndexes(dataSourceId);
         setIndexOptions(indexes);
       } catch (error) {
         notifications.toasts.addDanger('Failed to fetch UBI indexes');
@@ -62,7 +55,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
     fetchIndexes();
     formState.setUbiQueriesIndex('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [querySetService, selectedDataSource]);
+  }, [querySetService, dataSourceId]);
 
   const createQuerySet = useCallback(async () => {
     if (!formState.isFormValid()) {
@@ -79,7 +72,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
         ...(formState.ubiQueriesIndex && { ubiQueriesIndex: formState.ubiQueriesIndex }),
       };
 
-      await querySetService.createQuerySet(querySetData, formState.isManualInput, selectedDataSource || undefined);
+      await querySetService.createQuerySet(querySetData, formState.isManualInput, dataSourceId);
       notifications.toasts.addSuccess(`Query set "${formState.name}" created successfully`);
       history.push('/querySet');
     } catch (err) {
@@ -135,16 +128,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
-          {dataSourceEnabled && dataSourceManagement && savedObjects && (
-            <DataSourceSelector
-              dataSourceEnabled={dataSourceEnabled}
-              dataSourceManagement={dataSourceManagement}
-              savedObjects={savedObjects}
-              selectedDataSource={selectedDataSource}
-              setSelectedDataSource={setSelectedDataSource}
-            />
-          )}
-          <QuerySetForm 
+          <QuerySetForm
             formState={formState} 
             filePickerId={filePickerId}
             indexOptions={indexOptions}

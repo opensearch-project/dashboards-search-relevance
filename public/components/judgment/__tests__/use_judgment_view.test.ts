@@ -156,6 +156,76 @@ describe('useJudgmentView', () => {
     );
   });
 
+  it('should poll while judgment status is PROCESSING and stop when COMPLETED', async () => {
+    jest.useFakeTimers();
+
+    const processingResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Processing Judgment',
+              type: 'UBI',
+              status: 'PROCESSING',
+              metadata: {},
+              judgmentRatings: [],
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    const completedResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Processing Judgment',
+              type: 'UBI',
+              status: 'COMPLETED',
+              metadata: {},
+              judgmentRatings: [
+                {
+                  query: 'futon frames full size without mattress',
+                  ratings: [{ docId: 'doc-1', rating: '3' }],
+                },
+              ],
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get
+      .mockResolvedValueOnce(processingResponse)
+      .mockResolvedValueOnce(completedResponse);
+
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.judgment?.status).toBe('PROCESSING');
+    expect(result.current.judgment?.judgmentRatings).toEqual([]);
+
+    jest.advanceTimersByTime(5000);
+
+    await waitFor(() => expect(result.current.judgment?.status).toBe('COMPLETED'));
+
+    expect(result.current.judgment?.judgmentRatings).toEqual([
+      {
+        query: 'futon frames full size without mattress',
+        ratings: [{ docId: 'doc-1', rating: '3' }],
+      },
+    ]);
+    expect(mockHttp.get).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
+  });
+
   it('should omit dataSourceId query param when not provided', async () => {
     const mockResponse = {
       hits: { hits: [{ _source: { id: '1', name: 'Test' } }] },
