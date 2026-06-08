@@ -111,20 +111,46 @@ describe('JudgmentCreate', () => {
     expect(mockHistory.push).toHaveBeenCalledWith('/judgment');
   });
 
-  it('should render with data source enabled', () => {
+  it('forwards dataSourceId to the form hook', () => {
+    const captured: any[] = [];
+    const useJudgmentFormMock = jest.requireMock('../hooks/use_judgment_form');
+    useJudgmentFormMock.useJudgmentForm = jest.fn((...args: any[]) => {
+      captured.push(args);
+      return {
+        formData: { name: '', type: 'LLM_JUDGMENT', ignoreFailure: false, contextFields: [] },
+        updateFormData: jest.fn(),
+        selectedQuerySet: [],
+        setSelectedQuerySet: jest.fn(),
+        selectedSearchConfigs: [],
+        setSelectedSearchConfigs: jest.fn(),
+        selectedModel: [],
+        setSelectedModel: jest.fn(),
+        querySetOptions: [],
+        searchConfigOptions: [],
+        modelOptions: [],
+        isLoadingQuerySets: false,
+        isLoadingSearchConfigs: false,
+        isLoadingModels: false,
+        nameError: '',
+        newContextField: '',
+        setNewContextField: jest.fn(),
+        addContextField: jest.fn(),
+        removeContextField: jest.fn(),
+        validateAndSubmit: jest.fn(),
+      };
+    });
+
     render(
-      <JudgmentCreate 
-        http={mockHttp} 
-        notifications={mockNotifications} 
+      <JudgmentCreate
+        http={mockHttp}
+        notifications={mockNotifications}
         history={mockHistory}
-        dataSourceEnabled={true}
-        dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
-        savedObjects={{ client: {} } as any}
-        navigation={{} as any}
-        setActionMenu={jest.fn()}
+        dataSourceId="foo-ds"
       />
     );
 
-    expect(screen.getByText('DataSourceSelector')).toBeInTheDocument();
+    // Signature: (http, notifications, dataSourceId)
+    const lastCall = captured[captured.length - 1];
+    expect(lastCall[2]).toBe('foo-ds');
   });
 });

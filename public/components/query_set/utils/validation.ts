@@ -51,9 +51,7 @@ export const validateForm = (data: FormData): ValidationErrors => {
       'Name contains invalid characters (e.g., quotes, backslashes, or HTML tags).';
   }
 
-  if (!data.description.trim()) {
-    errors.descriptionError = 'Description is a required parameter.';
-  } else if (data.description.length > 250) {
+  if (data.description.trim() && data.description.length > 250) {
     errors.descriptionError = 'Description is too long (> 250 characters).';
   } else if (!isValidInputString(data.description)) {
     errors.descriptionError =

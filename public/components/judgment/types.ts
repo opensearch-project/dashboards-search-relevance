@@ -43,9 +43,7 @@ export interface JudgmentCreateProps {
   http: any;
   notifications: any;
   history: any;
-  savedObjects?: any;
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: any;
+  dataSourceId?: string;
 }
 
 // Re-export prompt template types

@@ -11,7 +11,11 @@ import { buildJudgmentPayload } from '../utils/form_processor';
 import { processJudgmentFile } from '../utils/judgment_file_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string, dataSourceEnabled = false) => {
+export const useJudgmentForm = (
+  http: any,
+  notifications: any,
+  dataSourceId?: string
+) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -107,7 +111,7 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
         setModelOptions([]);
       }).finally(() => setIsLoadingModels(false)),
     ]);
-  }, [formData.type, http, notifications.toasts, dataSourceId, dataSourceEnabled]);
+  }, [formData.type, http, notifications.toasts, dataSourceId]);
 
   useEffect(() => {
     fetchData();
