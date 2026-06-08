@@ -9,6 +9,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 
 ### Enhancements
+* Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
 
 ### Bug Fixes
 * Hide AnalyticEngine data sources from DSL-dependent data source dropdowns ([#846](https://github.com/opensearch-project/dashboards-search-relevance/pull/846))
