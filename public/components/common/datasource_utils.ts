@@ -66,7 +66,7 @@ export const useDataSourceUrlSync = (
   useEffect(() => {
     if (!dataSourceEnabled) return;
     const params = new URLSearchParams(location.search);
-    const current = params.get('dataSourceId') || undefined;
+    const current = params.get('dataSourceId') ?? undefined;
     if (current === dataSourceId) return;
     if (dataSourceId === undefined) {
       params.delete('dataSourceId');
@@ -74,8 +74,12 @@ export const useDataSourceUrlSync = (
       params.set('dataSourceId', dataSourceId);
     }
     const search = params.toString();
-    history.replace({ ...location, search: search ? `?${search}` : '' });
-  }, [dataSourceId, dataSourceEnabled, location, history]);
+    history.replace({
+      pathname: location.pathname,
+      search: search ? `?${search}` : '',
+      hash: location.hash,
+    });
+  }, [dataSourceId, dataSourceEnabled, location.search, location.pathname, location.hash, history]);
 
   return [dataSourceId, setDataSourceId];
 };
