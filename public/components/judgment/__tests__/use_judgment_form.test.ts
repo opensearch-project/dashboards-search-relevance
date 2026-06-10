@@ -390,5 +390,37 @@ describe('useJudgmentForm', () => {
     expect(result.current.parsedJudgments).toEqual([]);
     expect(result.current.importedRatings).toEqual([]);
   });
+
+  describe('dataSourceId propagation', () => {
+    it('runs the initial fetch with no dataSourceId when none is supplied', async () => {
+      renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalledWith(undefined);
+    });
+
+    it('refetches when dataSourceId changes', async () => {
+      const { rerender } = renderHook(
+        ({ dataSourceId }: { dataSourceId: string | undefined }) =>
+          useJudgmentForm(mockHttp, mockNotifications, dataSourceId),
+        { initialProps: { dataSourceId: undefined as string | undefined } }
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      rerender({ dataSourceId: 'foo-ds' });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalledWith('foo-ds');
+    });
+  });
 });
 

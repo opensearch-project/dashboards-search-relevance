@@ -23,7 +23,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       validate: {
         body: schema.object({
           name: schema.string(),
-          description: schema.string(),
+          description: schema.maybe(schema.string()),
           sampling: schema.string(),
           querySetSize: schema.number(),
           ubiQueriesIndex: schema.maybe(schema.string()),
@@ -39,7 +39,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       validate: {
         body: schema.object({
           name: schema.string(),
-          description: schema.string(),
+          description: schema.maybe(schema.string()),
           sampling: schema.string(),
           querySetQueries: schema.oneOf([
             schema.arrayOf(
