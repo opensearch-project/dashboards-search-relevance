@@ -24,3 +24,4 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Refactoring
 * Replace per-page data source selectors with a single global data source menu in the OSD chrome header, backed by URL-synced state ([#850](https://github.com/opensearch-project/dashboards-search-relevance/pull/850))
+* Remove unused `resource_management_home` component directory ([#779](https://github.com/opensearch-project/dashboards-search-relevance/issues/779))
