@@ -37,6 +37,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     setName,
     nameError,
     validateNameField,
+    description,
+    setDescription,
+    descriptionError,
+    validateDescriptionField,
     query,
     setQuery,
     queryError,
@@ -111,6 +115,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setName={setName}
               nameError={nameError}
               validateName={validateNameField}
+              description={description}
+              setDescription={setDescription}
+              descriptionError={descriptionError}
+              validateDescription={validateDescriptionField}
               query={query}
               setQuery={setQuery}
               queryError={queryError}

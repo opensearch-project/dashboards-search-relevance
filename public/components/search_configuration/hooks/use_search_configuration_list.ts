@@ -10,6 +10,7 @@ import { extractUserMessageFromError, ServiceEndpoints } from '../../../../commo
 export interface SearchConfigurationItem {
   id: string;
   search_configuration_name: string;
+  description?: string;
   index: string;
   query: string;
   timestamp: string;
@@ -25,6 +26,7 @@ export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId
     return {
       id: obj._source.id,
       search_configuration_name: obj._source.name,
+      description: obj._source.description,
       index: obj._source.index,
       query: obj._source.query,
       timestamp: obj._source.timestamp,
@@ -43,7 +45,8 @@ export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId
               const term = search.toLowerCase();
               return (
                 item.search_configuration_name.toLowerCase().includes(term) ||
-                item.id?.toLowerCase().includes(term)
+                item.id?.toLowerCase().includes(term) ||
+                item.description?.toLowerCase().includes(term)
               );
             })
           : list;

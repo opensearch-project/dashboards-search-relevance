@@ -84,6 +84,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       validate: {
         body: schema.object({
           name: schema.string(),
+          description: schema.maybe(schema.string()),
           index: schema.string(),
           query: schema.string(),
           searchPipeline: schema.maybe(schema.string()),

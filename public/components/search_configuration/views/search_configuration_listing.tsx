@@ -79,6 +79,25 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       ),
     },
     {
+      field: 'description',
+      name: 'Description',
+      dataType: 'string',
+      sortable: false,
+      render: (description: string) => (
+        <EuiText
+          size="s"
+          style={{
+            maxWidth: '250px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {description || '—'}
+        </EuiText>
+      ),
+    },
+    {
       field: 'index',
       name: 'Index',
       dataType: 'string',

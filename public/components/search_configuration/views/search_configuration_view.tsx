@@ -36,6 +36,10 @@ export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = (
           <EuiText>{searchConfiguration.name}</EuiText>
         </EuiFormRow>
 
+        <EuiFormRow label="Description" fullWidth>
+          <EuiText>{searchConfiguration.description || 'None'}</EuiText>
+        </EuiFormRow>
+
         <EuiFormRow label="Index" fullWidth>
           <EuiText>{searchConfiguration.index}</EuiText>
         </EuiFormRow>

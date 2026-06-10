@@ -4,13 +4,24 @@
  */
 
 import React, { memo } from 'react';
-import { EuiForm, EuiFormRow, EuiFieldText, EuiComboBox, EuiCodeEditor } from '@elastic/eui';
+import {
+  EuiForm,
+  EuiFormRow,
+  EuiFieldText,
+  EuiTextArea,
+  EuiComboBox,
+  EuiCodeEditor,
+} from '@elastic/eui';
 
 interface SearchConfigurationFormProps {
   name: string;
   setName: (name: string) => void;
   nameError: string;
   validateName: (e: React.FocusEvent<HTMLInputElement>) => void;
+  description: string;
+  setDescription: (description: string) => void;
+  descriptionError: string;
+  validateDescription: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   query: string;
   setQuery: (queryBody: string) => void;
   queryError: string;
@@ -34,6 +45,10 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
     setName,
     nameError,
     validateName,
+    description,
+    setDescription,
+    descriptionError,
+    validateDescription,
     query,
     setQuery,
     queryError,
@@ -50,7 +65,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
     isLoadingPipelines,
     disabled = false,
   }) => (
-    <EuiForm component="form" isInvalid={Boolean(nameError || queryError)}>
+    <EuiForm component="form" isInvalid={Boolean(nameError || descriptionError || queryError)}>
       <EuiFormRow
         label="Search Configuration Name"
         error={nameError}
@@ -66,6 +81,25 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
           isInvalid={Boolean(nameError)}
           fullWidth
           data-test-subj="searchConfigurationNameInput"
+          disabled={disabled}
+        />
+      </EuiFormRow>
+
+      <EuiFormRow
+        label="Description (optional)"
+        error={descriptionError}
+        isInvalid={Boolean(descriptionError)}
+        helpText="Describe the search configuration (up to 250 characters)."
+        fullWidth
+      >
+        <EuiTextArea
+          placeholder="Describe the purpose of this search configuration"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          onBlur={validateDescription}
+          isInvalid={Boolean(descriptionError)}
+          fullWidth
+          data-test-subj="searchConfigurationDescriptionInput"
           disabled={disabled}
         />
       </EuiFormRow>

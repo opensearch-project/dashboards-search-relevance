@@ -51,7 +51,9 @@ describe('useSearchConfigurationForm', () => {
     expect(result.current.query).toBe('');
     expect(result.current.searchTemplate).toBe('');
     expect(result.current.testSearchText).toBe('');
+    expect(result.current.description).toBe('');
     expect(result.current.nameError).toBe('');
+    expect(result.current.descriptionError).toBe('');
     expect(result.current.queryError).toBe('');
     expect(result.current.selectedIndex).toEqual([]);
     expect(result.current.selectedPipeline).toEqual([]);
@@ -175,6 +177,22 @@ describe('useSearchConfigurationForm', () => {
     });
   });
 
+  it('should validate description field', () => {
+    const { result } = renderHook(() =>
+      useSearchConfigurationForm({ http: mockHttp, notifications: mockNotifications })
+    );
+
+    const mockEvent = {
+      target: { value: 'a'.repeat(251) },
+    } as React.FocusEvent<HTMLTextAreaElement>;
+
+    act(() => {
+      result.current.validateDescriptionField(mockEvent);
+    });
+
+    expect(result.current.descriptionError).toBe('Description is too long (> 250 characters).');
+  });
+
   it('should create search configuration successfully', async () => {
     const mockOnSuccess = jest.fn();
     const { result } = renderHook(() =>
@@ -187,6 +205,7 @@ describe('useSearchConfigurationForm', () => {
 
     act(() => {
       result.current.setName('test config');
+      result.current.setDescription('test description');
       result.current.setQuery('{"query": {"match_all": {}}}');
       result.current.setSelectedIndex([{ label: 'index1', value: 'index1' }]);
     });
@@ -197,6 +216,7 @@ describe('useSearchConfigurationForm', () => {
 
     expect(mockService.createSearchConfiguration).toHaveBeenCalledWith({
       name: 'test config',
+      description: 'test description',
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: undefined,
@@ -377,6 +397,7 @@ describe('useSearchConfigurationForm', () => {
 
     expect(mockService.createSearchConfiguration).toHaveBeenCalledWith({
       name: 'test config',
+      description: '',
       index: 'index1',
       query: '{"query": {"match_all": {}}}',
       searchPipeline: 'pipeline1',
