@@ -86,6 +86,17 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   const { services } = useOpenSearchDashboards();
   const share = services.share;
 
+  const [isChatWindowOpen, setIsChatWindowOpen] = useState(
+    () => services.chat?.isWindowOpen() ?? false
+  );
+
+  useEffect(() => {
+    const sub = services.chat?.getWindowState$()?.subscribe((state) => {
+      setIsChatWindowOpen(state.isWindowOpen);
+    });
+    return () => sub?.unsubscribe();
+  }, [services.chat]);
+
   // Clear cached table data when data source changes so findExperiments re-fetches
   useEffect(() => {
     setTableData([]);
@@ -579,7 +590,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
       <EuiSpacer size="m" />
 
-      {onAskAI && !isAICalloutDismissed && (
+      {onAskAI && !isAICalloutDismissed && !isChatWindowOpen && (
         <>
           <EuiCallOut
             title={
