@@ -89,7 +89,7 @@ export const SearchConfigurationForm: React.FC<SearchConfigurationFormProps> = m
         label="Description (optional)"
         error={descriptionError}
         isInvalid={Boolean(descriptionError)}
-        helpText="Describe the search configuration (< 250 characters)."
+        helpText="Describe the search configuration (up to 250 characters)."
         fullWidth
       >
         <EuiTextArea
