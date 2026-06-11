@@ -11,7 +11,7 @@ import {
   appendDataSourceId,
   getSavedObjectsWithDataSource,
   overwriteSavedObjectsWithWorkspaceId,
-} from '../../../../src/plugins/home/server/services/sample_data/data_sets';
+} from '../../../../src/plugins/home/server/services/sample_data/data_sets/util';
 import { getUbiSavedObjects } from './ubi_saved_objects';
 
 /**
