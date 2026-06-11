@@ -12,6 +12,7 @@ jobs:
       product: opensearch-dashboards
 
   build-linux:
+    name: Run unit tests (ubuntu-latest)
     needs: Get-CI-Image-Tag
     runs-on: ubuntu-latest
     container:
@@ -93,6 +94,7 @@ jobs:
           path: ./OpenSearch-Dashboards/plugins/dashboards-search-relevance/build
 
   build-macos-windows:
+    name: Run unit tests
     strategy:
       matrix:
         os: [macos-latest, windows-latest]
