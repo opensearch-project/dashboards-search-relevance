@@ -27,6 +27,7 @@ module.exports = {
     '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/test/__mocks__/fileMock.js',
     '\\@algolia/autocomplete-theme-classic$': '<rootDir>/test/__mocks__/styleMock.js',
     '^!!raw-loader!.*': 'jest-raw-loader',
+    '^@hapi/hoek/(?!lib/)(.*)$': '<rootDir>/../../node_modules/@hapi/hoek/lib/$1',
   },
   testEnvironment: 'jsdom',
   collectCoverage: false, // Set to true to always collect coverage
