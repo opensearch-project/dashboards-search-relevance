@@ -12,6 +12,7 @@ module.exports = {
   roots: ['<rootDir>'],
   testMatch: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx'],
   clearMocks: true,
+  modulePaths: ['node_modules', '../../node_modules'],
   modulePathIgnorePatterns: ['<rootDir>/offline-module-cache/'],
   testPathIgnorePatterns: ['<rootDir>/build/', '<rootDir>/node_modules/'],
   snapshotSerializers: ['enzyme-to-json/serializer'],
