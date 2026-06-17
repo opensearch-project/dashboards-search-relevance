@@ -7,10 +7,11 @@ import path from 'path';
 import { i18n } from '@osd/i18n';
 import { SampleDatasetSchema } from '../../../../src/plugins/home/server/services/sample_data';
 import { AppLinkSchema } from '../../../../src/plugins/home/server/services/sample_data/lib/sample_dataset_registry_types';
-import { 
+import {
   appendDataSourceId,
-  getSavedObjectsWithDataSource
-} from '../../../../src/plugins/home/server/services/sample_data/data_sets';
+  getSavedObjectsWithDataSource,
+  overwriteSavedObjectsWithWorkspaceId,
+} from '../../../../src/plugins/home/server/services/sample_data/data_sets/util';
 import { getUbiSavedObjects } from './ubi_saved_objects';
 
 /**
@@ -141,6 +142,8 @@ export function ubiSpecProvider(): SampleDatasetSchema {
     savedObjects: getUbiSavedObjects(),
     getDataSourceIntegratedSavedObjects: (dataSourceId?: string, dataSourceTitle?: string) =>
       getSavedObjectsWithDataSource(getUbiSavedObjects(), dataSourceId, dataSourceTitle),
+    getWorkspaceIntegratedSavedObjects: (workspaceId: string) =>
+      overwriteSavedObjectsWithWorkspaceId(getUbiSavedObjects(), workspaceId),
     dataIndices: getUbiDataIndices(),
     status: 'not_installed',
   };
