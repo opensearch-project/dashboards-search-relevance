@@ -26,8 +26,8 @@ describe('SearchHandler', () => {
 
       expect(mockHttp.post).toHaveBeenCalledWith(ServiceEndpoints.GetSearchResults, {
         body: JSON.stringify({
-          query1: requestBody,
-          dataSourceId1: dataSourceId,
+          query: requestBody,
+          dataSourceId,
         }),
       });
     });
@@ -43,30 +43,37 @@ describe('SearchHandler', () => {
   });
 
   describe('performDualSearch', () => {
-    it('should call http.post with both queries', async () => {
+    it('should call http.post twice with separate queries', async () => {
       const requestBody1 = { query: { match: { title: 'test' } } };
       const requestBody2 = { query: { term: { status: 'active' } } };
       const dataSourceId1 = 'ds-123';
       const dataSourceId2 = 'ds-456';
 
+      mockHttp.post
+        .mockResolvedValueOnce({ result: { hits: { hits: [{ _id: '1' }] } } })
+        .mockResolvedValueOnce({ result: { hits: { hits: [{ _id: '2' }] } } });
+
       await searchHandler.performDualSearch(requestBody1, requestBody2, dataSourceId1, dataSourceId2);
 
-      expect(mockHttp.post).toHaveBeenCalledWith(ServiceEndpoints.GetSearchResults, {
+      expect(mockHttp.post).toHaveBeenCalledTimes(2);
+      expect(mockHttp.post).toHaveBeenNthCalledWith(1, ServiceEndpoints.GetSearchResults, {
         body: JSON.stringify({
-          query1: requestBody1,
-          query2: requestBody2,
-          dataSourceId1: dataSourceId1,
-          dataSourceId2: dataSourceId2,
+          query: requestBody1,
+          dataSourceId: dataSourceId1,
+        }),
+      });
+      expect(mockHttp.post).toHaveBeenNthCalledWith(2, ServiceEndpoints.GetSearchResults, {
+        body: JSON.stringify({
+          query: requestBody2,
+          dataSourceId: dataSourceId2,
         }),
       });
     });
 
     it('should return dual search results', async () => {
-      const expectedResults = {
-        result1: { hits: { hits: [{ _id: '1' }] } },
-        result2: { hits: { hits: [{ _id: '2' }] } },
-      };
-      mockHttp.post.mockResolvedValue(expectedResults);
+      mockHttp.post
+        .mockResolvedValueOnce({ result: { hits: { hits: [{ _id: '1' }] } } })
+        .mockResolvedValueOnce({ result: { hits: { hits: [{ _id: '2' }] } } });
 
       const result = await searchHandler.performDualSearch(
         { query: {} },
@@ -75,7 +82,12 @@ describe('SearchHandler', () => {
         'ds-2'
       );
 
-      expect(result).toEqual(expectedResults);
+      expect(result).toEqual({
+        result1: { hits: { hits: [{ _id: '1' }] } },
+        result2: { hits: { hits: [{ _id: '2' }] } },
+        errorMessage1: undefined,
+        errorMessage2: undefined,
+      });
     });
   });
 });

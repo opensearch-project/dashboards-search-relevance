@@ -201,21 +201,21 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           size: Math.max(querySetSize, 1),
         };
 
-        const requestBase = dataSourceId ? { dataSourceId1: dataSourceId } : {};
+        const requestBase = dataSourceId ? { dataSourceId } : {};
 
         const [evaluationSearchResult, variantSearchResult] = await Promise.all([
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query1: evaluationQuery, ...requestBase }),
+            body: JSON.stringify({ query: evaluationQuery, ...requestBase }),
           }),
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query1: variantQuery, ...requestBase }),
+            body: JSON.stringify({ query: variantQuery, ...requestBase }),
           }),
         ]);
 
         const parseResults =
-          evaluationSearchResult?.result1?.hits?.hits &&
+          evaluationSearchResult?.result?.hits?.hits &&
           combineResults(
-            ...evaluationSearchResult.result1.hits.hits.map((x: any) => toQueryEvaluation(x._source))
+            ...evaluationSearchResult.result.hits.hits.map((x: any) => toQueryEvaluation(x._source))
           );
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
@@ -231,7 +231,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             }
 
             const experimentResults = Array.isArray(_experiment.results) ? _experiment.results : [];
-            const variantSources = parseVariantSources(variantSearchResult?.result1?.hits?.hits ?? []);
+            const variantSources = parseVariantSources(variantSearchResult?.result?.hits?.hits ?? []);
             const variantStatusByQueryText = mapQueryStatusesFromVariants(
               getQueryExecutionOrder(experimentResults),
               variantSources

@@ -141,16 +141,16 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
               };
               console.log(`[DEBUG] Fetching batch: from=${from}, size=${batchSize}`);
               const result = await http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query1: query }),
+                body: JSON.stringify({ query }),
               });
               
-              if (result?.result1?.hits?.hits && result.result1.hits.hits.length > 0) {
-                console.log(`[DEBUG] Batch returned ${result.result1.hits.hits.length} results`);
-                allResults = allResults.concat(result.result1.hits.hits);
-                from += result.result1.hits.hits.length;
+              if (result?.result?.hits?.hits && result.result.hits.hits.length > 0) {
+                console.log(`[DEBUG] Batch returned ${result.result.hits.hits.length} results`);
+                allResults = allResults.concat(result.result.hits.hits);
+                from += result.result.hits.hits.length;
                 
                 // Stop if we got less than requested or reached max window
-                if (result.result1.hits.hits.length < batchSize || from >= maxSize) {
+                if (result.result.hits.hits.length < batchSize || from >= maxSize) {
                   hasMore = false;
                   if (from >= maxSize && expectedSize > maxSize) {
                     console.warn(`[WARNING] Reached OpenSearch max_result_window limit (${maxSize}). Cannot fetch remaining ${expectedSize - from} results.`);
@@ -178,11 +178,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           };
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query1: query }),
+            body: JSON.stringify({ query }),
           });
 
-          if (result?.result1?.hits?.hits) {
-              allResults = result.result1.hits.hits;
+          if (result?.result?.hits?.hits) {
+              allResults = result.result.hits.hits;
             }
           }
 
@@ -242,10 +242,10 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       };
 
       const result = await http.post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ query1: query }),
+        body: JSON.stringify({ query }),
       });
 
-      const variantDetails = result?.result1?.hits?.hits?.[0]?._source;
+      const variantDetails = result?.result?.hits?.hits?.[0]?._source;
       if (variantDetails) {
         setSelectedVariantDetails(variantDetails);
         setSelectedVariantId(variantId);
