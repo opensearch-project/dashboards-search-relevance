@@ -10,7 +10,6 @@ import { AppLinkSchema } from '../../../../src/plugins/home/server/services/samp
 import {
   appendDataSourceId,
   getSavedObjectsWithDataSource,
-  overwriteSavedObjectsWithWorkspaceId,
 } from '../../../../src/plugins/home/server/services/sample_data/data_sets/util';
 import { getUbiSavedObjects } from './ubi_saved_objects';
 
@@ -142,8 +141,6 @@ export function ubiSpecProvider(): SampleDatasetSchema {
     savedObjects: getUbiSavedObjects(),
     getDataSourceIntegratedSavedObjects: (dataSourceId?: string, dataSourceTitle?: string) =>
       getSavedObjectsWithDataSource(getUbiSavedObjects(), dataSourceId, dataSourceTitle),
-    getWorkspaceIntegratedSavedObjects: (workspaceId: string) =>
-      overwriteSavedObjectsWithWorkspaceId(getUbiSavedObjects(), workspaceId),
     dataIndices: getUbiDataIndices(),
     status: 'not_installed',
   };
