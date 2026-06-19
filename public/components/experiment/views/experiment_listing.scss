@@ -39,3 +39,45 @@
     }
   }
 }
+
+.srgExperimentListingNameTooltipAnchor {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.srgExperimentListingNameButton {
+  max-width: 100%;
+
+  &.euiButtonEmpty {
+    min-width: 0;
+  }
+
+  .euiButtonEmpty__content {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+.srgExperimentListingNameButton__label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srgExperimentListingNameTooltip {
+  max-width: 400px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.srgExperimentListingNameTooltip__name {
+  display: block;
+  font-weight: $ouiFontWeightSemiBold;
+}
+
+.srgExperimentListingNameTooltip__description {
+  display: block;
+  margin-top: $ouiSizeS;
+}
