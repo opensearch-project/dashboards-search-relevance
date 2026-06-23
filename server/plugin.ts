@@ -50,10 +50,12 @@ export class SearchRelevancePlugin
     this.staticAssetsService = new StaticAssetsService(this.logger.get('static-assets'));
   }
 
-  // Register standalone UBI sample dataset
   private addUbiSampleData(home: HomeServerPluginSetup) {
-    // Register standalone UBI sample dataset
-    home.sampleData.registerSampleDataset(ubiSpecProvider);
+    try {
+      home.sampleData.registerSampleDataset(() => ubiSpecProvider(true));
+    } catch (e) {
+      home.sampleData.registerSampleDataset(() => ubiSpecProvider(false));
+    }
   }
 
   public async setup(core: CoreSetup, { dataSource, home }: SearchRelevancePluginSetupDependencies) {

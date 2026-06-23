@@ -126,7 +126,7 @@ const ubiDescription = i18n.translate('searchRelevance.sampleData.ubiSpecDescrip
   defaultMessage: 'Sample User Behavior Insights (UBI) data for search relevance analysis.',
 });
 
-export function ubiSpecProvider(): SampleDatasetSchema {
+export function ubiSpecProvider(workspaceEnabled: boolean = false): SampleDatasetSchema {
   return {
     id: 'ubi',
     name: ubiName,
@@ -142,8 +142,10 @@ export function ubiSpecProvider(): SampleDatasetSchema {
     savedObjects: getUbiSavedObjects(),
     getDataSourceIntegratedSavedObjects: (dataSourceId?: string, dataSourceTitle?: string) =>
       getSavedObjectsWithDataSource(getUbiSavedObjects(), dataSourceId, dataSourceTitle),
-    getWorkspaceIntegratedSavedObjects: (workspaceId: string) =>
-      overwriteSavedObjectsWithWorkspaceId(getUbiSavedObjects(), workspaceId),
+    ...(workspaceEnabled && {
+      getWorkspaceIntegratedSavedObjects: (workspaceId: string) =>
+        overwriteSavedObjectsWithWorkspaceId(getUbiSavedObjects(), workspaceId),
+    }),
     dataIndices: getUbiDataIndices(),
     status: 'not_installed',
   };
