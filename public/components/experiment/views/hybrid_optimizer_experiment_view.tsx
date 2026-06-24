@@ -30,6 +30,7 @@ import {
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
 } from '../../../../common';
+import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
@@ -71,44 +72,29 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
-  const sanitizeResponse = (response: any) => response?.hits?.hits?.[0]?._source || undefined;
-
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const options = dataSourceId ? { query: { dataSourceId } } : {};
-        
-        const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
-          .then(sanitizeResponse);
-        const _searchConfiguration =
-          _experiment &&
-          (await http
-            .get(
-              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId,
-              options
-            )
-            .then(sanitizeResponse));
-        const _querySet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId, options)
-            .then(sanitizeResponse));
-        const _judgmentSet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId, options)
-            .then(sanitizeResponse));
 
-        const _scheduledExperimentJob =
-          _experiment && inputExperiment.isScheduled &&
-          (await http
-            .get(
-              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId,
-              options
-            )
-            .then(sanitizeResponse));            
+        const resources = await loadExperimentResourcesParallel(
+          http,
+          {
+            experimentId: inputExperiment.id,
+            searchConfigurationId: inputExperiment.searchConfigurationId,
+            querySetId: inputExperiment.querySetId,
+            judgmentId: inputExperiment.judgmentId,
+            isScheduled: inputExperiment.isScheduled,
+            scheduledExperimentJobId: inputExperiment.scheduledExperimentJobId,
+          },
+          dataSourceId
+        );
+
+        const _experiment = resources?.experiment;
+        const _searchConfiguration = resources?.searchConfiguration;
+        const _querySet = resources?.querySet;
+        const _judgmentSet = resources?.judgmentSet;
+        const _scheduledExperimentJob = resources?.scheduledExperimentJob;
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
@@ -228,7 +214,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     };
 
     fetchExperiment();
-  }, [http, inputExperiment]);
+  }, [http, inputExperiment, dataSourceId]);
 
   const fetchVariantDetails = async (variantId: string) => {
     try {

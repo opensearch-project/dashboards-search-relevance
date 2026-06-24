@@ -11,6 +11,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Add /search-relevance slash command for chatbot with welcome message and AI-assisted search relevance tuning ([#843](https://github.com/opensearch-project/dashboards-search-relevance/pull/843))
 
 ### Enhancements
+* Load experiment detail resources in parallel after the initial experiment fetch ([#882](https://github.com/opensearch-project/dashboards-search-relevance/issues/882))
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
 
 ### Bug Fixes
