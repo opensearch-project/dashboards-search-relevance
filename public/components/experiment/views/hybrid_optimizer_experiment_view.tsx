@@ -125,8 +125,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           if (expectedSize > maxSize) {
             let from = 0;
             let hasMore = true;
-            console.log(`[DEBUG] Expected size: ${expectedSize}, will fetch in batches`);
-            
             while (hasMore && from < maxSize) { // Important: from + size cannot exceed max_result_window
               const batchSize = Math.min(maxSize - from, expectedSize - from);
               const query = {
@@ -139,13 +137,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
                 from: from,
                 size: batchSize,
               };
-              console.log(`[DEBUG] Fetching batch: from=${from}, size=${batchSize}`);
               const result = await http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query }),
               });
               
               if (result?.result?.hits?.hits && result.result.hits.hits.length > 0) {
-                console.log(`[DEBUG] Batch returned ${result.result.hits.hits.length} results`);
                 allResults = allResults.concat(result.result.hits.hits);
                 from += result.result.hits.hits.length;
                 
@@ -164,7 +160,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
                 hasMore = false;
               }
             }
-            console.log(`[DEBUG] Total results fetched: ${allResults.length}`);
           } else {
             // Single query for small result sets
             const query = {
@@ -196,7 +191,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             return;
           }
 
-          console.log(`[DEBUG] Processing ${allResults.length} total results`);
           // Process all results
           allResults.forEach((hit: any) => {
             const nMetrics: Record<string, number> = {};
@@ -375,13 +369,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         });
       });
 
-      console.log('[DEBUG] Total items before filter:', items.length);
-
       const filteredItems = search
         ? items.filter((item) => item.queryText.includes(search))
         : items;
-
-      console.log('[DEBUG] Total items after filter:', filteredItems.length);
 
       return {
         hits: filteredItems,

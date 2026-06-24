@@ -20,22 +20,6 @@ jest.mock('react-router-dom', () => ({
 
 const mockUseLocation = useLocation as jest.MockedFunction<typeof useLocation>;
 
-// Mock console.log to verify debug outputs
-const originalConsoleLog = console.log;
-const mockConsoleLog = jest.fn();
-
-beforeAll(() => {
-  console.log = mockConsoleLog;
-});
-
-afterAll(() => {
-  console.log = originalConsoleLog;
-});
-
-beforeEach(() => {
-  mockConsoleLog.mockClear();
-});
-
 describe('SearchResult Base64 Config Loading', () => {
   const mockProps = {
     application: { setAppDescriptionControls: jest.fn() },

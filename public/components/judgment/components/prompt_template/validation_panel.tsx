@@ -61,10 +61,6 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
     setIsValidating(true);
     setValidationResult(null);
 
-    console.log('ValidationPanel - handleValidate called with:', {
-      placeholderValues,
-    });
-
     try {
       const result = await onValidate({
         placeholderValues,

@@ -222,8 +222,6 @@ export const usePromptTemplate = ({
         placeholderValues,
       };
 
-      console.log('Validation request:', requestBody);
-
       try {
         // Call the backend API to validate prompt with direct model predict call
         const response = await httpClient.post('/api/relevancy/judgments/validate_prompt', {
