@@ -23,7 +23,6 @@ describe('url_config', () => {
     window.history.replaceState = jest.fn();
 
     // Mock console methods
-    jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 
@@ -89,7 +88,6 @@ describe('url_config', () => {
       );
 
       expect(window.history.replaceState).toHaveBeenCalled();
-      expect(console.log).toHaveBeenCalled();
     });
 
     it('should handle errors gracefully', () => {

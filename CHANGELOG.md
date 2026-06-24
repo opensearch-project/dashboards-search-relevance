@@ -26,6 +26,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Documentation
 
 ### Maintenance
+* Remove debug console logging from production UI code ([#878](https://github.com/opensearch-project/dashboards-search-relevance/pull/878))
 
 ### Refactoring
 * Refactor `GetSearchResults` to a single-query endpoint; fixes inconsistent query1/query2 validation, wrong error routing for query2, and cross-cluster index rejection ([#784](https://github.com/opensearch-project/dashboards-search-relevance/issues/784))
