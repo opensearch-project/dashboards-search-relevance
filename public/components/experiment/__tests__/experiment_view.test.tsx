@@ -25,6 +25,7 @@ jest.mock('../../../types/index', () => ({
 
 const mockHttp = {
   get: jest.fn(),
+  patch: jest.fn(),
 };
 
 const mockNotifications = {
@@ -48,6 +49,10 @@ jest.mock('../views/evaluation_experiment_view', () => ({
 
 jest.mock('../views/hybrid_optimizer_experiment_view', () => ({
   HybridOptimizerExperimentViewWithRouter: () => <div>Hybrid View</div>,
+}));
+
+jest.mock('../views/experiment_edit_metadata_modal', () => ({
+  ExperimentEditMetadataModal: () => null,
 }));
 
 describe('ExperimentView', () => {

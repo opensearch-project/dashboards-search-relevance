@@ -10,7 +10,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Add optional description field to Search Configuration create form, detail view, and listing ([#798](https://github.com/opensearch-project/dashboards-search-relevance/issues/798))
 * Add /search-relevance slash command for chatbot with welcome message and AI-assisted search relevance tuning ([#843](https://github.com/opensearch-project/dashboards-search-relevance/pull/843))
 
-- Display experiment name and description in the experiments list and detail views, including list tooltips, detail page header, and search by name or description ([#823](https://github.com/opensearch-project/dashboards-search-relevance/pull/823))
+* Add experiment name and description across the full lifecycle: optional fields on creation forms, display in list and detail views (tooltips, header, search), and edit from the detail view ([#823](https://github.com/opensearch-project/dashboards-search-relevance/pull/823))
 
 ### Enhancements
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
