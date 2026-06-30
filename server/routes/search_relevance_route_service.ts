@@ -246,7 +246,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           searchConfigurationList: schema.maybe(schema.arrayOf(schema.string())),
           size: schema.maybe(schema.number()),
           modelId: schema.maybe(schema.string()),
-          tokenLimit: schema.maybe(schema.string()),
+          tokenLimit: schema.maybe(schema.number()),
           ignoreFailure: schema.maybe(schema.boolean()),
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
           promptTemplate: schema.maybe(schema.string()),

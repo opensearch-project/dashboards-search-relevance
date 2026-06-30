@@ -15,6 +15,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
 
 ### Bug Fixes
+* Fix judgment list creation failing when Token Limit is changed from the default 4000; server route validation expected a string but the UI sends a number ([#662](https://github.com/opensearch-project/dashboards-search-relevance/issues/662))
 * Fix Search Evaluation experiment view treating failed OpenSearch queries as zero search results (ZSR); show per-query status and separate notifications for failed, ZSR, and not-evaluated queries ([#733](https://github.com/opensearch-project/dashboards-search-relevance/pull/849))
 * Display stored reference answers on Query Set Details page ([#855](https://github.com/opensearch-project/dashboards-search-relevance/issues/855))
 * Poll judgment detail view while status is PROCESSING so ratings appear when async generation completes ([#857](https://github.com/opensearch-project/dashboards-search-relevance/issues/857))
