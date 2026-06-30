@@ -95,6 +95,10 @@ export class SearchRelevancePlugin
           },
         };
       } catch (e) {
+        this.logger.warn(
+          'Failed to read dynamic config for searchRelevanceDashboards capability',
+          e
+        );
         return {};
       }
     });
