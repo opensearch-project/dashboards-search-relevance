@@ -16,5 +16,8 @@
     "home",
     "chat"
   ],
-  "supportedOSDataSourceVersions": ">=2.8.0"
+  "supportedOSDataSourceVersions": ">=2.8.0",
+  "configPath": [
+    "searchRelevanceDashboards"
+  ]
 }

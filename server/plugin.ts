@@ -72,6 +72,33 @@ export class SearchRelevancePlugin
 
     const config: SearchRelevancePluginConfigType = await this.config$.pipe(first()).toPromise();
 
+    core.capabilities.registerProvider(() => ({
+      searchRelevanceDashboards: {
+        chatCommandEnabled: config.chatCommandEnabled,
+      },
+    }));
+
+    core.capabilities.registerSwitcher(async (request, capabilities) => {
+      try {
+        const dynamicConfigStartService = await core.dynamicConfigService.getStartService();
+        const store = dynamicConfigStartService.createStoreFromRequest(request);
+        if (!store) return {};
+        const client = dynamicConfigStartService.getClient();
+        const dynamicConfig = await client.getConfig(
+          { pluginConfigPath: 'searchRelevanceDashboards' },
+          { asyncLocalStorageContext: store }
+        );
+        return {
+          searchRelevanceDashboards: {
+            ...capabilities.searchRelevanceDashboards,
+            chatCommandEnabled: dynamicConfig.chatCommandEnabled,
+          },
+        };
+      } catch (e) {
+        return {};
+      }
+    });
+
     const metricsService: MetricsServiceSetup = this.metricsService.setup(
       config.metrics.metricInterval,
       config.metrics.windowSize
