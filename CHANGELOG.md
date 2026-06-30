@@ -22,6 +22,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Fix infinite re-render loop in useDataSourceUrlSync caused by unstable location object reference ([#859](https://github.com/opensearch-project/dashboards-search-relevance/pull/859))
 * Fix MetricsService.trim() to evict expired entries from all interval-keyed metric maps ([#879](https://github.com/opensearch-project/dashboards-search-relevance/issues/879))
 * Surface the backend error message and status code (e.g. a 403 security_exception) instead of a generic "unknown error" when list and detail views fail to load ([#873](https://github.com/opensearch-project/dashboards-search-relevance/issues/873))
+* Surface backend error messages in Search Configuration and Judgment detail views instead of generic load-failure messages ([#894](https://github.com/opensearch-project/dashboards-search-relevance/issues/894))
 
 ### Infrastructure
 

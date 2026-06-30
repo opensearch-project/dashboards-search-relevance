@@ -5,7 +5,16 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { useSearchConfigurationView } from '../hooks/use_search_configuration_view';
-import { ServiceEndpoints } from '../../../../common';
+import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
+
+jest.mock('../../../../common', () => ({
+  ...jest.requireActual('../../../../common'),
+  extractUserMessageFromError: jest.fn(),
+}));
+
+const mockExtractUserMessageFromError = extractUserMessageFromError as jest.MockedFunction<
+  typeof extractUserMessageFromError
+>;
 
 // Mock console.error to avoid noise in tests
 const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -17,6 +26,7 @@ const mockHttp = {
 describe('useSearchConfigurationView', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockExtractUserMessageFromError.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -42,9 +52,7 @@ describe('useSearchConfigurationView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
-      useSearchConfigurationView(mockHttp as any, '1')
-    );
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, '1'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -68,9 +76,7 @@ describe('useSearchConfigurationView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
-      useSearchConfigurationView(mockHttp as any, 'nonexistent')
-    );
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, 'nonexistent'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -132,9 +138,7 @@ describe('useSearchConfigurationView', () => {
   it('should handle fetch error', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 
-    const { result } = renderHook(() =>
-      useSearchConfigurationView(mockHttp as any, '1')
-    );
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, '1'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -143,22 +147,41 @@ describe('useSearchConfigurationView', () => {
     expect(result.current.error).toBe('Error loading search configuration data');
   });
 
+  it('should surface backend error message when available', async () => {
+    const customError = {
+      body: {
+        statusCode: 404,
+        message: '[resource_not_found_exception] Document not found: config-1',
+      },
+    };
+    mockHttp.get.mockRejectedValue(customError);
+    mockExtractUserMessageFromError.mockReturnValue(
+      '404: [resource_not_found_exception] Document not found: config-1'
+    );
+
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, 'config-1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.error).toBe(
+      '404: [resource_not_found_exception] Document not found: config-1'
+    );
+    expect(mockExtractUserMessageFromError).toHaveBeenCalledWith(customError);
+  });
+
   it('should pass dataSourceId when fetching a search configuration', async () => {
     const mockResponse = {
       hits: { hits: [{ _source: { id: '1', name: 'Test' } }] },
     };
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
-      useSearchConfigurationView(mockHttp as any, '1', 'my-ds')
-    );
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, '1', 'my-ds'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith(
-      `${ServiceEndpoints.SearchConfigurations}/1`,
-      { query: { dataSourceId: 'my-ds' } }
-    );
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`, {
+      query: { dataSourceId: 'my-ds' },
+    });
   });
 
   it('should omit dataSourceId query param when not provided', async () => {
@@ -167,15 +190,10 @@ describe('useSearchConfigurationView', () => {
     };
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
-      useSearchConfigurationView(mockHttp as any, '1')
-    );
+    const { result } = renderHook(() => useSearchConfigurationView(mockHttp as any, '1'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith(
-      `${ServiceEndpoints.SearchConfigurations}/1`,
-      {}
-    );
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.SearchConfigurations}/1`, {});
   });
 });

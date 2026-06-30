@@ -5,7 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../../common';
+import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
 export interface SearchConfigurationData {
   id: string;
@@ -18,7 +18,11 @@ export interface SearchConfigurationData {
   timestamp: string;
 }
 
-export const useSearchConfigurationView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
+export const useSearchConfigurationView = (
+  http: CoreStart['http'],
+  id: string,
+  dataSourceId?: string | null
+) => {
   const [searchConfiguration, setSearchConfiguration] = useState<SearchConfigurationData | null>(
     null
   );
@@ -29,8 +33,12 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string, 
     const fetchSearchConfiguration = async () => {
       try {
         setLoading(true);
+        setError(null);
         const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
-        const response = await http.get(`${ServiceEndpoints.SearchConfigurations}/${id}`, queryParams);
+        const response = await http.get(
+          `${ServiceEndpoints.SearchConfigurations}/${id}`,
+          queryParams
+        );
 
         if (response && response.hits && response.hits.hits && response.hits.hits.length > 0) {
           setSearchConfiguration(response.hits.hits[0]._source);
@@ -39,7 +47,8 @@ export const useSearchConfigurationView = (http: CoreStart['http'], id: string, 
         }
       } catch (err) {
         console.error('Failed to load search config', err);
-        setError('Error loading search configuration data');
+        const errorMessage = extractUserMessageFromError(err);
+        setError(errorMessage || 'Error loading search configuration data');
       } finally {
         setLoading(false);
       }
