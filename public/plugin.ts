@@ -96,9 +96,12 @@ export class SearchRelevancePlugin
       registerCompareQueryCard(contentManagement, core);
     }
 
-    if (core.application.capabilities.searchRelevanceDashboards?.chatCommandEnabled) {
+    if (
+      this.coreSetup &&
+      core.application.capabilities.searchRelevanceDashboards?.chatCommandEnabled
+    ) {
       this.unregisterSearchRelevanceCommand = registerSearchRelevanceCommand(
-        this.coreSetup!,
+        this.coreSetup,
         this.chatSetup
       );
     }
