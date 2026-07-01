@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CoreStart } from '../../../../../../src/core/public';
-import { ServiceEndpoints } from '../../../../common';
+import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
 
 export interface JudgmentData {
   id: string;
@@ -20,7 +20,11 @@ export interface JudgmentData {
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLL_ERRORS = 3;
 
-export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceId?: string | null) => {
+export const useJudgmentView = (
+  http: CoreStart['http'],
+  id: string,
+  dataSourceId?: string | null
+) => {
   const [judgment, setJudgment] = useState<JudgmentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +72,8 @@ export const useJudgmentView = (http: CoreStart['http'], id: string, dataSourceI
         console.error('Failed to load judgment', err);
         if (showLoading) {
           setJudgment(null);
-          setError('Error loading judgment data');
+          const errorMessage = extractUserMessageFromError(err);
+          setError(errorMessage || 'Error loading judgment data');
           stopPolling();
         } else {
           pollErrorCount.current += 1;
