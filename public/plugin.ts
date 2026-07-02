@@ -36,11 +36,15 @@ export interface SearchRelevanceStartDependencies {
 export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
   private unregisterSearchRelevanceCommand?: () => void;
+  private coreSetup?: CoreSetup;
+  private chatSetup?: ChatPluginSetup;
 
   public setup(
     core: CoreSetup,
     { dataSource, dataSourceManagement, chat }: SearchRelevancePluginSetupDependencies
   ): SearchRelevancePluginSetup {
+    this.coreSetup = core;
+    this.chatSetup = chat;
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
@@ -71,7 +75,6 @@ export class SearchRelevancePlugin
       },
     });
     registerAllPluginNavGroups(core);
-    this.unregisterSearchRelevanceCommand = registerSearchRelevanceCommand(core, chat);
     // Return methods that should be available to other plugins
     return {
       getGreeting() {
@@ -92,6 +95,17 @@ export class SearchRelevancePlugin
     if (contentManagement) {
       registerCompareQueryCard(contentManagement, core);
     }
+
+    if (
+      this.coreSetup &&
+      core.application.capabilities.searchRelevanceDashboards?.chatCommandEnabled
+    ) {
+      this.unregisterSearchRelevanceCommand = registerSearchRelevanceCommand(
+        this.coreSetup,
+        this.chatSetup
+      );
+    }
+
     return {};
   }
 
