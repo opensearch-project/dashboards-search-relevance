@@ -142,9 +142,14 @@ export interface JudgmentRating {
   rating: string;
 }
 
+export interface JudgmentFailure {
+  docId: string;
+}
+
 export interface QueryJudgment {
   query: string;
   ratings: JudgmentRating[];
+  failures?: JudgmentFailure[];
 }
 
 export interface JudgmentSet {

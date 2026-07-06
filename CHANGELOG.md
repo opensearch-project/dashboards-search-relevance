@@ -12,6 +12,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Add chatCommandEnabled dynamic config feature flag to gate /search-relevance command registration ([#890](https://github.com/opensearch-project/dashboards-search-relevance/pull/890))
 
 ### Enhancements
+* Show which documents failed in the Judgment view: the ratings table now lists each query's unrated docs with a Failed status alongside the rated ones ([#899](https://github.com/opensearch-project/dashboards-search-relevance/pull/899))
 * Load experiment detail resources in parallel after the initial experiment fetch ([#882](https://github.com/opensearch-project/dashboards-search-relevance/issues/882))
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
 
