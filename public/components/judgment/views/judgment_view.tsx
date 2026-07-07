@@ -37,7 +37,7 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const [sortField, setSortField] = useState<'query' | 'docId' | 'rating'>(
+  const [sortField, setSortField] = useState<'query' | 'docId' | 'rating' | 'status'>(
     'query'
   );
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -45,13 +45,22 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   // Flatten JSON → table rows
   const flattened = useMemo(() => {
     if (!Array.isArray(ratings)) return [];
-    return ratings.flatMap(item =>
-      (item.ratings || []).map(r => ({
+    return ratings.flatMap(item => {
+      const rated = (item.ratings || []).map(r => ({
         query: item.query,
         docId: r.docId,
         rating: Number(r.rating),
-      }))
-    );
+        status: 'Rated',
+      }));
+      // Docs sent to the LLM that came back without a rating are reported under "failures".
+      const failed = (item.failures || []).map(fnf => ({
+        query: item.query,
+        docId: fnf.docId,
+        rating: null,
+        status: 'Failed',
+      }));
+      return [...rated, ...failed];
+    });
   }, [ratings]);
 
   // Filtering
@@ -87,7 +96,14 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   const columns = [
     { field: 'query', name: 'Query', sortable: true },
     { field: 'docId', name: 'Doc ID', sortable: true },
-    { field: 'rating', name: 'Rating', sortable: true },
+    { field: 'status', name: 'Status', sortable: true },
+    {
+      field: 'rating',
+      name: 'Rating',
+      sortable: true,
+      render: (rating: number | null) =>
+        rating === null || Number.isNaN(rating) ? 'N/A' : rating,
+    },
   ];
 
   const pagination = {

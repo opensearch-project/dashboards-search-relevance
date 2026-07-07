@@ -388,4 +388,45 @@ describe('JudgmentView', () => {
     const rows = screen.getAllByRole('row');
     expect(rows.length).toBeGreaterThan(1);
   });
+
+  it('renders failed docs from the failures list with an N/A rating', () => {
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        id: '1',
+        name: 'Failures Judgment',
+        type: 'LLM',
+        status: 'COMPLETED',
+        metadata: { totalQueries: 1, successfulQueries: 0, failedQueries: 1 },
+        judgmentRatings: [
+          {
+            query: 'laptop',
+            ratings: [{ docId: 'A1', rating: '1.0' }],
+            failures: [{ docId: 'C9' }],
+          },
+        ],
+        timestamp: '2023-01-01',
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...defaultProps} />
+      </Router>
+    );
+
+    // The failed doc shows up alongside the rated one, with a Failed status and no score
+    const rows = screen.getAllByRole('row');
+
+    const failedRow = rows.find((row) => row.textContent?.includes('C9'));
+    expect(failedRow).toBeDefined();
+    expect(failedRow!.textContent).toContain('Failed');
+    expect(failedRow!.textContent).toContain('N/A');
+
+    const ratedRow = rows.find((row) => row.textContent?.includes('A1'));
+    expect(ratedRow).toBeDefined();
+    expect(ratedRow!.textContent).toContain('Rated');
+    expect(ratedRow!.textContent).not.toContain('N/A');
+  });
 });
