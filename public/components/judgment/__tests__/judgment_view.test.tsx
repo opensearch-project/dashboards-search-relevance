@@ -417,9 +417,16 @@ describe('JudgmentView', () => {
     );
 
     // The failed doc shows up alongside the rated one, with a Failed status and no score
-    expect(screen.getAllByText('C9').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Rated').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('Failed').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('N/A').length).toBeGreaterThan(0);
+    const rows = screen.getAllByRole('row');
+
+    const failedRow = rows.find((row) => row.textContent?.includes('C9'));
+    expect(failedRow).toBeDefined();
+    expect(failedRow!.textContent).toContain('Failed');
+    expect(failedRow!.textContent).toContain('N/A');
+
+    const ratedRow = rows.find((row) => row.textContent?.includes('A1'));
+    expect(ratedRow).toBeDefined();
+    expect(ratedRow!.textContent).toContain('Rated');
+    expect(ratedRow!.textContent).not.toContain('N/A');
   });
 });
