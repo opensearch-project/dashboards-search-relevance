@@ -13,6 +13,7 @@ const createMockRouter = () =>
     put: jest.fn(),
     post: jest.fn(),
     delete: jest.fn(),
+    patch: jest.fn(),
   }) as unknown as IRouter;
 
 const getJudgmentCreateRouteSchema = (router: IRouter) => {
