@@ -30,6 +30,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Surface backend error messages in Search Configuration and Judgment detail views instead of generic load-failure messages ([#894](https://github.com/opensearch-project/dashboards-search-relevance/issues/894))
 
 ### Infrastructure
+* Add unit tests for the metrics route handler (`GET /api/relevancy/stats`): route registration config, success response, and error status mapping ([#893](https://github.com/opensearch-project/dashboards-search-relevance/issues/893))
 
 ### Documentation
 
