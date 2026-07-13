@@ -30,6 +30,7 @@ const defaultProps = {
   result1ItemsRef: { current: {} },
   result2ItemsRef: { current: {} },
   lineColors: mockLineColors,
+  sizeMultiplier: 1,
 };
 
 describe('ConnectionLines', () => {
@@ -49,5 +50,25 @@ describe('ConnectionLines', () => {
     const { container } = render(<ConnectionLines {...defaultProps} result1={[]} result2={[]} />);
     const lines = container.querySelectorAll('line');
     expect(lines).toHaveLength(0);
+  });
+
+  it('uses the precomputed result position for matching lines', () => {
+    const element = document.createElement('div');
+    const result2 = [
+      { _id: '3', rank: 1 },
+      { _id: '1', rank: 2 },
+    ];
+    const { container } = render(
+      <ConnectionLines
+        {...defaultProps}
+        result2={result2}
+        result1ItemsRef={{ current: { '1': element } }}
+        result2ItemsRef={{ current: { '1': element } }}
+      />
+    );
+
+    const line = container.querySelector('line');
+    expect(line).toHaveAttribute('y1', '26');
+    expect(line).toHaveAttribute('y2', '78');
   });
 });

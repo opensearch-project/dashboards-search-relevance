@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import {
   EuiPanel,
   EuiEmptyPrompt,
@@ -24,6 +24,7 @@ import './visual_comparison.scss';
 import { ItemDetailHoverPane } from './item_detail_hover_pane';
 import { ConnectionLines } from './connection_lines';
 import { ResultItems } from './result_items';
+import { calculateStatistics, createResultLookup } from './comparison_utils';
 
 // Interface should match the first component
 interface OpenSearchComparisonProps {
@@ -105,34 +106,6 @@ const getDisplayFieldsAndImageField = (sampleItem) => {
   return {
     displayFields: [{ value: '_id', label: 'ID' }, ...fields],
     imageFieldName: imageField || null,
-  };
-};
-
-// Utility function to calculate statistics for the Venn diagram and rank changes
-const calculateStatistics = (result1, result2) => {
-  const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id)).length;
-  const onlyInResult1 = result1.length - inBoth;
-  const onlyInResult2 = result2.length - inBoth;
-  const unchanged = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank === item2.rank;
-  }).length;
-  const improved = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank > item2.rank;
-  }).length;
-  const worsened = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank < item2.rank;
-  }).length;
-
-  return {
-    inBoth,
-    onlyInResult1,
-    onlyInResult2,
-    unchanged,
-    improved,
-    worsened,
   };
 };
 
@@ -276,8 +249,10 @@ export const VisualComparison = ({
   const [singleResultMode, setSingleResultMode] = useState(false);
 
   // Process the results into the format we need
-  const [result1, setResult1] = useState([]);
-  const [result2, setResult2] = useState([]);
+  const [result1, setResult1] = useState<any[]>([]);
+  const [result2, setResult2] = useState<any[]>([]);
+  const result1ById = useMemo(() => createResultLookup(result1), [result1]);
+  const result2ById = useMemo(() => createResultLookup(result2), [result2]);
 
   // Summary statistics
   const [statistics, setStatistics] = useState({
@@ -388,8 +363,8 @@ export const VisualComparison = ({
   // Color function for item status
   const getStatusColor = (item, resultNum) => {
     const isResult1 = resultNum === 1;
-    const otherResult = isResult1 ? result2 : result1;
-    const matchingItem = otherResult.find((r) => r._id === item._id);
+    const otherResultById = isResult1 ? result2ById : result1ById;
+    const matchingItem = otherResultById.get(item._id)?.item;
 
     if (!matchingItem) {
       if (isResult1) {
