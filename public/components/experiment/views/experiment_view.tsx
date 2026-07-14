@@ -6,6 +6,7 @@
 import {
   EuiBadge,
   EuiButtonEmpty,
+  EuiCallOut,
   EuiFlexGroup,
   EuiFlexItem,
   EuiPageHeader,
@@ -42,6 +43,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
   history,
 }) => {
   const [experiment, setExperiment] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshRevision, setRefreshRevision] = useState(0);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -50,6 +52,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
   useEffect(() => {
     const fetchExperiment = async () => {
       setError(null);
+      setLoading(true);
       try {
         const response = await experimentService.getExperiment(id, dataSourceId);
         const source = response?.hits?.hits?.[0]?._source;
@@ -67,9 +70,14 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
         }
       } catch (err) {
         console.error('Failed to fetch experiment', err);
-        console.error(err);
         setExperiment(null);
-        setError('Error loading experiment data');
+        if (err?.body?.statusCode === 404) {
+          setError('No matching experiment found');
+        } else {
+          setError(err?.body?.message || 'Error loading experiment data');
+        }
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -129,6 +137,27 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
         }
         description={descriptionText}
       />
+      {!experiment && loading && (
+        <>
+          <EuiSpacer size="l" />
+          <EuiText size="s" color="subdued" data-test-subj="experimentViewLoading">
+            Loading experiment data...
+          </EuiText>
+        </>
+      )}
+      {!loading && error && (
+        <>
+          <EuiSpacer size="l" />
+          <EuiCallOut
+            title="Unable to load experiment"
+            color="danger"
+            iconType="alert"
+            data-test-subj="experimentViewErrorCallOut"
+          >
+            <p>{error}</p>
+          </EuiCallOut>
+        </>
+      )}
       {experiment && (
         <>
           <EuiSpacer size="s" />
