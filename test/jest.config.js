@@ -8,7 +8,11 @@ process.env.TZ = 'UTC';
 module.exports = {
   rootDir: '../',
   setupFiles: ['<rootDir>/test/setupTests.ts'],
-  setupFilesAfterEnv: ['<rootDir>/test/setup.jest.ts', '<rootDir>/test/suppress-console.js'],
+  setupFilesAfterEnv: [
+    'jest-location-mock',
+    '<rootDir>/test/setup.jest.ts',
+    '<rootDir>/test/suppress-console.js',
+  ],
   roots: ['<rootDir>'],
   testMatch: ['**/*.test.js', '**/*.test.jsx', '**/*.test.ts', '**/*.test.tsx'],
   clearMocks: true,
@@ -26,9 +30,20 @@ module.exports = {
     '\\.(css|less|sass|scss)$': '<rootDir>/test/__mocks__/styleMock.js',
     '\\.(gif|ttf|eot|svg|png)$': '<rootDir>/test/__mocks__/fileMock.js',
     '\\@algolia/autocomplete-theme-classic$': '<rootDir>/test/__mocks__/styleMock.js',
-    '^!!raw-loader!.*': 'jest-raw-loader',
+    '^!!raw-loader!.*': '<rootDir>/test/__mocks__/rawLoaderMock.js',
   },
   testEnvironment: 'jsdom',
+  testEnvironmentOptions: {
+    // Set the default URL so window.location.origin is 'http://localhost:5601' rather than
+    // 'http://localhost', avoiding the need for tests to mock window.location.origin.
+    url: 'http://localhost:5601',
+  },
+  // Retain Jest 28 snapshot defaults; Jest 29 flipped escapeString and printBasicPrototype to false,
+  // which would invalidate existing snapshots. See https://jestjs.io/docs/29.0/upgrading-to-jest29
+  snapshotFormat: {
+    escapeString: true,
+    printBasicPrototype: true,
+  },
   collectCoverage: false, // Set to true to always collect coverage
   collectCoverageFrom: [
     'public/components/**/*.{js,jsx,ts,tsx}',
