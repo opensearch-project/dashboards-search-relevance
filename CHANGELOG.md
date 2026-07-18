@@ -29,6 +29,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Surface the backend error message and status code (e.g. a 403 security_exception) instead of a generic "unknown error" when list and detail views fail to load ([#873](https://github.com/opensearch-project/dashboards-search-relevance/issues/873))
 * Surface backend error messages in Search Configuration and Judgment detail views instead of generic load-failure messages ([#894](https://github.com/opensearch-project/dashboards-search-relevance/issues/894))
 * Render an error callout on the Experiment Details page when the experiment fails to load (missing id, invalid data, or fetch error) instead of a blank content area ([#892](https://github.com/opensearch-project/dashboards-search-relevance/issues/892))
+* Surface the detailed error message on the Hybrid Optimizer experiment view, and show an informative empty state instead of a blank results table when an experiment completes with no evaluation results ([#550](https://github.com/opensearch-project/dashboards-search-relevance/issues/550))
 
 ### Infrastructure
 * Add unit tests for the metrics route handler (`GET /api/relevancy/stats`): route registration config, success response, and error status mapping ([#893](https://github.com/opensearch-project/dashboards-search-relevance/issues/893))
