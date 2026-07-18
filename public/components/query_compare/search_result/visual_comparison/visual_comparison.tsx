@@ -124,7 +124,7 @@ const buildResultMap = (results) => {
 };
 
 // Utility function to calculate statistics for the Venn diagram and rank changes
-const calculateStatistics = (result1, result2) => {
+export const calculateStatistics = (result1, result2) => {
   const result2ById = buildResultMap(result2);
 
   let inBoth = 0;
