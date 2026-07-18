@@ -96,11 +96,11 @@ describe('SearchResult Base64 Config Loading', () => {
   };
 
   describe('URL parameter parsing', () => {
-    const originalLocation = window.location;
-
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      // jsdom 26 makes window.location non-configurable; set hash/search in place
+      // instead of deleting and reassigning window.location.
+      window.location.hash = '';
+      window.location.search = '';
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -119,7 +119,8 @@ describe('SearchResult Base64 Config Loading', () => {
     });
 
     afterEach(() => {
-      window.location = originalLocation;
+      window.location.hash = '';
+      window.location.search = '';
       mockUseLocation.mockReset();
     });
 
@@ -316,11 +317,11 @@ describe('SearchResult Base64 Config Loading', () => {
   });
 
   describe('Experimental workbench UI parameter handling', () => {
-    const originalLocation = window.location;
-
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      // jsdom 26 makes window.location non-configurable; set hash/search in place
+      // instead of deleting and reassigning window.location.
+      window.location.hash = '';
+      window.location.search = '';
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -339,7 +340,8 @@ describe('SearchResult Base64 Config Loading', () => {
     });
 
     afterEach(() => {
-      window.location = originalLocation;
+      window.location.hash = '';
+      window.location.search = '';
       mockUseLocation.mockReset();
     });
 

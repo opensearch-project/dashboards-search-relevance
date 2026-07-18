@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { configure } from '@testing-library/react';
 
 configure({ testIdAttribute: 'data-test-subj' });
@@ -11,8 +11,13 @@ configure({ testIdAttribute: 'data-test-subj' });
 window.URL.createObjectURL = () => '';
 HTMLCanvasElement.prototype.getContext = () => '';
 
+// jest-location-mock uses process.env.HOST as the base URL for its window.location mock.
+// Set it to match testEnvironmentOptions.url so window.location.origin is 'http://localhost:5601'.
+process.env.HOST = 'http://localhost:5601';
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
+  configurable: true,
   value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
@@ -53,3 +58,17 @@ jest.mock('@elastic/eui/lib/services/accessibility/html_id_generator', () => ({
 }));
 
 jest.setTimeout(30000);
+
+// jsdom 26 marks window.localStorage and window.sessionStorage as non-configurable.
+// Re-declare them as configurable once here so individual tests can override them
+// with Object.defineProperty without hitting "Cannot redefine property" errors.
+['localStorage', 'sessionStorage'].forEach((key) => {
+  const descriptor = Object.getOwnPropertyDescriptor(window, key);
+  if (descriptor && !descriptor.configurable) {
+    Object.defineProperty(window, key, {
+      configurable: true,
+      writable: true,
+      value: descriptor.value,
+    });
+  }
+});
