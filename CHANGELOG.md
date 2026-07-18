@@ -14,6 +14,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Add experiment name and description across the full lifecycle: optional fields on creation forms, display in list and detail views (tooltips, header, search), and edit from the detail view ([#823](https://github.com/opensearch-project/dashboards-search-relevance/pull/823))
 
 ### Enhancements
+* Reduce O(n²) result matching in VisualComparison and connection lines by precomputing `_id` lookup maps ([#881](https://github.com/opensearch-project/dashboards-search-relevance/issues/881))
 * Show which documents failed in the Judgment view: the ratings table now lists each query's unrated docs with a Failed status alongside the rated ones ([#899](https://github.com/opensearch-project/dashboards-search-relevance/pull/899))
 * Load experiment detail resources in parallel after the initial experiment fetch ([#882](https://github.com/opensearch-project/dashboards-search-relevance/issues/882))
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))

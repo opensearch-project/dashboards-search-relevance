@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, useMemo } from 'react';
 import {
   EuiPanel,
   EuiEmptyPrompt,
@@ -108,23 +108,46 @@ const getDisplayFieldsAndImageField = (sampleItem) => {
   };
 };
 
+// Build a Map from `_id` to the first item carrying that id. Precomputing this
+// once turns the repeated linear `_id` lookups (Array.prototype.find/some) used
+// throughout comparison rendering into O(1) map reads, reducing the overall
+// matching cost from O(n²) to O(n). The "first occurrence wins" rule mirrors the
+// previous `.find()`/`.some()` semantics for the (unexpected) duplicate-id case.
+const buildResultMap = (results) => {
+  const map = new Map();
+  for (const item of results) {
+    if (!map.has(item._id)) {
+      map.set(item._id, item);
+    }
+  }
+  return map;
+};
+
 // Utility function to calculate statistics for the Venn diagram and rank changes
 const calculateStatistics = (result1, result2) => {
-  const inBoth = result1.filter((item1) => result2.some((item2) => item2._id === item1._id)).length;
+  const result2ById = buildResultMap(result2);
+
+  let inBoth = 0;
+  let unchanged = 0;
+  let improved = 0;
+  let worsened = 0;
+
+  for (const item1 of result1) {
+    const item2 = result2ById.get(item1._id);
+    if (!item2) continue;
+
+    inBoth++;
+    if (item1.rank === item2.rank) {
+      unchanged++;
+    } else if (item1.rank > item2.rank) {
+      improved++;
+    } else {
+      worsened++;
+    }
+  }
+
   const onlyInResult1 = result1.length - inBoth;
   const onlyInResult2 = result2.length - inBoth;
-  const unchanged = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank === item2.rank;
-  }).length;
-  const improved = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank > item2.rank;
-  }).length;
-  const worsened = result1.filter((item1) => {
-    const item2 = result2.find((item2) => item2._id === item1._id);
-    return item2 && item1.rank < item2.rank;
-  }).length;
 
   return {
     inBoth,
@@ -385,11 +408,17 @@ export const VisualComparison = ({
     forceRerender((v) => v + 1);
   }, [result1, result2, displayField, imageFieldName]);
 
+  // Precompute `_id` lookup maps so per-row status resolution (getStatusColor,
+  // called once for every rendered item) is O(1) instead of scanning the other
+  // result set each time.
+  const result1ById = useMemo(() => buildResultMap(result1), [result1]);
+  const result2ById = useMemo(() => buildResultMap(result2), [result2]);
+
   // Color function for item status
   const getStatusColor = (item, resultNum) => {
     const isResult1 = resultNum === 1;
-    const otherResult = isResult1 ? result2 : result1;
-    const matchingItem = otherResult.find((r) => r._id === item._id);
+    const otherResultById = isResult1 ? result2ById : result1ById;
+    const matchingItem = otherResultById.get(item._id);
 
     if (!matchingItem) {
       if (isResult1) {
