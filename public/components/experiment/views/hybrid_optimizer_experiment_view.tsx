@@ -213,8 +213,10 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         console.error('Failed to load experiment', err);
         // Surface the detailed message from the API response when available
         // instead of a generic string, so failures like an invalid query type
-        // are visible to the user.
-        setError(err?.body?.message || 'Error loading experiment data');
+        // are visible to the user. Only surface it when it is actually a
+        // string so a non-string/absent body falls back to the generic text.
+        const detail = err?.body?.message;
+        setError(typeof detail === 'string' && detail ? detail : 'Error loading experiment data');
       } finally {
         setLoading(false);
       }
