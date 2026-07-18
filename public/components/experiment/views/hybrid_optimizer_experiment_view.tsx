@@ -6,6 +6,8 @@
 import {
   EuiButtonEmpty,
   EuiCallOut,
+  EuiCode,
+  EuiEmptyPrompt,
   EuiPanel,
   EuiDescriptionList,
   EuiDescriptionListTitle,
@@ -63,6 +65,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
   const [scheduledExperimentJob, setScheduledExperimentJob] = useState<ScheduledJob | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [noResults, setNoResults] = useState<boolean>(false);
 
   const [queryEvaluations, setQueryEvaluations] = useState<QueryVariantEvaluations>({});
   const [searchConfiguration, setSearchConfiguration] = useState<any | null>(null);
@@ -76,6 +79,8 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     const fetchExperiment = async () => {
       try {
         setLoading(true);
+        setError(null);
+        setNoResults(false);
 
         const resources = await loadExperimentResourcesParallel(
           http,
@@ -168,12 +173,17 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           }
 
           if (!allResults || allResults.length === 0) {
-            console.error('No evaluation results found');
-            notifications.toasts.addWarning({
-              title: 'No Results',
-              text: 'No evaluation results found for this experiment',
-            });
+            // The experiment completed but produced no evaluation results,
+            // which typically means every query variant failed to run (e.g.
+            // the search configuration query is not of type `hybrid`). Still
+            // surface the experiment metadata and render an informative empty
+            // state instead of leaving a blank results table.
+            setExperiment(_experiment);
+            setSearchConfiguration(_searchConfiguration);
+            setQuerySet(_querySet);
+            setJudgmentSet(_judgmentSet);
             setQueryEvaluations({});
+            setNoResults(true);
             return;
           }
 
@@ -201,7 +211,12 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         }
       } catch (err) {
         console.error('Failed to load experiment', err);
-        setError('Error loading experiment data');
+        // Surface the detailed message from the API response when available
+        // instead of a generic string, so failures like an invalid query type
+        // are visible to the user. Only surface it when it is actually a
+        // string so a non-string/absent body falls back to the generic text.
+        const detail = err?.body?.message;
+        setError(typeof detail === 'string' && detail ? detail : 'Error loading experiment data');
       } finally {
         setLoading(false);
       }
@@ -418,9 +433,23 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       <EuiSpacer size="m" />
       <EuiPanel hasBorder paddingSize="l">
         {error ? (
-          <EuiCallOut title="Error" color="danger">
+          <EuiCallOut title="Error loading experiment" color="danger">
             <p>{error}</p>
           </EuiCallOut>
+        ) : noResults ? (
+          <EuiEmptyPrompt
+            iconType="alert"
+            title={<h3>No evaluation results</h3>}
+            body={
+              <p>
+                This experiment completed but produced no evaluation results. This usually
+                means all query variants failed to run — for a Hybrid Optimizer experiment, a
+                common cause is that the search configuration&apos;s query is not of type{' '}
+                <EuiCode>hybrid</EuiCode>. Check the search configuration and run the experiment
+                again.
+              </p>
+            }
+          />
         ) : (
           <AnyTableListView
             key={`table-${Object.keys(queryEvaluations).length}`}
