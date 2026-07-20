@@ -307,6 +307,265 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
     backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
   );
 
+  // AB Test routes
+  router.get(
+    {
+      path: ServiceEndpoints.AbTests,
+      validate: {
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('GET', BackendEndpoints.AbTests, dataSourceEnabled)
+  );
+  router.put(
+    {
+      path: `${ServiceEndpoints.AbTests}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          name: schema.string(),
+          search_configuration_a: schema.string(),
+          search_configuration_b: schema.string(),
+          size: schema.maybe(schema.number()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PUT', BackendEndpoints.AbTests, dataSourceEnabled)
+  );
+  router.put(
+    {
+      path: `${ServiceEndpoints.AbTests}/{id}/_update`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          enabled: schema.maybe(schema.boolean()),
+          size: schema.maybe(schema.number()),
+          search_configuration_a: schema.maybe(schema.string()),
+          search_configuration_b: schema.maybe(schema.string()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    async (context, req, res) => {
+      const { id } = req.params as { id: string };
+      const dataSourceId = (req.query as any)?.dataSourceId;
+      let callApi;
+      if (dataSourceEnabled && dataSourceId) {
+        callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+      } else {
+        callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+      }
+      try {
+        const response = await callApi('transport.request', {
+          method: 'PUT',
+          path: `${BackendEndpoints.AbTests}/${id}/_update`,
+          body: req.body,
+        });
+        return res.ok({ body: response });
+      } catch (err) {
+        return res.customError({ statusCode: err.statusCode || 500, body: { message: err.message } });
+      }
+    }
+  );
+  router.delete(
+    {
+      path: `${ServiceEndpoints.AbTests}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('DELETE', BackendEndpoints.AbTests, dataSourceEnabled)
+  );
+  router.put(
+    {
+      path: `${ServiceEndpoints.AbTests}/ubi_index`,
+      validate: {
+        body: schema.object({
+          index: schema.string(),
+          mapping: schema.maybe(schema.any()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    async (context, req, res) => {
+      const callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+      try {
+        const customMapping = req.body.mapping || {
+          mappings: {
+            properties: {
+              action_name: { type: 'keyword' },
+              timestamp: { type: 'date' },
+              event_attributes: {
+                properties: {
+                  object: {
+                    properties: {
+                      id: { type: 'keyword' },
+                      search_configuration_uuid: { type: 'keyword' },
+                    },
+                  },
+                  position: {
+                    properties: {
+                      ordinal: { type: 'integer' },
+                    },
+                  },
+                  ab_test_id: { type: 'keyword' },
+                },
+              },
+            },
+          },
+        };
+        const response = await callApi('transport.request', {
+          method: 'PUT',
+          path: `/${req.body.index}`,
+          body: customMapping,
+        });
+        return res.ok({ body: response });
+      } catch (err) {
+        return res.customError({ statusCode: err.statusCode || 500, body: { message: err.message } });
+      }
+    }
+  );
+  router.post(
+    {
+      path: `${ServiceEndpoints.AbTests}/results`,
+      validate: {
+        body: schema.object({
+          index: schema.string(),
+          test_id: schema.string(),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    async (context, req, res) => {
+      const callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+      try {
+        const response = await callApi('transport.request', {
+          method: 'POST',
+          path: `/${req.body.index}/_search`,
+          body: {
+            size: 0,
+            query: { term: { 'event_attributes.ab_test_id': req.body.test_id } },
+            aggs: {
+              clicks_per_config: {
+                terms: { field: 'event_attributes.object.search_configuration_uuid' }
+              }
+            },
+          },
+        });
+        return res.ok({ body: response });
+      } catch (err) {
+        return res.customError({ statusCode: err.statusCode || 500, body: { message: err.message } });
+      }
+    }
+  );
+  router.post(
+    {
+      path: `${ServiceEndpoints.AbTests}/register_click`,
+      validate: {
+        body: schema.object({
+          test_id: schema.string(),
+          search_configuration_uuid: schema.string(),
+          doc_id: schema.string(),
+          title: schema.maybe(schema.string()),
+          position: schema.maybe(schema.number()),
+          ubi_index: schema.maybe(schema.string()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    async (context, req, res) => {
+      const callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+      const targetIndex = req.body.ubi_index || 'ubi_events';
+      try {
+        // Auto-create index with correct mappings if it doesn't exist
+        try {
+          await callApi('transport.request', { method: 'HEAD', path: `/${targetIndex}` });
+        } catch (e) {
+          await callApi('transport.request', {
+            method: 'PUT',
+            path: `/${targetIndex}`,
+            body: {
+              mappings: {
+                properties: {
+                  action_name: { type: 'keyword' },
+                  timestamp: { type: 'date' },
+                  event_attributes: {
+                    properties: {
+                      object: { properties: { id: { type: 'keyword' }, search_configuration_uuid: { type: 'keyword' } } },
+                      position: { properties: { ordinal: { type: 'integer' } } },
+                      ab_test_id: { type: 'keyword' },
+                    },
+                  },
+                },
+              },
+            },
+          });
+        }
+        const response = await callApi('transport.request', {
+          method: 'POST',
+          path: `/${targetIndex}/_doc`,
+          body: {
+            timestamp: new Date().toISOString(),
+            action_name: 'click',
+            event_attributes: {
+              object: {
+                id: req.body.doc_id,
+                search_configuration_uuid: req.body.search_configuration_uuid,
+              },
+              position: { ordinal: req.body.position || 0 },
+              ab_test_id: req.body.test_id,
+            },
+          },
+        });
+        return res.ok({ body: response });
+      } catch (err) {
+        return res.customError({ statusCode: err.statusCode || 500, body: { message: err.message } });
+      }
+    }
+  );
+  router.post(
+    {
+      path: `${ServiceEndpoints.AbTests}/{id}/_search`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          query_params: schema.recordOf(schema.string(), schema.string()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    async (context, req, res) => {
+      const { id } = req.params as { id: string };
+      const dataSourceId = (req.query as any)?.dataSourceId;
+      let callApi;
+      if (dataSourceEnabled && dataSourceId) {
+        callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+      } else {
+        callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+      }
+      try {
+        const response = await callApi('transport.request', {
+          method: 'POST',
+          path: `${BackendEndpoints.AbTests}/${id}/_search`,
+          body: req.body,
+        });
+        return res.ok({ body: response });
+      } catch (err) {
+        return res.customError({ statusCode: err.statusCode || 500, body: { message: err.message } });
+      }
+    }
+  );
+
   router.post(
     {
       path: ServiceEndpoints.ValidatePrompt,
@@ -432,6 +691,13 @@ const backendAction = (
         response = await callApi('transport.request', {
           method,
           path: getPath,
+        });
+      } else if ((method === 'PUT' || method === 'POST') && req.params && (req.params as any).id) {
+        const idPath = `${path}/${(req.params as any).id}`;
+        response = await callApi('transport.request', {
+          method,
+          path: idPath,
+          body: req.body,
         });
       } else {
         // Handle PUT, POST, GET as before

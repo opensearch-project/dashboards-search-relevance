@@ -13,6 +13,7 @@ export enum TemplateType {
   QuerySetComparison = 'Query Set Comparison',
   SearchEvaluation = 'Search Evaluation',
   HybridSearchOptimizer = 'Hybrid Search Optimizer',
+  AbTest = 'A/B Test Search',
 }
 
 export const routeToTemplateType = (templateId: string) => {

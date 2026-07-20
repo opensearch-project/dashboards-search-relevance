@@ -29,6 +29,7 @@ export const ServiceEndpoints = Object.freeze({
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
   ValidatePrompt: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/validate_prompt`,
+  AbTests: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/ab_tests`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';
@@ -38,6 +39,7 @@ export const BackendEndpoints = Object.freeze({
   Judgments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/judgments`,
   Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments/schedule`,
+  AbTests: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/ab_tests`,
 } as const);
 
 const ML_COMMON_PLUGIN_BASE_PATH = '_plugins/_ml';
@@ -81,6 +83,7 @@ export enum Routes {
   JudgmentView = '/judgment/view/:entityId',
   JudgmentViewPrefix = '/judgment/view',
   JudgmentCreate = '/judgment/create',
+  AbTestCreate = '/abTest/create',
 }
 
 export enum SavedObjectIds {

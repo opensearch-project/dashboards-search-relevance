@@ -46,15 +46,22 @@ const TEMPLATES: Template[] = [
     description: 'Find the best balance between neural and lexical hybrid search configuration.',
     isDisabled: false,
   },
+  {
+    id: TemplateType.AbTest,
+    name: 'A/B Test Search',
+    description: 'Compare two search configurations using Team Draft Interleaving to determine which performs better with real users.',
+    isDisabled: false,
+  },
 ];
 
 const TEMPLATE_ICON = 'beaker';
 
-const ROUTE_MAP: Record<TemplateType, string> = {
+const ROUTE_MAP: Record<string, string> = {
   [TemplateType.QueryAnalysis]: Routes.ExperimentCreateQueryAnalysis,
   [TemplateType.QuerySetComparison]: Routes.ExperimentCreateQuerySetComparison,
   [TemplateType.SearchEvaluation]: Routes.ExperimentCreateSearchEvaluation,
   [TemplateType.HybridSearchOptimizer]: Routes.ExperimentCreateHybridOptimizer,
+  [TemplateType.AbTest]: Routes.AbTestCreate,
 };
 
 export const TemplateCards = ({ history }: TemplateCardsProps) => {

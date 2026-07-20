@@ -42,6 +42,7 @@ import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
 import { parseEntityParams } from './common/datasource_utils';
+import { AbTestCreate, AbTestListing, AbTestView, AbTestSearch, AbTestResults, AbTestDetail, AbTestUbiConfig } from './ab_test/ab_test_create';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -181,6 +182,38 @@ const SearchRelevancePage = ({
             history.push(Routes.JudgmentListing);
           },
           isSelected: location.pathname.startsWith(Routes.JudgmentListing),
+        },
+        {
+          name: 'A/B Tests',
+          id: 'abTests',
+          isSelected: location.pathname.startsWith('/abTest'),
+          forceOpen: true,
+          items: [
+            {
+              name: 'List',
+              id: 'abTestList',
+              onClick: () => { history.push('/abTest'); },
+              isSelected: location.pathname === '/abTest',
+            },
+            {
+              name: 'UBI Config',
+              id: 'abTestUbi',
+              onClick: () => { history.push('/abTest/ubi'); },
+              isSelected: location.pathname === '/abTest/ubi',
+            },
+            {
+              name: 'Search',
+              id: 'abTestSearch',
+              onClick: () => { history.push('/abTest/search'); },
+              isSelected: location.pathname === '/abTest/search',
+            },
+            {
+              name: 'Results',
+              id: 'abTestResults',
+              onClick: () => { history.push('/abTest/results'); },
+              isSelected: location.pathname === '/abTest/results',
+            },
+          ],
         },
       ],
     },
@@ -407,6 +440,57 @@ const SearchRelevancePage = ({
                 dataSourceEnabled={dataSourceEnabled}
                 dataSourceManagement={dataSourceManagement}
               />;
+            }}
+          />
+          <Route
+            path="/abTest/search"
+            exact
+            render={() => {
+              return <AbTestSearch http={http} notifications={notifications} history={history} />;
+            }}
+          />
+          <Route
+            path="/abTest/ubi"
+            exact
+            render={() => {
+              return <AbTestUbiConfig http={http} notifications={notifications} />;
+            }}
+          />
+          <Route
+            path="/abTest/results"
+            exact
+            render={() => {
+              return <AbTestResults http={http} notifications={notifications} />;
+            }}
+          />
+          <Route
+            path="/abTest/detail/:testId"
+            exact
+            render={(props) => {
+              const { testId } = props.match.params;
+              return <AbTestDetail http={http} notifications={notifications} testId={testId} history={history} />;
+            }}
+          />
+          <Route
+            path="/abTest/update/:testId"
+            exact
+            render={(props) => {
+              const { testId } = props.match.params;
+              return <AbTestView http={http} notifications={notifications} testId={testId} history={history} />;
+            }}
+          />
+          <Route
+            path="/abTest/create"
+            exact
+            render={() => {
+              return <AbTestCreate http={http} notifications={notifications} history={history} />;
+            }}
+          />
+          <Route
+            path="/abTest"
+            exact
+            render={() => {
+              return <AbTestListing http={http} notifications={notifications} history={history} />;
             }}
           />
         </Switch>
