@@ -15,11 +15,14 @@ import {
   EuiFieldNumber,
   EuiSwitch,
   EuiTitle,
+  EuiComboBox,
 } from '@elastic/eui';
 import { isValidTokenLimit } from '../utils/validation';
 import { PromptPanel } from './prompt_template/prompt_panel';
 import { ValidationPanel } from './prompt_template/validation_panel';
 import { usePromptTemplate } from '../hooks/use_prompt_template';
+
+const MAX_EXISTING_JUDGMENTS = 5;
 
 interface AdvancedSettingsProps {
   formData: any;
@@ -29,6 +32,8 @@ interface AdvancedSettingsProps {
   addContextField: () => void;
   removeContextField: (field: string) => void;
   modelOptions?: Array<{ label: string; value: string }>;
+  existingJudgmentOptions?: Array<{ label: string; value: string }>;
+  isLoadingExistingJudgments?: boolean;
   httpClient?: any;
   selectedSearchConfigs: Array<{ label: string; value: string }>;
 }
@@ -41,6 +46,8 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   addContextField,
   removeContextField,
   modelOptions = [],
+  existingJudgmentOptions = [],
+  isLoadingExistingJudgments = false,
   httpClient,
   selectedSearchConfigs,
 }) => {
@@ -60,6 +67,13 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     querySetId: formData.querySetId,
     modelId: formData.modelId,
     httpClient,
+  });
+
+  // Existing LLM judgments the customer selected to reuse ratings from (up to 5).
+  // Options are fetched once in the form hook and passed down as props.
+  const selectedExistingJudgments = (formData.existingJudgments || []).map((id: string) => {
+    const match = existingJudgmentOptions.find((o) => o.value === id);
+    return match || { label: id, value: id };
   });
 
   // Backend's default prompt template (used when user hasn't customized)
@@ -195,6 +209,25 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
           label="Ignore failures during judgment process"
           checked={formData.ignoreFailure}
           onChange={(e) => updateFormData({ ignoreFailure: e.target.checked })}
+        />
+      </EuiCompressedFormRow>
+
+      <EuiCompressedFormRow
+        label="Reuse Existing Judgments"
+        helpText={`Reuse ratings from up to ${MAX_EXISTING_JUDGMENTS} existing LLM judgments to avoid re-scoring documents that were already judged.`}
+        fullWidth
+      >
+        <EuiComboBox
+          placeholder="Select existing judgments to reuse"
+          options={existingJudgmentOptions}
+          selectedOptions={selectedExistingJudgments}
+          onChange={(selected) => {
+            if (selected.length <= MAX_EXISTING_JUDGMENTS) {
+              updateFormData({ existingJudgments: selected.map((s: any) => s.value) });
+            }
+          }}
+          isLoading={isLoadingExistingJudgments}
+          fullWidth
         />
       </EuiCompressedFormRow>
     </>

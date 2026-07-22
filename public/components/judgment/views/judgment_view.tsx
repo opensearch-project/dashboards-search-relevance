@@ -26,49 +26,47 @@ interface JudgmentViewProps extends RouteComponentProps<{ id: string }> {
 }
 
 /**
- * Table component for Judgment Ratings
- * Converts:
+ * Generic table for a judgment's per-query document lists (ratings or failures).
+ * Flattens:
  * [
- *   { query, ratings:[{docId, rating}, ...] }
+ *   { query, [listField]: [{docId, ...}, ...] }
  * ]
- * into flat rows usable by EuiBasicTable
+ * into rows and renders them with search, sort and pagination.
+ *
+ * @param data      the judgmentRatings array
+ * @param listField which per-query list to flatten ('ratings' or 'failures')
+ * @param mapRow    maps a raw list item to a table row
+ * @param columns   the EuiBasicTable columns to display
  */
-const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
+const JudgmentDocsTable = ({
+  data,
+  listField,
+  mapRow,
+  columns,
+}: {
+  data: any[];
+  listField: string;
+  mapRow: (query: string, item: any) => Record<string, any>;
+  columns: Array<{ field: string; name: string; sortable?: boolean }>;
+}) => {
   const [search, setSearch] = useState('');
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(20);
-  const [sortField, setSortField] = useState<'query' | 'docId' | 'rating' | 'status'>(
-    'query'
-  );
+  const [sortField, setSortField] = useState<string>('query');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   // Flatten JSON → table rows
   const flattened = useMemo(() => {
-    if (!Array.isArray(ratings)) return [];
-    return ratings.flatMap(item => {
-      const rated = (item.ratings || []).map(r => ({
-        query: item.query,
-        docId: r.docId,
-        rating: Number(r.rating),
-        status: 'Rated',
-      }));
-      // Docs sent to the LLM that came back without a rating are reported under "failures".
-      const failed = (item.failures || []).map(fnf => ({
-        query: item.query,
-        docId: fnf.docId,
-        rating: null,
-        status: 'Failed',
-      }));
-      return [...rated, ...failed];
-    });
-  }, [ratings]);
+    if (!Array.isArray(data)) return [];
+    return data.flatMap((item) => (item[listField] || []).map((entry: any) => mapRow(item.query, entry)));
+  }, [data, listField, mapRow]);
 
-  // Filtering
+  // Filtering (by query or docId)
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return flattened.filter(row =>
-      row.query.toLowerCase().includes(q) ||
-      row.docId.toLowerCase().includes(q)
+    return flattened.filter(
+      (row) =>
+        String(row.query).toLowerCase().includes(q) || String(row.docId).toLowerCase().includes(q)
     );
   }, [search, flattened]);
 
@@ -78,7 +76,6 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
     items.sort((a: any, b: any) => {
       const aVal = a[sortField];
       const bVal = b[sortField];
-
       if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1;
       if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1;
       return 0;
@@ -91,20 +88,6 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
     const start = pageIndex * pageSize;
     return sorted.slice(start, start + pageSize);
   }, [sorted, pageIndex, pageSize]);
-
-  // Table Columns
-  const columns = [
-    { field: 'query', name: 'Query', sortable: true },
-    { field: 'docId', name: 'Doc ID', sortable: true },
-    { field: 'status', name: 'Status', sortable: true },
-    {
-      field: 'rating',
-      name: 'Rating',
-      sortable: true,
-      render: (rating: number | null) =>
-        rating === null || Number.isNaN(rating) ? 'N/A' : rating,
-    },
-  ];
 
   const pagination = {
     pageIndex,
@@ -155,6 +138,33 @@ const JudgmentRatingsTable = ({ ratings }: { ratings: any[] }) => {
   );
 };
 
+// Ratings: query + docId + numeric rating.
+const JudgmentRatingsTable = ({ judgmentRatings }: { judgmentRatings: any[] }) => (
+  <JudgmentDocsTable
+    data={judgmentRatings}
+    listField="ratings"
+    mapRow={(query, r) => ({ query, docId: r.docId, rating: Number(r.rating) })}
+    columns={[
+      { field: 'query', name: 'Query', sortable: true },
+      { field: 'docId', name: 'Doc ID', sortable: true },
+      { field: 'rating', name: 'Rating', sortable: true },
+    ]}
+  />
+);
+
+// Failures: query + docId (no rating column, since these docs were not rated).
+const JudgmentFailuresTable = ({ judgmentRatings }: { judgmentRatings: any[] }) => (
+  <JudgmentDocsTable
+    data={judgmentRatings}
+    listField="failures"
+    mapRow={(query, f) => ({ query, docId: f.docId })}
+    columns={[
+      { field: 'query', name: 'Query', sortable: true },
+      { field: 'docId', name: 'Doc ID', sortable: true },
+    ]}
+  />
+);
+
 export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id, dataSourceId }) => {
   const { judgment, loading, error } = useJudgmentView(http, id, dataSourceId);
 
@@ -201,9 +211,21 @@ export const JudgmentView: React.FC<JudgmentViewProps> = ({ http, id, dataSource
 
         <EuiFormRow label="Judgment Ratings" fullWidth>
           <EuiPanel paddingSize="m" hasShadow={false}>
-            <JudgmentRatingsTable ratings={judgment?.judgmentRatings || []} />
+            <JudgmentRatingsTable judgmentRatings={judgment?.judgmentRatings || []} />
           </EuiPanel>
         </EuiFormRow>
+
+        {/* Only show the failed-documents table when the judgment actually has failures. */}
+        {Array.isArray(judgment?.judgmentRatings) &&
+          judgment.judgmentRatings.some(
+            (item: any) => Array.isArray(item.failures) && item.failures.length > 0
+          ) && (
+          <EuiFormRow label="Failed Documents" fullWidth>
+            <EuiPanel paddingSize="m" hasShadow={false}>
+              <JudgmentFailuresTable judgmentRatings={judgment?.judgmentRatings || []} />
+            </EuiPanel>
+          </EuiFormRow>
+        )}
       </EuiForm>
     );
   };
