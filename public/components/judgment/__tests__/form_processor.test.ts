@@ -82,6 +82,42 @@ describe('form_processor', () => {
       });
     });
 
+    it('should include existingJudgments in the LLM payload when provided', () => {
+      const formData = {
+        name: 'test judgment',
+        type: JudgmentType.LLM,
+        size: 5,
+        existingJudgments: ['j1', 'j2'],
+      };
+
+      const result = buildJudgmentPayload(
+        formData,
+        [{ label: 'qs1', value: 'qs1' }],
+        [{ label: 'sc1', value: 'sc1' }],
+        [{ label: 'model1', value: 'model1' }]
+      );
+
+      expect(result.existingJudgments).toEqual(['j1', 'j2']);
+    });
+
+    it('should omit existingJudgments from the LLM payload when empty', () => {
+      const formData = {
+        name: 'test judgment',
+        type: JudgmentType.LLM,
+        size: 5,
+        existingJudgments: [],
+      };
+
+      const result = buildJudgmentPayload(
+        formData,
+        [{ label: 'qs1', value: 'qs1' }],
+        [{ label: 'sc1', value: 'sc1' }],
+        [{ label: 'model1', value: 'model1' }]
+      );
+
+      expect(result).not.toHaveProperty('existingJudgments');
+    });
+
     it('should build UBI payload with ubiEventsIndex', () => {
       const formData = {
         name: 'test judgment',

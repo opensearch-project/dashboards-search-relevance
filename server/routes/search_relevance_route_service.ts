@@ -250,6 +250,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           ignoreFailure: schema.maybe(schema.boolean()),
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
           promptTemplate: schema.maybe(schema.string()),
+          existingJudgments: schema.maybe(schema.arrayOf(schema.string())),
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
@@ -306,6 +307,20 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       },
     },
     backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+  // Retry only the failed documents of an existing judgment. Proxies to the backend
+  // POST /_plugins/_search_relevance/judgments/{id}/_retry endpoint.
+  router.post(
+    {
+      path: `${ServiceEndpoints.JudgmentRetry}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('POST', BackendEndpoints.Judgments, dataSourceEnabled, { idSuffix: '_retry' })
   );
 
   router.post(
@@ -404,7 +419,7 @@ const backendAction = (
   method: string,
   path: string,
   dataSourceEnabled: boolean,
-  options?: { passQueryParams?: string[] }
+  options?: { passQueryParams?: string[]; idSuffix?: string }
 ) => {
   return async (
     context: RequestHandlerContext,
@@ -433,6 +448,13 @@ const backendAction = (
         response = await callApi('transport.request', {
           method,
           path: getPath,
+        });
+      } else if (req.params.id && options?.idSuffix) {
+        // Handle id-scoped action routes such as POST {path}/{id}/_retry
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}/${options.idSuffix}`,
+          ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
         });
       } else {
         // Handle PUT, POST, GET as before

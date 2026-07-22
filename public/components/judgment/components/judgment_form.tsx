@@ -31,9 +31,11 @@ interface JudgmentFormProps {
   querySetOptions: any[];
   searchConfigOptions: any[];
   modelOptions: any[];
+  existingJudgmentOptions: any[];
   isLoadingQuerySets: boolean;
   isLoadingSearchConfigs: boolean;
   isLoadingModels: boolean;
+  isLoadingExistingJudgments: boolean;
   newContextField: string;
   setNewContextField: (value: string) => void;
   addContextField: () => void;
@@ -57,9 +59,11 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
   querySetOptions,
   searchConfigOptions,
   modelOptions,
+  existingJudgmentOptions,
   isLoadingQuerySets,
   isLoadingSearchConfigs,
   isLoadingModels,
+  isLoadingExistingJudgments,
   newContextField,
   setNewContextField,
   addContextField,
@@ -125,9 +129,11 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           querySetOptions={querySetOptions}
           searchConfigOptions={searchConfigOptions}
           modelOptions={modelOptions}
+          existingJudgmentOptions={existingJudgmentOptions}
           isLoadingQuerySets={isLoadingQuerySets}
           isLoadingSearchConfigs={isLoadingSearchConfigs}
           isLoadingModels={isLoadingModels}
+          isLoadingExistingJudgments={isLoadingExistingJudgments}
           newContextField={newContextField}
           setNewContextField={setNewContextField}
           addContextField={addContextField}

@@ -56,6 +56,22 @@ export class JudgmentService {
     }));
   }
 
+  /**
+   * Fetch existing LLM judgments so their ratings can be reused when creating a new judgment.
+   */
+  async fetchLlmJudgments(dataSourceId?: string | null): Promise<ComboBoxOption[]> {
+    const opts = this.queryOpts(dataSourceId);
+    const response = opts
+      ? await this.http.get(ServiceEndpoints.Judgments, opts)
+      : await this.http.get(ServiceEndpoints.Judgments);
+    return response.hits.hits
+      .filter((judgment: any) => judgment._source.type === 'LLM_JUDGMENT')
+      .map((judgment: any) => ({
+        label: judgment._source.name ? `${judgment._source.name} (${judgment._id})` : judgment._id,
+        value: judgment._id,
+      }));
+  }
+
   async fetchModels(dataSourceId?: string | null): Promise<ModelOption[]> {
     const url = dataSourceId
       ? `${ServiceEndpoints.GetModels}/${dataSourceId}`

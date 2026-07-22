@@ -25,6 +25,11 @@ const defaultProps = {
     { label: 'Model 1', value: 'model1' },
     { label: 'Model 2', value: 'model2' },
   ],
+  existingJudgmentOptions: [
+    { label: 'Judgment 1 (j1)', value: 'j1' },
+    { label: 'Judgment 2 (j2)', value: 'j2' },
+  ],
+  isLoadingExistingJudgments: false,
   httpClient: {
     get: jest.fn(),
     post: jest.fn(),
@@ -184,6 +189,22 @@ describe('AdvancedSettings', () => {
       rerender(<AdvancedSettings {...newProps} />);
 
       expect(screen.getByText('Prompt Template Configuration')).toBeInTheDocument();
+    });
+  });
+
+  describe('reuse existing judgments', () => {
+    it('should render the Reuse Existing Judgments field', () => {
+      render(<AdvancedSettings {...defaultProps} />);
+      expect(screen.getByText('Reuse Existing Judgments')).toBeInTheDocument();
+    });
+
+    it('should show previously selected existing judgments', () => {
+      const propsWithSelection = {
+        ...defaultProps,
+        formData: { ...defaultProps.formData, existingJudgments: ['j1'] },
+      };
+      render(<AdvancedSettings {...propsWithSelection} />);
+      expect(screen.getByText('Judgment 1 (j1)')).toBeInTheDocument();
     });
   });
 

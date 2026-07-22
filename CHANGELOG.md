@@ -9,6 +9,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 * Add optional description field to Search Configuration create form, detail view, and listing ([#798](https://github.com/opensearch-project/dashboards-search-relevance/issues/798))
 * Add /search-relevance slash command for chatbot with welcome message and AI-assisted search relevance tuning ([#843](https://github.com/opensearch-project/dashboards-search-relevance/pull/843))
+* Add "Reuse Existing Judgments" option in LLM judgment Advanced Settings to reuse ratings from up to 5 existing judgments, and add a retry action for failed documents in the judgment listing ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
 
 ### Enhancements
 * Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
