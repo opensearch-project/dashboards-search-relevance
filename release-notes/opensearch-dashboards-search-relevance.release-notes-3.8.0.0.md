@@ -18,6 +18,7 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.8.0
 * Render error state on Experiment Details page when experiment fails to load ([#901](https://github.com/opensearch-project/dashboards-search-relevance/pull/901))
 * Onboard code diff analyzer/reviewer and issue dedupe workflows ([#887](https://github.com/opensearch-project/dashboards-search-relevance/pull/887))
 * Onboard new backport-pr reusable GitHub workflow ([#884](https://github.com/opensearch-project/dashboards-search-relevance/pull/884))
+* Make Query Set description optional ([#852](https://github.com/opensearch-project/dashboards-search-relevance/pull/852))
 
 ### Bug Fixes
 
@@ -25,6 +26,9 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.8.0
 * Fix metrics retention trimming to evict expired entries from all interval-keyed maps ([#880](https://github.com/opensearch-project/dashboards-search-relevance/pull/880))
 * Fix infinite re-render loop in `useDataSourceUrlSync` when local cluster is selected ([#859](https://github.com/opensearch-project/dashboards-search-relevance/pull/859))
 * Accept numeric `tokenLimit` in judgment route validation ([#891](https://github.com/opensearch-project/dashboards-search-relevance/pull/891))
+* Display stored reference answers on Query Set Details page ([#856](https://github.com/opensearch-project/dashboards-search-relevance/pull/856))
+* Poll judgment detail view while status is PROCESSING so ratings appear when async generation completes ([#858](https://github.com/opensearch-project/dashboards-search-relevance/pull/858))
+* Hide AnalyticEngine data sources from DSL-dependent data source dropdowns ([#846](https://github.com/opensearch-project/dashboards-search-relevance/pull/846))
 
 ### Infrastructure
 
@@ -33,6 +37,7 @@ Compatible with OpenSearch and OpenSearch Dashboards version 3.8.0
 
 ### Refactoring
 
+* Replace per-page data source selectors with a single global data source menu in the OSD chrome header, backed by URL-synced state ([#850](https://github.com/opensearch-project/dashboards-search-relevance/pull/850))
 * Refactor GetSearchResults to single-query endpoint ([#868](https://github.com/opensearch-project/dashboards-search-relevance/pull/868))
 * Remove debug console logging from production UI code ([#878](https://github.com/opensearch-project/dashboards-search-relevance/pull/878))
 * Remove unused resource management home components ([#853](https://github.com/opensearch-project/dashboards-search-relevance/pull/853))
