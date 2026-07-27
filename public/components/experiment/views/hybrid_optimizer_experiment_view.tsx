@@ -96,6 +96,8 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         const _judgmentSet = resources?.judgmentSet;
         const _scheduledExperimentJob = resources?.scheduledExperimentJob;
 
+        const requestBase = dataSourceId ? { dataSourceId } : {};
+
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
           const maxSize = 10000; // OpenSearch max result window
@@ -124,9 +126,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
                 size: batchSize,
               };
               const result = await http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query }),
+                body: JSON.stringify({ query, ...requestBase }),
               });
-              
+
               if (result?.result?.hits?.hits && result.result.hits.hits.length > 0) {
                 allResults = allResults.concat(result.result.hits.hits);
                 from += result.result.hits.hits.length;
@@ -159,7 +161,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           };
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query }),
+            body: JSON.stringify({ query, ...requestBase }),
           });
 
           if (result?.result?.hits?.hits) {
@@ -222,7 +224,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       };
 
       const result = await http.post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query, ...(dataSourceId ? { dataSourceId } : {}) }),
       });
 
       const variantDetails = result?.result?.hits?.hits?.[0]?._source;

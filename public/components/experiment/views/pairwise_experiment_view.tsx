@@ -234,12 +234,14 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
         },
       };
 
+      const requestBase = dataSourceId ? { dataSourceId } : {};
+
       Promise.all([
         http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query: query1 }),
+          body: JSON.stringify({ query: query1, ...requestBase }),
         }),
         http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query: query2 }),
+          body: JSON.stringify({ query: query2, ...requestBase }),
         }),
       ])
         .then(([res1, res2]) => {
