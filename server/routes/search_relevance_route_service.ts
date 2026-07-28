@@ -326,6 +326,33 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
     },
     backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
   );
+  // Manual rating update: adjust one or more (query, docId) ratings on an existing LLM judgment.
+  router.put(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          judgmentRatings: schema.arrayOf(
+            schema.object({
+              query: schema.string(),
+              ratings: schema.arrayOf(
+                schema.object({
+                  docId: schema.string(),
+                  rating: schema.oneOf([schema.string(), schema.number()]),
+                })
+              ),
+            })
+          ),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+
   // Retry only the failed documents of an existing judgment. Proxies to the backend
   // POST /_plugins/_search_relevance/judgments/{id}/_retry endpoint.
   router.post(
@@ -480,6 +507,14 @@ const backendAction = (
           method,
           path: `${path}/${req.params.id}/${options.idSuffix}`,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
+        });
+      } else if (method === 'PUT' && req.params.id) {
+        // Handle id-scoped updates such as PUT {path}/{id} (manual rating update).
+        // Without this, the id is dropped and the request hits the create endpoint.
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}`,
+          body: req.body,
         });
       } else {
         // Handle PUT, POST, GET as before

@@ -97,4 +97,38 @@ export class JudgmentService {
     }
     await this.http.put(ServiceEndpoints.Judgments, opts);
   }
+
+  /**
+   * Manually update one or more ratings on an existing LLM judgment in place.
+   *
+   * Sends PUT judgments/{id} with the same `judgmentRatings` shape the judgment is stored in.
+   * The backend applies only the listed (query, docId) pairs as a partial merge (all-or-none),
+   * recomputes the summary counts, and moves any newly-rated docs out of the failures list.
+   * Only LLM_JUDGMENT judgments are editable; the backend rejects others with 400, returns 404
+   * for an unknown judgment/query, and 409 while the judgment is PROCESSING/RETRYING or if the
+   * document changed since it was read (optimistic-concurrency conflict).
+   */
+  async updateRatings(
+    id: string,
+    edits: Array<{ query: string; docId: string; rating: string }>,
+    dataSourceId?: string | null
+  ): Promise<void> {
+    // Group the flat edits by query into the { judgmentRatings: [{ query, ratings: [...] }] } shape.
+    const byQuery = new Map<string, Array<{ docId: string; rating: string }>>();
+    edits.forEach(({ query, docId, rating }) => {
+      const ratings = byQuery.get(query) ?? [];
+      ratings.push({ docId, rating });
+      byQuery.set(query, ratings);
+    });
+    const judgmentRatings = Array.from(byQuery.entries()).map(([query, ratings]) => ({
+      query,
+      ratings,
+    }));
+
+    const opts: any = { body: JSON.stringify({ judgmentRatings }) };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+    await this.http.put(`${ServiceEndpoints.Judgments}/${id}`, opts);
+  }
 }

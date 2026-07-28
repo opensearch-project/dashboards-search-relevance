@@ -298,4 +298,56 @@ describe('JudgmentService', () => {
       await expect(service.createJudgment(formData)).rejects.toThrow('API Error');
     });
   });
+
+  describe('updateRatings', () => {
+    it('groups flat edits by query into the judgmentRatings shape', async () => {
+      mockHttp.put.mockResolvedValue({ judgment_id: 'j1', result: 'updated' });
+
+      await service.updateRatings('j1', [
+        { query: 'superhero action', docId: '5', rating: '0.8' },
+        { query: 'superhero action', docId: '9', rating: '0.2' },
+        { query: 'comedy', docId: '3', rating: '1.0' },
+      ]);
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/judgments/j1', {
+        body: JSON.stringify({
+          judgmentRatings: [
+            {
+              query: 'superhero action',
+              ratings: [
+                { docId: '5', rating: '0.8' },
+                { docId: '9', rating: '0.2' },
+              ],
+            },
+            { query: 'comedy', ratings: [{ docId: '3', rating: '1.0' }] },
+          ],
+        }),
+      });
+    });
+
+    it('passes dataSourceId as a query param when provided', async () => {
+      mockHttp.put.mockResolvedValue({});
+
+      await service.updateRatings(
+        'j1',
+        [{ query: 'q', docId: '1', rating: '0.5' }],
+        'my-ds'
+      );
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/judgments/j1', {
+        body: JSON.stringify({
+          judgmentRatings: [{ query: 'q', ratings: [{ docId: '1', rating: '0.5' }] }],
+        }),
+        query: { dataSourceId: 'my-ds' },
+      });
+    });
+
+    it('propagates backend errors to the caller', async () => {
+      mockHttp.put.mockRejectedValue(new Error('conflict'));
+
+      await expect(
+        service.updateRatings('j1', [{ query: 'q', docId: '1', rating: '0.5' }])
+      ).rejects.toThrow('conflict');
+    });
+  });
 });

@@ -314,7 +314,14 @@ const SearchRelevancePage = ({
             render={(props) => {
               const { entityId } = props.match.params;
               const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
-              return <JudgmentView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
+              return (
+                <JudgmentView
+                  http={http}
+                  notifications={notifications}
+                  id={cleanEntityId}
+                  dataSourceId={dataSourceId}
+                />
+              );
             }}
           />
           <Route
