@@ -97,6 +97,20 @@ describe('UBIJudgmentFields', () => {
     expect(screen.getByText('Max Rank')).toBeInTheDocument();
     expect(screen.getByText('Start Date')).toBeInTheDocument();
     expect(screen.getByText('End Date')).toBeInTheDocument();
+    expect(screen.getByText('UBI Events Index (Required)')).toBeInTheDocument();
+  });
+
+  it('labels UBI Events Index as required for the COEC click model', () => {
+    render(<UBIJudgmentFields {...defaultProps} />);
+    expect(screen.getByText('UBI Events Index (Required)')).toBeInTheDocument();
+  });
+
+  it('labels UBI Events Index as optional for non-COEC click models', () => {
+    const props = {
+      ...defaultProps,
+      formData: { ...defaultProps.formData, clickModel: 'other' },
+    };
+    render(<UBIJudgmentFields {...props} />);
     expect(screen.getByText('UBI Events Index (Optional)')).toBeInTheDocument();
   });
 
