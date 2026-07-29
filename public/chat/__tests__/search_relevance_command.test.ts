@@ -7,6 +7,13 @@ import { registerSearchRelevanceCommand } from '../search_relevance_command';
 import { ChatPluginSetup } from '../../../../../src/plugins/chat/public';
 import { CoreSetup } from '../../../../../src/core/public';
 
+jest.mock('../../../../../src/core/public', () => ({
+  ALL_USE_CASE_ID: 'all',
+  SEARCH_USE_CASE_ID: 'search',
+  isNavGroupInFeatureConfigs: (navGroupId: string, featureConfigs: string[]) =>
+    Array.isArray(featureConfigs) && featureConfigs.includes(`use-case-${navGroupId}`),
+}));
+
 describe('registerSearchRelevanceCommand', () => {
   let mockRegisterCommand: jest.Mock;
   let mockChatSetup: ChatPluginSetup;
