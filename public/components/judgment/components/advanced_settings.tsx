@@ -76,6 +76,10 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     return match || { label: id, value: id };
   });
 
+  // The backend rejects more than MAX_EXISTING_JUDGMENTS, so the picker ignores any selection
+  // beyond the cap. Track that so the ignored click is explained instead of looking broken.
+  const [existingJudgmentLimitHit, setExistingJudgmentLimitHit] = React.useState(false);
+
   // Backend's default prompt template (used when user hasn't customized)
   const BACKEND_DEFAULT_TEMPLATE = 'SearchText: {{searchText}}; Hits: {{hits}}';
 
@@ -214,18 +218,29 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
 
       <EuiCompressedFormRow
         label="Reuse Existing Judgments"
-        helpText={`Reuse ratings from up to ${MAX_EXISTING_JUDGMENTS} existing LLM judgments to avoid re-scoring documents that were already judged.`}
+        helpText={
+          existingJudgmentLimitHit
+            ? `You can reuse at most ${MAX_EXISTING_JUDGMENTS} existing judgments. Remove one before adding another.`
+            : `Reuse ratings from up to ${MAX_EXISTING_JUDGMENTS} existing LLM judgments to avoid re-scoring documents that were already judged.`
+        }
+        isInvalid={existingJudgmentLimitHit}
         fullWidth
       >
         <EuiComboBox
+          data-test-subj="existingJudgmentsComboBox"
           placeholder="Select existing judgments to reuse"
           options={existingJudgmentOptions}
           selectedOptions={selectedExistingJudgments}
           onChange={(selected) => {
-            if (selected.length <= MAX_EXISTING_JUDGMENTS) {
-              updateFormData({ existingJudgments: selected.map((s: any) => s.value) });
+            if (selected.length > MAX_EXISTING_JUDGMENTS) {
+              // Keep the current selection and tell the customer why the pick was ignored.
+              setExistingJudgmentLimitHit(true);
+              return;
             }
+            setExistingJudgmentLimitHit(false);
+            updateFormData({ existingJudgments: selected.map((s: any) => s.value) });
           }}
+          isInvalid={existingJudgmentLimitHit}
           isLoading={isLoadingExistingJudgments}
           fullWidth
         />
