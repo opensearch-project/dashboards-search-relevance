@@ -5,6 +5,7 @@
 
 import { renderHook, act } from '@testing-library/react';
 import { useQuerySetList } from '../hooks/use_query_set_list';
+import { extractUserMessageFromError } from '../../../../common';
 
 // Mock the common module
 jest.mock('../../../../common', () => ({
@@ -155,6 +156,7 @@ describe('useQuerySetList', () => {
   });
 
   it('handles delete error', async () => {
+    (extractUserMessageFromError as jest.Mock).mockReturnValueOnce(null);
     const mockError = new Error('Delete failed');
     mockHttp.delete.mockRejectedValue(mockError);
 
