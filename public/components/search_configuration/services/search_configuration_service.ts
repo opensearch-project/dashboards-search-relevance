@@ -74,6 +74,9 @@ export class SearchConfigurationService {
       opts.query = { dataSourceId };
     }
     const response = await this.http.post(ServiceEndpoints.GetSingleSearchResults, opts);
+    if (response.errorMsg) {
+      throw new Error(response.errorMsg.body);
+    }
     return response.result;
   }
 }

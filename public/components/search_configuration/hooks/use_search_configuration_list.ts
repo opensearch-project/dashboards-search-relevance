@@ -78,7 +78,7 @@ export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId
         return true;
       } catch (err) {
         console.error('Failed to delete search config', err);
-        setError('Failed to delete search configuration');
+        setError(extractUserMessageFromError(err) || 'Failed to delete search configuration');
         return false;
       } finally {
         setIsLoading(false);

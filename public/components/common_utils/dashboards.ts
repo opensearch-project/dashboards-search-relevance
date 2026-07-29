@@ -100,6 +100,17 @@ export async function dashboardUrl(
  */
 export const checkDashboardsInstalled = async (http: CoreStart['http'], dataSourceId?: string): Promise<boolean> => {
   try {
+    if (dataSourceId) {
+      try {
+        await http.get(
+          `/api/saved_objects/dashboard/${dataSourceId}_${SavedObjectIds.ExperimentDeepDive}`
+        );
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
     // Get datasource name dynamically to create expected suffix
     // This ensures we check for visualizations specific to the current datasource context
     let expectedSuffix = '';

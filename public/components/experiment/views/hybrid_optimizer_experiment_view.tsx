@@ -169,6 +169,11 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             }
           }
 
+          setExperiment(_experiment as HybridOptimizerExperiment);
+          setSearchConfiguration(_searchConfiguration);
+          setQuerySet(_querySet);
+          setJudgmentSet(_judgmentSet);
+
           if (!allResults || allResults.length === 0) {
             console.error('No evaluation results found');
             notifications.toasts.addWarning({

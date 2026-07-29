@@ -343,7 +343,9 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
       } catch (error) {
         if (error.statusCode !== 404) console.error(error);
 
-        const errorMessage = `Error: ${error.body?.error?.type} - ${error.body?.error?.reason}`;
+        const errorMessage = `Error: ${error.body?.error?.type || 'Unknown'} - ${
+          error.body?.error?.reason || 'Unknown reason'
+        }`;
         resBody.errorMsg = {
           statusCode: error.statusCode || 500,
           body: errorMessage,
