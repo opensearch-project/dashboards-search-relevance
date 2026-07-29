@@ -27,8 +27,8 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
     const formattedDate = date ? date.format('YYYY-MM-DD') : '';
     updateFormData({ [fieldName]: formattedDate });
   };
-  const isUbiIndexRequired = formData.clickModel === 'coec';
-  const ubiIndexInvalid = isUbiIndexRequired && !formData.ubiEventsIndex?.trim();
+  const noUbiEventsDataForCoec =
+    formData.clickModel === 'coec' && !isLoadingIndexes && indexOptions?.length === 0;
   return (
     <>
       <EuiCompressedFormRow label="Click Model"
@@ -77,14 +77,14 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
         />
       </EuiCompressedFormRow>
       <EuiCompressedFormRow
-        label={`UBI Events Index ${isUbiIndexRequired ? '(Required)' : '(Optional)'}`}
-        helpText={
-          isUbiIndexRequired
-            ? 'Select from UBI events indexes or type a custom index name and press Enter. Required for the COEC click model.'
-            : 'Select from UBI events indexes or type a custom index name and press Enter. Leave empty to use default.'
+        label="UBI Events Index (Optional)"
+        helpText="Select from UBI events indexes or type a custom index name and press Enter. Leave empty to use the default UBI events index."
+        isInvalid={noUbiEventsDataForCoec}
+        error={
+          noUbiEventsDataForCoec
+            ? 'The COEC click model requires UBI events data, but no UBI events index was found. Ingest UBI events data before generating COEC judgments.'
+            : undefined
         }
-        isInvalid={ubiIndexInvalid}
-        error={ubiIndexInvalid ? 'UBI Events Index is required when using the COEC click model' : undefined}
         fullWidth>
         <EuiComboBox
           placeholder="Select or type UBI events index"
@@ -99,7 +99,7 @@ export const UBIJudgmentFields: React.FC<UBIJudgmentFieldsProps> = ({
           }}
           singleSelection={{ asPlainText: true }}
           isLoading={isLoadingIndexes}
-          isInvalid={ubiIndexInvalid}
+          isInvalid={noUbiEventsDataForCoec}
           isClearable={true}
           fullWidth
           customOptionText="Use custom index: {searchValue}"

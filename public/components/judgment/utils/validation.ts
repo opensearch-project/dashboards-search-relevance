@@ -14,7 +14,6 @@ export interface ValidationResult {
     searchConfigs?: string;
     model?: string;
     dateRange?: string;
-    ubiEventsIndex?: string;
   };
 }
 
@@ -45,11 +44,6 @@ export const validateJudgmentForm = (
       errors.model = 'Please select a model id';
       isValid = false;
     }
-  }
-
-  if (data.type === JudgmentType.UBI && data.clickModel === 'coec' && !data.ubiEventsIndex?.trim()) {
-    errors.ubiEventsIndex = 'UBI Events Index is required when using the COEC click model';
-    isValid = false;
   }
 
   // Date validation: Only validate date range when both dates are provided

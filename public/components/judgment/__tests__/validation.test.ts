@@ -50,53 +50,15 @@ describe('validation', () => {
     expect(result.errors).toEqual({});
   });
 
-  describe('COEC UBI events index requirement', () => {
-    it('should fail validation when COEC is selected and UBI events index is empty', () => {
+  describe('COEC click model', () => {
+    it('does not require a UBI events index (COEC uses the default index)', () => {
       const result = validateJudgmentForm(
         { name: 'test', type: JudgmentType.UBI, clickModel: 'coec', ubiEventsIndex: '' },
         [],
         [],
         []
       );
-      expect(result.isValid).toBe(false);
-      expect(result.errors.ubiEventsIndex).toBe(
-        'UBI Events Index is required when using the COEC click model'
-      );
-    });
-
-    it('should fail validation when COEC is selected and UBI events index is whitespace only', () => {
-      const result = validateJudgmentForm(
-        { name: 'test', type: JudgmentType.UBI, clickModel: 'coec', ubiEventsIndex: '   ' },
-        [],
-        [],
-        []
-      );
-      expect(result.isValid).toBe(false);
-      expect(result.errors.ubiEventsIndex).toBe(
-        'UBI Events Index is required when using the COEC click model'
-      );
-    });
-
-    it('should pass validation when COEC is selected and UBI events index is provided', () => {
-      const result = validateJudgmentForm(
-        { name: 'test', type: JudgmentType.UBI, clickModel: 'coec', ubiEventsIndex: 'ubi_events' },
-        [],
-        [],
-        []
-      );
       expect(result.isValid).toBe(true);
-      expect(result.errors.ubiEventsIndex).toBeUndefined();
-    });
-
-    it('should not require UBI events index for non-COEC click models', () => {
-      const result = validateJudgmentForm(
-        { name: 'test', type: JudgmentType.UBI, clickModel: 'other', ubiEventsIndex: '' },
-        [],
-        [],
-        []
-      );
-      expect(result.isValid).toBe(true);
-      expect(result.errors.ubiEventsIndex).toBeUndefined();
     });
   });
 
