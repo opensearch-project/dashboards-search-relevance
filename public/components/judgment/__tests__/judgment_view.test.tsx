@@ -675,6 +675,64 @@ describe('JudgmentView — editable ratings (LLM_JUDGMENT)', () => {
     await waitFor(() => expect(mockRefresh).toHaveBeenCalled());
   });
 
+  it('keeps edits from page 1 when paging to page 2 and saves both together', async () => {
+    mockUpdateRatings.mockResolvedValue(undefined);
+    // 25 rated docs -> two pages at the default page size of 20.
+    mockUseJudgmentView.mockReturnValue({
+      judgment: {
+        ...score01Judgment,
+        judgmentRatings: [
+          {
+            query: 'paged query',
+            ratings: Array.from({ length: 25 }).map((_, i) => ({
+              docId: `D${i}`,
+              rating: '0.5',
+            })),
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+      refresh: mockRefresh,
+    } as any);
+
+    render(
+      <Router history={history}>
+        <JudgmentView {...editableProps} />
+      </Router>
+    );
+
+    enterEditMode();
+
+    // Page 1 shows 20 editors; edit the first one.
+    expect(screen.getAllByRole('spinbutton')).toHaveLength(20);
+    fireEvent.change(screen.getAllByRole('spinbutton')[0], { target: { value: '0.1' } });
+    expect(screen.getByText('1 unsaved change')).toBeInTheDocument();
+
+    // Go to page 2 - the pending edit from page 1 must survive.
+    fireEvent.click(screen.getByTestId('pagination-button-1'));
+    expect(screen.getByText('1 unsaved change')).toBeInTheDocument();
+
+    // Page 2 has the remaining 5 rows; edit one there too.
+    const page2Inputs = screen.getAllByRole('spinbutton');
+    expect(page2Inputs).toHaveLength(5);
+    fireEvent.change(page2Inputs[0], { target: { value: '0.9' } });
+    expect(screen.getByText('2 unsaved changes')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId('updateJudgmentRatingsButton'));
+
+    // Both edits, from different pages, are saved in one request.
+    await waitFor(() => expect(mockUpdateRatings).toHaveBeenCalled());
+    const saved = mockUpdateRatings.mock.calls[0][1];
+    expect(saved).toHaveLength(2);
+    expect(saved).toEqual(
+      expect.arrayContaining([
+        { query: 'paged query', docId: 'D0', rating: '0.1' },
+        { query: 'paged query', docId: 'D20', rating: '0.9' },
+      ])
+    );
+  });
+
   it('does not offer editing for non-LLM judgments', () => {
     mockUseJudgmentView.mockReturnValue({
       judgment: { ...score01Judgment, type: 'UBI_JUDGMENT' },
