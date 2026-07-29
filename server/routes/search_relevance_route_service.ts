@@ -16,6 +16,18 @@ import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } f
 
 const queryWithDataSource = schema.maybe(schema.object({}, { unknowns: 'allow' }));
 
+// Resource ids are interpolated straight into the backend transport.request path, so constrain
+// them to the shape the backend actually generates (UUIDs / URL-safe Base64 ids). This rejects
+// path separators and encoded traversal sequences (e.g. '..%2F.._cluster%2Fsettings') before the
+// value can be used to route a proxied request to an unintended OpenSearch endpoint.
+const resourceId = schema.string({
+  validate: (value) => {
+    if (!/^[A-Za-z0-9_-]+$/.test(value)) {
+      return 'must contain only letters, numbers, hyphens, and underscores';
+    }
+  },
+});
+
 export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled: boolean): void {
   router.post(
     {
@@ -332,7 +344,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       path: `${ServiceEndpoints.Judgments}/{id}`,
       validate: {
         params: schema.object({
-          id: schema.string(),
+          id: resourceId,
         }),
         body: schema.object({
           judgmentRatings: schema.arrayOf(
@@ -360,7 +372,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       path: `${ServiceEndpoints.JudgmentRetry}/{id}`,
       validate: {
         params: schema.object({
-          id: schema.string(),
+          id: resourceId,
         }),
         query: queryWithDataSource,
       },
