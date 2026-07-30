@@ -16,6 +16,18 @@ import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } f
 
 const queryWithDataSource = schema.maybe(schema.object({}, { unknowns: 'allow' }));
 
+// Resource ids are interpolated straight into the backend transport.request path, so constrain
+// them to the shape the backend actually generates (UUIDs / URL-safe Base64 ids). This rejects
+// path separators and encoded traversal sequences (e.g. '..%2F.._cluster%2Fsettings') before the
+// value can be used to route a proxied request to an unintended OpenSearch endpoint.
+const resourceId = schema.string({
+  validate: (value) => {
+    if (!/^[A-Za-z0-9_-]+$/.test(value)) {
+      return 'must contain only letters, numbers, hyphens, and underscores';
+    }
+  },
+});
+
 export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled: boolean): void {
   router.post(
     {
@@ -268,6 +280,7 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
           ignoreFailure: schema.maybe(schema.boolean()),
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
           promptTemplate: schema.maybe(schema.string()),
+          existingJudgments: schema.maybe(schema.arrayOf(schema.string())),
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
@@ -324,6 +337,47 @@ export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled
       },
     },
     backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+  // Manual rating update: adjust one or more (query, docId) ratings on an existing LLM judgment.
+  router.put(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: resourceId,
+        }),
+        body: schema.object({
+          judgmentRatings: schema.arrayOf(
+            schema.object({
+              query: schema.string(),
+              ratings: schema.arrayOf(
+                schema.object({
+                  docId: schema.string(),
+                  rating: schema.oneOf([schema.string(), schema.number()]),
+                })
+              ),
+            })
+          ),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+
+  // Retry only the failed documents of an existing judgment. Proxies to the backend
+  // POST /_plugins/_search_relevance/judgments/{id}/_retry endpoint.
+  router.post(
+    {
+      path: `${ServiceEndpoints.JudgmentRetry}/{id}`,
+      validate: {
+        params: schema.object({
+          id: resourceId,
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('POST', BackendEndpoints.Judgments, dataSourceEnabled, { idSuffix: '_retry' })
   );
 
   router.post(
@@ -422,7 +476,7 @@ const backendAction = (
   method: string,
   path: string,
   dataSourceEnabled: boolean,
-  options?: { passQueryParams?: string[] }
+  options?: { passQueryParams?: string[]; idSuffix?: string }
 ) => {
   return async (
     context: RequestHandlerContext,
@@ -458,6 +512,21 @@ const backendAction = (
         response = await callApi('transport.request', {
           method,
           path: getPath,
+        });
+      } else if (req.params.id && options?.idSuffix) {
+        // Handle id-scoped action routes such as POST {path}/{id}/_retry
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}/${options.idSuffix}`,
+          ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
+        });
+      } else if (method === 'PUT' && req.params.id) {
+        // Handle id-scoped updates such as PUT {path}/{id} (manual rating update).
+        // Without this, the id is dropped and the request hits the create endpoint.
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}`,
+          body: req.body,
         });
       } else {
         // Handle PUT, POST, GET as before

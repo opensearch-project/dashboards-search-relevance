@@ -26,6 +26,7 @@ export const ServiceEndpoints = Object.freeze({
   QuerySets: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/query_sets`,
   SearchConfigurations: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search_configurations`,
   Judgments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments`,
+  JudgmentRetry: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/retry`,
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
   ValidatePrompt: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/validate_prompt`,

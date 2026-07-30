@@ -14,6 +14,9 @@ export interface JudgmentItem {
   type: string;
   status: string;
   timestamp: string;
+  // Number of queries that had at least one document fail to be rated. Used to decide
+  // whether the retry action should be shown for this judgment (only when > 0).
+  failedQueries: number;
 }
 
 export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string | null) => {
@@ -44,7 +47,11 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
   const MAX_POLLING_DURATION = 10 * 60 * 1000;
   const MAX_ERRORS = 3;
 
-  const hasProcessing = judgments.some((judgment) => judgment.status === 'PROCESSING');
+  // Treat both PROCESSING (initial generation) and RETRYING (retry in progress) as in-progress
+  // states, so the list keeps auto-refreshing until the judgment settles.
+  const hasProcessing = judgments.some(
+    (judgment) => judgment.status === 'PROCESSING' || judgment.status === 'RETRYING'
+  );
 
   const mapJudgmentFields = (obj: any): JudgmentItem => {
     return {
@@ -53,6 +60,8 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
       type: obj._source.type,
       status: obj._source.status,
       timestamp: obj._source.timestamp,
+      // failedQueries is stored on the judgment metadata; default to 0 when absent.
+      failedQueries: Number(obj._source.metadata?.failedQueries ?? 0),
     };
   };
 
@@ -82,7 +91,8 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
         if (previousJudgments.current.length > 0) {
           const completions = updatedList.filter((curr) => {
             const prev = previousJudgments.current.find((p) => p.id === curr.id);
-            return prev?.status === 'PROCESSING' && curr.status === 'COMPLETED';
+            const wasInProgress = prev?.status === 'PROCESSING' || prev?.status === 'RETRYING';
+            return wasInProgress && curr.status === 'COMPLETED';
           });
 
           completions.forEach((judgment) => {
@@ -100,7 +110,11 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
           setRefreshKey((prev) => prev + 1);
         }
 
-        if (!updatedList.some((judgment) => judgment.status === 'PROCESSING')) {
+        if (
+          !updatedList.some(
+            (judgment) => judgment.status === 'PROCESSING' || judgment.status === 'RETRYING'
+          )
+        ) {
           clearInterval(intervalRef.current!);
           intervalRef.current = null;
         }
@@ -197,6 +211,35 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
     [http, dataSourceId]
   );
 
+  const retryJudgment = useCallback(
+    async (judgment: JudgmentItem) => {
+      try {
+        await http.post(`${ServiceEndpoints.JudgmentRetry}/${judgment.id}`, queryParams);
+        services.notifications?.toasts.addSuccess({
+          title: 'Retry started',
+          text: `Re-scoring failed documents for judgment "${judgment.name}".`,
+        });
+        // Optimistically mark the row as RETRYING so the status updates immediately and
+        // the polling loop (driven by hasProcessing) picks it up until it settles.
+        const markRetrying = (list: JudgmentItem[]) =>
+          list.map((j) => (j.id === judgment.id ? { ...j, status: 'RETRYING' } : j));
+        setJudgments((prev) => markRetrying(prev));
+        setTableData((prev) => markRetrying(prev));
+        setRefreshKey((prev) => prev + 1);
+        return true;
+      } catch (err) {
+        // Surface the backend reason (e.g. no failed documents, retry already in progress).
+        const message = extractUserMessageFromError(err) || 'Failed to retry judgment';
+        services.notifications?.toasts.addDanger({
+          title: 'Retry failed',
+          text: message,
+        });
+        return false;
+      }
+    },
+    [http, services.notifications, dataSourceId]
+  );
+
   return {
     isLoading,
     error,
@@ -206,5 +249,6 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
     refreshKey,
     findJudgments,
     deleteJudgment,
+    retryJudgment,
   };
 };
