@@ -46,6 +46,7 @@ import {
   createPhraseFilter,
   addDaysToTimestamp,
   checkDashboardsInstalled,
+  getScopedSavedObjectId,
 } from '../../common_utils/dashboards';
 import { getStatusColor } from '../../common_utils/status';
 import { ScheduleModal } from './ScheduleModal';
@@ -90,6 +91,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
+  const workspaceId = services.workspaces?.currentWorkspaceId$?.getValue();
 
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(
     () => services.chat?.isWindowOpen() ?? false
@@ -205,10 +207,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   } = useExperimentPolling();
 
   const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
-    const resolvedDashboardId = dataSourceId ? `${dataSourceId}_${dashboardId}` : dashboardId;
-    const resolvedIndexPatternId = dataSourceId
-      ? `${dataSourceId}_${indexPatternId}`
-      : indexPatternId;
+    const resolvedDashboardId = getScopedSavedObjectId(dashboardId, workspaceId, dataSourceId);
+    const resolvedIndexPatternId = getScopedSavedObjectId(indexPatternId, workspaceId, dataSourceId);
 
     const filters = [createPhraseFilter('experimentId', experiment.id, resolvedIndexPatternId)];
 
@@ -235,7 +235,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     indexPatternId: string
   ) => {
     try {
-      const dashboardsAreInstalled = await checkDashboardsInstalled(http, dataSourceId);
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http, workspaceId, dataSourceId);
       if (!dashboardsAreInstalled) {
         setPendingDashboardAction(() => () =>
           openDashboard(experiment, dashboardId, indexPatternId)
@@ -726,6 +726,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
           onSuccess={pendingDashboardAction}
           http={http}
           setError={setError}
+          workspaceId={workspaceId}
+          dataSourceId={dataSourceId}
         />
       )}
 
