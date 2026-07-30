@@ -188,7 +188,7 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
         return true;
       } catch (err) {
         console.error('Failed to delete judgment', err);
-        setError('Failed to delete judgment');
+        setError(extractUserMessageFromError(err) || 'Failed to delete judgment');
         return false;
       } finally {
         setIsLoading(false);

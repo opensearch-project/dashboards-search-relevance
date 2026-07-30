@@ -205,7 +205,12 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   } = useExperimentPolling();
 
   const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
-    const filters = [createPhraseFilter('experimentId', experiment.id, indexPatternId)];
+    const resolvedDashboardId = dataSourceId ? `${dataSourceId}_${dashboardId}` : dashboardId;
+    const resolvedIndexPatternId = dataSourceId
+      ? `${dataSourceId}_${indexPatternId}`
+      : indexPatternId;
+
+    const filters = [createPhraseFilter('experimentId', experiment.id, resolvedIndexPatternId)];
 
     // Create timeRange from experiment timestamp
     const timeRange = {
@@ -213,7 +218,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       to: "now",
     };
 
-    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
+    const url = await dashboardUrl(
+      share,
+      resolvedDashboardId,
+      resolvedIndexPatternId,
+      filters,
+      timeRange,
+      dataSourceId
+    );
     window.open(url, '_blank');
   };
 
@@ -223,7 +235,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     indexPatternId: string
   ) => {
     try {
-      const dashboardsAreInstalled = await checkDashboardsInstalled(http);
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http, dataSourceId);
       if (!dashboardsAreInstalled) {
         setPendingDashboardAction(() => () =>
           openDashboard(experiment, dashboardId, indexPatternId)

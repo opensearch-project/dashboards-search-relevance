@@ -43,10 +43,10 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
   React.useEffect(() => {
     const checkInstallation = async () => {
       try {
-        const queryParams = dataSourceId ? `?dataSourceId=${dataSourceId}` : '';
-        const _ = await http.get(
-          `/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}${queryParams}`
-        );
+        const dashboardObjectId = dataSourceId
+          ? `${dataSourceId}_${SavedObjectIds.ExperimentDeepDive}`
+          : SavedObjectIds.ExperimentDeepDive;
+        const _ = await http.get(`/api/saved_objects/dashboard/${dashboardObjectId}`);
         setDashboardsInstalled(true);
       } catch (error) {
         setDashboardsInstalled(false);
