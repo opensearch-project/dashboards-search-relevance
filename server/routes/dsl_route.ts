@@ -15,6 +15,11 @@ interface SearchResultResponse {
   errorMsg: any;
 }
 
+const queryWithDataSource = schema.object(
+  { dataSourceId: schema.maybe(schema.string()) },
+  { unknowns: 'allow' }
+);
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const performance = require('perf_hooks').performance;
 
@@ -311,10 +316,11 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   router.post(
     {
       path: ServiceEndpoints.GetSingleSearchResults,
-      validate: { body: schema.any() },
+      validate: { body: schema.any(), query: queryWithDataSource },
     },
     async (context, request, response) => {
-      const { query, dataSourceId } = request.body;
+      const { query } = request.body;
+      const dataSourceId = request.query.dataSourceId;
       const resBody: SearchResultResponse = {};
 
       const { index, size, search_pipeline, ...rest } = query;
