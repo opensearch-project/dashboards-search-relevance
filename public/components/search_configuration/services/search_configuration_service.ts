@@ -69,13 +69,12 @@ export class SearchConfigurationService {
   }
 
   async validateSearchQuery(requestBody: any, dataSourceId?: string | null): Promise<any> {
-    const opts: any = { body: JSON.stringify(requestBody) };
-    if (dataSourceId) {
-      opts.query = { dataSourceId };
-    }
-    const response = await this.http.post(ServiceEndpoints.GetSingleSearchResults, opts);
-    if (response.errorMsg) {
-      throw new Error(response.errorMsg.body);
+    const body = dataSourceId ? { ...requestBody, dataSourceId } : requestBody;
+    const response = await this.http.post(ServiceEndpoints.GetSearchResults, {
+      body: JSON.stringify(body),
+    });
+    if (response.errorMessage) {
+      throw new Error(response.errorMessage.body);
     }
     return response.result;
   }

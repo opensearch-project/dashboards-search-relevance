@@ -91,13 +91,28 @@ describe('SearchConfigurationService', () => {
 
   describe('validateSearchQuery', () => {
     it('should validate search query and return results', async () => {
-      const requestBody = { query: {}, index: 'test-index' };
+      const requestBody = {
+        query: { index: 'test-index', query: { match_all: {} } },
+      };
       const mockResponse = { result: { hits: { hits: [] } } };
       mockHttp.post.mockResolvedValue(mockResponse);
 
       const result = await service.validateSearchQuery(requestBody);
 
       expect(result).toEqual(mockResponse.result);
+      expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/search', {
+        body: JSON.stringify(requestBody),
+      });
+    });
+
+    it('should surface search errors', async () => {
+      mockHttp.post.mockResolvedValue({
+        errorMessage: { statusCode: 400, body: 'Invalid Index or missing' },
+      });
+
+      await expect(service.validateSearchQuery({ query: {} })).rejects.toThrow(
+        'Invalid Index or missing'
+      );
     });
   });
 
@@ -152,11 +167,12 @@ describe('SearchConfigurationService', () => {
     it('validateSearchQuery should pass dataSourceId as query param', async () => {
       mockHttp.post.mockResolvedValue({ result: {} });
 
-      await service.validateSearchQuery({ index: 'i' }, 'my-ds');
+      const requestBody = { query: { index: 'i', query: { match_all: {} } } };
 
-      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
-        body: JSON.stringify({ index: 'i' }),
-        query: { dataSourceId: 'my-ds' },
+      await service.validateSearchQuery(requestBody, 'my-ds');
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/search', {
+        body: JSON.stringify({ ...requestBody, dataSourceId: 'my-ds' }),
       });
     });
   });
