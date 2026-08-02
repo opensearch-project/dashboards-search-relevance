@@ -827,7 +827,10 @@ export const AbTestSearch = ({ http, notifications, history }: AbTestSearchProps
                             ubi_index: ubiIndexName,
                           }),
                         });
-                        notifications.toasts.addSuccess('Click registered');
+                        // Short-lived so rapid clicks do not stack toasts over the result list.
+                        notifications.toasts.addSuccess('Click registered', {
+                          toastLifeTimeMs: 1500,
+                        });
                       } catch (err: any) {
                         notifications.toasts.addDanger(`Click failed: ${err.body?.message || err.message}`);
                       }
@@ -851,12 +854,27 @@ interface AbTestResultsProps {
   notifications: CoreStart['notifications'];
 }
 
+// The per-request UUIDs each configuration's hits are tagged with. Needed to
+// tell A from B: the clicks aggregation is a `terms` agg, so its buckets come
+// back ordered by doc_count, NOT in A-then-B order.
+interface AbTestOption extends SearchConfigOption {
+  configAUuid?: string;
+  configBUuid?: string;
+}
+
+interface ConfigResult {
+  key: string;
+  doc_count: number;
+  label: 'A' | 'B';
+}
+
 export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
-  const [testOptions, setTestOptions] = useState<SearchConfigOption[]>([]);
-  const [selectedTest, setSelectedTest] = useState<SearchConfigOption[]>([]);
+  const [testOptions, setTestOptions] = useState<AbTestOption[]>([]);
+  const [selectedTest, setSelectedTest] = useState<AbTestOption[]>([]);
   const [indexOptions, setIndexOptions] = useState<SearchConfigOption[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<SearchConfigOption[]>([]);
-  const [results, setResults] = useState<{ key: string; doc_count: number }[]>([]);
+  // Always ordered [A, B] — never by click count. See fetchResults.
+  const [results, setResults] = useState<ConfigResult[]>([]);
   const [totalClicks, setTotalClicks] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -893,6 +911,8 @@ export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
         .map((hit: any) => ({
           label: hit._source?.name || hit._id,
           value: hit._source?.test_id || hit._id,
+          configAUuid: hit._source?.config_a_uuid,
+          configBUuid: hit._source?.config_b_uuid,
         }));
       setTestOptions(tests);
     } catch (err) {}
@@ -918,7 +938,23 @@ export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
       }) as any;
       const aggs = response?.aggregations?.clicks_per_config?.buckets || [];
       const total = aggs.reduce((sum: number, b: any) => sum + b.doc_count, 0);
-      setResults(aggs);
+
+      // A `terms` agg orders buckets by doc_count, so bucket[0] is simply
+      // whichever configuration got more clicks -- not configuration A. Look the
+      // uuids up instead, and keep a zero-click configuration in the list so it
+      // still renders (and so a lone bucket isn't mistaken for a tie).
+      const { configAUuid, configBUuid } = selectedTest[0];
+      const countFor = (uuid?: string) =>
+        aggs.find((b: any) => b.key === uuid)?.doc_count ?? 0;
+      const ordered: ConfigResult[] =
+        configAUuid && configBUuid
+          ? [
+              { key: configAUuid, doc_count: countFor(configAUuid), label: 'A' },
+              { key: configBUuid, doc_count: countFor(configBUuid), label: 'B' },
+            ]
+          : aggs.map((b: any, i: number) => ({ ...b, label: i === 0 ? 'A' : 'B' }));
+
+      setResults(ordered);
       setTotalClicks(total);
     } catch (err: any) {
       notifications.toasts.addDanger(`Failed to fetch results: ${err.body?.message || err.message}`);
@@ -929,15 +965,18 @@ export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
 
   const calculatePValue = () => {
     if (results.length < 2) return null;
-    const n1 = results[0].doc_count;
-    const n2 = results[1].doc_count;
+    const n1 = results[0].doc_count;   // configuration A
+    const n2 = results[1].doc_count;   // configuration B
     const n = n1 + n2;
+    if (n === 0) return null;
     const p = 0.5;
     const expected = n * p;
     const stdDev = Math.sqrt(n * p * (1 - p));
+    // Signed: positive means A drew more clicks, negative means B did.
     const zScore = (n1 - expected) / stdDev;
     const pValue = 2 * (1 - normalCDF(Math.abs(zScore)));
-    return { zScore, pValue, significant: pValue < 0.05 };
+    const winner = n1 === n2 ? null : n1 > n2 ? 'A' : 'B';
+    return { zScore, pValue, winner, significant: pValue < 0.05 && winner !== null };
   };
 
   const normalCDF = (x: number) => {
@@ -990,14 +1029,14 @@ export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
             <div key={idx} style={{ marginBottom: '16px' }}>
               <EuiFlexGroup alignItems="center">
                 <EuiFlexItem grow={false} style={{ width: '200px' }}>
-                  <EuiText size="s"><strong>Config {idx === 0 ? 'A' : 'B'}</strong></EuiText>
+                  <EuiText size="s"><strong>Config {bucket.label}</strong></EuiText>
                   <EuiText size="xs" color="subdued">{bucket.key.substring(0, 8)}...</EuiText>
                 </EuiFlexItem>
                 <EuiFlexItem>
-                  <div style={{ background: idx === 0 ? '#006BB4' : '#BD271E', height: '24px', width: `${(bucket.doc_count / totalClicks) * 100}%`, borderRadius: '4px' }} />
+                  <div style={{ background: bucket.label === 'A' ? '#006BB4' : '#BD271E', height: '24px', width: `${totalClicks ? (bucket.doc_count / totalClicks) * 100 : 0}%`, borderRadius: '4px' }} />
                 </EuiFlexItem>
                 <EuiFlexItem grow={false} style={{ width: '100px' }}>
-                  <EuiText size="s"><strong>{bucket.doc_count}</strong> ({((bucket.doc_count / totalClicks) * 100).toFixed(1)}%)</EuiText>
+                  <EuiText size="s"><strong>{bucket.doc_count}</strong> ({totalClicks ? ((bucket.doc_count / totalClicks) * 100).toFixed(1) : '0.0'}%)</EuiText>
                 </EuiFlexItem>
               </EuiFlexGroup>
             </div>
@@ -1011,7 +1050,9 @@ export const AbTestResults = ({ http, notifications }: AbTestResultsProps) => {
                 <EuiSpacer size="s" />
                 <EuiText size="s">
                   <p><strong>P-Value:</strong> {stats.pValue.toFixed(4)}</p>
-                  <p><strong>Result:</strong> {stats.significant ? 'Statistically significant (p < 0.05) — Config A is the winner' : 'Not statistically significant — need more data'}</p>
+                  <p><strong>Result:</strong> {stats.significant
+                    ? `Statistically significant (p < 0.05) — Config ${stats.winner} is the winner`
+                    : 'Not statistically significant — need more data'}</p>
                 </EuiText>
               </EuiPanel>
             </>
@@ -1175,7 +1216,8 @@ const VersionHistory = ({ http, testId }: { http: CoreStart['http']; testId: str
       const hits = response?.result1?.hits?.hits || [];
       setSnapshots(hits.map((h: any) => ({
         id: h._id,
-        created: h._source?.record?.created || '',
+        // The backend stores `created` at the top level of the snapshot, not inside `record`.
+        created: h._source?.created || '',
         configA: h._source?.record?.search_configuration_a || '',
         configB: h._source?.record?.search_configuration_b || '',
         enabled: h._source?.record?.enabled,
