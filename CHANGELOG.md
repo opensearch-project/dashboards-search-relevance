@@ -13,6 +13,8 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 ### Enhancements
 
+* Speed up pairwise and evaluation experiment detail views with Map-based id lookups (document resolve, query snapshots, judgment ratings) and parallel related-resource loading ([#934](https://github.com/opensearch-project/dashboards-search-relevance/pull/934))
+
 ### Bug Fixes
 
 - Pass dataSourceId in Hybrid Optimizer and Pairwise experiment result queries so experiment views render on multi-data-source deployments ([#921](https://github.com/opensearch-project/dashboards-search-relevance/pull/921))

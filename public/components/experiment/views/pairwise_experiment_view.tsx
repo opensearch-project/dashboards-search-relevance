@@ -14,7 +14,7 @@ import {
   EuiSpacer,
   EuiToolTip,
 } from '@elastic/eui';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   TableListView,
@@ -42,6 +42,10 @@ import {
   RBO90_TOOL_TIP,
   FREQUENCY_WEIGHTED_TOOL_TIP,
 } from '../../../../common';
+import {
+  buildSnapshotIdsByQueryText,
+  resolveAttributesById,
+} from '../utils/document_lookup';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -86,18 +90,21 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       try {
         setLoading(true);
         const options = dataSourceId ? { query: { dataSourceId } } : {};
-        
+
         const _experiment = await http
           .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
           .then(sanitizeResponse);
-        const _searchConfigurations = _experiment
-          ? await loadSearchConfigurations(_experiment.searchConfigurationList)
-          : [];
-        const _querySet = _experiment
-          ? await http
-              .get(ServiceEndpoints.QuerySets + '/' + _experiment.querySetId, options)
-              .then(sanitizeResponse)
-          : null;
+
+        // Configs and query set only depend on the experiment, so load them in
+        // parallel instead of waiting for configs before starting the query-set GET.
+        const [_searchConfigurations, _querySet] = _experiment
+          ? await Promise.all([
+              loadSearchConfigurations(_experiment.searchConfigurationList),
+              http
+                .get(ServiceEndpoints.QuerySets + '/' + _experiment.querySetId, options)
+                .then(sanitizeResponse),
+            ])
+          : [[], null];
 
         if (
           _experiment &&
@@ -205,54 +212,78 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
     }
   }, [experiment, queryEvaluations]);
 
-  function resolve_attributes(ids, hits) {
-    const res = ids.map((id) => hits.find((hit) => hit._id === id) || { _id: id });
-    return res.map((x, index) => ({ ...x, rank: index + 1 }));
-  }
+  // O(1) snapshot lookups by queryText (built once when snapshot lists change).
+  const snapshot1ByQueryText = useMemo(
+    () => buildSnapshotIdsByQueryText(querySnapshots[0]),
+    [querySnapshots]
+  );
+  const snapshot2ByQueryText = useMemo(
+    () => buildSnapshotIdsByQueryText(querySnapshots[1]),
+    [querySnapshots]
+  );
 
   useEffect(() => {
-    if (selectedQuery != null) {
-      const queryText = queryEvaluations[selectedQuery].queryText;
-      const snapshot1 = querySnapshots[0].find((s) => s.queryText === queryText).documentIds;
-      const snapshot2 = querySnapshots[1].find((s) => s.queryText === queryText).documentIds;
-      const query1 = {
-        index: searchConfigurations[0].index,
-        size: snapshot1.length,
-        query: {
-          terms: {
-            _id: snapshot1,
-          },
-        },
-      };
-      const query2 = {
-        index: searchConfigurations[1].index,
-        size: snapshot2.length,
-        query: {
-          terms: {
-            _id: snapshot2,
-          },
-        },
-      };
-
-      const requestBase = dataSourceId ? { dataSourceId } : {};
-
-      Promise.all([
-        http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query: query1, ...requestBase }),
-        }),
-        http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query: query2, ...requestBase }),
-        }),
-      ])
-        .then(([res1, res2]) => {
-          setQueryResult1(resolve_attributes(snapshot1, convertFromSearchResult(res1.result)));
-          setQueryResult2(resolve_attributes(snapshot2, convertFromSearchResult(res2.result)));
-        })
-        .catch((error: Error) => {
-          console.error(error);
-        });
+    if (selectedQuery == null) {
+      return;
     }
-  }, [selectedQuery]);
+    const queryText = queryEvaluations[selectedQuery]?.queryText;
+    if (!queryText) {
+      return;
+    }
+    const snapshot1 = snapshot1ByQueryText.get(queryText);
+    const snapshot2 = snapshot2ByQueryText.get(queryText);
+    if (!snapshot1 || !snapshot2) {
+      return;
+    }
+    const query1 = {
+      index: searchConfigurations[0].index,
+      size: snapshot1.length,
+      query: {
+        terms: {
+          _id: snapshot1,
+        },
+      },
+    };
+    const query2 = {
+      index: searchConfigurations[1].index,
+      size: snapshot2.length,
+      query: {
+        terms: {
+          _id: snapshot2,
+        },
+      },
+    };
+
+    const requestBase = dataSourceId ? { dataSourceId } : {};
+
+    Promise.all([
+      http.post(ServiceEndpoints.GetSearchResults, {
+        body: JSON.stringify({ query: query1, ...requestBase }),
+      }),
+      http.post(ServiceEndpoints.GetSearchResults, {
+        body: JSON.stringify({ query: query2, ...requestBase }),
+      }),
+    ])
+      .then(([res1, res2]) => {
+        setQueryResult1(
+          resolveAttributesById(snapshot1, convertFromSearchResult(res1.result)) as any
+        );
+        setQueryResult2(
+          resolveAttributesById(snapshot2, convertFromSearchResult(res2.result)) as any
+        );
+      })
+      .catch((error: Error) => {
+        console.error(error);
+      });
+  }, [
+    selectedQuery,
+    queryEvaluations,
+    snapshot1ByQueryText,
+    snapshot2ByQueryText,
+    searchConfigurations,
+    dataSourceId,
+    http,
+  ]);
 
   const findQueries = useCallback(
     async (search: any) => {

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ExperimentType, ExperimentStatus, toExperiment } from './index';
+import { ExperimentType, ExperimentStatus, toExperiment, toQuerySnapshots } from './index';
 
 const hybridBase = {
   id: 'exp-1',
@@ -48,5 +48,68 @@ describe('toExperiment metadata', () => {
     }
     expect(result.data.name).toBeUndefined();
     expect(result.data.description).toBeUndefined();
+  });
+});
+
+describe('toQuerySnapshots', () => {
+  it('extracts docIds for the matching search configuration via id lookup', () => {
+    const source = {
+      status: ExperimentStatus.COMPLETED,
+      results: [
+        {
+          query_text: 'q1',
+          snapshots: [
+            { searchConfigurationId: 'sc-a', docIds: ['a1', 'a2'] },
+            { searchConfigurationId: 'sc-b', docIds: ['b1'] },
+          ],
+        },
+        {
+          query_text: 'q2',
+          snapshots: [
+            { searchConfigurationId: 'sc-b', docIds: ['b2', 'b3'] },
+            { searchConfigurationId: 'sc-a', docIds: ['a3'] },
+          ],
+        },
+      ],
+    };
+
+    const forA = toQuerySnapshots(source, 'sc-a');
+    const forB = toQuerySnapshots(source, 'sc-b');
+
+    expect(forA.success).toBe(true);
+    expect(forB.success).toBe(true);
+    if (!forA.success || !forB.success) {
+      return;
+    }
+    expect(forA.data).toEqual([
+      { queryText: 'q1', documentIds: ['a1', 'a2'] },
+      { queryText: 'q2', documentIds: ['a3'] },
+    ]);
+    expect(forB.data).toEqual([
+      { queryText: 'q1', documentIds: ['b1'] },
+      { queryText: 'q2', documentIds: ['b2', 'b3'] },
+    ]);
+  });
+
+  it('uses the first snapshot when a config id is duplicated in a result', () => {
+    const source = {
+      status: ExperimentStatus.COMPLETED,
+      results: [
+        {
+          query_text: 'q1',
+          snapshots: [
+            { searchConfigurationId: 'sc-a', docIds: ['first'] },
+            { searchConfigurationId: 'sc-a', docIds: ['second'] },
+          ],
+        },
+      ],
+    };
+
+    const result = toQuerySnapshots(source, 'sc-a');
+    expect(result.success).toBe(true);
+    if (!result.success) {
+      return;
+    }
+    expect(result.data).toEqual([{ queryText: 'q1', documentIds: ['first'] }]);
   });
 });

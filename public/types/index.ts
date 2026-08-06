@@ -287,8 +287,22 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
   }
 
   const data: QuerySnapshot[] = [];
-  source.results.forEach((result: any) => {
-    const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
+  // Prefer O(1) lookup of the matching search-configuration snapshot per result
+  // row (avoids .find() over snapshots for every query in the experiment).
+  (source.results || []).forEach((result: any) => {
+    const snapshots = result.snapshots;
+    if (!Array.isArray(snapshots) || snapshots.length === 0) {
+      return;
+    }
+    // First-occurrence-wins Map matches prior Array.prototype.find semantics.
+    const byConfigId = new Map<string, any>();
+    for (const snapshot of snapshots) {
+      const configId = snapshot?.searchConfigurationId;
+      if (configId != null && !byConfigId.has(configId)) {
+        byConfigId.set(configId, snapshot);
+      }
+    }
+    const snapshot = byConfigId.get(queryName);
     if (snapshot) {
       data.push({
         queryText: result.query_text,

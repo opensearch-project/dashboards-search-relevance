@@ -15,7 +15,7 @@ import {
   EuiSpacer,
   EuiToolTip,
 } from '@elastic/eui';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import {
   TableListView,
@@ -57,6 +57,11 @@ import {
   QueryEvaluationRow,
   QueryEvaluationStatus,
 } from '../utils/query_evaluation_builder';
+import {
+  buildDocumentScores,
+  buildFirstWinMap,
+  buildJudgmentRatingsByQuery,
+} from '../utils/document_lookup';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
@@ -91,11 +96,21 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     Array<{ docId: string; rating: string }>
   >([]);
 
+  // Precompute O(1) lookups so opening a query is linear in documentIds, not
+  // nested finds over evaluations / judgmentRatings / ratings arrays.
+  const evaluationByQueryText = useMemo(
+    () => buildFirstWinMap(queryEvaluations, (q) => q.queryText),
+    [queryEvaluations]
+  );
+  const judgmentRatingsByQuery = useMemo(
+    () => buildJudgmentRatingsByQuery(judgmentSet?.judgmentRatings),
+    [judgmentSet]
+  );
+
   const handleQueryClick = useCallback(
     (queryText: string) => {
       try {
-        // Find the evaluation from already fetched queryEvaluations
-        const evaluation = queryEvaluations.find((q) => q.queryText === queryText);
+        const evaluation = evaluationByQueryText.get(queryText);
 
         if (evaluation?.status && evaluation.status !== 'success') {
           notifications.toasts.addWarning({
@@ -113,20 +128,10 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           return;
         }
 
-        // Get ratings from the already fetched judgment set
-        const judgmentEntry = judgmentSet?.judgmentRatings?.find(
-          (entry: any) => entry.query === queryText
+        const documentScores = buildDocumentScores(
+          evaluation.documentIds,
+          judgmentRatingsByQuery.get(queryText)
         );
-        const judgments = judgmentEntry?.ratings || [];
-
-        // Create document scores by matching evaluation documentIds with judgments
-        const documentScores = evaluation.documentIds.map((docId) => {
-          const judgment = judgments.find((j: any) => j.docId === docId);
-          return {
-            docId,
-            rating: judgment ? judgment.rating : 'N/A',
-          };
-        });
 
         setSelectedQuery(queryText);
         setSelectedQueryScores(documentScores);
@@ -137,7 +142,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         });
       }
     },
-    [queryEvaluations, judgmentSet, notifications]
+    [evaluationByQueryText, judgmentRatingsByQuery, notifications]
   );
 
   useEffect(() => {
