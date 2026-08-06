@@ -10,6 +10,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 
 - Add "Reuse Existing Judgments" option in LLM judgment Advanced Settings to reuse ratings from up to 5 existing judgments, and add a retry action for failed documents in the judgment listing ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
 - Allow ratings on a completed LLM judgment to be edited in place, including assigning ratings to previously failed documents ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
+- Add an A/B Test UI for Team Draft Interleaving, covering test creation, listing, search, click results, and UBI index configuration ([#932](https://github.com/opensearch-project/dashboards-search-relevance/pull/932))
 
 ### Enhancements
 
