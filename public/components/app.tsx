@@ -42,7 +42,15 @@ import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
 import { parseEntityParams } from './common/datasource_utils';
-import { AbTestCreate, AbTestListing, AbTestView, AbTestSearch, AbTestResults, AbTestDetail, AbTestUbiConfig } from './ab_test/ab_test_create';
+import {
+  AbTestCreate,
+  AbTestListing,
+  AbTestView,
+  AbTestSearch,
+  AbTestResults,
+  AbTestDetail,
+  AbTestUbiConfig,
+} from './ab_test';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
