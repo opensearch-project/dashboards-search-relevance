@@ -187,14 +187,16 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           size: Math.max(querySetSize, 1),
         };
 
-        const requestBase = dataSourceId ? { dataSourceId } : {};
+        const dsQuery = dataSourceId ? { query: { dataSourceId } } : {};
 
         const [evaluationSearchResult, variantSearchResult] = await Promise.all([
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query: evaluationQuery, ...requestBase }),
+            body: JSON.stringify({ query: evaluationQuery }),
+            ...dsQuery,
           }),
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query: variantQuery, ...requestBase }),
+            body: JSON.stringify({ query: variantQuery }),
+            ...dsQuery,
           }),
         ]);
 

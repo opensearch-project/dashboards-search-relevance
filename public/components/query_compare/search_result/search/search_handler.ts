@@ -11,10 +11,8 @@ export class SearchHandler {
 
   async performSearch(requestBody: any, dataSourceId: string) {
     return this.http.post(ServiceEndpoints.GetSearchResults, {
-      body: JSON.stringify({
-        query: requestBody,
-        dataSourceId,
-      }),
+      body: JSON.stringify({ query: requestBody }),
+      ...(dataSourceId ? { query: { dataSourceId } } : {}),
     });
   }
 

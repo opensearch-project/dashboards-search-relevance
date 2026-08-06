@@ -14,7 +14,7 @@ import {
 } from '../../../../src/core/server';
 import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../common';
 
-const queryWithDataSource = schema.maybe(schema.object({}, { unknowns: 'allow' }));
+export const queryWithDataSource = schema.maybe(schema.object({}, { unknowns: 'allow' }));
 
 // Resource ids are interpolated straight into the backend transport.request path, so constrain
 // them to the shape the backend actually generates (UUIDs / URL-safe Base64 ids). This rejects
