@@ -562,7 +562,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
   // Data fetching function
   const findExperiments = async (search: any) => {
-    // Use tableData if available (from polling or previous fetch)
+    // Use tableData if available (from polling or previous fetch). Always filter from the
+    // full cached list so search never permanently shrinks the cache.
     if (tableData.length > 0) {
       const filteredList = search
         ? tableData.filter((item) => experimentMatchesSearch(item, search))
@@ -589,10 +590,15 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       }
 
       const list = parseResults.data;
-      const filteredList = search ? list.filter((item) => experimentMatchesSearch(item, search)) : list;
+      // Always cache the full unfiltered list. Search only affects the returned hits so
+      // clearing the search box (or remounting after delete/refresh with an empty term)
+      // restores all rows. Keeping the full list also preserves hasProcessing for polling.
+      setExperiments(list);
+      setTableData(list);
 
-      setExperiments(filteredList);
-      setTableData(filteredList);
+      const filteredList = search
+        ? list.filter((item) => experimentMatchesSearch(item, search))
+        : list;
 
       return {
         total: filteredList.length,

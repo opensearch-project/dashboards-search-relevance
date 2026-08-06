@@ -65,6 +65,19 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
     };
   };
 
+  // Filter a full list for display only — never use the result to overwrite the cache.
+  // Caching a search-filtered subset would drop rows (and can stop PROCESSING polling)
+  // when the user clears the search box.
+  const filterJudgments = (items: JudgmentItem[], search?: string): JudgmentItem[] => {
+    const term = search?.trim().toLowerCase();
+    if (!term) {
+      return items;
+    }
+    return items.filter(
+      (item) => item.name.toLowerCase().includes(term) || item.id.toLowerCase().includes(term)
+    );
+  };
+
   const startPolling = useCallback(() => {
     if (intervalRef.current) return;
     pollingStartTime.current = Date.now();
@@ -141,14 +154,10 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
 
   const findJudgments = useCallback(
     async (search?: string) => {
-      // Use tableData if available (from polling or previous fetch)
+      // Use tableData if available (from polling or previous fetch). Always filter from the
+      // full cached list so search never permanently shrinks the cache.
       if (tableData.length > 0) {
-        const filteredList = search
-          ? tableData.filter((item) => {
-            const q = search.toLowerCase();
-            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-          })
-          : tableData;
+        const filteredList = filterJudgments(tableData, search);
         return {
           total: filteredList.length,
           hits: filteredList,
@@ -160,16 +169,13 @@ export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string |
       try {
         const response = await http.get(ServiceEndpoints.Judgments, queryParams);
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
-        const filteredList = search
-          ? list.filter((item: JudgmentItem) => {
-            const q = search.toLowerCase();
-            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-          })
-          : list;
+        // Always cache the full unfiltered list. Search only affects the returned hits so
+        // clearing the search box (or remounting with an empty term) restores all rows.
+        // Keeping the full list also preserves hasProcessing for background polling.
+        setJudgments(list);
+        setTableData(list);
 
-        setJudgments(filteredList);
-        setTableData(filteredList);
-
+        const filteredList = filterJudgments(list, search);
         return {
           total: filteredList.length,
           hits: filteredList,
