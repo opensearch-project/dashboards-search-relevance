@@ -92,10 +92,10 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
       </EuiCompressedFormRow>
 
       <EuiCompressedFormRow
-        label="Description"
+        label="Description (optional)"
         isInvalid={errors.descriptionError.length > 0}
         error={errors.descriptionError}
-        helpText="Describe the query set (< 250 characters)."
+        helpText="Optionally describe the query set (< 250 characters)."
         fullWidth
       >
         <EuiCompressedTextArea

@@ -263,38 +263,29 @@ export const SearchResult = ({
     datasource: string,
     setQueryResult: React.Dispatch<React.SetStateAction<SearchResults>>,
     updateComparedResult: (result: SearchResults) => void,
-    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>,
-    resultKey: 'result1' | 'result2',
-    errorKey: 'errorMessage1' | 'errorMessage2'
+    setQueryError: React.Dispatch<React.SetStateAction<QueryError>>
   ) => {
     if (Object.keys(requestBody).length === 0) return null;
 
     const isAgentic = agentHandler.isAgenticQuery(jsonQuery);
-    const searchPromise = isAgentic ?
-      agentHandler.performAgenticSearch(requestBody, datasource) :
-      searchHandler.performSearch(requestBody, datasource);
+    const searchPromise = isAgentic
+      ? agentHandler.performAgenticSearch(requestBody, datasource)
+      : searchHandler.performSearch(requestBody, datasource);
 
     return searchPromise
       .then((res) => {
-        // Normalize response format for query2
-        if (resultKey === 'result2' && res.result1) {
-          res = { result2: res.result1, errorMessage2: res.errorMessage1 };
-        }
-        return res;
-      })
-      .then((res) => {
         if (!isMountedRef.current) return;
 
-        if (res[resultKey]) {
-          setQueryResult(res[resultKey]);
-          updateComparedResult(res[resultKey]);
+        if (res.result) {
+          setQueryResult(res.result);
+          updateComparedResult(res.result);
         }
 
-        if (res[errorKey]) {
+        if (res.errorMessage) {
           setQueryError((error: QueryError) => ({
             ...error,
-            queryString: res[errorKey],
-            errorResponse: res[errorKey],
+            queryString: res.errorMessage,
+            errorResponse: res.errorMessage,
           }));
           setQueryResult({} as any);
           updateComparedResult({} as any);
@@ -355,12 +346,26 @@ export const SearchResult = ({
     const promises: Promise<any>[] = [];
 
     if (hasRequestBody1) {
-      const promise1 = processQuery(requestBody1, jsonQueries[0], datasource1 || '', setQueryResult1, updateComparedResult1, setQueryError1, 'result1', 'errorMessage1');
+      const promise1 = processQuery(
+        requestBody1,
+        jsonQueries[0],
+        datasource1 || '',
+        setQueryResult1,
+        updateComparedResult1,
+        setQueryError1
+      );
       if (promise1) promises.push(promise1);
     }
 
     if (hasRequestBody2) {
-      const promise2 = processQuery(requestBody2, jsonQueries[1], datasource2 || '', setQueryResult2, updateComparedResult2, setQueryError2, 'result2', 'errorMessage2');
+      const promise2 = processQuery(
+        requestBody2,
+        jsonQueries[1],
+        datasource2 || '',
+        setQueryResult2,
+        updateComparedResult2,
+        setQueryError2
+      );
       if (promise2) promises.push(promise2);
     }
 

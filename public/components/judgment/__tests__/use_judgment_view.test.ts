@@ -5,7 +5,16 @@
 
 import { renderHook, waitFor } from '@testing-library/react';
 import { useJudgmentView } from '../hooks/use_judgment_view';
-import { ServiceEndpoints } from '../../../../common';
+import { ServiceEndpoints, extractUserMessageFromError } from '../../../../common';
+
+jest.mock('../../../../common', () => ({
+  ...jest.requireActual('../../../../common'),
+  extractUserMessageFromError: jest.fn(),
+}));
+
+const mockExtractUserMessageFromError = extractUserMessageFromError as jest.MockedFunction<
+  typeof extractUserMessageFromError
+>;
 
 const mockHttp = {
   get: jest.fn(),
@@ -14,6 +23,7 @@ const mockHttp = {
 describe('useJudgmentView', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockExtractUserMessageFromError.mockReturnValue(null);
   });
 
   it('should fetch judgment by id successfully', async () => {
@@ -63,9 +73,7 @@ describe('useJudgmentView', () => {
 
     mockHttp.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() =>
-      useJudgmentView(mockHttp as any, 'nonexistent')
-    );
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, 'nonexistent'));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
@@ -84,6 +92,28 @@ describe('useJudgmentView', () => {
     expect(result.current.judgment).toBe(null);
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBe('Error loading judgment data');
+  });
+
+  it('should surface backend error message when available', async () => {
+    const customError = {
+      body: {
+        statusCode: 404,
+        message: '[resource_not_found_exception] Document not found: judgment-1',
+      },
+    };
+    mockHttp.get.mockRejectedValue(customError);
+    mockExtractUserMessageFromError.mockReturnValue(
+      '404: [resource_not_found_exception] Document not found: judgment-1'
+    );
+
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, 'judgment-1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.error).toBe(
+      '404: [resource_not_found_exception] Document not found: judgment-1'
+    );
+    expect(mockExtractUserMessageFromError).toHaveBeenCalledWith(customError);
   });
 
   it('should format JSON correctly', () => {
@@ -150,10 +180,77 @@ describe('useJudgmentView', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith(
-      `${ServiceEndpoints.Judgments}/1`,
-      { query: { dataSourceId: 'my-ds' } }
-    );
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`, {
+      query: { dataSourceId: 'my-ds' },
+    });
+  });
+
+  it('should poll while judgment status is PROCESSING and stop when COMPLETED', async () => {
+    jest.useFakeTimers();
+
+    const processingResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Processing Judgment',
+              type: 'UBI',
+              status: 'PROCESSING',
+              metadata: {},
+              judgmentRatings: [],
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    const completedResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Processing Judgment',
+              type: 'UBI',
+              status: 'COMPLETED',
+              metadata: {},
+              judgmentRatings: [
+                {
+                  query: 'futon frames full size without mattress',
+                  ratings: [{ docId: 'doc-1', rating: '3' }],
+                },
+              ],
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValueOnce(processingResponse).mockResolvedValueOnce(completedResponse);
+
+    const { result } = renderHook(() => useJudgmentView(mockHttp as any, '1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.judgment?.status).toBe('PROCESSING');
+    expect(result.current.judgment?.judgmentRatings).toEqual([]);
+
+    jest.advanceTimersByTime(5000);
+
+    await waitFor(() => expect(result.current.judgment?.status).toBe('COMPLETED'));
+
+    expect(result.current.judgment?.judgmentRatings).toEqual([
+      {
+        query: 'futon frames full size without mattress',
+        ratings: [{ docId: 'doc-1', rating: '3' }],
+      },
+    ]);
+    expect(mockHttp.get).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
   });
 
   it('should omit dataSourceId query param when not provided', async () => {
@@ -166,9 +263,6 @@ describe('useJudgmentView', () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith(
-      `${ServiceEndpoints.Judgments}/1`,
-      {}
-    );
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.Judgments}/1`, {});
   });
 });

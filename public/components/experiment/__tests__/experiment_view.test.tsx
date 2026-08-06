@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
+import { UNNAMED_EXPERIMENT_LABEL } from '../../../../common';
 import { ExperimentView } from '../views/experiment_view';
 
 const ExperimentType = {
@@ -13,12 +14,20 @@ const ExperimentType = {
   HYBRID_OPTIMIZER: 'HYBRID_OPTIMIZER',
 };
 
-jest.mock('../../../types', () => ({
-  toExperiment: (source) => ({ success: true, data: source }),
+jest.mock('../../../types/index', () => ({
+  ExperimentType: {
+    PAIRWISE_COMPARISON: 'PAIRWISE_COMPARISON',
+    POINTWISE_EVALUATION: 'POINTWISE_EVALUATION',
+    HYBRID_OPTIMIZER: 'HYBRID_OPTIMIZER',
+  },
+  toExperiment: jest.fn((source: any) => ({ success: true, data: source })),
 }));
+
+const { toExperiment: mockToExperiment } = jest.requireMock('../../../types/index');
 
 const mockHttp = {
   get: jest.fn(),
+  patch: jest.fn(),
 };
 
 const mockNotifications = {
@@ -42,6 +51,10 @@ jest.mock('../views/evaluation_experiment_view', () => ({
 
 jest.mock('../views/hybrid_optimizer_experiment_view', () => ({
   HybridOptimizerExperimentViewWithRouter: () => <div>Hybrid View</div>,
+}));
+
+jest.mock('../views/experiment_edit_metadata_modal', () => ({
+  ExperimentEditMetadataModal: () => null,
 }));
 
 describe('ExperimentView', () => {
@@ -83,9 +96,35 @@ describe('ExperimentView', () => {
     await waitFor(() => {
       expect(mockHttp.get).toHaveBeenCalled();
     });
+
+    await waitFor(() => {
+      expect(screen.getByText(UNNAMED_EXPERIMENT_LABEL)).toBeInTheDocument();
+    });
   });
 
-  it('handles fetch error', async () => {
+  it('shows a custom experiment name in the page header when provided', async () => {
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [{ _source: { id: 'exp-1', type: ExperimentType.PAIRWISE_COMPARISON, name: 'My experiment' } }],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('My experiment')).toBeInTheDocument();
+    });
+  });
+
+  it('shows a loading indicator while the experiment is being fetched', () => {
+    mockHttp.get.mockReturnValue(new Promise(() => {}));
+
+    render(<ExperimentView {...defaultProps} />);
+
+    expect(screen.getByText('Loading experiment data...')).toBeInTheDocument();
+  });
+
+  it('renders an error callout when the fetch fails', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 
     render(<ExperimentView {...defaultProps} />);
@@ -93,15 +132,76 @@ describe('ExperimentView', () => {
     await waitFor(() => {
       expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/experiments/test-experiment-id');
     });
+
+    await waitFor(() => {
+      expect(screen.getByText('Unable to load experiment')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Error loading experiment data')).toBeInTheDocument();
+    expect(screen.getByText('Experiment Details')).toBeInTheDocument();
   });
 
-  it('handles no experiment found', async () => {
+  it('shows not-found message when the backend returns 404', async () => {
+    mockHttp.get.mockRejectedValue({ body: { statusCode: 404, message: 'Document not found: abc' } });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('No matching experiment found')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Unable to load experiment')).toBeInTheDocument();
+  });
+
+  it('surfaces the backend error message for non-404 failures', async () => {
+    mockHttp.get.mockRejectedValue({ body: { statusCode: 403, message: 'security_exception' } });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('security_exception')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Unable to load experiment')).toBeInTheDocument();
+  });
+
+  it('renders an error callout when no experiment matches the id', async () => {
     mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
 
     render(<ExperimentView {...defaultProps} />);
 
     await waitFor(() => {
-      expect(mockHttp.get).toHaveBeenCalled();
+      expect(screen.getByText('No matching experiment found')).toBeInTheDocument();
     });
+    expect(screen.getByText('Unable to load experiment')).toBeInTheDocument();
+  });
+
+  it('renders an error callout when the experiment data is invalid', async () => {
+    mockToExperiment.mockReturnValueOnce({ success: false });
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [{ _source: { id: 'exp-1', type: 'UNKNOWN' } }],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Invalid experiment data format')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Unable to load experiment')).toBeInTheDocument();
+  });
+
+  it('does not render an error callout when the experiment loads successfully', async () => {
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [{ _source: { id: 'exp-1', type: ExperimentType.PAIRWISE_COMPARISON } }],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Pairwise View')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Unable to load experiment')).not.toBeInTheDocument();
+    expect(screen.queryByText('Loading experiment data...')).not.toBeInTheDocument();
   });
 });

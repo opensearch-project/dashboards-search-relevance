@@ -11,7 +11,11 @@ import { buildJudgmentPayload } from '../utils/form_processor';
 import { processJudgmentFile } from '../utils/judgment_file_processor';
 import moment from 'moment';
 
-export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: string, dataSourceEnabled = false) => {
+export const useJudgmentForm = (
+  http: any,
+  notifications: any,
+  dataSourceId?: string
+) => {
   // Form data
   const [formData, setFormData] = useState<JudgmentFormData>({
     name: '',
@@ -22,6 +26,7 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
     clickModel: 'coec',
     maxRank: 20,
     contextFields: [],
+    existingJudgments: [],
     startDate: moment('2000-01-01').format('YYYY-MM-DD'),
     endDate: moment().format('YYYY-MM-DD'),
   });
@@ -42,12 +47,14 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
   const [searchConfigOptions, setSearchConfigOptions] = useState<ComboBoxOption[]>([]);
   const [modelOptions, setModelOptions] = useState<ModelOption[]>([]);
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [existingJudgmentOptions, setExistingJudgmentOptions] = useState<ComboBoxOption[]>([]);
 
   // Loading states
   const [isLoadingQuerySets, setIsLoadingQuerySets] = useState(false);
   const [isLoadingSearchConfigs, setIsLoadingSearchConfigs] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
+  const [isLoadingExistingJudgments, setIsLoadingExistingJudgments] = useState(false);
 
   // UI states
   const [nameError, setNameError] = useState('');
@@ -63,6 +70,7 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
     setQuerySetOptions([]);
     setSearchConfigOptions([]);
     setModelOptions([]);
+    setExistingJudgmentOptions([]);
     setSelectedQuerySet([]);
     setSelectedSearchConfigs([]);
     setSelectedModel([]);
@@ -88,6 +96,7 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
     setIsLoadingQuerySets(true);
     setIsLoadingSearchConfigs(true);
     setIsLoadingModels(true);
+    setIsLoadingExistingJudgments(true);
 
     await Promise.all([
       service.fetchUbiIndexes(dataSourceId).then(setIndexOptions).catch(() => {
@@ -106,8 +115,12 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
         notifications.toasts.addDanger('Failed to fetch models');
         setModelOptions([]);
       }).finally(() => setIsLoadingModels(false)),
+      service.fetchLlmJudgments(dataSourceId).then(setExistingJudgmentOptions).catch(() => {
+        notifications.toasts.addDanger('Failed to fetch existing judgments');
+        setExistingJudgmentOptions([]);
+      }).finally(() => setIsLoadingExistingJudgments(false)),
     ]);
-  }, [formData.type, http, notifications.toasts, dataSourceId, dataSourceEnabled]);
+  }, [formData.type, http, notifications.toasts, dataSourceId]);
 
   useEffect(() => {
     fetchData();
@@ -238,10 +251,12 @@ export const useJudgmentForm = (http: any, notifications: any, dataSourceId?: st
     searchConfigOptions,
     modelOptions,
     indexOptions,
+    existingJudgmentOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
     isLoadingIndexes,
+    isLoadingExistingJudgments,
     nameError,
     newContextField,
     setNewContextField,

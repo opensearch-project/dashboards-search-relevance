@@ -114,12 +114,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     datasource2,
   } = useSearchRelevanceContext();
 
+  const dataSourceId = queryNumber === 1 ? datasource1 : datasource2;
+
   useEffect(() => {
     let isMounted = true;
     const fetchSearchConfigurations = async () => {
       setIsLoadingConfigs(true);
       try {
-        const data = await searchConfigurationService.getSearchConfigurations();
+        const data = await searchConfigurationService.getSearchConfigurations(dataSourceId);
         if (isMounted) {
           setAllConfigs(data.hits.hits);
           const options = data.hits.hits.map((search_config: any) => ({
@@ -142,7 +144,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [searchConfigurationService]);
+  }, [searchConfigurationService, dataSourceId]);
 
   const onSearchConfigChange = (selectedOptions: any[]) => {
     setSelectedSearchConfig(selectedOptions);
@@ -249,6 +251,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   useEffect(() => {
     setSelectedIndex('');
     setPipeline('');
+    setSelectedSearchConfig([]);
   }, [datasource1, datasource2]);
 
   let DataSourceSelector;
@@ -257,6 +260,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   }
   const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
+    if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
+      return false;
+    }
     const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
     return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
   };

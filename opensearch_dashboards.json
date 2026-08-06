@@ -1,7 +1,7 @@
 {
   "id": "searchRelevanceDashboards",
-  "version": "3.7.0.0",
-  "opensearchDashboardsVersion": "3.7.0",
+  "version": "3.8.0.0",
+  "opensearchDashboardsVersion": "3.8.0",
   "server": true,
   "ui": true,
   "requiredPlugins": [
@@ -13,7 +13,11 @@
     "dataSource",
     "dataSourceManagement",
     "contentManagement",
-    "home"
+    "home",
+    "chat"
   ],
-  "supportedOSDataSourceVersions": ">=2.8.0"
+  "supportedOSDataSourceVersions": ">=2.8.0",
+  "configPath": [
+    "searchRelevanceDashboards"
+  ]
 }

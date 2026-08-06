@@ -44,6 +44,19 @@ export class ExperimentService {
     return opts ? await this.http.delete(url, opts) : await this.http.delete(url);
   }
 
+  async patchExperiment(
+    id: string,
+    body: { name?: string; description?: string },
+    dataSourceId?: string | null
+  ) {
+    const url = `${ServiceEndpoints.Experiments}/${id}`;
+    const opts: any = { body: JSON.stringify(body) };
+    if (dataSourceId) {
+      opts.query = { dataSourceId };
+    }
+    return await this.http.patch(url, opts);
+  }
+
   async getScheduledExperiments(dataSourceId?: string | null) {
     const opts = this.dsOpts(dataSourceId);
     const response = opts

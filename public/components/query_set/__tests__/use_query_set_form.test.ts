@@ -129,10 +129,10 @@ describe('useQuerySetForm', () => {
     expect(result.current.errors.nameError).toBe('Name is a required parameter.');
   });
 
-  it('validates description field correctly', () => {
+  it('allows empty description on blur validation', () => {
     (validation.validateForm as jest.Mock).mockReturnValue({
       nameError: '',
-      descriptionError: 'Description is required',
+      descriptionError: '',
       querySizeError: '',
       manualQueriesError: '',
     });
@@ -143,7 +143,7 @@ describe('useQuerySetForm', () => {
       result.current.validateField('description', '');
     });
 
-    expect(result.current.errors.descriptionError).toBe('Description is required');
+    expect(result.current.errors.descriptionError).toBe('');
   });
 
   it('validates form correctly', () => {

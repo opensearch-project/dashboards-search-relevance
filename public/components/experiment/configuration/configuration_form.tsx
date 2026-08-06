@@ -176,6 +176,8 @@ const getInitialFormData = (templateType: TemplateType): ConfigurationFormData =
     querySetId: '',
     size: 10,
     searchConfigurationList: [],
+    name: '',
+    description: '',
   };
 
   switch (templateType) {

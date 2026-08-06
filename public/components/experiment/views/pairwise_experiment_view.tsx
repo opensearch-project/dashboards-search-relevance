@@ -234,13 +234,19 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
         },
       };
 
-      http
-        .post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify({ query1, query2 }),
-        })
-        .then((res) => {
-          setQueryResult1(resolve_attributes(snapshot1, convertFromSearchResult(res.result1)));
-          setQueryResult2(resolve_attributes(snapshot2, convertFromSearchResult(res.result2)));
+      const requestBase = dataSourceId ? { dataSourceId } : {};
+
+      Promise.all([
+        http.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query1, ...requestBase }),
+        }),
+        http.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query2, ...requestBase }),
+        }),
+      ])
+        .then(([res1, res2]) => {
+          setQueryResult1(resolve_attributes(snapshot1, convertFromSearchResult(res1.result)));
+          setQueryResult2(resolve_attributes(snapshot2, convertFromSearchResult(res2.result)));
         })
         .catch((error: Error) => {
           console.error(error);

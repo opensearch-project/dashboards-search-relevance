@@ -5,10 +5,8 @@
 
 import { EuiButton, EuiButtonEmpty, EuiFieldText, EuiFormRow, EuiModal, EuiModalBody, EuiModalFooter, EuiModalHeader, EuiModalHeaderTitle, EuiText } from "@elastic/eui";
 import React from 'react';
-import { useState } from "react";
 
 export const DeleteScheduleModal = ({ onClose, onSubmit, scheduleForExperiment }) => {
-console.log("experiment schedule to delete: ", scheduleForExperiment.id)
   return (
     <EuiModal onClose={onClose}>
       <EuiModalHeader>

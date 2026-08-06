@@ -3,30 +3,62 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { EuiText } from '@elastic/eui';
 import { TableListView } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 
-interface QueryItem {
+interface StoredQueryItem {
   queryText: string;
+  referenceAnswer?: string;
+  customFields?: {
+    referenceAnswer?: string;
+  };
+}
+
+export interface DisplayQueryItem {
+  id: string;
+  queryText: string;
+  referenceAnswer: string;
 }
 
 interface QuerySetQueriesTableProps {
-  queries: QueryItem[];
+  queries: StoredQueryItem[];
 }
 
-export const QuerySetQueriesTable: React.FC<QuerySetQueriesTableProps> = ({ queries }) => {
-  const findQueries = async (searchTerm: string) => {
-    if (!Array.isArray(queries)) {
-      return {
-        total: 0,
-        hits: [],
-      };
-    }
+export const getReferenceAnswer = (query: StoredQueryItem): string => {
+  const customFieldAnswer = query.customFields?.referenceAnswer;
+  if (customFieldAnswer !== undefined && customFieldAnswer !== null) {
+    return String(customFieldAnswer);
+  }
+  if (query.referenceAnswer !== undefined && query.referenceAnswer !== null) {
+    return String(query.referenceAnswer);
+  }
+  return '';
+};
 
+export const normalizeQuerySetQueries = (queries: StoredQueryItem[]): DisplayQueryItem[] => {
+  return queries.map((query, index) => ({
+    id: String(index),
+    queryText: query.queryText ?? '',
+    referenceAnswer: getReferenceAnswer(query),
+  }));
+};
+
+export const QuerySetQueriesTable: React.FC<QuerySetQueriesTableProps> = ({ queries }) => {
+  const normalizedQueries = useMemo(
+    () => (Array.isArray(queries) ? normalizeQuerySetQueries(queries) : []),
+    [queries]
+  );
+
+  const findQueries = async (searchTerm: string) => {
+    const term = searchTerm.toLowerCase();
     const filteredQueries = searchTerm
-      ? queries.filter((query) => query.queryText.toLowerCase().includes(searchTerm.toLowerCase()))
-      : queries;
+      ? normalizedQueries.filter(
+          (query) =>
+            query.queryText.toLowerCase().includes(term) ||
+            query.referenceAnswer.toLowerCase().includes(term)
+        )
+      : normalizedQueries;
     return {
       total: filteredQueries.length,
       hits: filteredQueries,
@@ -40,11 +72,20 @@ export const QuerySetQueriesTable: React.FC<QuerySetQueriesTableProps> = ({ quer
           field: 'queryText',
           name: 'Query',
           sortable: true,
-          width: '100%',
+          width: '50%',
+        },
+        {
+          field: 'referenceAnswer',
+          name: 'Reference Answer',
+          sortable: true,
+          width: '50%',
+          render: (referenceAnswer: string) => (
+            <EuiText size="s">{referenceAnswer || '—'}</EuiText>
+          ),
         },
       ]}
       tableProps={{
-        itemId: 'queryText',
+        itemId: 'id',
         noItemsMessage: 'No queries found',
       }}
       findItems={findQueries}

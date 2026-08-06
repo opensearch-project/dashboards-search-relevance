@@ -11,10 +11,7 @@ import {
   EuiModalBody,
   EuiModalFooter,
   EuiButton,
-  EuiFlexGroup,
-  EuiFlexItem,
   EuiPanel,
-  EuiText,
   EuiSpacer,
   EuiDescriptionList,
   EuiCodeBlock,
@@ -25,9 +22,10 @@ import {
 interface VariantDetailsModalProps {
   variantDetails: {
     parameters: {
-      weights: number[];
-      normalization: string;
       combination: string;
+      weights?: number[];
+      normalization?: string;
+      rank_constant?: number;
     };
   };
   onClose: () => void;
@@ -37,23 +35,35 @@ export const VariantDetailsModal: React.FC<VariantDetailsModalProps> = ({
   variantDetails,
   onClose,
 }) => {
+  const { combination, normalization, weights, rank_constant } = variantDetails.parameters;
+  const isRrf = combination === 'rrf';
+
   const parameterItems = [
     {
-      title: 'Weights',
-      description: (
-        <EuiCodeBlock language="json" paddingSize="s" isCopyable>
-          {JSON.stringify(variantDetails.parameters.weights, null, 2)}
-        </EuiCodeBlock>
-      ),
-    },
-    {
-      title: 'Normalization',
-      description: <EuiBadge color="primary">{variantDetails.parameters.normalization}</EuiBadge>,
-    },
-    {
       title: 'Combination',
-      description: <EuiBadge color="success">{variantDetails.parameters.combination}</EuiBadge>,
+      description: <EuiBadge color="success">{combination}</EuiBadge>,
     },
+    ...(isRrf
+      ? [
+          {
+            title: 'Rank constant',
+            description: <EuiBadge color="primary">{String(rank_constant ?? 'N/A')}</EuiBadge>,
+          },
+        ]
+      : [
+          {
+            title: 'Normalization',
+            description: <EuiBadge color="primary">{normalization}</EuiBadge>,
+          },
+          {
+            title: 'Weights',
+            description: (
+              <EuiCodeBlock language="json" paddingSize="s" isCopyable>
+                {JSON.stringify(weights, null, 2)}
+              </EuiCodeBlock>
+            ),
+          },
+        ]),
   ];
 
   return (

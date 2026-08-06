@@ -29,11 +29,14 @@ import {
   useOpenSearchDashboards,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { CoreStart } from '../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
-import { Routes, SavedObjectIds, extractUserMessageFromError } from '../../../../common';
+import {
+  Routes,
+  SavedObjectIds,
+  extractUserMessageFromError,
+  getExperimentDisplayName,
+} from '../../../../common';
 import { DeleteModal } from '../../common/DeleteModal';
 import { DashboardInstallModal } from '../../common/dashboard_install_modal';
-import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { printType } from '../../../types/index';
 import { ExperimentService } from '../services/experiment_service';
@@ -43,6 +46,7 @@ import {
   createPhraseFilter,
   addDaysToTimestamp,
   checkDashboardsInstalled,
+  getScopedSavedObjectId,
 } from '../../common_utils/dashboards';
 import { getStatusColor } from '../../common_utils/status';
 import { ScheduleModal } from './ScheduleModal';
@@ -52,24 +56,19 @@ import './experiment_listing.scss';
 
 interface ExperimentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
   onAskAI?: () => void;
 }
 
 export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   http,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
   onAskAI,
 }) => {
   const { dateFormat } = useConfig();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const experimentService = new ExperimentService(http);
 
   const [showDeleteExperimentModal, setShowDeleteExperimentModal] = useState(false);
@@ -92,12 +91,24 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
+  const workspaceId = services.workspaces?.currentWorkspaceId$?.getValue();
+
+  const [isChatWindowOpen, setIsChatWindowOpen] = useState(
+    () => services.chat?.isWindowOpen() ?? false
+  );
+
+  useEffect(() => {
+    const sub = services.chat?.getWindowState$()?.subscribe((state) => {
+      setIsChatWindowOpen(state.isWindowOpen);
+    });
+    return () => sub?.unsubscribe();
+  }, [services.chat]);
 
   // Clear cached table data when data source changes so findExperiments re-fetches
   useEffect(() => {
     setTableData([]);
     setRefreshKey((prev) => prev + 1);
-  }, [selectedDataSource]);
+  }, [dataSourceId]);
 
   // Custom hook for experiment polling
   const useExperimentPolling = () => {
@@ -130,7 +141,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
         setIsBackgroundRefreshing(true);
         try {
-          const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+          const parseResults = await experimentService.getExperiments(dataSourceId);
 
           if (parseResults.success) {
             const updatedList = parseResults.data;
@@ -196,7 +207,10 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   } = useExperimentPolling();
 
   const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
-    const filters = [createPhraseFilter('experimentId', experiment.id, indexPatternId)];
+    const resolvedDashboardId = getScopedSavedObjectId(dashboardId, workspaceId, dataSourceId);
+    const resolvedIndexPatternId = getScopedSavedObjectId(indexPatternId, workspaceId, dataSourceId);
+
+    const filters = [createPhraseFilter('experimentId', experiment.id, resolvedIndexPatternId)];
 
     // Create timeRange from experiment timestamp
     const timeRange = {
@@ -204,7 +218,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       to: "now",
     };
 
-    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
+    const url = await dashboardUrl(
+      share,
+      resolvedDashboardId,
+      resolvedIndexPatternId,
+      filters,
+      timeRange,
+      dataSourceId
+    );
     window.open(url, '_blank');
   };
 
@@ -214,7 +235,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     indexPatternId: string
   ) => {
     try {
-      const dashboardsAreInstalled = await checkDashboardsInstalled(http);
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http, workspaceId, dataSourceId);
       if (!dashboardsAreInstalled) {
         setPendingDashboardAction(() => () =>
           openDashboard(experiment, dashboardId, indexPatternId)
@@ -261,7 +282,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
     setIsLoading(true);
     try {
-      await experimentService.deleteExperiment(experimentToDelete.id, selectedDataSource || undefined);
+      await experimentService.deleteExperiment(experimentToDelete.id, dataSourceId);
 
       // Close modal and clear state first
       setShowDeleteExperimentModal(false);
@@ -289,7 +310,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
     setIsLoading(true);
     try {
-      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, selectedDataSource || undefined);
+      await experimentService.deleteScheduledExperiment(scheduledForExperiment.id, dataSourceId);
 
       // Close modal and clear state first
       setShowDeleteScheduleModal(false);
@@ -319,7 +340,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       await experimentService.createScheduledExperiment(JSON.stringify({
         experimentId: experimentToSchedule.id,
         cronExpression: `${cronExpression.trim()}`
-      }), selectedDataSource || undefined);
+      }), dataSourceId);
 
       setShowScheduleExperimentModal(false);
       setExperimentToSchedule(null);
@@ -339,10 +360,26 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     }
   }
 
+  const experimentMatchesSearch = (item: any, rawSearch: string) => {
+    const term = rawSearch.trim().toLowerCase();
+    if (!term) {
+      return true;
+    }
+    const displayName = getExperimentDisplayName(item?.name).toLowerCase();
+    return (
+      item.id?.toLowerCase().includes(term) ||
+      item.type?.toLowerCase().includes(term) ||
+      item.status?.toLowerCase().includes(term) ||
+      (typeof item.name === 'string' && item.name.toLowerCase().includes(term)) ||
+      (typeof item.description === 'string' && item.description.toLowerCase().includes(term)) ||
+      displayName.includes(term)
+    );
+  };
+
   const getScheduledExperiment = async (experimentId: string) => {
     setIsLoading(true);
     try {
-      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId, selectedDataSource || undefined));
+      const scheduledExperiment = (await experimentService.getScheduledExperiment(experimentId, dataSourceId));
       return scheduledExperiment.data;
     } catch (err) {
       console.error('Failed to retrieve schedule', err);
@@ -355,23 +392,55 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   // Column definitions
   const tableColumns = [
     {
+      field: 'name',
+      name: 'Name',
+      dataType: 'string',
+      sortable: true,
+      width: '27%',
+      truncateText: true,
+      render: (
+        _name: string | undefined,
+        experiment: { id: string; name?: string; description?: string }
+      ) => {
+        const fullName = getExperimentDisplayName(experiment.name);
+        const description =
+          typeof experiment.description === 'string' ? experiment.description.trim() : '';
+        const navigateProps = reactRouterNavigate(
+          history,
+          `${Routes.ExperimentViewPrefix}/${experiment.id}${
+            dataSourceId ? `?dataSourceId=${dataSourceId}` : ''
+          }`
+        );
+        const tooltipContent = (
+          <div className="srgExperimentListingNameTooltip">
+            <span className="srgExperimentListingNameTooltip__name">{fullName}</span>
+            {description ? (
+              <span className="srgExperimentListingNameTooltip__description">{description}</span>
+            ) : null}
+          </div>
+        );
+        const nameButton = (
+          <EuiButtonEmpty size="xs" className="srgExperimentListingNameButton" {...navigateProps}>
+            <span className="srgExperimentListingNameButton__label">{fullName}</span>
+          </EuiButtonEmpty>
+        );
+        return (
+          <EuiToolTip
+            content={tooltipContent}
+            delay="regular"
+            anchorClassName="srgExperimentListingNameTooltipAnchor"
+          >
+            {nameButton}
+          </EuiToolTip>
+        );
+      },
+    },
+    {
       field: 'type',
       name: 'Experiment Type',
       dataType: 'string',
       sortable: true,
-      render: (
-        type: string,
-        experiment: {
-          id: string;
-        }
-      ) => (
-        <EuiButtonEmpty
-          size="xs"
-          {...reactRouterNavigate(history, `${Routes.ExperimentViewPrefix}/${experiment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
-        >
-          {printType(type)}
-        </EuiButtonEmpty>
-      ),
+      render: (type: string) => <EuiText size="s">{printType(type)}</EuiText>,
     },
     {
       field: 'status',
@@ -385,7 +454,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     {
       field: 'size',
       name: 'Queries Run',
-      width: '20%',
+      width: '10%',
       render: (size: number) => <EuiText size="s">{size}</EuiText>,
     },
     {
@@ -496,14 +565,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     // Use tableData if available (from polling or previous fetch)
     if (tableData.length > 0) {
       const filteredList = search
-        ? tableData.filter((item) => {
-          const term = search.toLowerCase();
-          return (
-            item.id?.toLowerCase().includes(term) ||
-            item.type?.toLowerCase().includes(term) ||
-            item.status?.toLowerCase().includes(term)
-          );
-        })
+        ? tableData.filter((item) => experimentMatchesSearch(item, search))
         : tableData;
       return {
         total: filteredList.length,
@@ -515,7 +577,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const parseResults = await experimentService.getExperiments(selectedDataSource || undefined);
+      const parseResults = await experimentService.getExperiments(dataSourceId);
 
       if (!parseResults.success) {
         console.error(parseResults.errors);
@@ -527,16 +589,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       }
 
       const list = parseResults.data;
-      const filteredList = search
-        ? list.filter((item) => {
-          const term = search.toLowerCase();
-          return (
-            item.id?.toLowerCase().includes(term) ||
-            item.type?.toLowerCase().includes(term) ||
-            item.status?.toLowerCase().includes(term)
-          );
-        })
-        : list;
+      const filteredList = search ? list.filter((item) => experimentMatchesSearch(item, search)) : list;
 
       setExperiments(filteredList);
       setTableData(filteredList);
@@ -586,19 +639,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
       <EuiSpacer size="m" />
 
-      {dataSourceEnabled && dataSourceManagement && savedObjects && (
-        <DataSourceSelector
-          dataSourceEnabled={dataSourceEnabled}
-          dataSourceManagement={dataSourceManagement}
-          savedObjects={savedObjects}
-          selectedDataSource={selectedDataSource}
-          setSelectedDataSource={setSelectedDataSource}
-        />
-      )}
-
-      <EuiSpacer size="m" />
-
-      {onAskAI && !isAICalloutDismissed && (
+      {onAskAI && !isAICalloutDismissed && !isChatWindowOpen && (
         <>
           <EuiCallOut
             title={
@@ -633,7 +674,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       <EuiSpacer size="m" />
 
       <EuiFlexItem>
-        <EuiText>Click on an experiment id to view details.</EuiText>
+        <EuiText>Click a name to view experiment details.</EuiText>
         {error && (
           <EuiCallOut title="Error" color="danger">
             <p>{error}</p>
@@ -641,7 +682,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
         )}
         {!error && (
           <TableListView
-            key={`${refreshKey}-${selectedDataSource}`}
+            key={`${refreshKey}-${dataSourceId ?? ''}`}
             headingId="experimentListingHeading"
             entityName="Experiment"
             entityNamePlural="Experiments"
@@ -652,7 +693,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
             search={{
               box: {
                 incremental: true,
-                placeholder: 'Search experiments...',
+                placeholder: 'Search by name, description, id, type, or status...',
                 schema: true,
               },
             }}
@@ -685,6 +726,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
           onSuccess={pendingDashboardAction}
           http={http}
           setError={setError}
+          workspaceId={workspaceId}
+          dataSourceId={dataSourceId}
         />
       )}
 

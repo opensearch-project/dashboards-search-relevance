@@ -122,9 +122,6 @@ describe('Base64 Config Utilities', () => {
 
       // Verify URL is within safe limit (2000 characters)
       expect(fullUrl.length).toBeLessThan(2000);
-      
-      // Log actual length for reference
-      console.log(`URL length: ${fullUrl.length} characters`);
     });
 
     it('should identify when URL length exceeds safe limits', () => {
@@ -149,9 +146,6 @@ describe('Base64 Config Utilities', () => {
       
       // Verify URL exceeds safe limit (2000 characters)
       expect(fullUrl.length).toBeGreaterThan(2000);
-      
-      // Log actual length for reference
-      console.log(`Long URL length: ${fullUrl.length} characters`);
     });
 
     it('should calculate base64 size increase correctly', () => {

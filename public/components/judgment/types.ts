@@ -31,6 +31,7 @@ export interface JudgmentFormData {
   tokenLimit?: number;
   ignoreFailure?: boolean;
   promptTemplate?: any; // Prompt template configuration
+  existingJudgments?: string[]; // Up to 5 existing judgment IDs to reuse their ratings
   // UBI specific
   clickModel?: string;
   maxRank?: number;
@@ -43,9 +44,7 @@ export interface JudgmentCreateProps {
   http: any;
   notifications: any;
   history: any;
-  savedObjects?: any;
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: any;
+  dataSourceId?: string;
 }
 
 // Re-export prompt template types

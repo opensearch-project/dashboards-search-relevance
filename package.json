@@ -1,6 +1,6 @@
 {
   "name": "searchRelevanceDashboards",
-  "version": "3.7.0.0",
+  "version": "3.8.0.0",
   "main": "./public/index.ts",
   "license": "Apache-2.0",
   "scripts": {
@@ -13,16 +13,14 @@
     "cypress:open": "TZ=America/Los_Angeles cypress open",
     "plugin-helpers": "node ../../scripts/plugin_helpers"
   },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/enzyme-adapter-react-16": "^1.0.6"
+  "dependencies": {
+    "lodash": "^4.18.0",
+    "moment": "^2.24.0",
+    "rxjs": "^6.5.5",
+    "semver": "^7.5.3"
   },
-  "resolutions": {
-    "ansi-regex": "^5.0.1",
-    "glob-parent": "^6.0.1",
-    "qs": "~6.14.1",
-    "tough-cookie": "^4.1.3",
-    "ajv": "^6.14.0",
-    "lodash": "^4.18.0"
-  }
+  "devDependencies": {
+    "@types/enzyme": "^3.10.7"
+  },
+  "resolutions": {}
 }

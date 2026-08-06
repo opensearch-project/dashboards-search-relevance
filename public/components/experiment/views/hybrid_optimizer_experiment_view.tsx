@@ -30,6 +30,7 @@ import {
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
 } from '../../../../common';
+import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
@@ -71,44 +72,31 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
-  const sanitizeResponse = (response: any) => response?.hits?.hits?.[0]?._source || undefined;
-
   useEffect(() => {
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const options = dataSourceId ? { query: { dataSourceId } } : {};
-        
-        const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
-          .then(sanitizeResponse);
-        const _searchConfiguration =
-          _experiment &&
-          (await http
-            .get(
-              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId,
-              options
-            )
-            .then(sanitizeResponse));
-        const _querySet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId, options)
-            .then(sanitizeResponse));
-        const _judgmentSet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId, options)
-            .then(sanitizeResponse));
 
-        const _scheduledExperimentJob =
-          _experiment && inputExperiment.isScheduled &&
-          (await http
-            .get(
-              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId,
-              options
-            )
-            .then(sanitizeResponse));            
+        const resources = await loadExperimentResourcesParallel(
+          http,
+          {
+            experimentId: inputExperiment.id,
+            searchConfigurationId: inputExperiment.searchConfigurationId,
+            querySetId: inputExperiment.querySetId,
+            judgmentId: inputExperiment.judgmentId,
+            isScheduled: inputExperiment.isScheduled,
+            scheduledExperimentJobId: inputExperiment.scheduledExperimentJobId,
+          },
+          dataSourceId
+        );
+
+        const _experiment = resources?.experiment;
+        const _searchConfiguration = resources?.searchConfiguration;
+        const _querySet = resources?.querySet;
+        const _judgmentSet = resources?.judgmentSet;
+        const _scheduledExperimentJob = resources?.scheduledExperimentJob;
+
+        const requestBase = dataSourceId ? { dataSourceId } : {};
 
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
@@ -125,8 +113,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           if (expectedSize > maxSize) {
             let from = 0;
             let hasMore = true;
-            console.log(`[DEBUG] Expected size: ${expectedSize}, will fetch in batches`);
-            
             while (hasMore && from < maxSize) { // Important: from + size cannot exceed max_result_window
               const batchSize = Math.min(maxSize - from, expectedSize - from);
               const query = {
@@ -139,18 +125,16 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
                 from: from,
                 size: batchSize,
               };
-              console.log(`[DEBUG] Fetching batch: from=${from}, size=${batchSize}`);
               const result = await http.post(ServiceEndpoints.GetSearchResults, {
-                body: JSON.stringify({ query1: query }),
+                body: JSON.stringify({ query, ...requestBase }),
               });
-              
-              if (result?.result1?.hits?.hits && result.result1.hits.hits.length > 0) {
-                console.log(`[DEBUG] Batch returned ${result.result1.hits.hits.length} results`);
-                allResults = allResults.concat(result.result1.hits.hits);
-                from += result.result1.hits.hits.length;
+
+              if (result?.result?.hits?.hits && result.result.hits.hits.length > 0) {
+                allResults = allResults.concat(result.result.hits.hits);
+                from += result.result.hits.hits.length;
                 
                 // Stop if we got less than requested or reached max window
-                if (result.result1.hits.hits.length < batchSize || from >= maxSize) {
+                if (result.result.hits.hits.length < batchSize || from >= maxSize) {
                   hasMore = false;
                   if (from >= maxSize && expectedSize > maxSize) {
                     console.warn(`[WARNING] Reached OpenSearch max_result_window limit (${maxSize}). Cannot fetch remaining ${expectedSize - from} results.`);
@@ -164,7 +148,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
                 hasMore = false;
               }
             }
-            console.log(`[DEBUG] Total results fetched: ${allResults.length}`);
           } else {
             // Single query for small result sets
             const query = {
@@ -178,13 +161,18 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           };
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query1: query }),
+            body: JSON.stringify({ query, ...requestBase }),
           });
 
-          if (result?.result1?.hits?.hits) {
-              allResults = result.result1.hits.hits;
+          if (result?.result?.hits?.hits) {
+              allResults = result.result.hits.hits;
             }
           }
+
+          setExperiment(_experiment as HybridOptimizerExperiment);
+          setSearchConfiguration(_searchConfiguration);
+          setQuerySet(_querySet);
+          setJudgmentSet(_judgmentSet);
 
           if (!allResults || allResults.length === 0) {
             console.error('No evaluation results found');
@@ -196,7 +184,6 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             return;
           }
 
-          console.log(`[DEBUG] Processing ${allResults.length} total results`);
           // Process all results
           allResults.forEach((hit: any) => {
             const nMetrics: Record<string, number> = {};
@@ -228,7 +215,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     };
 
     fetchExperiment();
-  }, [http, inputExperiment]);
+  }, [http, inputExperiment, dataSourceId]);
 
   const fetchVariantDetails = async (variantId: string) => {
     try {
@@ -242,10 +229,10 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
       };
 
       const result = await http.post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ query1: query }),
+        body: JSON.stringify({ query, ...(dataSourceId ? { dataSourceId } : {}) }),
       });
 
-      const variantDetails = result?.result1?.hits?.hits?.[0]?._source;
+      const variantDetails = result?.result?.hits?.hits?.[0]?._source;
       if (variantDetails) {
         setSelectedVariantDetails(variantDetails);
         setSelectedVariantId(variantId);
@@ -375,13 +362,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         });
       });
 
-      console.log('[DEBUG] Total items before filter:', items.length);
-
       const filteredItems = search
         ? items.filter((item) => item.queryText.includes(search))
         : items;
-
-      console.log('[DEBUG] Total items after filter:', filteredItems.length);
 
       return {
         hits: filteredItems,

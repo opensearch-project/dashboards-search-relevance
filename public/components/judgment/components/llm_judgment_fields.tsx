@@ -25,9 +25,11 @@ interface LLMJudgmentFieldsProps {
   querySetOptions: any[];
   searchConfigOptions: any[];
   modelOptions: any[];
+  existingJudgmentOptions: any[];
   isLoadingQuerySets: boolean;
   isLoadingSearchConfigs: boolean;
   isLoadingModels: boolean;
+  isLoadingExistingJudgments: boolean;
   newContextField: string;
   setNewContextField: (value: string) => void;
   addContextField: () => void;
@@ -47,9 +49,11 @@ export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
   querySetOptions,
   searchConfigOptions,
   modelOptions,
+  existingJudgmentOptions,
   isLoadingQuerySets,
   isLoadingSearchConfigs,
   isLoadingModels,
+  isLoadingExistingJudgments,
   newContextField,
   setNewContextField,
   addContextField,
@@ -128,6 +132,8 @@ export const LLMJudgmentFields: React.FC<LLMJudgmentFieldsProps> = ({
           addContextField={addContextField}
           removeContextField={removeContextField}
           modelOptions={modelOptions.map((opt) => ({ label: opt.label, value: opt.value }))}
+          existingJudgmentOptions={existingJudgmentOptions}
+          isLoadingExistingJudgments={isLoadingExistingJudgments}
           httpClient={httpClient}
           selectedSearchConfigs={selectedSearchConfigs}
         />

@@ -7,19 +7,25 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
-* Add UI support for uploading Judgment Sets via CSV, including parsing and preview before creating the judgment list. ([#715](https://github.com/opensearch-project/dashboards-search-relevance/pull/715))
-* Support manually creating a Query Set using plain text, key-value, or NDJSON input directly in the UI. ([#754](https://github.com/opensearch-project/dashboards-search-relevance/pull/754))
+
+- Add "Reuse Existing Judgments" option in LLM judgment Advanced Settings to reuse ratings from up to 5 existing judgments, and add a retry action for failed documents in the judgment listing ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
+- Allow ratings on a completed LLM judgment to be edited in place, including assigning ratings to previously failed documents ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
 
 ### Enhancements
 
 ### Bug Fixes
 
+- Pass dataSourceId in Hybrid Optimizer and Pairwise experiment result queries so experiment views render on multi-data-source deployments ([#921](https://github.com/opensearch-project/dashboards-search-relevance/pull/921))
+- Fix delete error messages, search config validation, and dashboard/hybrid views ([#926](https://github.com/opensearch-project/dashboards-search-relevance/pull/926))
+- fix: scope search config to data source; require UBI index for COEC ([#923](https://github.com/opensearch-project/dashboards-search-relevance/pull/923))
+- Scope experiment result dashboards to the active workspace and data source ([#928](https://github.com/opensearch-project/dashboards-search-relevance/pull/928))
+
 ### Infrastructure
+
+- Stabilize /search-relevance chat command unit test (avoid loading @osd/monaco) ([#927](https://github.com/opensearch-project/dashboards-search-relevance/pull/927))
 
 ### Documentation
 
 ### Maintenance
-* Fix Linux workflow Node.js setup for OpenSearch Dashboards compatibility ([#839](https://github.com/opensearch-project/dashboards-search-relevance/pull/839))
-
 
 ### Refactoring

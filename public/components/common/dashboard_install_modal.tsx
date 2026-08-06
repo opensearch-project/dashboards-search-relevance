@@ -16,8 +16,7 @@ import {
 } from '@elastic/eui';
 import React, { useState } from 'react';
 import { CoreStart } from '../../../../../src/core/public';
-import { SavedObjectIds } from '../../../common';
-import { escapedDashboardsData } from '../common_utils/dashboards_data';
+import { checkDashboardsInstalled, installDashboards } from '../common_utils/dashboards';
 
 interface DashboardInstallModalProps {
   onClose: () => void;
@@ -25,6 +24,7 @@ interface DashboardInstallModalProps {
   title?: string;
   http: CoreStart['http'];
   setError: (error: string | null) => void;
+  workspaceId?: string;
   dataSourceId?: string;
 }
 
@@ -34,54 +34,30 @@ export const DashboardInstallModal: React.FC<DashboardInstallModalProps> = ({
   title = 'Install Dashboards',
   http,
   setError,
+  workspaceId,
   dataSourceId,
 }) => {
   const [isInstalling, setIsInstalling] = useState(false);
   const [dashboardsInstalled, setDashboardsInstalled] = useState<boolean | null>(null);
 
-  // Check if dashboards are already installed when modal opens
+  // Check if dashboards are already installed for the current workspace/data source when the modal opens
   React.useEffect(() => {
     const checkInstallation = async () => {
-      try {
-        const queryParams = dataSourceId ? `?dataSourceId=${dataSourceId}` : '';
-        const _ = await http.get(
-          `/api/saved_objects/dashboard/${SavedObjectIds.ExperimentDeepDive}${queryParams}`
-        );
-        setDashboardsInstalled(true);
-      } catch (error) {
-        setDashboardsInstalled(false);
-      }
+      setDashboardsInstalled(await checkDashboardsInstalled(http, workspaceId, dataSourceId));
     };
     checkInstallation();
-  }, [http, dataSourceId]);
+  }, [http, workspaceId, dataSourceId]);
 
   const handleConfirm = async () => {
     setIsInstalling(true);
     setError(null);
-    try {
-      const formData = new FormData();
-      formData.append(
-        'file',
-        new Blob([escapedDashboardsData], { type: 'application/x-ndjson' }),
-        'dashboards.ndjson'
-      );
-      
-      const queryParams = dataSourceId ? { dataSourceId, overwrite: true } : { overwrite: true };
-      
-      await http.post('/api/saved_objects/_import', {
-        body: formData,
-        headers: {
-          'Content-Type': undefined,
-        },
-        query: queryParams,
-      });
+    const success = await installDashboards(http, workspaceId, dataSourceId);
+    setIsInstalling(false);
+    if (success) {
       onSuccess?.();
       onClose();
-    } catch (error) {
-      console.error('Failed to install dashboards:', error);
+    } else {
       setError('Failed to install dashboards');
-    } finally {
-      setIsInstalling(false);
     }
   };
 
