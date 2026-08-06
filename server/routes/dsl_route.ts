@@ -9,11 +9,7 @@ import { schema } from '@osd/config-schema';
 import { ILegacyScopedClusterClient, IRouter } from '../../../../src/core/server';
 import { ServiceEndpoints, SEARCH_API } from '../../common';
 import { METRIC_ACTION, METRIC_NAME } from '../metrics';
-
-interface SearchResultResponse {
-  result: any;
-  errorMsg: any;
-}
+import { queryWithDataSource } from './search_relevance_route_service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const performance = require('perf_hooks').performance;
@@ -22,10 +18,11 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
   router.post(
     {
       path: ServiceEndpoints.GetSearchResults,
-      validate: { body: schema.any() },
+      validate: { body: schema.any(), query: queryWithDataSource },
     },
     async (context, request, response) => {
-      const { query, dataSourceId = '' } = request.body;
+      const dataSourceId = (request.query as any)?.dataSourceId ?? '';
+      const { query } = request.body;
       const { index, pipeline = '', size = 10, ...rest } = query ?? {};
 
       const invalidCharactersPattern = /[\s,\"*+\/\\|?#><]/;
@@ -305,56 +302,6 @@ export function registerDslRoute(router: IRouter, dataSourceEnabled: boolean) {
           body: error,
         });
       }
-    }
-  );
-
-  router.post(
-    {
-      path: ServiceEndpoints.GetSingleSearchResults,
-      validate: { body: schema.any() },
-    },
-    async (context, request, response) => {
-      const { query, dataSourceId } = request.body;
-      const resBody: SearchResultResponse = {};
-
-      const { index, size, search_pipeline, ...rest } = query;
-
-      const params: RequestParams.Search = {
-        index,
-        size,
-        body: rest,
-      };
-
-      if (typeof search_pipeline === 'string' && search_pipeline.trim() !== '') {
-        params.search_pipeline = search_pipeline;
-      }
-
-      try {
-        // Execute search
-        let resp;
-        if (dataSourceEnabled && dataSourceId) {
-          const client = context.dataSource.opensearch.legacy.getClient(dataSourceId);
-          resp = await client.callAPI('search', params);
-        } else {
-          resp = await context.core.opensearch.legacy.client.callAsCurrentUser('search', params);
-        }
-
-        resBody.result = resp;
-      } catch (error) {
-        if (error.statusCode !== 404) console.error(error);
-
-        const errorMessage = `Error: ${error.body?.error?.type || 'Unknown'} - ${
-          error.body?.error?.reason || 'Unknown reason'
-        }`;
-        resBody.errorMsg = {
-          statusCode: error.statusCode || 500,
-          body: errorMessage,
-        };
-      }
-
-      return response.ok({
-        body: resBody,
-      });
     }
   );
 

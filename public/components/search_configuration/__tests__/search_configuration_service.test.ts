@@ -99,6 +99,27 @@ describe('SearchConfigurationService', () => {
 
       expect(result).toEqual(mockResponse.result);
     });
+
+    it('should post to the shared search endpoint', async () => {
+      mockHttp.post.mockResolvedValue({ result: {} });
+
+      await service.validateSearchQuery({ index: 'test-index' });
+
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        '/api/relevancy/search',
+        expect.any(Object)
+      );
+    });
+
+    it('should throw when the route reports an errorMessage', async () => {
+      mockHttp.post.mockResolvedValue({
+        errorMessage: { statusCode: 400, body: 'Invalid Index or missing' },
+      });
+
+      await expect(service.validateSearchQuery({ index: '' })).rejects.toThrow(
+        'Invalid Index or missing'
+      );
+    });
   });
 
   describe('with dataSourceId', () => {

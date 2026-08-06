@@ -17,7 +17,6 @@ export const ServiceEndpoints = Object.freeze({
   GetIndexesByPattern: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/indexes/pattern`,
   GetPipelines: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search/pipelines`,
   GetSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/search`,
-  GetSingleSearchResults: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/single_search`,
   GetStats: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/stats`,
   GetClusterSettings: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/cluster_settings`,
   GetModels: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/models`,

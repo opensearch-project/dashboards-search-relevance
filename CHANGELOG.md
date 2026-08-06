@@ -19,6 +19,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix delete error messages, search config validation, and dashboard/hybrid views ([#926](https://github.com/opensearch-project/dashboards-search-relevance/pull/926))
 - fix: scope search config to data source; require UBI index for COEC ([#923](https://github.com/opensearch-project/dashboards-search-relevance/pull/923))
 - Scope experiment result dashboards to the active workspace and data source ([#928](https://github.com/opensearch-project/dashboards-search-relevance/pull/928))
+- Merge the `single_search` route into `search` and read `dataSourceId` from the query parameter, so search configuration validation runs against the selected data source ([#930](https://github.com/opensearch-project/dashboards-search-relevance/issues/930))
 
 ### Infrastructure
 
