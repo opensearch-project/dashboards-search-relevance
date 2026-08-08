@@ -30,10 +30,12 @@ describe('query_processor', () => {
   });
 
   describe('rewriteQuery', () => {
-    it('should replace %SearchText% with search value', () => {
+    it('should replace %SearchText% and %queryText% with search value', () => {
       const queryError: QueryError = { ...initialQueryErrorState };
-      const result = rewriteQuery('test', '{"query": {"match": {"title": "%SearchText%"}}}', queryError);
-      expect(result.query.match.title).toBe('test');
+      const result1 = rewriteQuery('test', '{"query": {"match": {"title": "%SearchText%"}}}', queryError);
+      const result2 = rewriteQuery('test', '{"query": {"match": {"title": "%queryText%"}}}', queryError);
+      expect((result1 as any).query.match.title).toBe('test');
+      expect((result2 as any).query.match.title).toBe('test');
     });
 
     it('should set error for invalid JSON', () => {
@@ -79,11 +81,11 @@ describe('query_processor', () => {
         'index1',
         'index2',
         '{"query": {"match": {"title": "%SearchText%"}}}',
-        '{"query": {"term": {"status": "%SearchText%"}}}'
+        '{"query": {"term": {"status": "%queryText%"}}}'
       );
 
-      expect(result.jsonQueries[0].query.match.title).toBe('search-term');
-      expect(result.jsonQueries[1].query.term.status).toBe('search-term');
+      expect((result.jsonQueries[0] as any).query.match.title).toBe('search-term');
+      expect((result.jsonQueries[1] as any).query.term.status).toBe('search-term');
       expect(result.queryErrors).toHaveLength(2);
     });
 

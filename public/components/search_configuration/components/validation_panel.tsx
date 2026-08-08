@@ -28,7 +28,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = memo(
     return (
       <EuiFlexItem>
         <EuiFieldText
-          placeholder="Enter a user query to replace %SearchText% placeholder to validate the search configuration..."
+          placeholder="Enter a user query to replace %queryText% placeholder to validate the search configuration..."
           value={testSearchText}
           onChange={(e) => setTestSearchText(e.target.value)}
           fullWidth
