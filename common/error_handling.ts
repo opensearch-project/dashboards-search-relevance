@@ -1,3 +1,8 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 export const DISABLED_BACKEND_PLUGIN_MESSAGE = 'Search Relevance Workbench is disabled';
 
 export const extractUserMessageFromError = (err: any): string | null => {
