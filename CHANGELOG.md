@@ -12,6 +12,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Allow ratings on a completed LLM judgment to be edited in place, including assigning ratings to previously failed documents ([#525](https://github.com/opensearch-project/dashboards-search-relevance/issues/525))
 
 ### Enhancements
+* Rename `%SearchText%` to `%queryText%` in Query Template ([#774](https://github.com/opensearch-project/dashboards-search-relevance/pull/774))
 
 ### Bug Fixes
 
