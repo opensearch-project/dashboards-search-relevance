@@ -38,6 +38,7 @@ import {
   SearchConfigurationCreate,
 } from './search_configuration';
 import { JudgmentListing, JudgmentView, JudgmentCreate } from './judgment';
+import { LtrModelListing, LtrModelView } from './ltr_model';
 import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
@@ -61,6 +62,7 @@ enum Navigation {
   QuerySets = 'Query Sets',
   SearchConfigurations = 'Search Configurations',
   Judgments = 'Judgments',
+  LtrModels = 'LTR Models',
 }
 
 interface SearchRelevanceAppDeps {
@@ -201,6 +203,14 @@ const SearchRelevancePage = ({
           },
           isSelected: location.pathname.startsWith(Routes.JudgmentListing),
         },
+        {
+          name: Navigation.LtrModels,
+          id: Navigation.LtrModels,
+          onClick: () => {
+            history.push(Routes.LtrModelListing);
+          },
+          isSelected: location.pathname.startsWith(Routes.LtrModelListing),
+        },
       ],
     },
   ];
@@ -311,6 +321,21 @@ const SearchRelevancePage = ({
             exact
             render={() => {
               return <JudgmentListing http={http} dataSourceId={dataSourceId} />;
+            }}
+          />
+          <Route
+            path={Routes.LtrModelListing}
+            exact
+            render={() => {
+              return <LtrModelListing http={http} />;
+            }}
+          />
+          <Route
+            path={Routes.LtrModelView}
+            exact
+            render={(props) => {
+              const { entityId } = props.match.params;
+              return <LtrModelView http={http} id={decodeURIComponent(entityId)} />;
             }}
           />
           <Route

@@ -15,7 +15,7 @@ import {
   Plugin,
   PluginInitializerContext,
 } from '../../../src/core/server';
-import { defineRoutes, registerSearchRelevanceRoutes } from './routes';
+import { defineRoutes, registerLtrRoutes, registerSearchRelevanceRoutes } from './routes';
 
 import { DataSourcePluginSetup } from '../../../src/plugins/data_source/server/types';
 import { DataSourceManagementPlugin } from '../../../src/plugins/data_source_management/public/plugin';
@@ -134,6 +134,7 @@ export class SearchRelevancePlugin
     // Register server side APIs
     defineRoutes(router, core.opensearch, dataSourceEnabled);
     registerSearchRelevanceRoutes(router, dataSourceEnabled);
+    registerLtrRoutes(router);
     registerMLRoutes(router, dataSourceEnabled);
 
     // Add UBI sample data if home plugin is available
