@@ -24,20 +24,24 @@ export class LtrModelService {
    * Feature sets exist only so the upload form can offer the ones a model can be built
    * against. The registry does not otherwise show them.
    */
-  async listFeatureSets(): Promise<LtrFeatureSetSummary[]> {
+  async listFeatureSets(dataSourceId?: string | null): Promise<LtrFeatureSetSummary[]> {
     const response = await this.http.get(ServiceEndpoints.LtrFeatureSets, {
-      query: { size: LTR_FEATURE_SET_FETCH_SIZE },
+      query: {
+        size: LTR_FEATURE_SET_FETCH_SIZE,
+        ...(dataSourceId ? { dataSourceId } : {}),
+      },
     });
     const hits = response?.hits?.hits ?? [];
     return hits.map(mapLtrFeatureSetFields).filter((set: LtrFeatureSetSummary) => set.name);
   }
 
-  async createModel(model: LtrModelUpload): Promise<any> {
+  async createModel(model: LtrModelUpload, dataSourceId?: string | null): Promise<any> {
     return this.http.post(ServiceEndpoints.LtrModels, {
       body: JSON.stringify(model),
       headers: {
         'Content-Type': 'application/json',
       },
+      ...(dataSourceId ? { query: { dataSourceId } } : {}),
     });
   }
 }

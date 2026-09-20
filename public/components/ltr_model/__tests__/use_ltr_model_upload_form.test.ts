@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { act, renderHook } from '@testing-library/react-hooks';
+import { act, renderHook } from '@testing-library/react';
 import { useLtrModelUploadForm, validateLtrModelUpload } from '../hooks/use_ltr_model_upload_form';
 
 const validForm = {

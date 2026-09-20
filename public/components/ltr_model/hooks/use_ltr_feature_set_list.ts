@@ -13,7 +13,7 @@ import { LtrFeatureSetSummary, LtrUnavailableReason } from '../types';
  * already exists in the store -- this plugin does not author feature sets -- so an empty
  * list is a dead end the form has to say something about rather than an error.
  */
-export const useLtrFeatureSetList = (http: CoreStart['http']) => {
+export const useLtrFeatureSetList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const service = useMemo(() => new LtrModelService(http), [http]);
   const [featureSets, setFeatureSets] = useState<LtrFeatureSetSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +25,7 @@ export const useLtrFeatureSetList = (http: CoreStart['http']) => {
     setError(null);
     setUnavailableReason(null);
     try {
-      setFeatureSets(await service.listFeatureSets());
+      setFeatureSets(await service.listFeatureSets(dataSourceId));
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Failed to load LTR feature sets', err);
@@ -39,7 +39,7 @@ export const useLtrFeatureSetList = (http: CoreStart['http']) => {
     } finally {
       setIsLoading(false);
     }
-  }, [service]);
+  }, [service, dataSourceId]);
 
   useEffect(() => {
     fetchFeatureSets();

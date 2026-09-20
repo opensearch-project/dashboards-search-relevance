@@ -79,8 +79,15 @@ const formState = (overrides: any = {}) => ({
   ...overrides,
 });
 
-const renderUpload = () =>
-  render(<LtrModelUpload http={mockHttp} notifications={notifications} {...routeProps} />);
+const renderUpload = (dataSourceId?: string) =>
+  render(
+    <LtrModelUpload
+      http={mockHttp}
+      notifications={notifications}
+      dataSourceId={dataSourceId}
+      {...routeProps}
+    />
+  );
 
 const submit = () => fireEvent.click(screen.getByTestId('uploadLtrModelButton'));
 
@@ -111,13 +118,24 @@ describe('LtrModelUpload', () => {
 
     submit();
 
-    await waitFor(() => expect(createModel).toHaveBeenCalledWith(model));
+    await waitFor(() => expect(createModel).toHaveBeenCalledWith(model, undefined));
     expect(notifications.toasts.addSuccess).toHaveBeenCalledWith(
       'Model "my_model" uploaded successfully'
     );
     // The detail view reads the definition back out of the store, which is the only
     // confirmation that what was pasted is what landed.
     expect(history.push).toHaveBeenCalledWith('/ltrModel/view/my_model');
+  });
+
+  it('forwards dataSourceId to create and the detail view URL', async () => {
+    mockUseLtrFeatureSetList.mockReturnValue(featureSetState() as any);
+    renderUpload('ds-1');
+
+    expect(mockUseLtrFeatureSetList).toHaveBeenCalledWith(mockHttp, 'ds-1');
+    submit();
+
+    await waitFor(() => expect(createModel).toHaveBeenCalledWith(model, 'ds-1'));
+    expect(history.push).toHaveBeenCalledWith('/ltrModel/view/my_model?dataSourceId=ds-1');
   });
 
   it('escapes a model name that is not URL-safe on its way to the detail view', async () => {

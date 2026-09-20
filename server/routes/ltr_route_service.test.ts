@@ -157,9 +157,9 @@ describe('ltrError', () => {
 });
 
 describe('registerLtrRoutes', () => {
-  const register = () => {
+  const register = (dataSourceEnabled = false) => {
     const router = { get: jest.fn(), post: jest.fn() } as any;
-    registerLtrRoutes(router);
+    registerLtrRoutes(router, dataSourceEnabled);
     return router;
   };
 
@@ -207,5 +207,165 @@ describe('registerLtrRoutes', () => {
         definition: '{}',
       })
     ).toThrow();
+  });
+
+  it('accepts dataSourceId on listing, detail, feature set, and upload query schemas', () => {
+    const router = register(true);
+
+    const [listConfig, detailConfig, featureSetConfig] = router.get.mock.calls.map(
+      (call: any[]) => call[0]
+    );
+    const uploadConfig = router.post.mock.calls[0][0];
+    expect(listConfig.validate.query.validate({ dataSourceId: 'ds-1', size: 10 })).toEqual({
+      dataSourceId: 'ds-1',
+      size: 10,
+    });
+    expect(detailConfig.validate.query.validate({ dataSourceId: 'ds-1' })).toEqual({
+      dataSourceId: 'ds-1',
+    });
+    expect(featureSetConfig.validate.query.validate({ dataSourceId: 'ds-1' })).toEqual({
+      dataSourceId: 'ds-1',
+    });
+    expect(uploadConfig.validate.query.validate({ dataSourceId: 'ds-1' })).toEqual({
+      dataSourceId: 'ds-1',
+    });
+  });
+});
+
+describe('MDS client selection', () => {
+  const localCallAsCurrentUser = jest.fn().mockResolvedValue({ hits: { hits: [] } });
+  const mdsCallAPI = jest.fn().mockResolvedValue({ hits: { hits: [] } });
+  const getClient = jest.fn().mockReturnValue({ callAPI: mdsCallAPI });
+  const context = {
+    core: { opensearch: { legacy: { client: { callAsCurrentUser: localCallAsCurrentUser } } } },
+    dataSource: { opensearch: { legacy: { getClient } } },
+  } as any;
+  const response = {
+    ok: jest.fn((arg) => arg),
+    customError: jest.fn((arg) => arg),
+  } as any;
+
+  const handlers = (dataSourceEnabled: boolean) => {
+    const router = { get: jest.fn(), post: jest.fn() } as any;
+    registerLtrRoutes(router, dataSourceEnabled);
+    return {
+      listModels: router.get.mock.calls[0][1],
+      getModel: router.get.mock.calls[1][1],
+      listFeatureSets: router.get.mock.calls[2][1],
+      createModel: router.post.mock.calls[0][1],
+    };
+  };
+
+  const modelBody = {
+    name: 'my_model',
+    featureSetName: 'my_set',
+    modelType: 'model/linear',
+    definition: { title_match: 0.4 },
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localCallAsCurrentUser.mockResolvedValue({ hits: { hits: [] } });
+    mdsCallAPI.mockResolvedValue({ hits: { hits: [] } });
+    getClient.mockReturnValue({ callAPI: mdsCallAPI });
+  });
+
+  it('lists against the local cluster when no dataSourceId is set', async () => {
+    const { listModels } = handlers(true);
+    await listModels(context, { query: { size: 10 } }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model' })
+    );
+    expect(getClient).not.toHaveBeenCalled();
+  });
+
+  it('lists against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { listModels } = handlers(true);
+    await listModels(context, { query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model' })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('lists against the local cluster when MDS is disabled even if dataSourceId is present', async () => {
+    const { listModels } = handlers(false);
+    await listModels(context, { query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalled();
+    expect(getClient).not.toHaveBeenCalled();
+  });
+
+  it('fetches a model against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { getModel } = handlers(true);
+    await getModel(
+      context,
+      { params: { name: 'my_model' }, query: { dataSourceId: 'ds-1' } },
+      response
+    );
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model/my_model' })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('fetches a model against the local cluster when no dataSourceId is set', async () => {
+    const { getModel } = handlers(true);
+    await getModel(context, { params: { name: 'my_model' }, query: {} }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model/my_model' })
+    );
+    expect(getClient).not.toHaveBeenCalled();
+  });
+
+  it('lists feature sets against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { listFeatureSets } = handlers(true);
+    await listFeatureSets(context, { query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_featureset' })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('creates a model against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { createModel } = handlers(true);
+    await createModel(context, { body: modelBody, query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({
+        method: 'POST',
+        path: '/_ltr/_featureset/my_set/_createmodel',
+      })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('creates a model against the local cluster when no dataSourceId is set', async () => {
+    const { createModel } = handlers(true);
+    await createModel(context, { body: modelBody, query: {} }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({
+        method: 'POST',
+        path: '/_ltr/_featureset/my_set/_createmodel',
+      })
+    );
+    expect(getClient).not.toHaveBeenCalled();
   });
 });

@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { mapLtrModelFields, useLtrModelList } from '../hooks/use_ltr_model_list';
 
 jest.mock('../../../../common', () => ({
@@ -100,6 +100,32 @@ describe('useLtrModelList', () => {
   });
 
   it('requests an explicit size so the endpoint does not silently truncate at 20', async () => {
+    mockHttp.get.mockResolvedValue(searchResponse([]));
+
+    const { result } = renderHook(() => useLtrModelList(mockHttp));
+    await act(async () => {
+      await result.current.findLtrModels('');
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models', {
+      query: { size: 1000 },
+    });
+  });
+
+  it('passes dataSourceId when fetching models', async () => {
+    mockHttp.get.mockResolvedValue(searchResponse([]));
+
+    const { result } = renderHook(() => useLtrModelList(mockHttp, 'my-datasource'));
+    await act(async () => {
+      await result.current.findLtrModels('');
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models', {
+      query: { size: 1000, dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('omits dataSourceId when not provided', async () => {
     mockHttp.get.mockResolvedValue(searchResponse([]));
 
     const { result } = renderHook(() => useLtrModelList(mockHttp));

@@ -327,7 +327,7 @@ const SearchRelevancePage = ({
             path={Routes.LtrModelListing}
             exact
             render={() => {
-              return <LtrModelListing http={http} />;
+              return <LtrModelListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -335,14 +335,21 @@ const SearchRelevancePage = ({
             exact
             render={(props) => {
               const { entityId } = props.match.params;
-              return <LtrModelView http={http} id={decodeURIComponent(entityId)} />;
+              const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
+              return <LtrModelView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
             path={Routes.LtrModelCreate}
             exact
             render={() => {
-              return <LtrModelUpload http={http} notifications={notifications} />;
+              return (
+                <LtrModelUpload
+                  http={http}
+                  notifications={notifications}
+                  dataSourceId={dataSourceId}
+                />
+              );
             }}
           />
           <Route

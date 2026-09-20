@@ -26,12 +26,18 @@ import { LTR_UNAVAILABLE_COPY } from '../unavailable_copy';
 interface LtrModelUploadProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+  dataSourceId?: string;
 }
 
-export const LtrModelUpload: React.FC<LtrModelUploadProps> = ({ http, notifications, history }) => {
+export const LtrModelUpload: React.FC<LtrModelUploadProps> = ({
+  http,
+  notifications,
+  history,
+  dataSourceId,
+}) => {
   const form = useLtrModelUploadForm();
   const service = useMemo(() => new LtrModelService(http), [http]);
-  const { featureSets, isLoading, unavailableReason } = useLtrFeatureSetList(http);
+  const { featureSets, isLoading, unavailableReason } = useLtrFeatureSetList(http, dataSourceId);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleCancel = useCallback(() => {
@@ -46,11 +52,17 @@ export const LtrModelUpload: React.FC<LtrModelUploadProps> = ({ http, notificati
 
     setIsSubmitting(true);
     try {
-      await service.createModel(model);
+      await service.createModel(model, dataSourceId);
       notifications.toasts.addSuccess(`Model "${model.name}" uploaded successfully`);
       // Straight to the detail view: it renders the definition back out of the store, which
       // is the only confirmation that what was pasted is what landed.
-      history.push(`${Routes.LtrModelViewPrefix}/${encodeURIComponent(model.name)}`);
+      const encodedName = encodeURIComponent(model.name);
+      const viewUrl = dataSourceId
+        ? `${Routes.LtrModelViewPrefix}/${encodedName}?dataSourceId=${encodeURIComponent(
+            dataSourceId
+          )}`
+        : `${Routes.LtrModelViewPrefix}/${encodedName}`;
+      history.push(viewUrl);
     } catch (err) {
       const reason = err?.body?.attributes?.ltrErrorType;
 
@@ -72,7 +84,7 @@ export const LtrModelUpload: React.FC<LtrModelUploadProps> = ({ http, notificati
     } finally {
       setIsSubmitting(false);
     }
-  }, [form, service, notifications.toasts, history]);
+  }, [form, service, notifications.toasts, history, dataSourceId]);
 
   const renderBody = () => {
     if (unavailableReason) {

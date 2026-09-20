@@ -10,10 +10,11 @@ import { useLtrModelList } from '../hooks/use_ltr_model_list';
 
 jest.mock('../hooks/use_ltr_model_list');
 jest.mock('../components/ltr_model_table', () => ({
-  LtrModelTable: ({ isLoading, history }: any) => (
+  LtrModelTable: ({ isLoading, history, dataSourceId }: any) => (
     <div data-test-subj="ltr-model-table">
       {isLoading ? 'loading' : 'loaded'}
       <span data-test-subj="table-has-history">{history ? 'yes' : 'no'}</span>
+      <span data-test-subj="table-data-source-id">{dataSourceId ?? ''}</span>
     </div>
   ),
 }));
@@ -50,6 +51,16 @@ describe('LtrModelListing', () => {
     expect(screen.getByTestId('ltr-model-table')).toBeInTheDocument();
     // The table needs history to link names through to the detail view.
     expect(screen.getByTestId('table-has-history')).toHaveTextContent('yes');
+    expect(mockUseLtrModelList).toHaveBeenCalledWith(mockHttp, undefined);
+  });
+
+  it('forwards dataSourceId to the list hook', () => {
+    mockUseLtrModelList.mockReturnValue(hookState() as any);
+
+    render(<LtrModelListing http={mockHttp} dataSourceId="ds-1" {...routeProps} />);
+
+    expect(mockUseLtrModelList).toHaveBeenCalledWith(mockHttp, 'ds-1');
+    expect(screen.getByTestId('table-data-source-id')).toHaveTextContent('ds-1');
   });
 
   it('routes the upload button to the upload form', () => {

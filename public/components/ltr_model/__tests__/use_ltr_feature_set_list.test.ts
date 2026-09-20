@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { useLtrFeatureSetList } from '../hooks/use_ltr_feature_set_list';
 import { LtrModelService } from '../services/ltr_model_service';
 
@@ -27,10 +27,10 @@ describe('useLtrFeatureSetList', () => {
     const featureSets = [{ name: 'my_set', featureCount: 3 }];
     withListFeatureSets(jest.fn().mockResolvedValue(featureSets));
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrFeatureSetList(mockHttp));
+    const { result } = renderHook(() => useLtrFeatureSetList(mockHttp));
 
     expect(result.current.isLoading).toBe(true);
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.featureSets).toEqual(featureSets);
     expect(result.current.isLoading).toBe(false);
@@ -45,8 +45,8 @@ describe('useLtrFeatureSetList', () => {
       jest.fn().mockRejectedValue({ body: { attributes: { ltrErrorType: 'store_not_found' } } })
     );
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrFeatureSetList(mockHttp));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrFeatureSetList(mockHttp));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.unavailableReason).toBe('store_not_found');
     expect(result.current.error).toBeNull();
@@ -56,8 +56,8 @@ describe('useLtrFeatureSetList', () => {
   it('surfaces an unclassified failure as an error', async () => {
     withListFeatureSets(jest.fn().mockRejectedValue({ body: { message: 'circuit breaking' } }));
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrFeatureSetList(mockHttp));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrFeatureSetList(mockHttp));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.error).toBe('circuit breaking');
     expect(result.current.unavailableReason).toBeNull();
@@ -66,9 +66,17 @@ describe('useLtrFeatureSetList', () => {
   it('falls back to a generic message when the failure carries none', async () => {
     withListFeatureSets(jest.fn().mockRejectedValue(new Error('socket hang up')));
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrFeatureSetList(mockHttp));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrFeatureSetList(mockHttp));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.error).toBe('Failed to load feature sets due to an unknown error.');
+  });
+
+  it('forwards dataSourceId to the service', async () => {
+    const listFeatureSets = jest.fn().mockResolvedValue([]);
+    withListFeatureSets(listFeatureSets);
+
+    renderHook(() => useLtrFeatureSetList(mockHttp, 'ds-1'));
+    await waitFor(() => expect(listFeatureSets).toHaveBeenCalledWith('ds-1'));
   });
 });

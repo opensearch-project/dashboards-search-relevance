@@ -21,11 +21,17 @@ import { LTR_UNAVAILABLE_COPY } from '../unavailable_copy';
 
 interface LtrModelListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
-export const LtrModelListing: React.FC<LtrModelListingProps> = ({ http, history }) => {
+export const LtrModelListing: React.FC<LtrModelListingProps> = ({
+  http,
+  history,
+  dataSourceId,
+}) => {
   const { isLoading, error, unavailableReason, truncatedTotal, findLtrModels } = useLtrModelList(
-    http
+    http,
+    dataSourceId
   );
 
   const renderBody = () => {
@@ -58,7 +64,12 @@ export const LtrModelListing: React.FC<LtrModelListingProps> = ({ http, history 
             <EuiSpacer size="m" />
           </>
         )}
-        <LtrModelTable isLoading={isLoading} findItems={findLtrModels} history={history} />
+        <LtrModelTable
+          isLoading={isLoading}
+          findItems={findLtrModels}
+          history={history}
+          dataSourceId={dataSourceId}
+        />
       </>
     );
   };

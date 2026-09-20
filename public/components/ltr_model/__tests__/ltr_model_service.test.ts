@@ -54,6 +54,16 @@ describe('LtrModelService', () => {
     expect(sets).toEqual([{ name: 'my_set', featureCount: 0 }]);
   });
 
+  it('passes dataSourceId when listing feature sets', async () => {
+    mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+    await new LtrModelService(mockHttp).listFeatureSets('my-datasource');
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/feature_sets', {
+      query: { size: 1000, dataSourceId: 'my-datasource' },
+    });
+  });
+
   it('drops hits with no name, which cannot be selected anyway', async () => {
     mockHttp.get.mockResolvedValue({
       hits: { hits: [featureSetHit('my_set'), { _source: { type: 'featureset' } }] },
@@ -84,6 +94,24 @@ describe('LtrModelService', () => {
     expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/ltr/models', {
       body: JSON.stringify(model),
       headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('passes dataSourceId when creating a model', async () => {
+    mockHttp.post.mockResolvedValue({ result: 'created' });
+    const model = {
+      name: 'my_model',
+      featureSetName: 'my_set',
+      modelType: 'model/linear',
+      definition: { title_match: 0.4 },
+    };
+
+    await new LtrModelService(mockHttp).createModel(model, 'my-datasource');
+
+    expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/ltr/models', {
+      body: JSON.stringify(model),
+      headers: { 'Content-Type': 'application/json' },
+      query: { dataSourceId: 'my-datasource' },
     });
   });
 });

@@ -24,7 +24,7 @@ export const mapLtrModelFields = (hit: any): LtrModelListItem => {
   };
 };
 
-export const useLtrModelList = (http: CoreStart['http']) => {
+export const useLtrModelList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [unavailableReason, setUnavailableReason] = useState<LtrUnavailableReason | null>(null);
@@ -39,7 +39,10 @@ export const useLtrModelList = (http: CoreStart['http']) => {
     setTruncatedTotal(null);
     try {
       const response = await http.get(ServiceEndpoints.LtrModels, {
-        query: { size: LTR_MODEL_FETCH_SIZE },
+        query: {
+          size: LTR_MODEL_FETCH_SIZE,
+          ...(dataSourceId ? { dataSourceId } : {}),
+        },
       });
 
       const hits = response?.hits?.hits ?? [];
