@@ -111,12 +111,115 @@ describe('registerLtrRoutes', () => {
   it('registers the listing and detail routes', () => {
     const router = { get: jest.fn() } as any;
 
-    registerLtrRoutes(router);
+    registerLtrRoutes(router, false);
 
     expect(router.get).toHaveBeenCalledTimes(2);
     expect(router.get.mock.calls.map((call: any[]) => call[0].path)).toEqual([
       '/api/relevancy/ltr/models',
       '/api/relevancy/ltr/models/{name}',
     ]);
+  });
+
+  it('accepts dataSourceId on both listing and detail query schemas', () => {
+    const router = { get: jest.fn() } as any;
+
+    registerLtrRoutes(router, true);
+
+    const [listConfig, detailConfig] = router.get.mock.calls.map((call: any[]) => call[0]);
+    expect(listConfig.validate.query.validate({ dataSourceId: 'ds-1', size: 10 })).toEqual({
+      dataSourceId: 'ds-1',
+      size: 10,
+    });
+    expect(detailConfig.validate.query.validate({ dataSourceId: 'ds-1' })).toEqual({
+      dataSourceId: 'ds-1',
+    });
+  });
+});
+
+describe('MDS client selection', () => {
+  const localCallAsCurrentUser = jest.fn().mockResolvedValue({ hits: { hits: [] } });
+  const mdsCallAPI = jest.fn().mockResolvedValue({ hits: { hits: [] } });
+  const getClient = jest.fn().mockReturnValue({ callAPI: mdsCallAPI });
+  const context = {
+    core: { opensearch: { legacy: { client: { callAsCurrentUser: localCallAsCurrentUser } } } },
+    dataSource: { opensearch: { legacy: { getClient } } },
+  } as any;
+  const response = {
+    ok: jest.fn((arg) => arg),
+    customError: jest.fn((arg) => arg),
+  } as any;
+
+  const handlers = (dataSourceEnabled: boolean) => {
+    const router = { get: jest.fn() } as any;
+    registerLtrRoutes(router, dataSourceEnabled);
+    return {
+      listModels: router.get.mock.calls[0][1],
+      getModel: router.get.mock.calls[1][1],
+    };
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localCallAsCurrentUser.mockResolvedValue({ hits: { hits: [] } });
+    mdsCallAPI.mockResolvedValue({ hits: { hits: [] } });
+    getClient.mockReturnValue({ callAPI: mdsCallAPI });
+  });
+
+  it('lists against the local cluster when no dataSourceId is set', async () => {
+    const { listModels } = handlers(true);
+    await listModels(context, { query: { size: 10 } }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model' })
+    );
+    expect(getClient).not.toHaveBeenCalled();
+  });
+
+  it('lists against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { listModels } = handlers(true);
+    await listModels(context, { query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model' })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('lists against the local cluster when MDS is disabled even if dataSourceId is present', async () => {
+    const { listModels } = handlers(false);
+    await listModels(context, { query: { dataSourceId: 'ds-1' } }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalled();
+    expect(getClient).not.toHaveBeenCalled();
+  });
+
+  it('fetches a model against the MDS client when dataSourceEnabled and dataSourceId are set', async () => {
+    const { getModel } = handlers(true);
+    await getModel(
+      context,
+      { params: { name: 'my_model' }, query: { dataSourceId: 'ds-1' } },
+      response
+    );
+
+    expect(getClient).toHaveBeenCalledWith('ds-1');
+    expect(mdsCallAPI).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model/my_model' })
+    );
+    expect(localCallAsCurrentUser).not.toHaveBeenCalled();
+  });
+
+  it('fetches a model against the local cluster when no dataSourceId is set', async () => {
+    const { getModel } = handlers(true);
+    await getModel(context, { params: { name: 'my_model' }, query: {} }, response);
+
+    expect(localCallAsCurrentUser).toHaveBeenCalledWith(
+      'transport.request',
+      expect.objectContaining({ method: 'GET', path: '/_ltr/_model/my_model' })
+    );
+    expect(getClient).not.toHaveBeenCalled();
   });
 });

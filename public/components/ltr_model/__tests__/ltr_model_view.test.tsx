@@ -46,6 +46,7 @@ describe('LtrModelView', () => {
 
     render(<LtrModelView http={mockHttp} id="my_model" />);
 
+    expect(mockUseLtrModelView).toHaveBeenCalledWith(mockHttp, 'my_model', undefined);
     expect(screen.getByText('my_set')).toBeInTheDocument();
     expect(screen.getByText('ranklib')).toBeInTheDocument();
     // The feature set renders a real feature with its template.
@@ -84,6 +85,14 @@ describe('LtrModelView', () => {
     render(<LtrModelView http={mockHttp} id="my_model" />);
 
     expect(screen.getByText('cluster is on fire')).toBeInTheDocument();
+  });
+
+  it('forwards dataSourceId to the view hook', () => {
+    mockUseLtrModelView.mockReturnValue(hookState({ model }) as any);
+
+    render(<LtrModelView http={mockHttp} id="my_model" dataSourceId="ds-1" />);
+
+    expect(mockUseLtrModelView).toHaveBeenCalledWith(mockHttp, 'my_model', 'ds-1');
   });
 
   it('renders a model whose feature set is empty', () => {

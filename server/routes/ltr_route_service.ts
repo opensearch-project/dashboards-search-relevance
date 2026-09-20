@@ -5,6 +5,7 @@
 
 import { schema } from '@osd/config-schema';
 import {
+  ILegacyScopedClusterClient,
   IOpenSearchDashboardsResponse,
   IRouter,
   OpenSearchDashboardsRequest,
@@ -13,6 +14,8 @@ import {
 } from '../../../../src/core/server';
 import { LtrBackendEndpoints, ServiceEndpoints } from '../../common';
 
+const dataSourceIdQuery = schema.maybe(schema.string());
+
 /**
  * Routes backing the Learning to Rank model registry.
  *
@@ -20,7 +23,7 @@ import { LtrBackendEndpoints, ServiceEndpoints } from '../../common';
  * `_plugins/_search_relevance`. The `.ltrstore*` indices are registered system indices, so
  * the plugin's REST endpoints are the only supported way to read them.
  */
-export function registerLtrRoutes(router: IRouter): void {
+export function registerLtrRoutes(router: IRouter, dataSourceEnabled: boolean): void {
   router.get(
     {
       path: ServiceEndpoints.LtrModels,
@@ -30,10 +33,11 @@ export function registerLtrRoutes(router: IRouter): void {
           from: schema.maybe(schema.number({ min: 0 })),
           prefix: schema.maybe(schema.string()),
           store: schema.maybe(schema.string()),
+          dataSourceId: dataSourceIdQuery,
         }),
       },
     },
-    listModels
+    listModels(dataSourceEnabled)
   );
 
   router.get(
@@ -45,27 +49,40 @@ export function registerLtrRoutes(router: IRouter): void {
         }),
         query: schema.object({
           store: schema.maybe(schema.string()),
+          dataSourceId: dataSourceIdQuery,
         }),
       },
     },
-    getModel
+    getModel(dataSourceEnabled)
   );
 }
 
-const listModels = async (
+const getCaller = (
+  context: RequestHandlerContext,
+  dataSourceEnabled: boolean,
+  dataSourceId?: string
+): ILegacyScopedClusterClient['callAsCurrentUser'] => {
+  if (dataSourceEnabled && dataSourceId) {
+    return context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+  }
+  return context.core.opensearch.legacy.client.callAsCurrentUser;
+};
+
+const listModels = (dataSourceEnabled: boolean) => async (
   context: RequestHandlerContext,
   request: OpenSearchDashboardsRequest,
   response: OpenSearchDashboardsResponseFactory
 ): Promise<IOpenSearchDashboardsResponse<any>> => {
-  const { size, from, prefix, store } = request.query as {
+  const { size, from, prefix, store, dataSourceId } = request.query as {
     size?: number;
     from?: number;
     prefix?: string;
     store?: string;
+    dataSourceId?: string;
   };
 
   try {
-    const caller = context.core.opensearch.legacy.client.callAsCurrentUser;
+    const caller = getCaller(context, dataSourceEnabled, dataSourceId);
     const result = await caller('transport.request', {
       method: 'GET',
       path: storePath(LtrBackendEndpoints.Models, store),
@@ -82,16 +99,16 @@ const listModels = async (
   }
 };
 
-const getModel = async (
+const getModel = (dataSourceEnabled: boolean) => async (
   context: RequestHandlerContext,
   request: OpenSearchDashboardsRequest,
   response: OpenSearchDashboardsResponseFactory
 ): Promise<IOpenSearchDashboardsResponse<any>> => {
   const { name } = request.params as { name: string };
-  const { store } = request.query as { store?: string };
+  const { store, dataSourceId } = request.query as { store?: string; dataSourceId?: string };
 
   try {
-    const caller = context.core.opensearch.legacy.client.callAsCurrentUser;
+    const caller = getCaller(context, dataSourceEnabled, dataSourceId);
     const result = await caller('transport.request', {
       method: 'GET',
       path: `${storePath(LtrBackendEndpoints.Models, store)}/${encodeURIComponent(name)}`,

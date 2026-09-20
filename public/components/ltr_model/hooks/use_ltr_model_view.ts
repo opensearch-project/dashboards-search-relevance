@@ -31,7 +31,11 @@ export const mapLtrModelDetail = (response: any): LtrModelDetail => {
   };
 };
 
-export const useLtrModelView = (http: CoreStart['http'], name: string) => {
+export const useLtrModelView = (
+  http: CoreStart['http'],
+  name: string,
+  dataSourceId?: string | null
+) => {
   const [model, setModel] = useState<LtrModelDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +48,11 @@ export const useLtrModelView = (http: CoreStart['http'], name: string) => {
     setNotFound(false);
     setUnavailableReason(null);
     try {
-      const response = await http.get(`${ServiceEndpoints.LtrModels}/${encodeURIComponent(name)}`);
+      const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
+      const response = await http.get(
+        `${ServiceEndpoints.LtrModels}/${encodeURIComponent(name)}`,
+        queryParams
+      );
       setModel(mapLtrModelDetail(response));
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -61,7 +69,7 @@ export const useLtrModelView = (http: CoreStart['http'], name: string) => {
     } finally {
       setIsLoading(false);
     }
-  }, [http, name]);
+  }, [http, name, dataSourceId]);
 
   useEffect(() => {
     fetchModel();

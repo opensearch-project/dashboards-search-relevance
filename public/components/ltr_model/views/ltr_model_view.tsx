@@ -27,10 +27,15 @@ import { LTR_UNAVAILABLE_COPY } from '../unavailable_copy';
 interface LtrModelViewProps {
   http: CoreStart['http'];
   id: string;
+  dataSourceId?: string | null;
 }
 
-export const LtrModelView: React.FC<LtrModelViewProps> = ({ http, id }) => {
-  const { model, isLoading, error, notFound, unavailableReason } = useLtrModelView(http, id);
+export const LtrModelView: React.FC<LtrModelViewProps> = ({ http, id, dataSourceId }) => {
+  const { model, isLoading, error, notFound, unavailableReason } = useLtrModelView(
+    http,
+    id,
+    dataSourceId
+  );
 
   const renderBody = () => {
     if (isLoading) {

@@ -17,13 +17,19 @@ interface LtrModelTableProps {
   isLoading: boolean;
   findItems: (search: any) => Promise<{ total: number; hits: LtrModelListItem[] }>;
   history: RouteComponentProps['history'];
+  dataSourceId?: string;
 }
 
 /** `model/xgboost+json` reads better in a table as `xgboost+json`. */
 export const shortModelType = (modelType: string): string =>
   modelType?.startsWith('model/') ? modelType.slice('model/'.length) : modelType;
 
-export const LtrModelTable: React.FC<LtrModelTableProps> = ({ isLoading, findItems, history }) => {
+export const LtrModelTable: React.FC<LtrModelTableProps> = ({
+  isLoading,
+  findItems,
+  history,
+  dataSourceId,
+}) => {
   const tableColumns = [
     {
       field: 'name',
@@ -31,17 +37,19 @@ export const LtrModelTable: React.FC<LtrModelTableProps> = ({ isLoading, findIte
       dataType: 'string',
       sortable: true,
       // Model names are unique per store, so the name is the detail view's identifier.
-      render: (name: string) => (
-        <EuiButtonEmpty
-          size="xs"
-          {...reactRouterNavigate(
-            history,
-            `${Routes.LtrModelViewPrefix}/${encodeURIComponent(name)}`
-          )}
-        >
-          {name}
-        </EuiButtonEmpty>
-      ),
+      render: (name: string) => {
+        const encodedName = encodeURIComponent(name);
+        const viewUrl = dataSourceId
+          ? `${Routes.LtrModelViewPrefix}/${encodedName}?dataSourceId=${encodeURIComponent(
+              dataSourceId
+            )}`
+          : `${Routes.LtrModelViewPrefix}/${encodedName}`;
+        return (
+          <EuiButtonEmpty size="xs" {...reactRouterNavigate(history, viewUrl)}>
+            {name}
+          </EuiButtonEmpty>
+        );
+      },
     },
     {
       field: 'featureSetName',
@@ -70,6 +78,7 @@ export const LtrModelTable: React.FC<LtrModelTableProps> = ({ isLoading, findIte
 
   return (
     <TableListView
+      key={dataSourceId ?? ''}
       headingId="ltrModelListingHeading"
       entityName="Model"
       entityNamePlural="Models"

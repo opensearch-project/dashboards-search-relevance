@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook, waitFor } from '@testing-library/react';
 import { mapLtrModelDetail, useLtrModelView } from '../hooks/use_ltr_model_view';
 
 jest.mock('../../../../common', () => ({
@@ -70,10 +70,10 @@ describe('useLtrModelView', () => {
   it('fetches the model by name', async () => {
     mockHttp.get.mockResolvedValue(documentResponse);
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my_model');
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my_model', {});
     expect(result.current.model?.name).toBe('my_model');
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBe(null);
@@ -82,17 +82,37 @@ describe('useLtrModelView', () => {
   it('encodes a name that needs escaping', async () => {
     mockHttp.get.mockResolvedValue(documentResponse);
 
-    const { waitForNextUpdate } = renderHook(() => useLtrModelView(mockHttp, 'my model/v2'));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my model/v2'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my%20model%2Fv2');
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my%20model%2Fv2', {});
+  });
+
+  it('passes dataSourceId when fetching a model', async () => {
+    mockHttp.get.mockResolvedValue(documentResponse);
+
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my_model', 'my-datasource'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my_model', {
+      query: { dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('omits dataSourceId when not provided', async () => {
+    mockHttp.get.mockResolvedValue(documentResponse);
+
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith('/api/relevancy/ltr/models/my_model', {});
   });
 
   it('reports a missing model separately from a broken registry', async () => {
     mockHttp.get.mockRejectedValue({ body: { attributes: { ltrErrorType: 'model_not_found' } } });
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrModelView(mockHttp, 'ghost'));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'ghost'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.notFound).toBe(true);
     expect(result.current.unavailableReason).toBe(null);
@@ -103,8 +123,8 @@ describe('useLtrModelView', () => {
   it('surfaces a registry-level reason', async () => {
     mockHttp.get.mockRejectedValue({ body: { attributes: { ltrErrorType: 'plugin_disabled' } } });
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.unavailableReason).toBe('plugin_disabled');
     expect(result.current.notFound).toBe(false);
@@ -113,8 +133,8 @@ describe('useLtrModelView', () => {
   it('reports an unexpected failure as an error', async () => {
     mockHttp.get.mockRejectedValue({ body: { message: 'cluster is on fire' } });
 
-    const { result, waitForNextUpdate } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
-    await waitForNextUpdate();
+    const { result } = renderHook(() => useLtrModelView(mockHttp, 'my_model'));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     expect(result.current.error).toBe('cluster is on fire');
   });

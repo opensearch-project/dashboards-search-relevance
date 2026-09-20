@@ -19,7 +19,9 @@ describe('shortModelType', () => {
 
 const mockHistory = {
   push: jest.fn(),
-  createHref: jest.fn((location: any) => location.pathname),
+  createHref: jest.fn((location: any) =>
+    typeof location === 'string' ? location : `${location.pathname}${location.search || ''}`
+  ),
   location: { pathname: '/ltrModel', search: '', hash: '', state: undefined },
 } as any;
 
@@ -56,6 +58,42 @@ describe('LtrModelTable', () => {
     expect(screen.getByText('my_model').closest('a')).toHaveAttribute(
       'href',
       '/ltrModel/view/my_model'
+    );
+  });
+
+  it('encodes a name containing % without a second decode on the outbound link', async () => {
+    const findItems = jest.fn().mockResolvedValue({
+      total: 1,
+      hits: [
+        { name: 'discount%', featureSetName: 'my_set', modelType: 'model/ranklib', featureCount: 1 },
+      ],
+    });
+
+    render(<LtrModelTable isLoading={false} findItems={findItems} history={mockHistory} />);
+
+    await waitFor(() => expect(screen.getByText('discount%')).toBeInTheDocument());
+    expect(screen.getByText('discount%').closest('a')).toHaveAttribute(
+      'href',
+      '/ltrModel/view/discount%25'
+    );
+  });
+
+  it('threads dataSourceId through the detail view link', async () => {
+    const findItems = jest.fn().mockResolvedValue({ total: items.length, hits: items });
+
+    render(
+      <LtrModelTable
+        isLoading={false}
+        findItems={findItems}
+        history={mockHistory}
+        dataSourceId="ds-1"
+      />
+    );
+
+    await waitFor(() => expect(screen.getByText('my_model')).toBeInTheDocument());
+    expect(screen.getByText('my_model').closest('a')).toHaveAttribute(
+      'href',
+      '/ltrModel/view/my_model?dataSourceId=ds-1'
     );
   });
 });
