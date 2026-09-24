@@ -123,7 +123,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                               <code
                                 class="euiCodeBlock__code"
                               >
-                                %SearchText%
+                                %queryText%
                               </code>
                             </span>
                              variable to refer to the text in the search bar. When you enter 
@@ -325,7 +325,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <span
                                     class="token string"
                                   >
-                                    "%SearchText%"
+                                    "%queryText%"
                                   </span>
                                   <span
                                     class="token punctuation"
@@ -563,7 +563,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                   <span
                                     class="token string"
                                   >
-                                    "%SearchText%"
+                                    "%queryText%"
                                   </span>
                                   <span
                                     class="token punctuation"
@@ -926,7 +926,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                       <code
                                         class="euiCodeBlock__code"
                                       >
-                                        %SearchText%
+                                        %queryText%
                                       </code>
                                     </span>
                                      variable to refer to the text in the search bar. When you enter 
@@ -1128,7 +1128,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="token string"
                                           >
-                                            "%SearchText%"
+                                            "%queryText%"
                                           </span>
                                           <span
                                             class="token punctuation"
@@ -1366,7 +1366,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <span
                                             class="token string"
                                           >
-                                            "%SearchText%"
+                                            "%queryText%"
                                           </span>
                                           <span
                                             class="token punctuation"
@@ -1661,7 +1661,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                         <code
                                           class="euiCodeBlock__code"
                                         >
-                                          %SearchText%
+                                          %queryText%
                                         </code>
                                       </span>
                                        variable to refer to the text in the search bar. When you enter 
@@ -1863,7 +1863,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="token string"
                                             >
-                                              "%SearchText%"
+                                              "%queryText%"
                                             </span>
                                             <span
                                               class="token punctuation"
@@ -2101,7 +2101,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <span
                                               class="token string"
                                             >
-                                              "%SearchText%"
+                                              "%queryText%"
                                             </span>
                                             <span
                                               class="token punctuation"
@@ -2396,7 +2396,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                           <code
                                             class="euiCodeBlock__code"
                                           >
-                                            %SearchText%
+                                            %queryText%
                                           </code>
                                         </span>
                                          variable to refer to the text in the search bar. When you enter 
@@ -2598,7 +2598,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="token string"
                                               >
-                                                "%SearchText%"
+                                                "%queryText%"
                                               </span>
                                               <span
                                                 class="token punctuation"
@@ -2836,7 +2836,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <span
                                                 class="token string"
                                               >
-                                                "%SearchText%"
+                                                "%queryText%"
                                               </span>
                                               <span
                                                 class="token punctuation"
@@ -3119,7 +3119,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                             <code
                                               class="euiCodeBlock__code"
                                             >
-                                              %SearchText%
+                                              %queryText%
                                             </code>
                                           </span>
                                            variable to refer to the text in the search bar. When you enter 
@@ -3321,7 +3321,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <span
                                                   class="token string"
                                                 >
-                                                  "%SearchText%"
+                                                  "%queryText%"
                                                 </span>
                                                 <span
                                                   class="token punctuation"
@@ -3559,7 +3559,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                 <span
                                                   class="token string"
                                                 >
-                                                  "%SearchText%"
+                                                  "%queryText%"
                                                 </span>
                                                 <span
                                                   class="token punctuation"
@@ -3943,7 +3943,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                               <code
                                                 className="euiCodeBlock__code"
                                               >
-                                                %SearchText%
+                                                %queryText%
                                               </code>
                                             </span>
                                           </EuiCodeBlockImpl>
@@ -4237,7 +4237,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     className="token string"
                                                     key="node-1-4"
                                                   >
-                                                    "%SearchText%"
+                                                    "%queryText%"
                                                   </span>
                                                   <span
                                                     className="token punctuation"
@@ -4363,7 +4363,7 @@ exports[`Flyout component Renders flyout component 1`] = `
 {
   \\"query\\": {
     \\"multi_match\\": {
-      \\"query\\": \\"%SearchText%\\",
+      \\"query\\": \\"%queryText%\\",
       \\"fields\\": [\\"speaker\\", \\"text_entry\\"]
     }
   }
@@ -4584,7 +4584,7 @@ exports[`Flyout component Renders flyout component 1`] = `
                                                     className="token string"
                                                     key="node-1-4"
                                                   >
-                                                    "%SearchText%"
+                                                    "%queryText%"
                                                   </span>
                                                   <span
                                                     className="token punctuation"
@@ -4710,7 +4710,7 @@ exports[`Flyout component Renders flyout component 1`] = `
 {
   \\"query\\": {
     \\"multi_match\\": {
-      \\"query\\": \\"%SearchText%\\",
+      \\"query\\": \\"%queryText%\\",
       \\"fields\\": [\\"speaker^3\\", \\"text_entry\\"]
     }
   }
