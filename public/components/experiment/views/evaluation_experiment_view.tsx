@@ -46,6 +46,7 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  TOOK_MS_TOOL_TIP,
 } from '../../../../common';
 import {
   buildQueryEvaluationRows,
@@ -53,11 +54,13 @@ import {
   getQueryExecutionOrder,
   getQueryTextsFromQuerySet,
   mapQueryStatusesFromVariants,
+  mapTookMsFromVariants,
   parseVariantSources,
   QueryEvaluationRow,
   QueryEvaluationStatus,
 } from '../utils/query_evaluation_builder';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
+import { formatTookMs } from '../../../utils/took_ms';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -220,16 +223,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
             const experimentResults = Array.isArray(_experiment.results) ? _experiment.results : [];
             const variantSources = parseVariantSources(variantSearchResult?.result?.hits?.hits ?? []);
+            const queryExecutionOrder = getQueryExecutionOrder(experimentResults);
             const variantStatusByQueryText = mapQueryStatusesFromVariants(
-              getQueryExecutionOrder(experimentResults),
+              queryExecutionOrder,
               variantSources
             );
+            const tookMsByQueryText = mapTookMsFromVariants(queryExecutionOrder, variantSources);
 
             const queryRows = buildQueryEvaluationRows({
               queryTexts,
               evaluationByQueryText,
               experimentResults,
               variantStatusByQueryText,
+              tookMsByQueryText,
             });
             setQueryEvaluations(queryRows);
 
@@ -355,6 +361,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           sortable: true,
           render: (_status: QueryEvaluationStatus, row: QueryEvaluationRow) =>
             getStatusIndicator(row.status, row.statusMessage),
+        },
+        {
+          field: 'tookMs',
+          name: (
+            <EuiToolTip content={TOOK_MS_TOOL_TIP}>
+              <span>Time taken</span>
+            </EuiToolTip>
+          ),
+          dataType: 'number',
+          sortable: true,
+          render: (_value: number | undefined, row: QueryEvaluationRow) => (
+            <span data-test-subj="tookMsCell">{formatTookMs(row.tookMs)}</span>
+          ),
         },
       ];
       metricNames.forEach((metricName) => {
@@ -504,6 +523,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         metrics={queryEvaluations
           .filter((query) => query.status === 'success')
           .map((query) => query.metrics)}
+        tookMsValues={queryEvaluations
+          .filter((query) => query.status === 'success')
+          .map((query) => query.tookMs)}
       />
       <EuiSpacer size="m" />
       {resultsPane}

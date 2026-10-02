@@ -29,11 +29,14 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  TOOK_MS_TOOL_TIP,
 } from '../../../../common';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
+import { formatTookMs, parseTookMs } from '../../../utils/took_ms';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
+  tookMs?: number;
 }
 
 interface QueryVariantEvaluations {
@@ -192,12 +195,14 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             hit._source.metrics?.forEach((metric: any) => {
               nMetrics[metric.metric] = metric.value;
             });
+            const tookMs = parseTookMs(hit._source.tookMs);
             evaluationsByQueryAndVariant[hit._source.searchText] =
               evaluationsByQueryAndVariant[hit._source.searchText] || {};
             evaluationsByQueryAndVariant[hit._source.searchText][
               hit._source.experimentVariantId
             ] = {
               metrics: nMetrics,
+              ...(tookMs !== undefined ? { tookMs } : {}),
             };
           });
 
@@ -313,6 +318,19 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             </EuiButtonEmpty>
           ),
         },
+        {
+          field: 'tookMs',
+          name: (
+            <EuiToolTip content={TOOK_MS_TOOL_TIP}>
+              <span>Time taken</span>
+            </EuiToolTip>
+          ),
+          dataType: 'number',
+          sortable: true,
+          render: (value: number | undefined) => (
+            <span data-test-subj="tookMsCell">{formatTookMs(value)}</span>
+          ),
+        },
         ...metricNames.map((metricName) => {
           const baseMetricName = getBaseMetricName(metricName);
           const tooltipContent =
@@ -361,6 +379,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             queryText,
             variantId,
             metrics: data.metrics,
+            tookMs: data.tookMs,
           });
         });
       });

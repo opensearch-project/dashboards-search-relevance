@@ -4,6 +4,7 @@
  */
 
 import { QueryEvaluation } from '../../../types/index';
+import { parseTookMs } from '../../../utils/took_ms';
 
 export type QueryEvaluationStatus = 'success' | 'zero_results' | 'failed' | 'not_run';
 
@@ -24,6 +25,7 @@ export interface ExperimentVariantSource {
     error?: string;
     details?: string;
     evaluationResultId?: string;
+    tookMs?: number | string;
   };
 }
 
@@ -122,6 +124,34 @@ export const mapQueryStatusesFromVariants = (
   return statusByQuery;
 };
 
+/**
+ * Map per-query tookMs from experiment variants (including zero-hit rows that store tookMs
+ * on the variant results map next to "details": "no search hits found").
+ */
+export const mapTookMsFromVariants = (
+  queryExecutionOrder: string[],
+  variants: ExperimentVariantSource[]
+): Map<string, number> => {
+  const tookMsByQuery = new Map<string, number>();
+
+  if (queryExecutionOrder.length === 0 || variants.length !== queryExecutionOrder.length) {
+    return tookMsByQuery;
+  }
+
+  const sortedVariants = [...variants].sort((a, b) =>
+    String(a.timestamp ?? '').localeCompare(String(b.timestamp ?? ''))
+  );
+
+  queryExecutionOrder.forEach((queryText, index) => {
+    const tookMs = parseTookMs(sortedVariants[index]?.results?.tookMs);
+    if (tookMs !== undefined) {
+      tookMsByQuery.set(queryText, tookMs);
+    }
+  });
+
+  return tookMsByQuery;
+};
+
 const getStatusMessage = (status: QueryEvaluationStatus, errorMessage?: string): string | undefined => {
   switch (status) {
     case 'failed':
@@ -140,11 +170,13 @@ export const buildQueryEvaluationRows = ({
   evaluationByQueryText,
   experimentResults,
   variantStatusByQueryText,
+  tookMsByQueryText,
 }: {
   queryTexts: string[];
   evaluationByQueryText: Map<string, QueryEvaluation>;
   experimentResults: ExperimentResultEntry[];
   variantStatusByQueryText: Map<string, QueryEvaluationStatus>;
+  tookMsByQueryText?: Map<string, number>;
 }): QueryEvaluationRow[] => {
   const experimentResultsByQuery = new Map<string, ExperimentResultEntry[]>();
 
@@ -159,54 +191,59 @@ export const buildQueryEvaluationRows = ({
   }
 
   return queryTexts.map((queryText) => {
+    const variantTookMs = tookMsByQueryText?.get(queryText);
     const evaluation = evaluationByQueryText.get(queryText);
     if (evaluation) {
       return {
         ...evaluation,
-        status: 'success',
+        // Prefer evaluation-result tookMs; fall back to variant tookMs when absent.
+        tookMs: evaluation.tookMs ?? variantTookMs,
+        status: 'success' as const,
       };
     }
 
     const variantStatus = variantStatusByQueryText.get(queryText);
     const experimentEntries = experimentResultsByQuery.get(queryText) ?? [];
     const hasEvaluationId = experimentEntries.some((entry) => Boolean(entry.evaluationId));
+    const withTookMs = <T extends object>(row: T): T & { tookMs?: number } =>
+      variantTookMs === undefined ? row : { ...row, tookMs: variantTookMs };
 
     if (hasEvaluationId) {
-      return {
+      return withTookMs({
         queryText,
         metrics: {},
         documentIds: [],
-        status: 'success',
-      };
+        status: 'success' as const,
+      });
     }
 
     if (variantStatus) {
-      return {
+      return withTookMs({
         queryText,
         metrics: {},
         documentIds: [],
         status: variantStatus,
         statusMessage: getStatusMessage(variantStatus),
-      };
+      });
     }
 
     if (experimentEntries.length > 0) {
-      return {
+      return withTookMs({
         queryText,
         metrics: {},
         documentIds: [],
-        status: 'failed',
+        status: 'failed' as const,
         statusMessage: getStatusMessage('failed'),
-      };
+      });
     }
 
-    return {
+    return withTookMs({
       queryText,
       metrics: {},
       documentIds: [],
-      status: 'not_run',
+      status: 'not_run' as const,
       statusMessage: getStatusMessage('not_run'),
-    };
+    });
   });
 };
 

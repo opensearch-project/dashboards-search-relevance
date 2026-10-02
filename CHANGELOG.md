@@ -7,6 +7,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
+* Show per-query OpenSearch search latency (tookMs) in experiment results ([#942](https://github.com/opensearch-project/dashboards-search-relevance/issues/942))
 
 ### Enhancements
 
