@@ -15,6 +15,7 @@ import {
   EuiPage,
   EuiPageBody,
   EuiLoadingSpinner,
+  EuiEmptyPrompt,
 } from '@elastic/eui';
 import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
@@ -41,7 +42,12 @@ import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
-import { parseEntityParams, useDataSourceUrlSync } from './common/datasource_utils';
+import {
+  parseEntityParams,
+  useDataSourceUrlSync,
+  isAwaitingDataSourceSelection,
+  useDataSourceSupportsSearchRelevance,
+} from './common/datasource_utils';
 import { DataSourceMenu } from './common/data_source_menu';
 
 enum Navigation {
@@ -96,6 +102,12 @@ const SearchRelevancePage = ({
     dataSourceEnabled,
     history,
     location
+  );
+
+  const supportsSearchRelevance = useDataSourceSupportsSearchRelevance(
+    dataSourceEnabled,
+    dataSourceId,
+    savedObjects
   );
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
@@ -193,6 +205,32 @@ const SearchRelevancePage = ({
     },
   ];
 
+  let dataSourceGate: React.ReactNode = null;
+  if (isAwaitingDataSourceSelection(dataSourceEnabled, dataSourceId)) {
+    dataSourceGate = (
+      <EuiEmptyPrompt
+        iconType="database"
+        title={<h2>Select a data source</h2>}
+        body={<p>Choose a data source to get started.</p>}
+        data-test-subj="searchRelevanceSelectDataSourcePrompt"
+      />
+    );
+  } else if (!supportsSearchRelevance) {
+    dataSourceGate = (
+      <EuiEmptyPrompt
+        iconType="alert"
+        title={<h2>Search Relevance is not available on this data source</h2>}
+        body={
+          <p>
+            The selected data source does not have the Search Relevance plugin installed. Choose a
+            different data source to continue.
+          </p>
+        }
+        data-test-subj="searchRelevanceUnsupportedDataSourcePrompt"
+      />
+    );
+  }
+
   return (
     <EuiPage restrictWidth={'100%'}>
       <DataSourceMenu
@@ -208,6 +246,7 @@ const SearchRelevancePage = ({
         <EuiSideNav style={{ width: 200 }} items={sideNavItems} />
       </EuiPageSideBar>
       <EuiPageBody>
+        {dataSourceGate || (
         <Switch>
           <Route
             path="/"
@@ -406,6 +445,7 @@ const SearchRelevancePage = ({
             }}
           />
         </Switch>
+        )}
       </EuiPageBody>
     </EuiPage>
   );

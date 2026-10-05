@@ -4,10 +4,12 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { SavedObject } from '../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../src/core/public';
 import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
 import semver from 'semver';
 import * as pluginManifest from '../../../opensearch_dashboards.json';
+
+export const SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN = 'opensearch-search-relevance';
 
 /**
  * Parse dataSourceId from URL search parameters
@@ -102,4 +104,48 @@ export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
     },
     [excludeEngineTypes]
   );
+};
+
+export const isAwaitingDataSourceSelection = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined
+): boolean => dataSourceEnabled && dataSourceId === undefined;
+
+export const useDataSourceSupportsSearchRelevance = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined,
+  savedObjects: CoreStart['savedObjects']
+): boolean => {
+  const [supportsSearchRelevance, setSupportsSearchRelevance] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!dataSourceEnabled || dataSourceId === undefined || dataSourceId === '') {
+      setSupportsSearchRelevance(true);
+      return;
+    }
+
+    setSupportsSearchRelevance(true);
+
+    savedObjects.client
+      .get<DataSourceAttributes>('data-source', dataSourceId)
+      .then((dataSource) => {
+        if (cancelled) return;
+        const installedPlugins = dataSource?.attributes?.installedPlugins;
+        setSupportsSearchRelevance(
+          !Array.isArray(installedPlugins) ||
+            installedPlugins.includes(SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN)
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setSupportsSearchRelevance(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataSourceEnabled, dataSourceId, savedObjects]);
+
+  return supportsSearchRelevance;
 };
