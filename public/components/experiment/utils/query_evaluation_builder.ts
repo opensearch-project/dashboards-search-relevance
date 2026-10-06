@@ -4,7 +4,7 @@
  */
 
 import { QueryEvaluation } from '../../../types/index';
-import { parseTookMs } from '../../../utils/took_ms';
+import { parseTook } from '../../../utils/took';
 
 export type QueryEvaluationStatus = 'success' | 'zero_results' | 'failed' | 'not_run';
 
@@ -25,7 +25,7 @@ export interface ExperimentVariantSource {
     error?: string;
     details?: string;
     evaluationResultId?: string;
-    tookMs?: number | string;
+    took?: number | string;
   };
 }
 
@@ -125,17 +125,17 @@ export const mapQueryStatusesFromVariants = (
 };
 
 /**
- * Map per-query tookMs from experiment variants (including zero-hit rows that store tookMs
+ * Map per-query took from experiment variants (including zero-hit rows that store took
  * on the variant results map next to "details": "no search hits found").
  */
-export const mapTookMsFromVariants = (
+export const mapTookFromVariants = (
   queryExecutionOrder: string[],
   variants: ExperimentVariantSource[]
 ): Map<string, number> => {
-  const tookMsByQuery = new Map<string, number>();
+  const tookByQuery = new Map<string, number>();
 
   if (queryExecutionOrder.length === 0 || variants.length !== queryExecutionOrder.length) {
-    return tookMsByQuery;
+    return tookByQuery;
   }
 
   const sortedVariants = [...variants].sort((a, b) =>
@@ -143,13 +143,13 @@ export const mapTookMsFromVariants = (
   );
 
   queryExecutionOrder.forEach((queryText, index) => {
-    const tookMs = parseTookMs(sortedVariants[index]?.results?.tookMs);
-    if (tookMs !== undefined) {
-      tookMsByQuery.set(queryText, tookMs);
+    const took = parseTook(sortedVariants[index]?.results?.took);
+    if (took !== undefined) {
+      tookByQuery.set(queryText, took);
     }
   });
 
-  return tookMsByQuery;
+  return tookByQuery;
 };
 
 const getStatusMessage = (status: QueryEvaluationStatus, errorMessage?: string): string | undefined => {
@@ -170,13 +170,13 @@ export const buildQueryEvaluationRows = ({
   evaluationByQueryText,
   experimentResults,
   variantStatusByQueryText,
-  tookMsByQueryText,
+  tookByQueryText,
 }: {
   queryTexts: string[];
   evaluationByQueryText: Map<string, QueryEvaluation>;
   experimentResults: ExperimentResultEntry[];
   variantStatusByQueryText: Map<string, QueryEvaluationStatus>;
-  tookMsByQueryText?: Map<string, number>;
+  tookByQueryText?: Map<string, number>;
 }): QueryEvaluationRow[] => {
   const experimentResultsByQuery = new Map<string, ExperimentResultEntry[]>();
 
@@ -191,13 +191,13 @@ export const buildQueryEvaluationRows = ({
   }
 
   return queryTexts.map((queryText) => {
-    const variantTookMs = tookMsByQueryText?.get(queryText);
+    const variantTook = tookByQueryText?.get(queryText);
     const evaluation = evaluationByQueryText.get(queryText);
     if (evaluation) {
       return {
         ...evaluation,
-        // Prefer evaluation-result tookMs; fall back to variant tookMs when absent.
-        tookMs: evaluation.tookMs ?? variantTookMs,
+        // Prefer evaluation-result took; fall back to variant took when absent.
+        took: evaluation.took ?? variantTook,
         status: 'success' as const,
       };
     }
@@ -205,11 +205,11 @@ export const buildQueryEvaluationRows = ({
     const variantStatus = variantStatusByQueryText.get(queryText);
     const experimentEntries = experimentResultsByQuery.get(queryText) ?? [];
     const hasEvaluationId = experimentEntries.some((entry) => Boolean(entry.evaluationId));
-    const withTookMs = <T extends object>(row: T): T & { tookMs?: number } =>
-      variantTookMs === undefined ? row : { ...row, tookMs: variantTookMs };
+    const withTook = <T extends object>(row: T): T & { took?: number } =>
+      variantTook === undefined ? row : { ...row, took: variantTook };
 
     if (hasEvaluationId) {
-      return withTookMs({
+      return withTook({
         queryText,
         metrics: {},
         documentIds: [],
@@ -218,7 +218,7 @@ export const buildQueryEvaluationRows = ({
     }
 
     if (variantStatus) {
-      return withTookMs({
+      return withTook({
         queryText,
         metrics: {},
         documentIds: [],
@@ -228,7 +228,7 @@ export const buildQueryEvaluationRows = ({
     }
 
     if (experimentEntries.length > 0) {
-      return withTookMs({
+      return withTook({
         queryText,
         metrics: {},
         documentIds: [],
@@ -237,7 +237,7 @@ export const buildQueryEvaluationRows = ({
       });
     }
 
-    return withTookMs({
+    return withTook({
       queryText,
       metrics: {},
       documentIds: [],

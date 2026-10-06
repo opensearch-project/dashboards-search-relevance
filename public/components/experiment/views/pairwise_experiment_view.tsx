@@ -41,9 +41,9 @@ import {
   RBO50_TOOL_TIP,
   RBO90_TOOL_TIP,
   FREQUENCY_WEIGHTED_TOOL_TIP,
-  TOOK_MS_TOOL_TIP,
+  TOOK_TOOL_TIP,
 } from '../../../../common';
-import { formatTookMs } from '../../../utils/took_ms';
+import { formatTook } from '../../../utils/took';
 
 interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -52,8 +52,8 @@ interface PairwiseExperimentViewProps extends RouteComponentProps<{ id: string }
 }
 
 type PairwiseTableRow = QueryEvaluation & {
-  tookMsConfig0?: number;
-  tookMsConfig1?: number;
+  tookConfig0?: number;
+  tookConfig1?: number;
 };
 
 export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
@@ -76,15 +76,15 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
-  const enrichEvaluationsWithTookMs = useCallback(
+  const enrichEvaluationsWithTook = useCallback(
     (evaluations: QueryEvaluation[]): PairwiseTableRow[] => {
-      const tookMsLookup = (snapshots: QuerySnapshot[] | undefined, queryText: string) =>
-        snapshots?.find((snapshot) => snapshot.queryText === queryText)?.tookMs;
+      const tookLookup = (snapshots: QuerySnapshot[] | undefined, queryText: string) =>
+        snapshots?.find((snapshot) => snapshot.queryText === queryText)?.took;
 
       return evaluations.map((evaluation) => ({
         ...evaluation,
-        tookMsConfig0: tookMsLookup(querySnapshots[0], evaluation.queryText),
-        tookMsConfig1: tookMsLookup(querySnapshots[1], evaluation.queryText),
+        tookConfig0: tookLookup(querySnapshots[0], evaluation.queryText),
+        tookConfig1: tookLookup(querySnapshots[1], evaluation.queryText),
       }));
     },
     [querySnapshots]
@@ -227,29 +227,29 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       ];
       columns.push(
         {
-          field: 'tookMsConfig0',
+          field: 'tookConfig0',
           name: (
-            <EuiToolTip content={TOOK_MS_TOOL_TIP}>
+            <EuiToolTip content={TOOK_TOOL_TIP}>
               <span>Time taken ({configLabels[0]})</span>
             </EuiToolTip>
           ),
           dataType: 'number',
           sortable: true,
           render: (value: number | undefined) => (
-            <span data-test-subj="tookMsConfig0Cell">{formatTookMs(value)}</span>
+            <span data-test-subj="tookConfig0Cell">{formatTook(value)}</span>
           ),
         },
         {
-          field: 'tookMsConfig1',
+          field: 'tookConfig1',
           name: (
-            <EuiToolTip content={TOOK_MS_TOOL_TIP}>
+            <EuiToolTip content={TOOK_TOOL_TIP}>
               <span>Time taken ({configLabels[1]})</span>
             </EuiToolTip>
           ),
           dataType: 'number',
           sortable: true,
           render: (value: number | undefined) => (
-            <span data-test-subj="tookMsConfig1Cell">{formatTookMs(value)}</span>
+            <span data-test-subj="tookConfig1Cell">{formatTook(value)}</span>
           ),
         }
       );
@@ -312,13 +312,13 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
 
   const findQueries = useCallback(
     async (search: any) => {
-      const enriched = enrichEvaluationsWithTookMs(queryEvaluations);
+      const enriched = enrichEvaluationsWithTook(queryEvaluations);
       const filteredQueryEntries = search
         ? enriched.filter((q) => q.queryText.includes(search))
         : enriched;
       return { hits: filteredQueryEntries, total: filteredQueryEntries.length };
     },
-    [queryEvaluations, enrichEvaluationsWithTookMs]
+    [queryEvaluations, enrichEvaluationsWithTook]
   );
 
   const experimentDetails = (
@@ -407,9 +407,9 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
       <EuiSpacer size="m" />
       <MetricsSummaryPanel
         metrics={queryEvaluations.map((q) => q.metrics)}
-        tookMsValues={[
-          ...(querySnapshots[0] ?? []).map((snapshot) => snapshot.tookMs),
-          ...(querySnapshots[1] ?? []).map((snapshot) => snapshot.tookMs),
+        tookValues={[
+          ...(querySnapshots[0] ?? []).map((snapshot) => snapshot.took),
+          ...(querySnapshots[1] ?? []).map((snapshot) => snapshot.took),
         ]}
       />
       <EuiSpacer size="m" />

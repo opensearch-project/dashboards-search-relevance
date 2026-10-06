@@ -29,14 +29,14 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
-  TOOK_MS_TOOL_TIP,
+  TOOK_TOOL_TIP,
 } from '../../../../common';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
-import { formatTookMs, parseTookMs } from '../../../utils/took_ms';
+import { formatTook, parseTook } from '../../../utils/took';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
-  tookMs?: number;
+  took?: number;
 }
 
 interface QueryVariantEvaluations {
@@ -195,14 +195,14 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             hit._source.metrics?.forEach((metric: any) => {
               nMetrics[metric.metric] = metric.value;
             });
-            const tookMs = parseTookMs(hit._source.tookMs);
+            const took = parseTook(hit._source.took);
             evaluationsByQueryAndVariant[hit._source.searchText] =
               evaluationsByQueryAndVariant[hit._source.searchText] || {};
             evaluationsByQueryAndVariant[hit._source.searchText][
               hit._source.experimentVariantId
             ] = {
               metrics: nMetrics,
-              ...(tookMs !== undefined ? { tookMs } : {}),
+              ...(took !== undefined ? { took } : {}),
             };
           });
 
@@ -319,16 +319,16 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
           ),
         },
         {
-          field: 'tookMs',
+          field: 'took',
           name: (
-            <EuiToolTip content={TOOK_MS_TOOL_TIP}>
+            <EuiToolTip content={TOOK_TOOL_TIP}>
               <span>Time taken</span>
             </EuiToolTip>
           ),
           dataType: 'number',
           sortable: true,
           render: (value: number | undefined) => (
-            <span data-test-subj="tookMsCell">{formatTookMs(value)}</span>
+            <span data-test-subj="tookCell">{formatTook(value)}</span>
           ),
         },
         ...metricNames.map((metricName) => {
@@ -379,7 +379,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             queryText,
             variantId,
             metrics: data.metrics,
-            tookMs: data.tookMs,
+            took: data.took,
           });
         });
       });

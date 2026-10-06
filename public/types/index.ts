@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { parseTookMs } from '../utils/took_ms';
+import { parseTook } from '../utils/took';
 
-export { parseTookMs } from '../utils/took_ms';
+export { parseTook } from '../utils/took';
 
 export interface DocumentsIndex {
   'docs.count': string;
@@ -209,14 +209,14 @@ export interface QueryEvaluation {
   metrics: Metrics;
   documentIds: string[];
   /** OpenSearch cluster search time in ms (SearchResponse.getTook()). Absent on legacy/failed rows. */
-  tookMs?: number;
+  took?: number;
 }
 
 export interface QuerySnapshot {
   queryText: string;
   documentIds: string[];
   /** OpenSearch cluster search time in ms for this search configuration × query. */
-  tookMs?: number;
+  took?: number;
 }
 
 export type ParseResult<T> = { success: true; data: T } | { success: false; errors: string[] };
@@ -246,11 +246,11 @@ export const parseMetrics = (metricsArray: Array<{ metric: string; value: number
   ) as Metrics;
 };
 
-const withOptionalTookMs = <T extends object>(
+const withOptionalTook = <T extends object>(
   base: T,
-  tookMs: number | undefined
-): T & { tookMs?: number } => {
-  return tookMs === undefined ? base : { ...base, tookMs };
+  took: number | undefined
+): T & { took?: number } => {
+  return took === undefined ? base : { ...base, took };
 };
 
 // Currently this function consumes the response of a pairwise comparison experiment
@@ -265,13 +265,13 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
     if (!result.metrics) {
       hasMetrics = false;
     }
-    return withOptionalTookMs(
+    return withOptionalTook(
       {
         queryText: result.query_text,
         metrics: parseMetrics(result.metrics),
         documentIds: [],
       },
-      parseTookMs(result.tookMs)
+      parseTook(result.took)
     );
   });
 
@@ -292,13 +292,13 @@ export const toQueryEvaluation = (source: any): ParseResult<QueryEvaluation> => 
 
   return {
     success: true,
-    data: withOptionalTookMs(
+    data: withOptionalTook(
       {
         queryText: source.searchText,
         metrics: parseMetrics(source.metrics),
         documentIds: source.documentIds,
       },
-      parseTookMs(source.tookMs)
+      parseTook(source.took)
     ),
   };
 };
@@ -313,12 +313,12 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
     const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
     if (snapshot) {
       data.push(
-        withOptionalTookMs(
+        withOptionalTook(
           {
             queryText: result.query_text,
             documentIds: snapshot.docIds,
           },
-          parseTookMs(snapshot.tookMs)
+          parseTook(snapshot.took)
         )
       );
     }

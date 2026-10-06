@@ -4,10 +4,10 @@
  */
 
 /**
- * Parse optional OpenSearch cluster search latency (tookMs) from API payloads.
+ * Parse optional OpenSearch cluster search latency (took) from API payloads.
  * Accepts finite numbers >= 0; coerces numeric strings. Returns undefined when absent/invalid.
  */
-export const parseTookMs = (value: unknown): number | undefined => {
+export const parseTook = (value: unknown): number | undefined => {
   if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
     return value;
   }
@@ -21,24 +21,24 @@ export const parseTookMs = (value: unknown): number | undefined => {
 };
 
 /**
- * Format tookMs for table/summary display: "14 ms", "1.2 s", or "—".
+ * Format took for table/summary display: "14 ms", "1.2 s", or "—".
  */
-export const formatTookMs = (tookMs: number | undefined | null): string => {
-  if (tookMs === undefined || tookMs === null || !Number.isFinite(tookMs) || tookMs < 0) {
+export const formatTook = (took: number | undefined | null): string => {
+  if (took === undefined || took === null || !Number.isFinite(took) || took < 0) {
     return '—';
   }
-  if (tookMs < 1000) {
-    return `${Math.round(tookMs)} ms`;
+  if (took < 1000) {
+    return `${Math.round(took)} ms`;
   }
-  const seconds = tookMs / 1000;
+  const seconds = took / 1000;
   const rounded = seconds >= 10 ? seconds.toFixed(0) : seconds.toFixed(1).replace(/\.0$/, '');
   return `${rounded} s`;
 };
 
 /**
- * Average of finite tookMs values. Returns undefined when none are present.
+ * Average of finite took values. Returns undefined when none are present.
  */
-export const averageTookMs = (values: Array<number | undefined | null>): number | undefined => {
+export const averageTook = (values: Array<number | undefined | null>): number | undefined => {
   const present = values.filter(
     (value): value is number => typeof value === 'number' && Number.isFinite(value) && value >= 0
   );

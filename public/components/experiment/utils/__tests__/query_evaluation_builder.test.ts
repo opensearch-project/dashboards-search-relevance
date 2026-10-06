@@ -9,7 +9,7 @@ import {
   getQueryExecutionOrder,
   getQueryTextsFromQuerySet,
   mapQueryStatusesFromVariants,
-  mapTookMsFromVariants,
+  mapTookFromVariants,
 } from '../query_evaluation_builder';
 
 describe('query_evaluation_builder', () => {
@@ -76,14 +76,14 @@ describe('query_evaluation_builder', () => {
     expect(rows[0].statusMessage).toContain('zero search results');
   });
 
-  it('maps tookMs from zero-hit variant results', () => {
-    const tookMsByQuery = mapTookMsFromVariants(
+  it('maps took from zero-hit variant results', () => {
+    const tookByQuery = mapTookFromVariants(
       ['zsr-query', 'failed-query'],
       [
         {
           timestamp: '2026-01-01T00:00:00Z',
           status: 'COMPLETED',
-          results: { details: 'no search hits found', tookMs: 9 },
+          results: { details: 'no search hits found', took: 9 },
         },
         {
           timestamp: '2026-01-01T00:00:01Z',
@@ -93,24 +93,24 @@ describe('query_evaluation_builder', () => {
       ]
     );
 
-    expect(tookMsByQuery.get('zsr-query')).toBe(9);
-    expect(tookMsByQuery.has('failed-query')).toBe(false);
+    expect(tookByQuery.get('zsr-query')).toBe(9);
+    expect(tookByQuery.has('failed-query')).toBe(false);
   });
 
-  it('attaches variant tookMs to zero-results rows', () => {
+  it('attaches variant took to zero-results rows', () => {
     const rows = buildQueryEvaluationRows({
       queryTexts: ['zsr-query'],
       evaluationByQueryText: new Map(),
       experimentResults: [{ queryText: 'zsr-query' }],
       variantStatusByQueryText: new Map([['zsr-query', 'zero_results']]),
-      tookMsByQueryText: new Map([['zsr-query', 11]]),
+      tookByQueryText: new Map([['zsr-query', 11]]),
     });
 
     expect(rows[0].status).toBe('zero_results');
-    expect(rows[0].tookMs).toBe(11);
+    expect(rows[0].took).toBe(11);
   });
 
-  it('prefers evaluation tookMs over variant tookMs for successful rows', () => {
+  it('prefers evaluation took over variant took for successful rows', () => {
     const rows = buildQueryEvaluationRows({
       queryTexts: ['success-query'],
       evaluationByQueryText: new Map([
@@ -120,16 +120,16 @@ describe('query_evaluation_builder', () => {
             queryText: 'success-query',
             metrics: { ndcg: 0.5 },
             documentIds: ['doc-1'],
-            tookMs: 14,
+            took: 14,
           },
         ],
       ]),
       experimentResults: [],
       variantStatusByQueryText: new Map(),
-      tookMsByQueryText: new Map([['success-query', 99]]),
+      tookByQueryText: new Map([['success-query', 99]]),
     });
 
-    expect(rows[0].tookMs).toBe(14);
+    expect(rows[0].took).toBe(14);
   });
 
   it('counts outcomes for notifications', () => {
