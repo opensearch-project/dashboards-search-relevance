@@ -14,11 +14,17 @@ import { useQuerySetList } from '../hooks/use_query_set_list';
 
 interface QuerySetListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
-export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history }) => {
+export const QuerySetListing: React.FC<QuerySetListingProps> = ({
+  http,
+  history,
+  dataSourceId,
+}) => {
   const { isLoading, error, refreshKey, findQuerySets, deleteQuerySet, setError } = useQuerySetList(
-    http
+    http,
+    dataSourceId
   );
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [querySetToDelete, setQuerySetToDelete] = useState<any>(null);
@@ -70,6 +76,7 @@ export const QuerySetListing: React.FC<QuerySetListingProps> = ({ http, history 
             findItems={findQuerySets}
             onDelete={handleDeleteClick}
             history={history}
+            dataSourceId={dataSourceId}
           />
         )}
       </EuiFlexItem>

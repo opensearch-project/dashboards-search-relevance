@@ -145,10 +145,17 @@ export class MetricsService {
     const oldestTimestampToKeep = Math.floor(
       (Date.now() - this.windowSize * this.interval) / this.interval
     );
-    for (const timestampStr in this.data) {
-      const timestamp = parseInt(timestampStr);
+    this.trimIntervalMap(this.data, oldestTimestampToKeep);
+    this.trimIntervalMap(this.overall, oldestTimestampToKeep);
+    this.trimIntervalMap(this.componentCounts, oldestTimestampToKeep);
+    this.trimIntervalMap(this.statusCodeCounts, oldestTimestampToKeep);
+  }
+
+  private trimIntervalMap<T>(map: Record<number, T>, oldestTimestampToKeep: number): void {
+    for (const timestampStr of Object.keys(map)) {
+      const timestamp = parseInt(timestampStr, 10);
       if (timestamp < oldestTimestampToKeep) {
-        delete this.data[timestamp];
+        delete map[timestamp];
       }
     }
   }

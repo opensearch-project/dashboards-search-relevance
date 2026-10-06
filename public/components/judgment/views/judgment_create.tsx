@@ -13,11 +13,17 @@ import {
   EuiPanel,
   EuiPageHeader,
 } from '@elastic/eui';
-import { JudgmentCreateProps } from '../types';
+import { JudgmentCreateProps, JudgmentType } from '../types';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
+import { JudgmentPreview } from '../components/judgment_preview';
 import { JudgmentForm } from '../components/judgment_form';
 
-export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notifications, history }) => {
+export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
+  http,
+  notifications,
+  history,
+  dataSourceId,
+}) => {
   const {
     formData,
     updateFormData,
@@ -31,18 +37,27 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
     searchConfigOptions,
     modelOptions,
     indexOptions,
+    existingJudgmentOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
     isLoadingIndexes,
+    isLoadingExistingJudgments,
     nameError,
     newContextField,
     setNewContextField,
     addContextField,
     removeContextField,
     validateAndSubmit,
+    handleJudgmentFileContent,
     dateRangeError,
-  } = useJudgmentForm(http, notifications);
+    parsedJudgments,
+    parseSummary,
+  } = useJudgmentForm(
+    http,
+    notifications,
+    dataSourceId
+  );
 
   const handleSubmit = useCallback(() => {
     validateAndSubmit(() => {
@@ -97,17 +112,25 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({ http, notificati
             searchConfigOptions={searchConfigOptions}
             modelOptions={modelOptions}
             indexOptions={indexOptions}
+            existingJudgmentOptions={existingJudgmentOptions}
             isLoadingQuerySets={isLoadingQuerySets}
             isLoadingSearchConfigs={isLoadingSearchConfigs}
             isLoadingModels={isLoadingModels}
             isLoadingIndexes={isLoadingIndexes}
+            isLoadingExistingJudgments={isLoadingExistingJudgments}
             newContextField={newContextField}
             setNewContextField={setNewContextField}
             addContextField={addContextField}
             removeContextField={removeContextField}
             dateRangeError={dateRangeError}
+            handleJudgmentFileContent={handleJudgmentFileContent}
             httpClient={http}
           />
+
+          {formData.type === JudgmentType.IMPORT && (
+              <JudgmentPreview parsedJudgments={parsedJudgments} parseSummary={parseSummary} />
+          )}
+
         </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>

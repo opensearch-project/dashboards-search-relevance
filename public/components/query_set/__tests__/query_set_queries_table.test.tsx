@@ -5,7 +5,11 @@
 
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { QuerySetQueriesTable } from '../components/query_set_queries_table';
+import {
+  QuerySetQueriesTable,
+  getReferenceAnswer,
+  normalizeQuerySetQueries,
+} from '../components/query_set_queries_table';
 
 // Mock TableListView
 let mockFindItems: any;
@@ -35,7 +39,7 @@ describe('QuerySetQueriesTable', () => {
     const { container } = render(<QuerySetQueriesTable queries={mockQueries} />);
 
     expect(container.querySelector('[data-testid="table-list-view"]')).toBeTruthy();
-    expect(container.querySelector('[data-testid="columns-count"]')?.textContent).toBe('1');
+    expect(container.querySelector('[data-testid="columns-count"]')?.textContent).toBe('2');
     expect(container.querySelector('[data-testid="queries-count"]')?.textContent).toBe('3');
   });
 
@@ -64,7 +68,7 @@ describe('QuerySetQueriesTable', () => {
   it('renders correct table column configuration', () => {
     const { container } = render(<QuerySetQueriesTable queries={mockQueries} />);
 
-    expect(container.querySelector('[data-testid="columns-count"]')?.textContent).toBe('1');
+    expect(container.querySelector('[data-testid="columns-count"]')?.textContent).toBe('2');
   });
 
   it('handles undefined queries gracefully', () => {
@@ -93,5 +97,65 @@ describe('QuerySetQueriesTable', () => {
     const result = await mockFindItems('');
     expect(result.total).toBe(3);
     expect(result.hits).toHaveLength(3);
+  });
+
+  it('tests findQueries function filters by reference answer', async () => {
+    const queriesWithReferences = [
+      {
+        queryText: 'What is C#?',
+        customFields: { referenceAnswer: 'Programming language' },
+      },
+      { queryText: 'example1', customFields: { referenceAnswer: '' } },
+    ];
+
+    render(<QuerySetQueriesTable queries={queriesWithReferences} />);
+
+    const result = await mockFindItems('programming');
+    expect(result.total).toBe(1);
+    expect(result.hits[0].queryText).toBe('What is C#?');
+    expect(result.hits[0].referenceAnswer).toBe('Programming language');
+  });
+});
+
+describe('getReferenceAnswer', () => {
+  it('reads referenceAnswer from customFields', () => {
+    expect(
+      getReferenceAnswer({
+        queryText: 'test',
+        customFields: { referenceAnswer: 'stored answer' },
+      })
+    ).toBe('stored answer');
+  });
+
+  it('falls back to top-level referenceAnswer', () => {
+    expect(
+      getReferenceAnswer({
+        queryText: 'test',
+        referenceAnswer: 'legacy answer',
+      })
+    ).toBe('legacy answer');
+  });
+
+  it('returns empty string when no reference answer is present', () => {
+    expect(getReferenceAnswer({ queryText: 'test', customFields: {} })).toBe('');
+  });
+});
+
+describe('normalizeQuerySetQueries', () => {
+  it('normalizes backend query shape for display', () => {
+    expect(
+      normalizeQuerySetQueries([
+        {
+          queryText: 'What is C#?',
+          customFields: { referenceAnswer: 'C# is a programming language' },
+        },
+      ])
+    ).toEqual([
+      {
+        id: '0',
+        queryText: 'What is C#?',
+        referenceAnswer: 'C# is a programming language',
+      },
+    ]);
   });
 });

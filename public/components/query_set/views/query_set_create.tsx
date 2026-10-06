@@ -22,13 +22,19 @@ import { QueryPreview } from '../components/query_preview';
 interface QuerySetCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+  dataSourceId?: string;
 }
 
-export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notifications, history }) => {
+export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({
+  http,
+  notifications,
+  history,
+  dataSourceId,
+}) => {
   const formState = useQuerySetForm();
   const querySetService = useMemo(() => new QuerySetService(http), [http]);
   const filePickerId = useMemo(() => `filePicker-${Math.random().toString(36).substr(2, 9)}`, []);
-  
+
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
 
@@ -36,7 +42,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
     const fetchIndexes = async () => {
       setIsLoadingIndexes(true);
       try {
-        const indexes = await querySetService.fetchUbiIndexes();
+        const indexes = await querySetService.fetchUbiIndexes(dataSourceId);
         setIndexOptions(indexes);
       } catch (error) {
         notifications.toasts.addDanger('Failed to fetch UBI indexes');
@@ -45,9 +51,11 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         setIsLoadingIndexes(false);
       }
     };
+    setIndexOptions([]);
     fetchIndexes();
+    formState.setUbiQueriesIndex('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [querySetService]);
+  }, [querySetService, dataSourceId]);
 
   const createQuerySet = useCallback(async () => {
     if (!formState.isFormValid()) {
@@ -64,7 +72,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
         ...(formState.ubiQueriesIndex && { ubiQueriesIndex: formState.ubiQueriesIndex }),
       };
 
-      await querySetService.createQuerySet(querySetData, formState.isManualInput);
+      await querySetService.createQuerySet(querySetData, formState.isManualInput, dataSourceId);
       notifications.toasts.addSuccess(`Query set "${formState.name}" created successfully`);
       history.push('/querySet');
     } catch (err) {
@@ -86,7 +94,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
           <span>
             Create a new query set by{' '}
             <a
-              href="https://docs.opensearch.org/docs/latest/search-plugins/search-relevance/query-sets/"
+              href="https://docs.opensearch.org/latest/search-plugins/search-relevance/query-sets/"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -120,7 +128,7 @@ export const QuerySetCreate: React.FC<QuerySetCreateProps> = ({ http, notificati
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
-          <QuerySetForm 
+          <QuerySetForm
             formState={formState} 
             filePickerId={filePickerId}
             indexOptions={indexOptions}

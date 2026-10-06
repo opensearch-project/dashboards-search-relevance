@@ -51,7 +51,7 @@ export const buildValidationRequestBody = (
   };
 
   if (pipeline) {
-    requestBody.query.search_pipeline = pipeline;
+    requestBody.query.pipeline = pipeline;
   }
 
   return requestBody;

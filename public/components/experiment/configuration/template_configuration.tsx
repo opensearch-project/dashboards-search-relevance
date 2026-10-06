@@ -9,6 +9,7 @@ import { EuiFlexItem, EuiFlexGroup, EuiTitle, EuiSpacer, EuiLoadingSpinner } fro
 import { withRouter } from 'react-router-dom';
 import { EuiPanel } from '@elastic/eui';
 import { ConfigurationForm, ConfigurationFormRef } from './configuration_form';
+import { buildExperimentCreateRequestBody } from './build_experiment_create_payload';
 import { TemplateConfigurationProps } from './types';
 import { Routes } from '../../../../common';
 import { ConfigurationActions } from './configuration_action';
@@ -20,6 +21,7 @@ export const TemplateConfiguration = ({
   onBack,
   onClose,
   history,
+  dataSourceId,
 }: TemplateConfigurationProps) => {
   const [experimentId, setExperimentId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState<boolean>(false);
@@ -54,7 +56,10 @@ export const TemplateConfiguration = ({
       // If we reach here, `data` is guaranteed to be valid and not null
       try {
         setIsCreating(true);
-        const response = await experimentService.createExperiment(data);
+        const response = await experimentService.createExperiment(
+          buildExperimentCreateRequestBody(data),
+          dataSourceId
+        );
 
         if (response.experiment_id) {
           if (isMountedRef.current) {
@@ -99,7 +104,7 @@ export const TemplateConfiguration = ({
             <h2>{templateType} Experiment</h2>
           </EuiTitle>
           <EuiSpacer size="m" />
-          <ConfigurationForm templateType={templateType} ref={configurationFormRef} />
+          <ConfigurationForm templateType={templateType} dataSourceId={dataSourceId} ref={configurationFormRef} />
         </EuiFlexItem>
 
         <EuiFlexItem>

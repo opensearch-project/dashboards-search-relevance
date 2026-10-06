@@ -15,9 +15,11 @@ import {
   EuiFilePicker,
   EuiComboBox,
   EuiTextArea,
+  EuiText,
 } from '@elastic/eui';
 import { UseQuerySetFormReturn } from '../hooks/use_query_set_form';
 import { ManualInputMethod } from '../hooks/use_query_set_form';
+import { QuerySetHelpButton } from './query_set_help';
 
 interface QuerySetFormProps {
   formState: UseQuerySetFormReturn;
@@ -90,10 +92,10 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
       </EuiCompressedFormRow>
 
       <EuiCompressedFormRow
-        label="Description"
+        label="Description (optional)"
         isInvalid={errors.descriptionError.length > 0}
         error={errors.descriptionError}
-        helpText="Describe the query set (< 250 characters)."
+        helpText="Optionally describe the query set (< 250 characters)."
         fullWidth
       >
         <EuiCompressedTextArea
@@ -129,6 +131,11 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
               error={errors.manualQueriesError}
               isInvalid={Boolean(errors.manualQueriesError)}
               helpText="Upload an NDJSON file with queries (one JSON object per line containing queryText and referenceAnswer)"
+              labelAppend={
+                <EuiText size="xs">
+                  <QuerySetHelpButton />
+                </EuiText>
+              }
               fullWidth
             >
               <EuiFilePicker
@@ -148,6 +155,11 @@ export const QuerySetForm: React.FC<QuerySetFormProps> = ({ formState, filePicke
               error={errors.manualQueriesError}
               isInvalid={Boolean(errors.manualQueriesError)}
               helpText='Enter queries in any format: plain text (one per line), key-value (query: "...", answer: "..."), or NDJSON ({"queryText":"...","referenceAnswer":"..."}).'
+              labelAppend={
+                <EuiText size="xs">
+                  <QuerySetHelpButton />
+                </EuiText>
+              }
               fullWidth
             >
               <EuiTextArea

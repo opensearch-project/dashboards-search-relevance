@@ -20,22 +20,6 @@ jest.mock('react-router-dom', () => ({
 
 const mockUseLocation = useLocation as jest.MockedFunction<typeof useLocation>;
 
-// Mock console.log to verify debug outputs
-const originalConsoleLog = console.log;
-const mockConsoleLog = jest.fn();
-
-beforeAll(() => {
-  console.log = mockConsoleLog;
-});
-
-afterAll(() => {
-  console.log = originalConsoleLog;
-});
-
-beforeEach(() => {
-  mockConsoleLog.mockClear();
-});
-
 describe('SearchResult Base64 Config Loading', () => {
   const mockProps = {
     application: { setAppDescriptionControls: jest.fn() },
@@ -112,11 +96,11 @@ describe('SearchResult Base64 Config Loading', () => {
   };
 
   describe('URL parameter parsing', () => {
-    const originalLocation = window.location;
-
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      // jsdom 26 makes window.location non-configurable; set hash/search in place
+      // instead of deleting and reassigning window.location.
+      window.location.hash = '';
+      window.location.search = '';
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -128,14 +112,15 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Set up default useLocation mock
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: window.location.search || '',
         hash: window.location.hash || '',
       });
     });
 
     afterEach(() => {
-      window.location = originalLocation;
+      window.location.hash = '';
+      window.location.search = '';
       mockUseLocation.mockReset();
     });
 
@@ -332,11 +317,11 @@ describe('SearchResult Base64 Config Loading', () => {
   });
 
   describe('Experimental workbench UI parameter handling', () => {
-    const originalLocation = window.location;
-
     beforeEach(() => {
-      delete window.location;
-      window.location = { ...originalLocation };
+      // jsdom 26 makes window.location non-configurable; set hash/search in place
+      // instead of deleting and reassigning window.location.
+      window.location.hash = '';
+      window.location.search = '';
       window.history.replaceState = jest.fn();
 
       // Reset all mock calls
@@ -348,14 +333,15 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Set up default useLocation mock
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: window.location.search || '',
         hash: window.location.hash || '',
       });
     });
 
     afterEach(() => {
-      window.location = originalLocation;
+      window.location.hash = '';
+      window.location.search = '';
       mockUseLocation.mockReset();
     });
 
@@ -382,7 +368,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${base64Config}`,
         hash: '',
       });
@@ -444,7 +430,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the search parameters (which should take priority)
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${base64QueryConfig}`,
         hash: `#/?config=${base64HashConfig}`,
       });
@@ -479,7 +465,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the malformed search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: '?config=malformed_base64',
         hash: '',
       });
@@ -509,7 +495,7 @@ describe('SearchResult Base64 Config Loading', () => {
 
       // Mock useLocation to return the valid search parameters
       mockUseLocation.mockReturnValue({
-        pathname: '/experiment/create/singleQueryComparison',
+        pathname: '/experiment/create/queryAnalysis',
         search: `?config=${validBase64Config}`,
         hash: '#/?config=invalid_hash_config',
       });

@@ -23,16 +23,21 @@ import { useSearchConfigurationView } from '../hooks/use_search_configuration_vi
 
 interface SearchConfigurationViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
+  dataSourceId?: string | null;
 }
 
-export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id }) => {
-  const { searchConfiguration, loading, error, formatJson } = useSearchConfigurationView(http, id);
+export const SearchConfigurationView: React.FC<SearchConfigurationViewProps> = ({ http, id, dataSourceId }) => {
+  const { searchConfiguration, loading, error, formatJson } = useSearchConfigurationView(http, id, dataSourceId);
 
   const SearchConfigurationViewPane: React.FC = () => {
     return (
       <EuiForm>
         <EuiFormRow label="Search Configuration Name" fullWidth>
           <EuiText>{searchConfiguration.name}</EuiText>
+        </EuiFormRow>
+
+        <EuiFormRow label="Description" fullWidth>
+          <EuiText>{searchConfiguration.description || 'None'}</EuiText>
         </EuiFormRow>
 
         <EuiFormRow label="Index" fullWidth>

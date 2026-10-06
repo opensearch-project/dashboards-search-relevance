@@ -5,6 +5,7 @@
 
 import { schema } from '@osd/config-schema';
 import {
+  ILegacyScopedClusterClient,
   IOpenSearchDashboardsResponse,
   IRouter,
   OpenSearchDashboardsRequest,
@@ -13,21 +14,36 @@ import {
 } from '../../../../src/core/server';
 import { ServiceEndpoints, BackendEndpoints, DISABLED_BACKEND_PLUGIN_MESSAGE } from '../../common';
 
-export function registerSearchRelevanceRoutes(router: IRouter): void {
+export const queryWithDataSource = schema.maybe(schema.object({}, { unknowns: 'allow' }));
+
+// Resource ids are interpolated straight into the backend transport.request path, so constrain
+// them to the shape the backend actually generates (UUIDs / URL-safe Base64 ids). This rejects
+// path separators and encoded traversal sequences (e.g. '..%2F.._cluster%2Fsettings') before the
+// value can be used to route a proxied request to an unintended OpenSearch endpoint.
+const resourceId = schema.string({
+  validate: (value) => {
+    if (!/^[A-Za-z0-9_-]+$/.test(value)) {
+      return 'must contain only letters, numbers, hyphens, and underscores';
+    }
+  },
+});
+
+export function registerSearchRelevanceRoutes(router: IRouter, dataSourceEnabled: boolean): void {
   router.post(
     {
       path: ServiceEndpoints.QuerySets,
       validate: {
         body: schema.object({
           name: schema.string(),
-          description: schema.string(),
+          description: schema.maybe(schema.string()),
           sampling: schema.string(),
           querySetSize: schema.number(),
           ubiQueriesIndex: schema.maybe(schema.string()),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('POST', BackendEndpoints.QuerySets)
+    backendAction('POST', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.put(
     {
@@ -35,7 +51,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
       validate: {
         body: schema.object({
           name: schema.string(),
-          description: schema.string(),
+          description: schema.maybe(schema.string()),
           sampling: schema.string(),
           querySetQueries: schema.oneOf([
             schema.arrayOf(
@@ -48,16 +64,19 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
             schema.string(),
           ]),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('PUT', BackendEndpoints.QuerySets)
+    backendAction('PUT', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.QuerySets,
-      validate: false,
+      validate: {
+        query: queryWithDataSource,
+      },
     },
-    backendAction('GET', BackendEndpoints.QuerySets)
+    backendAction('GET', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.delete(
     {
@@ -66,9 +85,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('DELETE', BackendEndpoints.QuerySets)
+    backendAction('DELETE', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.put(
     {
@@ -76,20 +96,24 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
       validate: {
         body: schema.object({
           name: schema.string(),
+          description: schema.maybe(schema.string()),
           index: schema.string(),
           query: schema.string(),
           searchPipeline: schema.maybe(schema.string()),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('PUT', BackendEndpoints.SearchConfigurations)
+    backendAction('PUT', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.SearchConfigurations,
-      validate: false,
+      validate: {
+        query: queryWithDataSource,
+      },
     },
-    backendAction('GET', BackendEndpoints.SearchConfigurations)
+    backendAction('GET', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.delete(
     {
@@ -98,9 +122,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('DELETE', BackendEndpoints.SearchConfigurations)
+    backendAction('DELETE', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.post(
     {
@@ -111,19 +136,24 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           searchConfigurationList: schema.arrayOf(schema.string()),
           size: schema.number(),
           type: schema.string(),
+          name: schema.maybe(schema.string()),
+          description: schema.maybe(schema.string()),
           // TODO: make mandatory conditional on experiment type
           judgmentList: schema.maybe(schema.arrayOf(schema.string())),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('PUT', BackendEndpoints.Experiments)
+    backendAction('PUT', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.Experiments,
-      validate: false,
+      validate: {
+        query: queryWithDataSource,
+      },
     },
-    backendAction('GET', BackendEndpoints.Experiments)
+    backendAction('GET', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
@@ -132,9 +162,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.Experiments)
+    backendAction('GET', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.get(
     {
@@ -143,9 +174,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.SearchConfigurations)
+    backendAction('GET', BackendEndpoints.SearchConfigurations, dataSourceEnabled)
   );
   router.get(
     {
@@ -154,9 +186,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.QuerySets)
+    backendAction('GET', BackendEndpoints.QuerySets, dataSourceEnabled)
   );
   router.delete(
     {
@@ -165,9 +198,26 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('DELETE', BackendEndpoints.Experiments)
+    backendAction('DELETE', BackendEndpoints.Experiments, dataSourceEnabled)
+  );
+  router.patch(
+    {
+      path: `${ServiceEndpoints.Experiments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: schema.string(),
+        }),
+        body: schema.object({
+          name: schema.maybe(schema.string()),
+          description: schema.maybe(schema.string()),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PATCH', BackendEndpoints.Experiments, dataSourceEnabled)
   );
   router.post(
     {
@@ -175,18 +225,21 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
       validate: {
         body: schema.object({
           experimentId: schema.string(),
-          cronExpression: schema.string()
+          cronExpression: schema.string({ minLength: 9 })
         }),
+        query: queryWithDataSource,
       }
     },
-    backendAction('POST', `${BackendEndpoints.ScheduledExperiments}`)
+    backendAction('POST', `${BackendEndpoints.ScheduledExperiments}`, dataSourceEnabled)
   );
   router.get(
     {
       path: `${ServiceEndpoints.ScheduledExperiments}`,
-      validate: false,
+      validate: {
+        query: queryWithDataSource,
+      },
     },
-    backendAction('GET', `${BackendEndpoints.ScheduledExperiments}`)
+    backendAction('GET', `${BackendEndpoints.ScheduledExperiments}`, dataSourceEnabled)
   );
   router.get(
     {
@@ -195,9 +248,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.ScheduledExperiments)
+    backendAction('GET', BackendEndpoints.ScheduledExperiments, dataSourceEnabled)
   );
   router.delete(
     {
@@ -206,9 +260,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('DELETE', BackendEndpoints.ScheduledExperiments)
+    backendAction('DELETE', BackendEndpoints.ScheduledExperiments, dataSourceEnabled)
   );
   router.put(
     {
@@ -221,34 +276,43 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           searchConfigurationList: schema.maybe(schema.arrayOf(schema.string())),
           size: schema.maybe(schema.number()),
           modelId: schema.maybe(schema.string()),
-          tokenLimit: schema.maybe(schema.string()),
+          tokenLimit: schema.maybe(schema.number()),
           ignoreFailure: schema.maybe(schema.boolean()),
           contextFields: schema.maybe(schema.arrayOf(schema.string())),
+          promptTemplate: schema.maybe(schema.string()),
+          existingJudgments: schema.maybe(schema.arrayOf(schema.string())),
           clickModel: schema.maybe(schema.string()),
           maxRank: schema.maybe(schema.number()),
           startDate: schema.maybe(schema.string()),
           endDate: schema.maybe(schema.string()),
+          judgmentRatings: schema.maybe(
+            schema.arrayOf(
+              schema.object({
+                query: schema.string(),
+                ratings: schema.arrayOf(
+                  schema.object({
+                    docId: schema.string(),
+                    rating: schema.oneOf([schema.string(), schema.number()]),
+                  })
+                ),
+              })
+            )
+          ),
           ubiEventsIndex: schema.maybe(schema.string()),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('PUT', BackendEndpoints.Judgments)
+    backendAction('PUT', BackendEndpoints.Judgments, dataSourceEnabled)
   );
   router.get(
     {
       path: ServiceEndpoints.Judgments,
       validate: {
-        query: schema.object({
-          status: schema.maybe(schema.oneOf([
-            schema.literal('COMPLETED'),
-            schema.literal('PROCESSING'),
-            schema.literal('FAILED'),
-            schema.literal('ERROR'),
-          ])),
-        }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.Judgments, { passQueryParams: ['status'] })
+    backendAction('GET', BackendEndpoints.Judgments, dataSourceEnabled, { passQueryParams: ['status'] })
   );
   router.get(
     {
@@ -257,9 +321,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('GET', BackendEndpoints.Judgments)
+    backendAction('GET', BackendEndpoints.Judgments, dataSourceEnabled)
   );
   router.delete(
     {
@@ -268,9 +333,51 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         params: schema.object({
           id: schema.string(),
         }),
+        query: queryWithDataSource,
       },
     },
-    backendAction('DELETE', BackendEndpoints.Judgments)
+    backendAction('DELETE', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+  // Manual rating update: adjust one or more (query, docId) ratings on an existing LLM judgment.
+  router.put(
+    {
+      path: `${ServiceEndpoints.Judgments}/{id}`,
+      validate: {
+        params: schema.object({
+          id: resourceId,
+        }),
+        body: schema.object({
+          judgmentRatings: schema.arrayOf(
+            schema.object({
+              query: schema.string(),
+              ratings: schema.arrayOf(
+                schema.object({
+                  docId: schema.string(),
+                  rating: schema.oneOf([schema.string(), schema.number()]),
+                })
+              ),
+            })
+          ),
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('PUT', BackendEndpoints.Judgments, dataSourceEnabled)
+  );
+
+  // Retry only the failed documents of an existing judgment. Proxies to the backend
+  // POST /_plugins/_search_relevance/judgments/{id}/_retry endpoint.
+  router.post(
+    {
+      path: `${ServiceEndpoints.JudgmentRetry}/{id}`,
+      validate: {
+        params: schema.object({
+          id: resourceId,
+        }),
+        query: queryWithDataSource,
+      },
+    },
+    backendAction('POST', BackendEndpoints.Judgments, dataSourceEnabled, { idSuffix: '_retry' })
   );
 
   router.post(
@@ -282,6 +389,7 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           promptTemplate: schema.string(),
           placeholderValues: schema.recordOf(schema.string(), schema.string()),
         }),
+        query: queryWithDataSource,
       },
     },
     async (context, req, res) => {
@@ -291,26 +399,21 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         placeholderValues,
       } = req.body;
 
-      const dataSourceId = req.query.data_source;
-      const caller = dataSourceId
-        ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
-        : context.core.opensearch.legacy.client.callAsCurrentUser;
+      const dataSourceId = (req.query as any)?.dataSourceId;
+      let caller: ILegacyScopedClusterClient['callAsCurrentUser'];
+      if (dataSourceEnabled && dataSourceId) {
+        caller = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+      } else {
+        caller = context.core.opensearch.legacy.client.callAsCurrentUser;
+      }
 
       try {
-        console.log('Validate prompt request:', {
-          modelId,
-          placeholderValues,
-          promptTemplate,
-        });
-
         // Step 1: Build the prompt by substituting placeholders
         let filledPrompt = promptTemplate;
         Object.keys(placeholderValues).forEach((key) => {
           const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
           filledPrompt = filledPrompt.replace(regex, placeholderValues[key]);
         });
-
-        console.log('Filled prompt:', filledPrompt);
 
         // Step 2: Make direct predict call to the model
         const predictBody = {
@@ -324,15 +427,11 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
           },
         };
 
-        console.log('Making predict call to model:', modelId);
-
         const predictResponse = await caller('transport.request', {
           method: 'POST',
           path: `/_plugins/_ml/models/${modelId}/_predict`,
           body: predictBody,
         });
-
-        console.log('Predict response:', JSON.stringify(predictResponse, null, 2));
 
         // Step 3: Extract the response
         const inference_results = predictResponse?.inference_results?.[0];
@@ -341,13 +440,10 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         let responseText = '';
         if (output) {
           if (Array.isArray(output)) {
-            // For models that return array of outputs
             responseText = output.map(item => item.result || item.response || '').join('\n');
           } else if (typeof output === 'object') {
-            // For models with nested structure
             responseText = output.response || output.result || JSON.stringify(output);
           } else {
-            // For simple string responses
             responseText = String(output);
           }
         }
@@ -361,11 +457,6 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
         });
       } catch (err) {
         console.error('Failed to validate prompt:', err);
-        console.error('Error details:', {
-          message: err.message,
-          statusCode: err.statusCode,
-          body: err.body,
-        });
 
         return res.customError({
           statusCode: err.statusCode || 500,
@@ -381,32 +472,61 @@ export function registerSearchRelevanceRoutes(router: IRouter): void {
   );
 }
 
-const backendAction = (method, path, options?: { passQueryParams?: string[] }) => {
+const backendAction = (
+  method: string,
+  path: string,
+  dataSourceEnabled: boolean,
+  options?: { passQueryParams?: string[]; idSuffix?: string }
+) => {
   return async (
     context: RequestHandlerContext,
     req: OpenSearchDashboardsRequest,
     res: OpenSearchDashboardsResponseFactory
   ): Promise<IOpenSearchDashboardsResponse<any>> => {
-    const dataSourceId = req.query.data_source;
-    const caller = dataSourceId
-      ? context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI
-      : context.core.opensearch.legacy.client.callAsCurrentUser;
+    const dataSourceId = (req.query as any)?.dataSourceId;
+    let callApi: ILegacyScopedClusterClient['callAsCurrentUser'];
+    if (dataSourceEnabled && dataSourceId) {
+      callApi = context.dataSource.opensearch.legacy.getClient(dataSourceId).callAPI;
+    } else {
+      callApi = context.core.opensearch.legacy.client.callAsCurrentUser;
+    }
 
     try {
       let response;
       if (method === 'DELETE') {
         const { id } = req.params;
         const deletePath = `${path}/${id}`;
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path: deletePath,
         });
+      } else if (method === 'PATCH' && req.params.id) {
+        const patchPath = `${path}/${req.params.id}`;
+        response = await callApi('transport.request', {
+          method,
+          path: patchPath,
+          body: req.body,
+        });
       } else if (method === 'GET' && req.params.id) {
-        // Handle GET request for individual experiment
         const getPath = `${path}/${req.params.id}`;
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path: getPath,
+        });
+      } else if (req.params.id && options?.idSuffix) {
+        // Handle id-scoped action routes such as POST {path}/{id}/_retry
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}/${options.idSuffix}`,
+          ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
+        });
+      } else if (method === 'PUT' && req.params.id) {
+        // Handle id-scoped updates such as PUT {path}/{id} (manual rating update).
+        // Without this, the id is dropped and the request hits the create endpoint.
+        response = await callApi('transport.request', {
+          method,
+          path: `${path}/${req.params.id}`,
+          body: req.body,
         });
       } else {
         // Handle PUT, POST, GET as before
@@ -424,7 +544,7 @@ const backendAction = (method, path, options?: { passQueryParams?: string[] }) =
             backendPath = `${path}?${queryParams.join('&')}`;
           }
         }
-        response = await caller('transport.request', {
+        response = await callApi('transport.request', {
           method,
           path: backendPath,
           ...(method === 'POST' || method === 'PUT' ? { body: req.body } : {}),
@@ -434,19 +554,16 @@ const backendAction = (method, path, options?: { passQueryParams?: string[] }) =
       return res.ok({ body: response });
     } catch (err) {
 
-      console.error('Failed to call search-relevance APIs', err); // Keep for full server-side logging
+      console.error('Failed to call search-relevance APIs', err);
 
-      let clientMessage = err.message; // Default to the err.message from transport.request
-      let clientAttributesError = err.body?.error || err.message; // Default attributes error
+      let clientMessage = err.message;
+      let clientAttributesError = err.body?.error || err.message;
 
-      // Check if the backend error body contains the specific message
       if (err.body && typeof err.body === 'string' && err.body.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
           clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
           clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
       }
-      // If the backend error body is a JSON object with a message/reason
       else if (err.body && typeof err.body === 'object') {
-          // Check for common backend error formats
           if (err.body.message && typeof err.body.message === 'string' && err.body.message.includes(DISABLED_BACKEND_PLUGIN_MESSAGE)) {
               clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
               clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
@@ -457,7 +574,6 @@ const backendAction = (method, path, options?: { passQueryParams?: string[] }) =
               clientMessage = DISABLED_BACKEND_PLUGIN_MESSAGE;
               clientAttributesError = DISABLED_BACKEND_PLUGIN_MESSAGE;
           }
-          // Fallback if specific message not found in complex body, but body has a message
           else if (err.body.message && typeof err.body.message === 'string') {
               clientMessage = err.body.message;
               clientAttributesError = err.body.message;
@@ -467,9 +583,9 @@ const backendAction = (method, path, options?: { passQueryParams?: string[] }) =
       return res.customError({
         statusCode: err.statusCode || 500,
         body: {
-          message: clientMessage, // Use the determined message
+          message: clientMessage,
           attributes: {
-            error: clientAttributesError, // Use the determined attributes error
+            error: clientAttributesError,
           },
         },
       });

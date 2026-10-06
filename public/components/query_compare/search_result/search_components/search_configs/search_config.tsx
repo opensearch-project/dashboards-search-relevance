@@ -5,7 +5,6 @@
 
 import {
   EuiButtonEmpty,
-  EuiCodeEditor,
   EuiCompressedComboBox,
   EuiFlexGroup,
   EuiFlexItem,
@@ -37,6 +36,7 @@ import { DataSourceAttributes } from '../../../../../../../../src/plugins/data_s
 import { ServiceEndpoints } from '../../../../../../common';
 import * as pluginManifest from '../../../../../../opensearch_dashboards.json';
 import { SearchConfigurationService } from '../../../../search_configuration/services/search_configuration_service';
+import { ResizableQueryEditor } from '../resizable_query_editor';
 
 export interface SearchRelevanceServices extends CoreStart {
   setHeaderActionMenu: AppMountParameters['setHeaderActionMenu'];
@@ -69,6 +69,10 @@ interface SearchConfigProps {
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   dataSourceOptions: DataSourceOption[];
   optional?: boolean;
+  /** Controlled height for the query editor (for synchronized resizing) */
+  editorHeight?: number;
+  /** Callback when editor height changes (for synchronized resizing) */
+  onEditorHeightChange?: (newHeight: number) => void;
 }
 
 export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
@@ -89,6 +93,8 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   setActionMenu,
   dataSourceOptions,
   optional = false,
+  editorHeight,
+  onEditorHeightChange,
 }) => {
   const [searchConfigOptions, setSearchConfigOptions] = React.useState<any[]>([]);
   const [selectedSearchConfig, setSelectedSearchConfig] = React.useState<any[]>([]);
@@ -108,12 +114,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     datasource2,
   } = useSearchRelevanceContext();
 
+  const dataSourceId = queryNumber === 1 ? datasource1 : datasource2;
+
   useEffect(() => {
     let isMounted = true;
     const fetchSearchConfigurations = async () => {
       setIsLoadingConfigs(true);
       try {
-        const data = await searchConfigurationService.getSearchConfigurations();
+        const data = await searchConfigurationService.getSearchConfigurations(dataSourceId);
         if (isMounted) {
           setAllConfigs(data.hits.hits);
           const options = data.hits.hits.map((search_config: any) => ({
@@ -136,7 +144,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [searchConfigurationService]);
+  }, [searchConfigurationService, dataSourceId]);
 
   const onSearchConfigChange = (selectedOptions: any[]) => {
     setSelectedSearchConfig(selectedOptions);
@@ -243,6 +251,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   useEffect(() => {
     setSelectedIndex('');
     setPipeline('');
+    setSelectedSearchConfig([]);
   }, [datasource1, datasource2]);
 
   let DataSourceSelector;
@@ -251,6 +260,9 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   }
   const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
+    if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
+      return false;
+    }
     const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
     return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
   };
@@ -357,22 +369,14 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
           </p>
         }
       >
-        <EuiCodeEditor
-          mode="json"
-          theme="textmate"
-          width="100%"
-          height="10rem"
+        <ResizableQueryEditor
           value={queryString}
           onChange={onChangeQueryString}
-          showPrintMargin={false}
-          setOptions={{
-            fontSize: '14px',
-            enableBasicAutocompletion: true,
-            enableLiveAutocompletion: true,
-          }}
-          aria-label="Code Editor"
           onBlur={codeEditorOnBlur}
-          tabSize={2}
+          aria-label="Code Editor"
+          data-test-subj={`queryEditor${queryNumber}`}
+          height={editorHeight}
+          onHeightChange={onEditorHeightChange}
         />
       </EuiCompressedFormRow>
     </>

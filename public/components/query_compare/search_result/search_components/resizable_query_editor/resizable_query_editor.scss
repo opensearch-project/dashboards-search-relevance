@@ -1,0 +1,62 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+@import '@elastic/eui/src/global_styling/variables/index';
+
+.resizableQueryEditor {
+  position: relative;
+  width: 100%;
+
+  &__editorWrapper {
+    width: 100%;
+  }
+
+  &__resizeHandle {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 12px;
+    cursor: row-resize;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    transition: background-color $euiAnimSpeedFast ease;
+    border-radius: 0 0 $euiBorderRadius $euiBorderRadius;
+
+    &:hover,
+    &:focus {
+      background-color: transparentize($euiColorPrimary, 0.9);
+
+      .resizableQueryEditor__resizeHandleBar {
+        background-color: $euiColorPrimary;
+        width: 48px;
+      }
+    }
+
+    &:focus {
+      outline: $euiFocusRingSize solid $euiColorPrimary;
+      outline-offset: -$euiFocusRingSize;
+    }
+
+    &--active {
+      background-color: transparentize($euiColorPrimary, 0.85);
+
+      .resizableQueryEditor__resizeHandleBar {
+        background-color: $euiColorPrimary;
+        width: 48px;
+      }
+    }
+  }
+
+  &__resizeHandleBar {
+    width: 32px;
+    height: 4px;
+    background-color: $euiColorMediumShade;
+    border-radius: $euiBorderRadius;
+    transition: background-color $euiAnimSpeedFast ease, width $euiAnimSpeedFast ease;
+  }
+}

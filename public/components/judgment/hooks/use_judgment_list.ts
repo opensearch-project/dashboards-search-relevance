@@ -14,9 +14,12 @@ export interface JudgmentItem {
   type: string;
   status: string;
   timestamp: string;
+  // Number of queries that had at least one document fail to be rated. Used to decide
+  // whether the retry action should be shown for this judgment (only when > 0).
+  failedQueries: number;
 }
 
-export const useJudgmentList = (http: CoreStart['http']) => {
+export const useJudgmentList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [judgments, setJudgments] = useState<JudgmentItem[]>([]);
@@ -24,6 +27,16 @@ export const useJudgmentList = (http: CoreStart['http']) => {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const { services } = useOpenSearchDashboards();
+
+  const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
+
+  // Clear cached data when dataSourceId changes so findJudgments re-fetches
+  useEffect(() => {
+    setJudgments([]);
+    setTableData([]);
+    previousJudgments.current = [];
+    setRefreshKey((prev) => prev + 1);
+  }, [dataSourceId]);
 
   // Polling state
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +47,11 @@ export const useJudgmentList = (http: CoreStart['http']) => {
   const MAX_POLLING_DURATION = 10 * 60 * 1000;
   const MAX_ERRORS = 3;
 
-  const hasProcessing = judgments.some((judgment) => judgment.status === 'PROCESSING');
+  // Treat both PROCESSING (initial generation) and RETRYING (retry in progress) as in-progress
+  // states, so the list keeps auto-refreshing until the judgment settles.
+  const hasProcessing = judgments.some(
+    (judgment) => judgment.status === 'PROCESSING' || judgment.status === 'RETRYING'
+  );
 
   const mapJudgmentFields = (obj: any): JudgmentItem => {
     return {
@@ -43,7 +60,22 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       type: obj._source.type,
       status: obj._source.status,
       timestamp: obj._source.timestamp,
+      // failedQueries is stored on the judgment metadata; default to 0 when absent.
+      failedQueries: Number(obj._source.metadata?.failedQueries ?? 0),
     };
+  };
+
+  // Filter a full list for display only — never use the result to overwrite the cache.
+  // Caching a search-filtered subset would drop rows (and can stop PROCESSING polling)
+  // when the user clears the search box.
+  const filterJudgments = (items: JudgmentItem[], search?: string): JudgmentItem[] => {
+    const term = search?.trim().toLowerCase();
+    if (!term) {
+      return items;
+    }
+    return items.filter(
+      (item) => item.name.toLowerCase().includes(term) || item.id.toLowerCase().includes(term)
+    );
   };
 
   const startPolling = useCallback(() => {
@@ -65,14 +97,15 @@ export const useJudgmentList = (http: CoreStart['http']) => {
 
       setIsBackgroundRefreshing(true);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const response = await http.get(ServiceEndpoints.Judgments, queryParams);
         const updatedList = response ? response.hits.hits.map(mapJudgmentFields) : [];
         errorCount.current = 0;
 
         if (previousJudgments.current.length > 0) {
           const completions = updatedList.filter((curr) => {
             const prev = previousJudgments.current.find((p) => p.id === curr.id);
-            return prev?.status === 'PROCESSING' && curr.status === 'COMPLETED';
+            const wasInProgress = prev?.status === 'PROCESSING' || prev?.status === 'RETRYING';
+            return wasInProgress && curr.status === 'COMPLETED';
           });
 
           completions.forEach((judgment) => {
@@ -90,7 +123,11 @@ export const useJudgmentList = (http: CoreStart['http']) => {
           setRefreshKey((prev) => prev + 1);
         }
 
-        if (!updatedList.some((judgment) => judgment.status === 'PROCESSING')) {
+        if (
+          !updatedList.some(
+            (judgment) => judgment.status === 'PROCESSING' || judgment.status === 'RETRYING'
+          )
+        ) {
           clearInterval(intervalRef.current!);
           intervalRef.current = null;
         }
@@ -101,7 +138,7 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsBackgroundRefreshing(false);
       }
     }, 15000);
-  }, [http, services.notifications]);
+  }, [http, services.notifications, dataSourceId]);
 
   useEffect(() => {
     if (hasProcessing && !intervalRef.current) {
@@ -117,14 +154,10 @@ export const useJudgmentList = (http: CoreStart['http']) => {
 
   const findJudgments = useCallback(
     async (search?: string) => {
-      // Use tableData if available (from polling or previous fetch)
+      // Use tableData if available (from polling or previous fetch). Always filter from the
+      // full cached list so search never permanently shrinks the cache.
       if (tableData.length > 0) {
-        const filteredList = search
-          ? tableData.filter((item) => {
-            const q = search.toLowerCase();
-            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-          })
-          : tableData;
+        const filteredList = filterJudgments(tableData, search);
         return {
           total: filteredList.length,
           hits: filteredList,
@@ -134,18 +167,15 @@ export const useJudgmentList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.Judgments);
+        const response = await http.get(ServiceEndpoints.Judgments, queryParams);
         const list = response ? response.hits.hits.map(mapJudgmentFields) : [];
-        const filteredList = search
-          ? list.filter((item: JudgmentItem) => {
-            const q = search.toLowerCase();
-            return item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q);
-          })
-          : list;
+        // Always cache the full unfiltered list. Search only affects the returned hits so
+        // clearing the search box (or remounting with an empty term) restores all rows.
+        // Keeping the full list also preserves hasProcessing for background polling.
+        setJudgments(list);
+        setTableData(list);
 
-        setJudgments(filteredList);
-        setTableData(filteredList);
-
+        const filteredList = filterJudgments(list, search);
         return {
           total: filteredList.length,
           hits: filteredList,
@@ -162,17 +192,15 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http, tableData]
+    [http, tableData, dataSourceId]
   );
 
   const deleteJudgment = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.Judgments}/${id}`);
+        await http.delete(`${ServiceEndpoints.Judgments}/${id}`, queryParams);
         setError(null);
-        // remove deleted item from all cached state so the list
-        // reflects the deletion immediately without requiring a re-fetch.
         setJudgments((prev) => prev.filter((j) => j.id !== id));
         setTableData((prev) => prev.filter((j) => j.id !== id));
         previousJudgments.current = previousJudgments.current.filter((j) => j.id !== id);
@@ -180,13 +208,42 @@ export const useJudgmentList = (http: CoreStart['http']) => {
         return true;
       } catch (err) {
         console.error('Failed to delete judgment', err);
-        setError('Failed to delete judgment');
+        setError(extractUserMessageFromError(err) || 'Failed to delete judgment');
         return false;
       } finally {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
+  );
+
+  const retryJudgment = useCallback(
+    async (judgment: JudgmentItem) => {
+      try {
+        await http.post(`${ServiceEndpoints.JudgmentRetry}/${judgment.id}`, queryParams);
+        services.notifications?.toasts.addSuccess({
+          title: 'Retry started',
+          text: `Re-scoring failed documents for judgment "${judgment.name}".`,
+        });
+        // Optimistically mark the row as RETRYING so the status updates immediately and
+        // the polling loop (driven by hasProcessing) picks it up until it settles.
+        const markRetrying = (list: JudgmentItem[]) =>
+          list.map((j) => (j.id === judgment.id ? { ...j, status: 'RETRYING' } : j));
+        setJudgments((prev) => markRetrying(prev));
+        setTableData((prev) => markRetrying(prev));
+        setRefreshKey((prev) => prev + 1);
+        return true;
+      } catch (err) {
+        // Surface the backend reason (e.g. no failed documents, retry already in progress).
+        const message = extractUserMessageFromError(err) || 'Failed to retry judgment';
+        services.notifications?.toasts.addDanger({
+          title: 'Retry failed',
+          text: message,
+        });
+        return false;
+      }
+    },
+    [http, services.notifications, dataSourceId]
   );
 
   return {
@@ -198,5 +255,6 @@ export const useJudgmentList = (http: CoreStart['http']) => {
     refreshKey,
     findJudgments,
     deleteJudgment,
+    retryJudgment,
   };
 };

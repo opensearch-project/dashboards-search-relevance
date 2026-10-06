@@ -15,6 +15,8 @@ import {
 import { JudgmentType } from '../types';
 import { LLMJudgmentFields } from './llm_judgment_fields';
 import { UBIJudgmentFields } from './ubi_judgment_fields';
+import { ImportedJudgmentFields } from './imported_judgment_fields';
+
 
 interface JudgmentFormProps {
   formData: any;
@@ -29,9 +31,11 @@ interface JudgmentFormProps {
   querySetOptions: any[];
   searchConfigOptions: any[];
   modelOptions: any[];
+  existingJudgmentOptions: any[];
   isLoadingQuerySets: boolean;
   isLoadingSearchConfigs: boolean;
   isLoadingModels: boolean;
+  isLoadingExistingJudgments: boolean;
   newContextField: string;
   setNewContextField: (value: string) => void;
   addContextField: () => void;
@@ -55,14 +59,17 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
   querySetOptions,
   searchConfigOptions,
   modelOptions,
+  existingJudgmentOptions,
   isLoadingQuerySets,
   isLoadingSearchConfigs,
   isLoadingModels,
+  isLoadingExistingJudgments,
   newContextField,
   setNewContextField,
   addContextField,
   removeContextField,
   dateRangeError,
+  handleJudgmentFileContent,
   indexOptions,
   isLoadingIndexes,
   httpClient,
@@ -102,6 +109,7 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           options={[
             { value: JudgmentType.LLM, text: 'Explicit (LLM Judge)' },
             { value: JudgmentType.UBI, text: 'Implicit (Click based)' },
+            { value: JudgmentType.IMPORT, text: 'Explicit (Imported)' },
           ]}
           value={formData.type}
           onChange={(e) => updateFormData({ type: e.target.value as JudgmentType })}
@@ -121,14 +129,20 @@ export const JudgmentForm: React.FC<JudgmentFormProps> = ({
           querySetOptions={querySetOptions}
           searchConfigOptions={searchConfigOptions}
           modelOptions={modelOptions}
+          existingJudgmentOptions={existingJudgmentOptions}
           isLoadingQuerySets={isLoadingQuerySets}
           isLoadingSearchConfigs={isLoadingSearchConfigs}
           isLoadingModels={isLoadingModels}
+          isLoadingExistingJudgments={isLoadingExistingJudgments}
           newContextField={newContextField}
           setNewContextField={setNewContextField}
           addContextField={addContextField}
           removeContextField={removeContextField}
           httpClient={httpClient}
+        />
+      ) : formData.type === JudgmentType.IMPORT ? (
+         <ImportedJudgmentFields
+          handleJudgmentFileContent={handleJudgmentFileContent}
         />
       ) : (
         <UBIJudgmentFields

@@ -12,6 +12,7 @@ import {
   EuiPageHeader,
   EuiPageTemplate,
   EuiText,
+  EuiToolTip,
 } from '@elastic/eui';
 import React, { useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
@@ -28,11 +29,13 @@ import { useSearchConfigurationList } from '../hooks/use_search_configuration_li
 
 interface SearchConfigurationListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export const SearchConfigurationListing: React.FC<SearchConfigurationListingProps> = ({
   http,
   history,
+  dataSourceId,
 }) => {
   const { dateFormat } = useConfig();
   const {
@@ -40,7 +43,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
     error,
     findSearchConfigurations,
     deleteSearchConfiguration,
-  } = useSearchConfigurationList(http);
+  } = useSearchConfigurationList(http, dataSourceId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [configToDelete, setConfigToDelete] = useState<any>(null);
@@ -67,12 +70,31 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
             size="xs"
             {...reactRouterNavigate(
               history,
-              `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}`
+              `${Routes.SearchConfigurationViewPrefix}/${searchConfiguration.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`
             )}
           >
             {name}
           </EuiButtonEmpty>
         </>
+      ),
+    },
+    {
+      field: 'description',
+      name: 'Description',
+      dataType: 'string',
+      sortable: false,
+      render: (description: string) => (
+        <EuiText
+          size="s"
+          style={{
+            maxWidth: '250px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {description || '—'}
+        </EuiText>
       ),
     },
     {
@@ -114,15 +136,17 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => {
-            setConfigToDelete(item);
-            setShowDeleteModal(true);
-          }}
-        />
+        <EuiToolTip content="Delete">
+          <EuiButtonIcon
+            aria-label="Delete"
+            iconType="trash"
+            color="danger"
+            onClick={() => {
+              setConfigToDelete(item);
+              setShowDeleteModal(true);
+            }}
+          />
+        </EuiToolTip>
       ),
     },
   ];
@@ -166,7 +190,7 @@ export const SearchConfigurationListing: React.FC<SearchConfigurationListingProp
           </EuiCallOut>
         ) : (
           <TableListView
-            key={refreshKey} // force refresh
+            key={`${refreshKey}-${dataSourceId ?? ''}`}
             headingId="searchConfigurationListingHeading"
             entityName="Search Configuration"
             entityNamePlural="Search Configurations"

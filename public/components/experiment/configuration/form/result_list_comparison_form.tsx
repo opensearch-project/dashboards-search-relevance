@@ -14,6 +14,8 @@ import {
   mapOptionLabelsToFormData,
   mapQuerySetToOptionLabels,
 } from '../configuration_form';
+import { ExperimentMetadataFields } from '../experiment_metadata_fields';
+import { validateExperimentMetadataForCreate } from '../../../../../common';
 
 export interface ResultListComparisonFormRef {
   validateAndSetErrors: () => { isValid: boolean; data: ResultListComparisonFormData };
@@ -24,12 +26,13 @@ interface ResultListComparisonFormProps {
   formData: ResultListComparisonFormData;
   onChange: (field: keyof ResultListComparisonFormData, value: any) => void;
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export const ResultListComparisonForm = forwardRef<
   ResultListComparisonFormRef,
   ResultListComparisonFormProps
->(({ formData, onChange, http }, ref) => {
+>(({ formData, onChange, http, dataSourceId }, ref) => {
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
@@ -37,11 +40,15 @@ export const ResultListComparisonForm = forwardRef<
   const [querySetError, setQuerySetError] = useState<string[]>([]);
   const [kError, setKError] = useState<string[]>([]);
   const [searchConfigError, setSearchConfigError] = useState<string[]>([]);
+  const [nameError, setNameError] = useState<string[]>([]);
+  const [descriptionError, setDescriptionError] = useState<string[]>([]);
 
   const clearAllErrors = () => {
     setQuerySetError([]);
     setKError([]);
     setSearchConfigError([]);
+    setNameError([]);
+    setDescriptionError([]);
   };
 
   useEffect(() => {
@@ -64,7 +71,23 @@ export const ResultListComparisonForm = forwardRef<
       size: k,
       searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
       type: formData.type,
+      name: typeof formData.name === 'string' ? formData.name : '',
+      description: typeof formData.description === 'string' ? formData.description : '',
     };
+
+    const metadataErrors = validateExperimentMetadataForCreate(currentData.name, currentData.description);
+    if (metadataErrors.name) {
+      setNameError(metadataErrors.name);
+      isValid = false;
+    } else {
+      setNameError([]);
+    }
+    if (metadataErrors.description) {
+      setDescriptionError(metadataErrors.description);
+      isValid = false;
+    } else {
+      setDescriptionError([]);
+    }
 
     // Validate Query Set
     if (!currentData.querySetId) {
@@ -146,6 +169,15 @@ export const ResultListComparisonForm = forwardRef<
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
+        <ExperimentMetadataFields
+          name={typeof formData.name === 'string' ? formData.name : ''}
+          description={typeof formData.description === 'string' ? formData.description : ''}
+          onChange={(field, value) => onChange(field, value)}
+          nameError={nameError}
+          descriptionError={descriptionError}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
         <EuiFlexGroup gutterSize="m" direction="row" style={{ maxWidth: 600 }}>
           <EuiFlexItem grow={4}>
             <EuiFormRow
@@ -157,6 +189,7 @@ export const ResultListComparisonForm = forwardRef<
                 selectedOptions={querySetOptions}
                 onChange={handleQuerySetsChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 hideLabel={true}
               />
             </EuiFormRow>
@@ -193,6 +226,7 @@ export const ResultListComparisonForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
+            dataSourceId={dataSourceId}
             maxNumberOfOptions={2}
             hideLabel={true}
           />

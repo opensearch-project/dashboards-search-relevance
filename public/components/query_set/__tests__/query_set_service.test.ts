@@ -41,6 +41,16 @@ describe('QuerySetService', () => {
 
       expect(result).toEqual([]);
     });
+
+    it('should include dataSourceId in URL when provided', async () => {
+      mockHttp.get.mockResolvedValue([]);
+
+      await service.fetchUbiIndexes('my-datasource');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        '/api/relevancy/search/indexes/pattern/*ubi_queries*/my-datasource'
+      );
+    });
   });
 
   describe('createQuerySet', () => {
@@ -135,6 +145,97 @@ describe('QuerySetService', () => {
       mockHttp.post.mockRejectedValue(error);
 
       await expect(service.createQuerySet(querySetData, false)).rejects.toThrow('API Error');
+    });
+
+    it('should include dataSourceId in POST request when provided', async () => {
+      const querySetData = { name: 'test', sampling: 'random', querySetSize: 10 };
+      
+      await service.createQuerySet(querySetData, false, 'test-datasource');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify(querySetData),
+        headers: { 'Content-Type': 'application/json' },
+        query: { dataSourceId: 'test-datasource' }
+      });
+    });
+
+    it('should include dataSourceId in PUT request when provided', async () => {
+      const querySetData = { 
+        name: 'test', 
+        sampling: 'manual', 
+        querySetQueries: [{ queryText: 'test', referenceAnswer: 'answer' }] 
+      };
+      
+      await service.createQuerySet(querySetData, true, 'test-datasource');
+
+      expect(mockHttp.put).toHaveBeenCalledWith(expect.any(String), {
+        body: JSON.stringify({ ...querySetData, sampling: 'manual' }),
+        headers: { 'Content-Type': 'application/json' },
+        query: { dataSourceId: 'test-datasource' }
+      });
+    });
+
+    it('should omit description from POST body when empty', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '',
+        sampling: 'random',
+        querySetSize: 10,
+      };
+
+      mockHttp.post.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, false);
+
+      expect(mockHttp.post).toHaveBeenCalledWith('/api/relevancy/query_sets', {
+        body: JSON.stringify({
+          name: 'Test Query Set',
+          sampling: 'random',
+          querySetSize: 10,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
+
+    it('should omit description from POST body when whitespace only', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '   ',
+        sampling: 'random',
+        querySetSize: 10,
+      };
+
+      mockHttp.post.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, false);
+
+      expect(JSON.parse(mockHttp.post.mock.calls[0][1].body)).not.toHaveProperty('description');
+    });
+
+    it('should omit description from PUT body when empty', async () => {
+      const querySetData = {
+        name: 'Test Query Set',
+        description: '',
+        sampling: 'manual',
+        querySetQueries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
+      };
+
+      mockHttp.put.mockResolvedValue({ success: true });
+
+      await service.createQuerySet(querySetData, true);
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/query_sets', {
+        body: JSON.stringify({
+          name: 'Test Query Set',
+          sampling: 'manual',
+          querySetQueries: [{ queryText: 'test query', referenceAnswer: 'test answer' }],
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
     });
   });
 });

@@ -38,9 +38,11 @@ jest.mock('../hooks/use_judgment_form', () => ({
     querySetOptions: [],
     searchConfigOptions: [],
     modelOptions: [],
+    existingJudgmentOptions: [],
     isLoadingQuerySets: false,
     isLoadingSearchConfigs: false,
     isLoadingModels: false,
+    isLoadingExistingJudgments: false,
     nameError: '',
     newContextField: '',
     setNewContextField: jest.fn(),
@@ -91,9 +93,11 @@ describe('JudgmentCreate', () => {
       querySetOptions: [],
       searchConfigOptions: [],
       modelOptions: [],
+      existingJudgmentOptions: [],
       isLoadingQuerySets: false,
       isLoadingSearchConfigs: false,
       isLoadingModels: false,
+      isLoadingExistingJudgments: false,
       nameError: '',
       newContextField: '',
       setNewContextField: jest.fn(),
@@ -109,5 +113,50 @@ describe('JudgmentCreate', () => {
     fireEvent.click(screen.getByTestId('createJudgmentButton'));
     expect(mockValidateAndSubmit).toHaveBeenCalled();
     expect(mockHistory.push).toHaveBeenCalledWith('/judgment');
+  });
+
+  it('forwards dataSourceId to the form hook', () => {
+    const captured: any[] = [];
+    const useJudgmentFormMock = jest.requireMock('../hooks/use_judgment_form');
+    useJudgmentFormMock.useJudgmentForm = jest.fn((...args: any[]) => {
+      captured.push(args);
+      return {
+        formData: { name: '', type: 'LLM_JUDGMENT', ignoreFailure: false, contextFields: [] },
+        updateFormData: jest.fn(),
+        selectedQuerySet: [],
+        setSelectedQuerySet: jest.fn(),
+        selectedSearchConfigs: [],
+        setSelectedSearchConfigs: jest.fn(),
+        selectedModel: [],
+        setSelectedModel: jest.fn(),
+        querySetOptions: [],
+        searchConfigOptions: [],
+        modelOptions: [],
+        existingJudgmentOptions: [],
+        isLoadingQuerySets: false,
+        isLoadingSearchConfigs: false,
+        isLoadingModels: false,
+        isLoadingExistingJudgments: false,
+        nameError: '',
+        newContextField: '',
+        setNewContextField: jest.fn(),
+        addContextField: jest.fn(),
+        removeContextField: jest.fn(),
+        validateAndSubmit: jest.fn(),
+      };
+    });
+
+    render(
+      <JudgmentCreate
+        http={mockHttp}
+        notifications={mockNotifications}
+        history={mockHistory}
+        dataSourceId="foo-ds"
+      />
+    );
+
+    // Signature: (http, notifications, dataSourceId)
+    const lastCall = captured[captured.length - 1];
+    expect(lastCall[2]).toBe('foo-ds');
   });
 });

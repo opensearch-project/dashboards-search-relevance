@@ -170,6 +170,20 @@ describe('QuerySetForm', () => {
     expect(mockFormState.setIsManualInput).toHaveBeenCalledWith(true);
   });
 
+  it('labels description as optional', () => {
+    render(
+      <QuerySetForm
+        formState={mockFormState}
+        filePickerId={mockFilePickerId}
+        indexOptions={mockIndexOptions}
+        isLoadingIndexes={false}
+      />
+    );
+
+    expect(screen.getByText('Description (optional)')).toBeInTheDocument();
+    expect(screen.getByText('Optionally describe the query set (< 250 characters).')).toBeInTheDocument();
+  });
+
   it('displays validation errors', () => {
     const formStateWithErrors = {
       ...mockFormState,
@@ -264,5 +278,35 @@ describe('QuerySetForm', () => {
     fireEvent.change(methodSelect, { target: { value: 'file' } });
 
     expect(mockFormState.handleManualInputMethodChange).toHaveBeenCalledWith('file');
+  });
+
+  it('renders help button in manual input mode with file upload', () => {
+    const manualInputFormState = {
+      ...mockFormState,
+      isManualInput: true,
+      manualInputMethod: 'file' as const,
+    };
+
+    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.getByTestId('querySetHelpButton')).toBeInTheDocument();
+  });
+
+  it('renders help button in manual input mode with text input', () => {
+    const manualInputFormState = {
+      ...mockFormState,
+      isManualInput: true,
+      manualInputMethod: 'text' as const,
+    };
+
+    render(<QuerySetForm formState={manualInputFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.getByTestId('querySetHelpButton')).toBeInTheDocument();
+  });
+
+  it('does not render help button in sampling mode', () => {
+    render(<QuerySetForm formState={mockFormState} filePickerId={mockFilePickerId} indexOptions={mockIndexOptions} isLoadingIndexes={false} />);
+
+    expect(screen.queryByTestId('querySetHelpButton')).not.toBeInTheDocument();
   });
 });

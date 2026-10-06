@@ -5,16 +5,16 @@
 
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useQuerySetView } from '../hooks/use_query_set_view';
+import { extractUserMessageFromError, ServiceEndpoints } from '../../../../common';
 
-// Mock the common module
 jest.mock('../../../../common', () => ({
-  ServiceEndpoints: {
-    QuerySets: '/api/relevancy/querySets',
-  },
-  extractUserMessageFromError: jest.fn(
-    (err) => 'Failed to load query set due to an unknown error.'
-  ),
+  ...jest.requireActual('../../../../common'),
+  extractUserMessageFromError: jest.fn(),
 }));
+
+const mockExtractUserMessageFromError = extractUserMessageFromError as jest.MockedFunction<
+  typeof extractUserMessageFromError
+>;
 
 const mockHttp = {
   get: jest.fn(),
@@ -23,6 +23,7 @@ const mockHttp = {
 describe('useQuerySetView', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockExtractUserMessageFromError.mockReturnValue(null);
   });
 
   it('initializes with loading state', () => {
@@ -95,8 +96,30 @@ describe('useQuerySetView', () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.loading).toBe(false);
-    expect(result.current.error).toBe('Failed to load query set due to an unknown error.');
+    expect(result.current.error).toBe('Error loading query set data');
     expect(result.current.querySet).toBe(null);
+  });
+
+  it('surfaces backend error message when available', async () => {
+    const customError = {
+      body: {
+        statusCode: 404,
+        message: '[resource_not_found_exception] Document not found: query-set-1',
+      },
+    };
+    mockHttp.get.mockRejectedValue(customError);
+    mockExtractUserMessageFromError.mockReturnValue(
+      '404: [resource_not_found_exception] Document not found: query-set-1'
+    );
+
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'query-set-1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.error).toBe(
+      '404: [resource_not_found_exception] Document not found: query-set-1'
+    );
+    expect(mockExtractUserMessageFromError).toHaveBeenCalledWith(customError);
   });
 
   it('does not fetch when id is empty', () => {
@@ -104,6 +127,34 @@ describe('useQuerySetView', () => {
 
     expect(result.current.loading).toBe(true);
     expect(mockHttp.get).not.toHaveBeenCalled();
+  });
+
+  it('passes dataSourceId when fetching a query set', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: 'test-id', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id', 'my-datasource'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.QuerySets}/test-id`, {
+      query: { dataSourceId: 'my-datasource' },
+    });
+  });
+
+  it('omits dataSourceId query param when not provided', async () => {
+    const mockResponse = {
+      hits: { hits: [{ _source: { id: 'test-id', name: 'Test' } }] },
+    };
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useQuerySetView(mockHttp, 'test-id'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(mockHttp.get).toHaveBeenCalledWith(`${ServiceEndpoints.QuerySets}/test-id`, {});
   });
 
   it('refetches when id changes', async () => {

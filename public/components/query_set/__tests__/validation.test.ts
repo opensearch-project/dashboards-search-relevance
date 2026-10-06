@@ -38,7 +38,7 @@ describe('validation utils', () => {
       expect(errors.nameError).toBe('Name is a required parameter.');
     });
 
-    it('should return description error when description is empty', () => {
+    it('should allow empty description', () => {
       const formData = {
         name: 'Test Query Set',
         description: '',
@@ -49,7 +49,22 @@ describe('validation utils', () => {
 
       const errors = validateForm(formData);
 
-      expect(errors.descriptionError).toBe('Description is a required parameter.');
+      expect(errors.descriptionError).toBe('');
+      expect(hasValidationErrors(errors)).toBe(false);
+    });
+
+    it('should return description error when description is too long', () => {
+      const formData = {
+        name: 'Test Query Set',
+        description: 'a'.repeat(251),
+        querySetSize: 10,
+        manualQueries: '',
+        isManualInput: false,
+      };
+
+      const errors = validateForm(formData);
+
+      expect(errors.descriptionError).toBe('Description is too long (> 250 characters).');
     });
 
     it('should return query size error when size is invalid for non-manual input', () => {

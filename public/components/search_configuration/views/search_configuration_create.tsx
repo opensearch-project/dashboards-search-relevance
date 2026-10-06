@@ -22,12 +22,14 @@ import { useSearchConfigurationForm } from '../hooks/use_search_configuration_fo
 interface SearchConfigurationCreateProps extends RouteComponentProps {
   http: CoreStart['http'];
   notifications: NotificationsStart;
+  dataSourceId?: string;
 }
 
 export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps> = ({
   http,
   notifications,
   history,
+  dataSourceId,
 }) => {
   const {
     // Form state
@@ -35,6 +37,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     setName,
     nameError,
     validateNameField,
+    description,
+    setDescription,
+    descriptionError,
+    validateDescriptionField,
     query,
     setQuery,
     queryError,
@@ -67,6 +73,7 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
     http,
     notifications,
     onSuccess: () => history.push('/searchConfiguration'),
+    dataSourceId,
   });
 
   // Handle cancel action
@@ -108,6 +115,10 @@ export const SearchConfigurationCreate: React.FC<SearchConfigurationCreateProps>
               setName={setName}
               nameError={nameError}
               validateName={validateNameField}
+              description={description}
+              setDescription={setDescription}
+              descriptionError={descriptionError}
+              validateDescription={validateDescriptionField}
               query={query}
               setQuery={setQuery}
               queryError={queryError}

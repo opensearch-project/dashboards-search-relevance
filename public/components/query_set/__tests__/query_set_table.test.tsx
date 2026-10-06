@@ -12,6 +12,18 @@ jest.mock('../../../contexts/date_format_context', () => ({
   useConfig: () => ({ dateFormat: 'YYYY-MM-DD HH:mm:ss' }),
 }));
 
+jest.mock('@elastic/eui', () => {
+  const originalModule = jest.requireActual('@elastic/eui');
+  return {
+    ...originalModule,
+    EuiToolTip: ({ children, content }: any) => (
+      <div data-test-subj="eui-tooltip" data-tooltip-content={content}>
+        {children}
+      </div>
+    ),
+  };
+});
+
 jest.mock('../../../../../../src/plugins/opensearch_dashboards_react/public', () => ({
   reactRouterNavigate: () => ({ onClick: jest.fn() }),
   TableListView: ({ tableColumns, findItems, loading, pagination, search, sorting }: any) => {
@@ -117,5 +129,12 @@ describe('QuerySetTable', () => {
     expect(descriptionColumn).toBeTruthy();
     expect(numQueriesColumn).toBeTruthy();
     expect(timestampColumn).toBeTruthy();
+  });
+
+  it('renders "Delete" tooltip for the action button', () => {
+    const { getByTestId } = render(<QuerySetTable {...defaultProps} />);
+    const tooltip = getByTestId('eui-tooltip');
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveAttribute('data-tooltip-content', 'Delete');
   });
 });

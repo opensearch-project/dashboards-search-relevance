@@ -9,8 +9,7 @@ import { ServiceEndpoints } from '../../../../common';
 
 // Mock the HTTP service
 const mockHttpPost = jest.fn(() => Promise.resolve({
-  result1: { hits: { hits: [] } },
-  result2: { hits: { hits: [] } }
+  result: { hits: { hits: [] } },
 }));
 
 const mockHttp = {
@@ -33,7 +32,7 @@ describe('PairwiseExperimentView', () => {
     /**
      * This test verifies that when creating queries with document IDs,
      * the size parameter is set to match the number of IDs.
-     * 
+     *
      * This directly tests the fix we implemented to ensure all requested
      * documents are returned, not just the default 10.
      */
@@ -61,7 +60,7 @@ describe('PairwiseExperimentView', () => {
           docIds2: Array(25).fill(0).map((_, i) => `doc${i+1}`)   // 25 documents
         }
       ];
-      
+
       testCases.forEach(testCase => {
         // Create queries as they would be created in the component
         const query1 = {
@@ -73,7 +72,7 @@ describe('PairwiseExperimentView', () => {
             }
           }
         };
-        
+
         const query2 = {
           index: 'test-index-2',
           size: testCase.docIds2.length, // This is the line we added in our fix
@@ -83,31 +82,27 @@ describe('PairwiseExperimentView', () => {
             }
           }
         };
-        
+
         // Assert that the size parameters match the document ID arrays length
         expect(query1.size).toBe(testCase.docIds1.length);
         expect(query2.size).toBe(testCase.docIds2.length);
-        
-        // Create the POST request as it would be in the component
-        const requestBody = { query1, query2 };
-        const requestOptions = {
-          body: JSON.stringify(requestBody)
-        };
-        
-        // Call the mock HTTP service
-        mockHttp.post(ServiceEndpoints.GetSearchResults, requestOptions);
-        
-        // Get the last call arguments
-        const lastCallArgs = mockHttpPost.mock.calls[mockHttpPost.mock.calls.length - 1];
-        const sentRequestBody = JSON.parse(lastCallArgs[1].body);
-        
-        // Verify that the size parameters in the sent request match the document ID counts
-        expect(sentRequestBody.query1.size).toBe(testCase.docIds1.length);
-        expect(sentRequestBody.query2.size).toBe(testCase.docIds2.length);
-        
-        // For test cases with document IDs, verify the full query structure
+
+        // Create the POST requests as they would be in the component
+        mockHttp.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query1 }),
+        });
+        mockHttp.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query2 }),
+        });
+
+        const firstCallBody = JSON.parse(mockHttpPost.mock.calls[mockHttpPost.mock.calls.length - 2][1].body);
+        const secondCallBody = JSON.parse(mockHttpPost.mock.calls[mockHttpPost.mock.calls.length - 1][1].body);
+
+        expect(firstCallBody.query.size).toBe(testCase.docIds1.length);
+        expect(secondCallBody.query.size).toBe(testCase.docIds2.length);
+
         if (testCase.docIds1.length > 0) {
-          expect(sentRequestBody.query1).toEqual({
+          expect(firstCallBody.query).toEqual({
             index: 'test-index-1',
             size: testCase.docIds1.length,
             query: {
@@ -117,9 +112,9 @@ describe('PairwiseExperimentView', () => {
             }
           });
         }
-        
+
         if (testCase.docIds2.length > 0) {
-          expect(sentRequestBody.query2).toEqual({
+          expect(secondCallBody.query).toEqual({
             index: 'test-index-2',
             size: testCase.docIds2.length,
             query: {
@@ -131,17 +126,15 @@ describe('PairwiseExperimentView', () => {
         }
       });
     });
-    
+
     /**
      * Integration test to verify that the HTTP request is made with the correct size parameter
      * Simulates the flow in the component's useEffect hook when selectedQuery changes
      */
-    it('should make HTTP request with size parameter equal to document IDs length', async () => {
-      // Create document IDs
+    it('should make HTTP requests with size parameter equal to document IDs length', async () => {
       const documentIds1 = Array(15).fill(0).map((_, i) => `doc${i+1}`);
       const documentIds2 = Array(12).fill(0).map((_, i) => `doc${i+1}`);
-      
-      // Set up query objects as they would be in the component
+
       const query1 = {
         index: 'test-index-1',
         size: documentIds1.length,
@@ -151,7 +144,7 @@ describe('PairwiseExperimentView', () => {
           }
         }
       };
-      
+
       const query2 = {
         index: 'test-index-2',
         size: documentIds2.length,
@@ -161,22 +154,23 @@ describe('PairwiseExperimentView', () => {
           }
         }
       };
-      
-      // Simulate the HTTP request made in the useEffect hook
-      mockHttp.post(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({ query1, query2 })
-      });
-      
-      // Verify the HTTP request was made
-      expect(mockHttpPost).toHaveBeenCalledTimes(1);
-      
-      // Get the arguments from the HTTP request
-      const callArgs = mockHttpPost.mock.calls[0];
-      const requestBody = JSON.parse(callArgs[1].body);
-      
-      // Verify the size parameters in the request match the document ID counts
-      expect(requestBody.query1.size).toBe(documentIds1.length);
-      expect(requestBody.query2.size).toBe(documentIds2.length);
+
+      await Promise.all([
+        mockHttp.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query1 }),
+        }),
+        mockHttp.post(ServiceEndpoints.GetSearchResults, {
+          body: JSON.stringify({ query: query2 }),
+        }),
+      ]);
+
+      expect(mockHttpPost).toHaveBeenCalledTimes(2);
+
+      const firstRequestBody = JSON.parse(mockHttpPost.mock.calls[0][1].body);
+      const secondRequestBody = JSON.parse(mockHttpPost.mock.calls[1][1].body);
+
+      expect(firstRequestBody.query.size).toBe(documentIds1.length);
+      expect(secondRequestBody.query.size).toBe(documentIds2.length);
     });
   });
 });

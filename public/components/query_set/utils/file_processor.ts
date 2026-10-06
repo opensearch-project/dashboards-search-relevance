@@ -124,9 +124,12 @@ export const processQueryFile = async (file: File): Promise<FileProcessResult> =
     const lines = text.trim().split('\n');
     const queryList: QueryItem[] = [];
 
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (line.length === 0) continue;
+
       try {
-        const parsed = JSON.parse(line.trim());
+        const parsed = JSON.parse(line);
         if (parsed.queryText) {
           queryList.push({
             queryText: String(parsed.queryText).trim(),
@@ -137,7 +140,10 @@ export const processQueryFile = async (file: File): Promise<FileProcessResult> =
           });
         }
       } catch (e) {
-        // console.error('Error parsing line:', line, e);
+        return {
+          queries: [],
+          error: `Invalid JSON format at line ${i + 1}: ${(e as Error).message}`,
+        };
       }
     }
 

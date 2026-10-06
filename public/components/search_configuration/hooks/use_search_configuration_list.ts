@@ -10,19 +10,23 @@ import { extractUserMessageFromError, ServiceEndpoints } from '../../../../commo
 export interface SearchConfigurationItem {
   id: string;
   search_configuration_name: string;
+  description?: string;
   index: string;
   query: string;
   timestamp: string;
 }
 
-export const useSearchConfigurationList = (http: CoreStart['http']) => {
+export const useSearchConfigurationList = (http: CoreStart['http'], dataSourceId?: string | null) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const queryParams = dataSourceId ? { query: { dataSourceId } } : {};
 
   const mapSearchConfigurationFields = (obj: any): SearchConfigurationItem => {
     return {
       id: obj._source.id,
       search_configuration_name: obj._source.name,
+      description: obj._source.description,
       index: obj._source.index,
       query: obj._source.query,
       timestamp: obj._source.timestamp,
@@ -34,14 +38,15 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await http.get(ServiceEndpoints.SearchConfigurations);
+        const response = await http.get(ServiceEndpoints.SearchConfigurations, queryParams);
         const list: SearchConfigurationItem[] = response ? response.hits.hits.map(mapSearchConfigurationFields) : [];
         const filteredList = search
           ? list.filter((item) => {
               const term = search.toLowerCase();
               return (
                 item.search_configuration_name.toLowerCase().includes(term) ||
-                item.id?.toLowerCase().includes(term)
+                item.id?.toLowerCase().includes(term) ||
+                item.description?.toLowerCase().includes(term)
               );
             })
           : list;
@@ -61,25 +66,25 @@ export const useSearchConfigurationList = (http: CoreStart['http']) => {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   const deleteSearchConfiguration = useCallback(
     async (id: string) => {
       setIsLoading(true);
       try {
-        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`);
+        await http.delete(`${ServiceEndpoints.SearchConfigurations}/${id}`, queryParams);
         setError(null);
         return true;
       } catch (err) {
         console.error('Failed to delete search config', err);
-        setError('Failed to delete search configuration');
+        setError(extractUserMessageFromError(err) || 'Failed to delete search configuration');
         return false;
       } finally {
         setIsLoading(false);
       }
     },
-    [http]
+    [http, dataSourceId]
   );
 
   return {

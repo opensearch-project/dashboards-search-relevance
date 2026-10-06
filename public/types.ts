@@ -17,4 +17,5 @@ export interface AppPluginStartDependencies {
   navigation: NavigationPublicPluginStart;
   dataSource: DataSourcePluginStart;
   share: SharePluginStart;
+  onAskAI?: () => void;
 }

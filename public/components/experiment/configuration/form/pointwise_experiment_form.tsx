@@ -15,11 +15,14 @@ import {
   mapOptionLabelsToFormData,
   mapQuerySetToOptionLabels,
 } from '../configuration_form';
+import { ExperimentMetadataFields } from '../experiment_metadata_fields';
+import { validateExperimentMetadataForCreate } from '../../../../../common';
 
 interface PointwiseExperimentFormProps {
   formData: PointwiseExperimentFormData;
   onChange: (field: keyof PointwiseExperimentFormData, value: any) => void;
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
 export interface PointwiseExperimentFormRef {
@@ -30,7 +33,7 @@ export interface PointwiseExperimentFormRef {
 export const PointwiseExperimentForm = forwardRef<
   PointwiseExperimentFormRef,
   PointwiseExperimentFormProps
->(({ formData, onChange, http }, ref) => {
+>(({ formData, onChange, http, dataSourceId }, ref) => {
   const [selectedSearchConfigs, setSelectedSearchConfigs] = useState<OptionLabel[]>([]);
   const [querySetOptions, setQuerySetOptions] = useState<OptionLabel[]>([]);
   const [k, setK] = useState<number>(10);
@@ -40,12 +43,16 @@ export const PointwiseExperimentForm = forwardRef<
   const [kError, setKError] = useState<string[]>([]);
   const [searchConfigError, setSearchConfigError] = useState<string[]>([]);
   const [judgmentError, setJudgmentError] = useState<string[]>([]);
+  const [nameError, setNameError] = useState<string[]>([]);
+  const [descriptionError, setDescriptionError] = useState<string[]>([]);
 
   const clearAllErrors = () => {
     setQuerySetError([]);
     setKError([]);
     setSearchConfigError([]);
     setJudgmentError([]);
+    setNameError([]);
+    setDescriptionError([]);
   };
 
   useEffect(() => {
@@ -68,7 +75,23 @@ export const PointwiseExperimentForm = forwardRef<
       searchConfigurationList: selectedSearchConfigs.map((c) => c.value),
       judgmentList: judgmentOptions.map((j) => j.value),
       type: formData.type, // Preserve the type from the initial formData
+      name: typeof formData.name === 'string' ? formData.name : '',
+      description: typeof formData.description === 'string' ? formData.description : '',
     };
+
+    const metadataErrors = validateExperimentMetadataForCreate(currentData.name, currentData.description);
+    if (metadataErrors.name) {
+      setNameError(metadataErrors.name);
+      isValid = false;
+    } else {
+      setNameError([]);
+    }
+    if (metadataErrors.description) {
+      setDescriptionError(metadataErrors.description);
+      isValid = false;
+    } else {
+      setDescriptionError([]);
+    }
 
     // Validate Query Set
     if (!currentData.querySetId) {
@@ -168,6 +191,15 @@ export const PointwiseExperimentForm = forwardRef<
   return (
     <EuiFlexGroup direction="column">
       <EuiFlexItem>
+        <ExperimentMetadataFields
+          name={typeof formData.name === 'string' ? formData.name : ''}
+          description={typeof formData.description === 'string' ? formData.description : ''}
+          onChange={(field, value) => onChange(field, value)}
+          nameError={nameError}
+          descriptionError={descriptionError}
+        />
+      </EuiFlexItem>
+      <EuiFlexItem>
         <EuiFlexGroup gutterSize="m" direction="row" style={{ maxWidth: 600 }}>
           <EuiFlexItem grow={4}>
             <EuiFormRow
@@ -179,6 +211,7 @@ export const PointwiseExperimentForm = forwardRef<
                 selectedOptions={querySetOptions}
                 onChange={handleQuerySetsChange}
                 http={http}
+                dataSourceId={dataSourceId}
                 hideLabel={true}
               />
             </EuiFormRow>
@@ -212,6 +245,7 @@ export const PointwiseExperimentForm = forwardRef<
             selectedOptions={selectedSearchConfigs}
             onChange={handleSearchConfigChange}
             http={http}
+            dataSourceId={dataSourceId}
             maxNumberOfOptions={1}
             hideLabel={true}
           />
@@ -223,6 +257,7 @@ export const PointwiseExperimentForm = forwardRef<
             selectedOptions={judgmentOptions}
             onChange={handleJudgmentsChange}
             http={http}
+            dataSourceId={dataSourceId}
             hideLabel={true}
           />
         </EuiFormRow>

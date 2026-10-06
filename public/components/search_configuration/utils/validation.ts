@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { isValidInputString } from '../../query_set/utils/validation';
+
 /**
  * Validates the search configuration name
  * @param name The search configuration name to validate
@@ -46,27 +48,52 @@ export const validateIndex = (selectedIndex: Array<{ label: string; value: strin
 };
 
 /**
+ * Validates the search configuration description
+ * @param description The description to validate
+ * @returns Error message if invalid, empty string if valid
+ */
+export const validateDescription = (description: string): string => {
+  if (description.trim() && description.length > 250) {
+    return 'Description is too long (> 250 characters).';
+  }
+  if (!isValidInputString(description)) {
+    return 'Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).';
+  }
+  return '';
+};
+
+/**
  * Validates the entire search configuration form
  * @param name The search configuration name
  * @param query The query JSON string
  * @param selectedIndex The selected index array
+ * @param description The optional description
  * @returns Object containing validation results
  */
 export const validateForm = (
   name: string,
   query: string,
-  selectedIndex: Array<{ label: string; value: string }>
-): { isValid: boolean; nameError: string; queryError: string; indexError: string } => {
+  selectedIndex: Array<{ label: string; value: string }>,
+  description = ''
+): {
+  isValid: boolean;
+  nameError: string;
+  queryError: string;
+  indexError: string;
+  descriptionError: string;
+} => {
   const nameError = validateName(name);
   const queryError = validateQuery(query);
   const indexError = validateIndex(selectedIndex);
+  const descriptionError = validateDescription(description);
 
-  const isValid = !nameError && !queryError && !indexError;
+  const isValid = !nameError && !queryError && !indexError && !descriptionError;
 
   return {
     isValid,
     nameError,
     queryError,
     indexError,
+    descriptionError,
   };
 };

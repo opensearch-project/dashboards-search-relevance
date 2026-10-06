@@ -13,6 +13,10 @@ const mockHookReturn = {
   setName: jest.fn(),
   nameError: '',
   validateNameField: jest.fn(),
+  description: '',
+  setDescription: jest.fn(),
+  descriptionError: '',
+  validateDescriptionField: jest.fn(),
   query: '',
   setQuery: jest.fn(),
   queryError: '',
@@ -156,5 +160,40 @@ describe('SearchConfigurationCreate', () => {
     );
 
     expect(screen.getByTestId('createSearchConfigurationButton')).toBeInTheDocument();
+  });
+
+  it('should handle create button click', () => {
+    render(
+      <SearchConfigurationCreate
+        http={mockHttp}
+        notifications={mockNotifications}
+        history={mockHistory}
+      />
+    );
+
+    fireEvent.click(screen.getByTestId('createSearchConfigurationButton'));
+    // Just verify the button exists and can be clicked
+    expect(screen.getByTestId('createSearchConfigurationButton')).toBeInTheDocument();
+  });
+
+  it('forwards dataSourceId to the form hook', () => {
+    const captured: any[] = [];
+    const useFormMock = jest.requireMock('../hooks/use_search_configuration_form');
+    useFormMock.useSearchConfigurationForm = jest.fn((props: any) => {
+      captured.push(props);
+      return mockHookReturn;
+    });
+
+    render(
+      <SearchConfigurationCreate
+        http={mockHttp}
+        notifications={mockNotifications}
+        history={mockHistory}
+        dataSourceId="foo-ds"
+      />
+    );
+
+    const lastCall = captured[captured.length - 1];
+    expect(lastCall.dataSourceId).toBe('foo-ds');
   });
 });

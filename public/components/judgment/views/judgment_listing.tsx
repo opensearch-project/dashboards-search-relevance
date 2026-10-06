@@ -6,6 +6,7 @@
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import React, { useState } from 'react';
 import {
+  EuiBadge,
   EuiButtonEmpty,
   EuiButton,
   EuiButtonIcon,
@@ -15,6 +16,7 @@ import {
   EuiPageTemplate,
   EuiText,
   EuiHealth,
+  EuiToolTip,
 } from '@elastic/eui';
 import moment from 'moment';
 import { CoreStart } from '../../../../../../src/core/public';
@@ -30,9 +32,14 @@ import { getStatusColor } from '../../common_utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
+  dataSourceId?: string;
 }
 
-export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history }) => {
+export const JudgmentListing: React.FC<JudgmentListingProps> = ({
+  http,
+  history,
+  dataSourceId,
+}) => {
   const { dateFormat } = useConfig();
   const {
     isLoading,
@@ -42,7 +49,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     refreshKey,
     findJudgments,
     deleteJudgment,
-  } = useJudgmentList(http);
+    retryJudgment,
+  } = useJudgmentList(http, dataSourceId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [judgmentToDelete, setJudgmentToDelete] = useState<any>(null);
@@ -71,7 +79,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}`)}
+            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -86,6 +94,19 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       render: (status: string) => {
         return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
       },
+    },
+    {
+      field: 'failedQueries',
+      name: 'Failures',
+      sortable: true,
+      // Show whether the judgment has any failed documents (Error) or not (No Error), so users
+      // can see at a glance which judgments are worth retrying.
+      render: (failedQueries: number) =>
+        failedQueries > 0 ? (
+          <EuiBadge color="danger">Error</EuiBadge>
+        ) : (
+          <EuiBadge color="hollow">No Error</EuiBadge>
+        ),
     },
     {
       field: 'type',
@@ -107,15 +128,31 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiButtonIcon
-          aria-label="Delete"
-          iconType="trash"
-          color="danger"
-          onClick={() => {
-            setJudgmentToDelete(item);
-            setShowDeleteModal(true);
-          }}
-        />
+        <>
+          {/* Retry is only shown when the judgment has failed documents to re-score. */}
+          {item.failedQueries > 0 && item.status !== 'PROCESSING' && item.status !== 'RETRYING' && (
+            <EuiToolTip content="Retry failed documents">
+              <EuiButtonIcon
+                aria-label="Retry failed documents"
+                iconType="refresh"
+                color="primary"
+                data-test-subj="retryJudgmentButton"
+                onClick={() => retryJudgment(item)}
+              />
+            </EuiToolTip>
+          )}
+          <EuiToolTip content="Delete">
+            <EuiButtonIcon
+              aria-label="Delete"
+              iconType="trash"
+              color="danger"
+              onClick={() => {
+                setJudgmentToDelete(item);
+                setShowDeleteModal(true);
+              }}
+            />
+          </EuiToolTip>
+        </>
       ),
     },
   ];
@@ -124,9 +161,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
     <EuiPageTemplate paddingSize="l" restrictWidth="100%">
       <EuiPageHeader
         pageTitle="Judgments"
-        description={`View and manage your existing judgments. Click on a judgment list name to view details.${
-          hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
-        }`}
+        description={`View and manage your existing judgments. Click on a judgment list name to view details.${hasProcessing ? ` (Auto-refreshing for 10 min${isBackgroundRefreshing ? ' ●' : ''})` : ''
+          }`}
         rightSideItems={[
           <EuiButton
             onClick={() => history.push(Routes.JudgmentCreate)}
@@ -148,7 +184,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({ http, history 
           </EuiCallOut>
         ) : (
           <TableListView
-            key={refreshKey}
+            key={`${refreshKey}-${dataSourceId ?? ''}`}
             headingId="judgmentListingHeading"
             entityName="Judgment"
             entityNamePlural="Judgments"

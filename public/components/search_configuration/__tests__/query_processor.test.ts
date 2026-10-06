@@ -119,7 +119,7 @@ describe('query_processor', () => {
           index: 'test-index',
           size: 5,
           query: { match_all: {} },
-          search_pipeline: 'test-pipeline',
+          pipeline: 'test-pipeline',
         },
       });
     });

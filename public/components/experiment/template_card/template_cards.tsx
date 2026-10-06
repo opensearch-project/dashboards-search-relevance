@@ -21,10 +21,10 @@ interface Template {
 
 const TEMPLATES: Template[] = [
   {
-    id: TemplateType.SingleQueryComparison,
-    name: 'Single Query Comparison',
+    id: TemplateType.QueryAnalysis,
+    name: 'Query Analysis',
     description:
-      'Test two search configurations with a single query. View side-by-side results to find the best performer.',
+      'Run and analyze a single query. Optionally view side-by-side results to find the best performer.',
     isDisabled: false,
   },
   {
@@ -51,7 +51,7 @@ const TEMPLATES: Template[] = [
 const TEMPLATE_ICON = 'beaker';
 
 const ROUTE_MAP: Record<TemplateType, string> = {
-  [TemplateType.SingleQueryComparison]: Routes.ExperimentCreateSingleQueryComparison,
+  [TemplateType.QueryAnalysis]: Routes.ExperimentCreateQueryAnalysis,
   [TemplateType.QuerySetComparison]: Routes.ExperimentCreateQuerySetComparison,
   [TemplateType.SearchEvaluation]: Routes.ExperimentCreateSearchEvaluation,
   [TemplateType.HybridSearchOptimizer]: Routes.ExperimentCreateHybridOptimizer,
