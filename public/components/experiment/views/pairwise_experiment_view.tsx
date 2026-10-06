@@ -225,39 +225,44 @@ export const PairwiseExperimentView: React.FC<PairwiseExperimentViewProps> = ({
         searchConfigurations?.[0]?.name || 'A',
         searchConfigurations?.[1]?.name || 'B',
       ];
-      columns.push(
-        {
-          field: 'tookConfig0',
-          name: (
-            <EuiToolTip content={TOOK_TOOL_TIP}>
-              <span>Time taken ({configLabels[0]})</span>
-            </EuiToolTip>
-          ),
-          dataType: 'number',
-          sortable: true,
-          render: (value: number | undefined) => (
-            <span data-test-subj="tookConfig0Cell">{formatTook(value)}</span>
-          ),
-        },
-        {
-          field: 'tookConfig1',
-          name: (
-            <EuiToolTip content={TOOK_TOOL_TIP}>
-              <span>Time taken ({configLabels[1]})</span>
-            </EuiToolTip>
-          ),
-          dataType: 'number',
-          sortable: true,
-          render: (value: number | undefined) => (
-            <span data-test-subj="tookConfig1Cell">{formatTook(value)}</span>
-          ),
-        }
+      const hasTook = querySnapshots.some((snapshots) =>
+        snapshots?.some((snapshot) => snapshot.took !== undefined && snapshot.took !== null)
       );
+      if (hasTook) {
+        columns.push(
+          {
+            field: 'tookConfig0',
+            name: (
+              <EuiToolTip content={TOOK_TOOL_TIP}>
+                <span>Time taken ({configLabels[0]})</span>
+              </EuiToolTip>
+            ),
+            dataType: 'number',
+            sortable: true,
+            render: (value: number | undefined) => (
+              <span data-test-subj="tookConfig0Cell">{formatTook(value)}</span>
+            ),
+          },
+          {
+            field: 'tookConfig1',
+            name: (
+              <EuiToolTip content={TOOK_TOOL_TIP}>
+                <span>Time taken ({configLabels[1]})</span>
+              </EuiToolTip>
+            ),
+            dataType: 'number',
+            sortable: true,
+            render: (value: number | undefined) => (
+              <span data-test-subj="tookConfig1Cell">{formatTook(value)}</span>
+            ),
+          }
+        );
+      }
 
       setTableColumns(columns);
       setLoading(false);
     }
-  }, [experiment, queryEvaluations, searchConfigurations]);
+  }, [experiment, queryEvaluations, searchConfigurations, querySnapshots]);
 
   function resolve_attributes(ids, hits) {
     const res = ids.map((id) => hits.find((hit) => hit._id === id) || { _id: id });

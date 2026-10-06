@@ -63,7 +63,8 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
 
   // Get metric keys from the first element if available
   const metricKeys = metrics.length > 0 ? Object.keys(metrics[0]) : [];
-  const avgTook = tookValues ? averageTook(tookValues) : undefined;
+  const hasTook = tookValues?.some((value) => value !== undefined && value !== null) ?? false;
+  const avgTook = hasTook ? averageTook(tookValues) : undefined;
 
   return (
     <EuiPanel paddingSize="l">
@@ -91,7 +92,7 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
             </EuiFlexItem>
           );
         })}
-        {tookValues && (
+        {hasTook && (
           <EuiFlexItem grow={2} key="avg-took-ms">
             <EuiStat
               title={formatTook(avgTook)}

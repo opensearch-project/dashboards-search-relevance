@@ -300,6 +300,12 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         return;
       }
 
+      const hasTook = Object.values(queryEvaluations).some((variants) =>
+        Object.values(variants).some(
+          (data: VariantEvaluation) => data.took !== undefined && data.took !== null
+        )
+      );
+
       const columns = [
         {
           field: 'queryText',
@@ -318,19 +324,23 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             </EuiButtonEmpty>
           ),
         },
-        {
-          field: 'took',
-          name: (
-            <EuiToolTip content={TOOK_TOOL_TIP}>
-              <span>Time taken</span>
-            </EuiToolTip>
-          ),
-          dataType: 'number',
-          sortable: true,
-          render: (value: number | undefined) => (
-            <span data-test-subj="tookCell">{formatTook(value)}</span>
-          ),
-        },
+        ...(hasTook
+          ? [
+              {
+                field: 'took',
+                name: (
+                  <EuiToolTip content={TOOK_TOOL_TIP}>
+                    <span>Time taken</span>
+                  </EuiToolTip>
+                ),
+                dataType: 'number',
+                sortable: true,
+                render: (value: number | undefined) => (
+                  <span data-test-subj="tookCell">{formatTook(value)}</span>
+                ),
+              },
+            ]
+          : []),
         ...metricNames.map((metricName) => {
           const baseMetricName = getBaseMetricName(metricName);
           const tooltipContent =

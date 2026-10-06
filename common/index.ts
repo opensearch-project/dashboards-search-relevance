@@ -101,7 +101,7 @@ export const PRECISION_TOOL_TIP = 'Precision measures the proportion of retrieve
 export const MAP_TOOL_TIP = 'Mean Average Precision (MAP) is a single-figure measure of quality across recall levels. For a single query, Average Precision (AP) is the average of the Precision values calculated at the rank of each relevant document. MAP is the mean of these Average Precision scores across multiple queries.';
 export const COVERAGE_TOOL_TIP = 'Coverage represents the ratio of query-document pairs in the search results for which a relevance judgment exists. It indicates how much of the returned data has been evaluated for relevance.';
 export const TOOK_TOOL_TIP =
-  'OpenSearch search time for this query (cluster "took"), in milliseconds. Compare with the same query on a previous experiment run. Not shown for experiments created before latency was recorded.';
+  'OpenSearch search time for this query (cluster "took"), in milliseconds. Compare with the same query on a previous experiment run.';
 export const AVG_TOOK_TOOL_TIP =
   'Average OpenSearch search time (cluster "took") across queries that recorded latency.';
 

@@ -342,6 +342,10 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         coverage: COVERAGE_TOOL_TIP,
       };
 
+      const hasTook = queryEvaluations.some(
+        (evaluation) => evaluation.took !== undefined && evaluation.took !== null
+      );
+
       const columns: any[] = [
         {
           field: 'queryText',
@@ -362,7 +366,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           render: (_status: QueryEvaluationStatus, row: QueryEvaluationRow) =>
             getStatusIndicator(row.status, row.statusMessage),
         },
-        {
+      ];
+      if (hasTook) {
+        columns.push({
           field: 'took',
           name: (
             <EuiToolTip content={TOOK_TOOL_TIP}>
@@ -374,8 +380,8 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           render: (_value: number | undefined, row: QueryEvaluationRow) => (
             <span data-test-subj="tookCell">{formatTook(row.took)}</span>
           ),
-        },
-      ];
+        });
+      }
       metricNames.forEach((metricName) => {
         // Extract base name for tooltip lookup
         const baseMetricName = getBaseMetricName(metricName);
