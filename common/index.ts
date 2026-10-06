@@ -103,7 +103,7 @@ export const COVERAGE_TOOL_TIP = 'Coverage represents the ratio of query-documen
 export const TOOK_TOOL_TIP =
   'OpenSearch search time for this query (cluster "took"), in milliseconds. Compare with the same query on a previous experiment run. Not shown for experiments created before latency was recorded.';
 export const AVG_TOOK_TOOL_TIP =
-  'Average OpenSearch search time (cluster "took") across queries that recorded latency. Not a relevance metric.';
+  'Average OpenSearch search time (cluster "took") across queries that recorded latency.';
 
 export {
   EXPERIMENT_DESCRIPTION_MAX_LENGTH,
