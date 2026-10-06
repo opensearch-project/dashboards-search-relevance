@@ -26,6 +26,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Surface backend error messages in Search Configuration and Judgment detail views instead of generic load-failure messages ([#894](https://github.com/opensearch-project/dashboards-search-relevance/issues/894))
 
 ### Infrastructure
+* Fix Lychee link checking attempting to test a fake link. ([#962](https://github.com/opensearch-project/dashboards-search-relevance/pull/962))
 
 ### Documentation
 
