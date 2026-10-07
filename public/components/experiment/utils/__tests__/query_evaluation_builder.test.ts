@@ -9,6 +9,7 @@ import {
   getQueryExecutionOrder,
   getQueryTextsFromQuerySet,
   mapQueryStatusesFromVariants,
+  mapTookFromVariants,
 } from '../query_evaluation_builder';
 
 describe('query_evaluation_builder', () => {
@@ -73,6 +74,62 @@ describe('query_evaluation_builder', () => {
 
     expect(rows[0].status).toBe('zero_results');
     expect(rows[0].statusMessage).toContain('zero search results');
+  });
+
+  it('maps took from zero-hit variant results', () => {
+    const tookByQuery = mapTookFromVariants(
+      ['zsr-query', 'failed-query'],
+      [
+        {
+          timestamp: '2026-01-01T00:00:00Z',
+          status: 'COMPLETED',
+          results: { details: 'no search hits found', took: 9 },
+        },
+        {
+          timestamp: '2026-01-01T00:00:01Z',
+          status: 'ERROR',
+          results: { error: 'boom' },
+        },
+      ]
+    );
+
+    expect(tookByQuery.get('zsr-query')).toBe(9);
+    expect(tookByQuery.has('failed-query')).toBe(false);
+  });
+
+  it('attaches variant took to zero-results rows', () => {
+    const rows = buildQueryEvaluationRows({
+      queryTexts: ['zsr-query'],
+      evaluationByQueryText: new Map(),
+      experimentResults: [{ queryText: 'zsr-query' }],
+      variantStatusByQueryText: new Map([['zsr-query', 'zero_results']]),
+      tookByQueryText: new Map([['zsr-query', 11]]),
+    });
+
+    expect(rows[0].status).toBe('zero_results');
+    expect(rows[0].took).toBe(11);
+  });
+
+  it('prefers evaluation took over variant took for successful rows', () => {
+    const rows = buildQueryEvaluationRows({
+      queryTexts: ['success-query'],
+      evaluationByQueryText: new Map([
+        [
+          'success-query',
+          {
+            queryText: 'success-query',
+            metrics: { ndcg: 0.5 },
+            documentIds: ['doc-1'],
+            took: 14,
+          },
+        ],
+      ]),
+      experimentResults: [],
+      variantStatusByQueryText: new Map(),
+      tookByQueryText: new Map([['success-query', 99]]),
+    });
+
+    expect(rows[0].took).toBe(14);
   });
 
   it('counts outcomes for notifications', () => {

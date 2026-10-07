@@ -37,4 +37,26 @@ describe('MetricsSummaryPanel', () => {
 
     expect(screen.getByText('Metrics Summary')).toBeInTheDocument();
   });
+
+  it('shows average time taken separately from relevance metrics', () => {
+    const mockMetrics = [{ 'ndcg@10': 0.8 }];
+
+    render(<MetricsSummaryPanel metrics={mockMetrics} tookValues={[10, undefined, 30]} />);
+
+    expect(screen.getByText('Avg. time taken')).toBeInTheDocument();
+    expect(screen.getByText('20 ms')).toBeInTheDocument();
+    expect(screen.getByText('0.80')).toBeInTheDocument();
+  });
+
+  it('hides avg time taken when no took values exist', () => {
+    render(<MetricsSummaryPanel metrics={[{ 'ndcg@10': 0.5 }]} tookValues={[undefined, null]} />);
+
+    expect(screen.queryByText('Avg. time taken')).not.toBeInTheDocument();
+  });
+
+  it('hides avg time taken when tookValues is not provided', () => {
+    render(<MetricsSummaryPanel metrics={[{ 'ndcg@10': 0.5 }]} />);
+
+    expect(screen.queryByText('Avg. time taken')).not.toBeInTheDocument();
+  });
 });
