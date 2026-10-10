@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 
 interface ConnectionLinesProps {
   mounted: boolean;
@@ -25,7 +25,32 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
   sizeMultiplier,
 }) => {
   const containerHeight = Math.max(420, Math.max(result1.length, result2.length) * (32 * sizeMultiplier + 20));
-  
+
+  // Precompute `_id` -> { item, index } for result2 and `_id` -> index for
+  // result1 so drawing each connection line is O(1) rather than re-scanning both
+  // result sets (previously one `.find()` plus two `.findIndex()` per row, i.e.
+  // O(n²) overall). "First occurrence wins" matches the prior find/findIndex
+  // behaviour for the (unexpected) duplicate-id case.
+  const result2ById = useMemo(() => {
+    const map = new Map<string, { item: any; index: number }>();
+    result2.forEach((item, index) => {
+      if (!map.has(item._id)) {
+        map.set(item._id, { item, index });
+      }
+    });
+    return map;
+  }, [result2]);
+
+  const result1IndexById = useMemo(() => {
+    const map = new Map<string, number>();
+    result1.forEach((item, index) => {
+      if (!map.has(item._id)) {
+        map.set(item._id, index);
+      }
+    });
+    return map;
+  }, [result1]);
+
   return (
     <svg
       width="100%"
@@ -38,8 +63,9 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
       {mounted &&
         result1.map((r1Item) => {
           // Find if this item exists in result2
-          const r2Match = result2.find((r2) => r2._id === r1Item._id);
-          if (!r2Match) return null; // Skip if no match
+          const r2Entry = result2ById.get(r1Item._id);
+          if (!r2Entry) return null; // Skip if no match
+          const r2Match = r2Entry.item;
 
           // Get elements by ref to ensure we have their positions
           const r1El = result1ItemsRef.current[r1Item._id];
@@ -50,9 +76,9 @@ export const ConnectionLines: React.FC<ConnectionLinesProps> = ({
 
           try {
             // Calculate positions based on item index and size multiplier
-            const r1Index = result1.findIndex(item => item._id === r1Item._id);
-            const r2Index = result2.findIndex(item => item._id === r1Item._id);
-            
+            const r1Index = result1IndexById.get(r1Item._id);
+            const r2Index = r2Entry.index;
+
             const itemHeight = 32 * sizeMultiplier + 20; // Image size + padding/margins
             const y1 = r1Index * itemHeight + itemHeight / 2;
             const y2 = r2Index * itemHeight + itemHeight / 2;
