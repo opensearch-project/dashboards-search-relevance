@@ -9,6 +9,9 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Features
 * Show per-query OpenSearch search latency (took) in experiment results ([#942](https://github.com/opensearch-project/dashboards-search-relevance/issues/942))
 
+- Add a read-only Learning to Rank model registry listing ([#943](https://github.com/opensearch-project/dashboards-search-relevance/pull/943))
+- Add a Learning to Rank model upload flow ([#944](https://github.com/opensearch-project/dashboards-search-relevance/pull/944))
+
 ### Enhancements
 * Rename `%SearchText%` to `%queryText%` in Query Template ([#774](https://github.com/opensearch-project/dashboards-search-relevance/pull/774))
 

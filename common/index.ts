@@ -29,6 +29,10 @@ export const ServiceEndpoints = Object.freeze({
   Experiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/experiments/schedule`,
   ValidatePrompt: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/judgments/validate_prompt`,
+
+  // Learning to Rank node APIs
+  LtrModels: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/ltr/models`,
+  LtrFeatureSets: `${SEARCH_RELEVANCE_WORKBENCH_BASE_PATH}/ltr/feature_sets`,
 } as const);
 
 const SEARCH_RELEVANCE_PLUGIN_BASE_PATH = '/_plugins/_search_relevance';
@@ -39,6 +43,31 @@ export const BackendEndpoints = Object.freeze({
   Experiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments`,
   ScheduledExperiments: `${SEARCH_RELEVANCE_PLUGIN_BASE_PATH}/experiments/schedule`,
 } as const);
+
+// The Learning to Rank plugin owns its own REST namespace, separate from
+// _plugins/_search_relevance. The `.ltrstore*` indices are system indices, so these
+// plugin endpoints are the only supported way to read them.
+const LTR_PLUGIN_BASE_PATH = '/_ltr';
+export const LtrBackendEndpoints = Object.freeze({
+  Models: `${LTR_PLUGIN_BASE_PATH}/_model`,
+  FeatureSets: `${LTR_PLUGIN_BASE_PATH}/_featureset`,
+} as const);
+
+/**
+ * A model is created against the feature set it scores, not against the model collection:
+ * `POST _ltr/_featureset/{name}/_createmodel`. The store has no update path -- a second
+ * create under the same name is rejected rather than overwriting.
+ */
+export const ltrCreateModelPath = (featureSetName: string): string =>
+  `${LtrBackendEndpoints.FeatureSets}/${encodeURIComponent(featureSetName)}/_createmodel`;
+
+// `GET /_ltr/_model` defaults to size=20, which silently truncates the listing. We always
+// request explicitly and warn the user when the store holds more than we fetched.
+export const LTR_MODEL_FETCH_SIZE = 1000;
+
+// `GET /_ltr/_featureset` has the same size=20 default, and the upload form's picker is
+// useless if it silently omits the feature set the user wants.
+export const LTR_FEATURE_SET_FETCH_SIZE = 1000;
 
 const ML_COMMON_PLUGIN_BASE_PATH = '_plugins/_ml';
 export const ML_MODEL_ROUTE_PREFIX = `${ML_COMMON_PLUGIN_BASE_PATH}/models`;
@@ -81,6 +110,10 @@ export enum Routes {
   JudgmentView = '/judgment/view/:entityId',
   JudgmentViewPrefix = '/judgment/view',
   JudgmentCreate = '/judgment/create',
+  LtrModelListing = '/ltrModel',
+  LtrModelView = '/ltrModel/view/:entityId',
+  LtrModelViewPrefix = '/ltrModel/view',
+  LtrModelCreate = '/ltrModel/create',
 }
 
 export enum SavedObjectIds {
