@@ -116,6 +116,14 @@ describe('HybridOptimizerExperimentView', () => {
 
     renderView(http);
 
+    // Yield one real macrotask before the first findBy* call. Unlike the other tests in this
+    // file, this is the only case with two chained resolved promises (loadExperimentResourcesParallel
+    // then http.post) before a state update lands; calling findByTestId as the very next statement
+    // after render() races the component's effect and times out even with an increased timeout,
+    // since waitFor's own retry loop never gets scheduled before the assertion gives up. Letting one
+    // real tick pass first avoids the race.
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     expect(await screen.findByTestId('table-list-view')).toBeInTheDocument();
     expect(screen.queryByText('No evaluation results')).not.toBeInTheDocument();
   });
