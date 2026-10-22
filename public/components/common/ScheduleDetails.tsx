@@ -5,7 +5,6 @@
 
 import React from 'react';
 import { EuiAccordion, EuiPanel, EuiTitle, EuiSpacer, EuiFlexGroup, EuiFlexItem, EuiDescriptionList, EuiText } from '@elastic/eui';
-import cronstrue from 'cronstrue';
 import { ScheduledJob } from '../../types/index';
 
 export interface ScheduleDetailsProps {
@@ -36,18 +35,11 @@ export const ScheduleDetails: React.FC<ScheduleDetailsProps> = ({
   const startedAtDisplay = formatTimestamp(scheduledExperimentJob?.enabledTime);
   const lastRunDisplay = formatTimestamp(scheduledExperimentJob?.lastUpdateTime);
 
-  let cronDescription = '—';
-  if (!isCronEmpty) {
-    try {
-      cronDescription = cronstrue.toString(cron!.expression);
-    } catch (err) {
-      cronDescription = cron!.expression;
-    }
-  }
-
   const scheduleInfoList = [
-    { title: 'Cron setup', description: `${cron?.expression || '—'} ${cron?.timezone ? `(${cron.timezone})` : ''}` },
-    { title: 'Frequency', description: cronDescription },
+    {
+      title: 'Cron setup',
+      description: `${cron?.expression || '—'}${cron?.timezone ? ` (${cron.timezone})` : ''}`,
+    },
   ];
 
   const executionInfoList = [

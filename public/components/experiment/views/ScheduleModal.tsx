@@ -6,7 +6,12 @@
 import { EuiButton, EuiButtonEmpty, EuiFieldText, EuiFormRow, EuiModal, EuiModalBody, EuiModalFooter, EuiModalHeader, EuiModalHeaderTitle, EuiText } from "@elastic/eui";
 import React from 'react';
 import { useState } from "react";
-import cronstrue from 'cronstrue';
+
+const isValidCronExpression = (expression: string): boolean => {
+  // Expect standard 5-field cron: minute hour day-of-month month day-of-week
+  const parts = expression.trim().split(/\s+/);
+  return parts.length === 5 && parts.every((part) => part.length > 0);
+};
 
 export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
   const [cronExpression, setCronExpression] = useState("");
@@ -17,9 +22,7 @@ export const ScheduleModal = ({ onClose, onSubmit, itemName }) => {
       setError('Cron expression is required.');
       return;
     }
-    try {
-      cronstrue.toString(cronExpression);
-    } catch (err: any) {
+    if (!isValidCronExpression(cronExpression)) {
       setError('Invalid cron expression. Please provide a valid cron format.');
       return;
     }

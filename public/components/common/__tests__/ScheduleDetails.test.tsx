@@ -46,8 +46,8 @@ describe('ScheduleDetails', () => {
     
     expect(screen.getByText('Schedule')).toBeInTheDocument();
     expect(screen.getByText('0 12 * * * (UTC)')).toBeInTheDocument();
-    expect(screen.getByText('At 12:00 PM')).toBeInTheDocument(); // cronstrue output for 0 12 * * *
-    
+    expect(screen.getByText('Cron setup')).toBeInTheDocument();
+
     expect(screen.getByText('Started at')).toBeInTheDocument();
     expect(screen.getByText('Last run')).toBeInTheDocument();
   });
