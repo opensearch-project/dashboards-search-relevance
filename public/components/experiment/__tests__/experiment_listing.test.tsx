@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { ExperimentListing } from '../views/experiment_listing';
 
 const mockHttp = {
@@ -175,6 +175,51 @@ describe('ExperimentListing', () => {
     expect(result.hits[0].status).toBe("COMPLETED");
   });
 
+  it('restores the full list after a search-filtered fetch on a cold cache', async () => {
+    // Regression: when tableData is empty and findItems is first called with a search term,
+    // the full unfiltered list must still be cached so clearing search restores every row.
+    const mockData = [
+      { id: 'exp-1', type: 'PAIRWISE', status: 'RUNNING' },
+      { id: 'exp-2', type: 'HYBRID', status: 'FAILED' },
+      { id: 'xyz-123', type: 'POINTWISE', status: 'COMPLETED' },
+    ];
+
+    // Mount auto-fetch returns empty so tableData stays empty (still a cold cache).
+    mockGetExperiments
+      .mockResolvedValueOnce({ success: true, data: [] })
+      .mockResolvedValue({ success: true, data: mockData });
+
+    render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+    await waitFor(() => expect(capturedFindItems).toBeDefined());
+
+    // Allow the TableListView mount fetch (empty list) to settle.
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Cold network fetch with an active search term — return filtered hits, cache all rows.
+    let result: any;
+    await act(async () => {
+      result = await capturedFindItems('xyz');
+    });
+    expect(result.hits).toHaveLength(1);
+    expect(result.hits[0].id).toBe('xyz-123');
+
+    // Clearing search uses the full cache (no extra fetch) and restores all experiments.
+    const fetchCountAfterSearch = mockGetExperiments.mock.calls.length;
+    await act(async () => {
+      result = await capturedFindItems('');
+    });
+    expect(result.hits).toHaveLength(3);
+    expect(result.hits.map((h: { id: string }) => h.id)).toEqual([
+      'exp-1',
+      'exp-2',
+      'xyz-123',
+    ]);
+    expect(mockGetExperiments.mock.calls.length).toBe(fetchCountAfterSearch);
+  });
+
   it('renders correct tooltips for experiment actions', async () => {
     const mockData = [
       { id: "exp-1", type: "POINTWISE_EVALUATION", status: "COMPLETED", isScheduled: false }
@@ -193,6 +238,49 @@ describe('ExperimentListing', () => {
       expect(contents).toContain('View Visualization');
       expect(contents).toContain('Delete');
       expect(contents).toContain('Schedule Experiment');
+    });
+  });
+
+  describe('AI callout banner', () => {
+    it('does not show AI callout when onAskAI is not provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} />);
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
+      expect(screen.queryByText('Ask AI')).not.toBeInTheDocument();
+    });
+
+    it('shows AI callout when onAskAI is provided', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+      expect(screen.getByText('Ask AI')).toBeInTheDocument();
+    });
+
+    it('calls onAskAI when Ask AI button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      fireEvent.click(screen.getByText('Ask AI'));
+
+      expect(mockOnAskAI).toHaveBeenCalledTimes(1);
+    });
+
+    it('hides AI callout when dismiss button is clicked', () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+      const mockOnAskAI = jest.fn();
+
+      render(<ExperimentListing http={mockHttp} history={mockHistory} onAskAI={mockOnAskAI} />);
+      expect(screen.getByText('Tune your relevance with AI.')).toBeInTheDocument();
+
+      fireEvent.click(screen.getByLabelText('dismissible_icon'));
+
+      expect(screen.queryByText('Tune your relevance with AI.')).not.toBeInTheDocument();
     });
   });
 

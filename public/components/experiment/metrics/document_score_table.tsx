@@ -13,6 +13,7 @@ import {
   EuiSpacer,
 } from '@elastic/eui';
 import React from 'react';
+import { escapeCsvCell } from '../../common_utils/utils';
 
 export const DocumentScoresTable: React.FC<{
   queryText: string;
@@ -23,7 +24,9 @@ export const DocumentScoresTable: React.FC<{
     const headers = ['Document ID', 'Rating'];
     const csvContent = [
       headers.join(','),
-      ...documentScores.map((item) => `${item.docId},${item.rating}`),
+      // docId and rating come from stored judgments; escape them so a value cannot inject a
+      // spreadsheet formula or break the row structure.
+      ...documentScores.map((item) => [item.docId, item.rating].map(escapeCsvCell).join(',')),
     ].join('\n');
 
     // Create and trigger download

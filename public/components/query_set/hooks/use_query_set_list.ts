@@ -70,7 +70,7 @@ export const useQuerySetList = (http: CoreStart['http'], dataSourceId?: string |
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
       console.error('Failed to delete query set', err);
-      setError('Failed to delete query set');
+      setError(extractUserMessageFromError(err) || 'Failed to delete query set');
       throw err;
     } finally {
       setIsLoading(false);

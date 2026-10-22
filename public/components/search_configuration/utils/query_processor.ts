@@ -10,7 +10,7 @@
  * @returns The processed query with placeholders replaced
  */
 export const processQuery = (query: string, searchText: string = ''): string => {
-  return query.replace(/%SearchText%/g, searchText);
+  return query.replace(/%SearchText%|%queryText%/g, searchText);
 };
 
 /**
@@ -51,7 +51,7 @@ export const buildValidationRequestBody = (
   };
 
   if (pipeline) {
-    requestBody.query.search_pipeline = pipeline;
+    requestBody.query.pipeline = pipeline;
   }
 
   return requestBody;

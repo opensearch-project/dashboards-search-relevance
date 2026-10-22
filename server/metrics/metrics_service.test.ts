@@ -3,7 +3,25 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { METRIC_INTERVAL } from './';
 import { MetricsService, MetricsServiceSetup } from './';
+
+type InternalMetricsService = MetricsService & {
+  data: Record<number, unknown>;
+  overall: Record<number, unknown>;
+  componentCounts: Record<number, unknown>;
+  statusCodeCounts: Record<number, unknown>;
+};
+
+const getIntervalKeys = (service: MetricsService) => {
+  const internal = service as InternalMetricsService;
+  return {
+    data: Object.keys(internal.data),
+    overall: Object.keys(internal.overall),
+    componentCounts: Object.keys(internal.componentCounts),
+    statusCodeCounts: Object.keys(internal.statusCodeCounts),
+  };
+};
 
 describe('MetricsService', () => {
   let metricsService: MetricsService;
@@ -96,22 +114,84 @@ describe('MetricsService', () => {
   });
 
   describe('trim', () => {
-    it('should remove old metrics data', () => {
+    it('should trim all interval-keyed maps when the retention window expires', () => {
       jest.useFakeTimers('modern');
       jest.setSystemTime(0);
-      setup.addMetric('component1', 'action1', 200, 100);
-      jest.advanceTimersByTime(60000);
-      setup.addMetric('component1', 'action1', 200, 200);
-      jest.advanceTimersByTime(60000);
-      setup.addMetric('component1', 'action1', 200, 300);
-      jest.advanceTimersByTime(60000);
-      metricsService.trim();
+
+      const WINDOW_SIZE = 3;
+      const intervalMs = METRIC_INTERVAL.ONE_MINUTE;
+      const trimmedSetup = metricsService.setup(intervalMs, WINDOW_SIZE);
+
+      for (let i = 0; i < 10; i++) {
+        trimmedSetup.addMetric('component1', 'action1', 200, 100);
+        jest.advanceTimersByTime(intervalMs);
+      }
+
+      const keys = getIntervalKeys(metricsService);
+
+      expect(keys.data.length).toBeLessThanOrEqual(WINDOW_SIZE + 1);
+      expect(keys.overall).toEqual(keys.data);
+      expect(keys.componentCounts).toEqual(keys.data);
+      expect(keys.statusCodeCounts).toEqual(keys.data);
+    });
+
+    it('should remove expired intervals from all maps on explicit trim', () => {
+      jest.useFakeTimers('modern');
       jest.setSystemTime(0);
-      const stats = setup.getStats();
-      expect(stats.data).toEqual({});
-      expect(stats.overall).toEqual({ response_time_avg: 0, requests_per_second: 0 });
-      expect(stats.counts_by_component).toEqual({});
-      expect(stats.counts_by_status_code).toEqual({});
+
+      const intervalMs = METRIC_INTERVAL.ONE_MINUTE;
+      const trimmedSetup = metricsService.setup(intervalMs, 3);
+
+      trimmedSetup.addMetric('component1', 'action1', 200, 100);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 200);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 300);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 400);
+
+      expect(getIntervalKeys(metricsService)).toEqual({
+        data: ['0', '1', '2', '3'],
+        overall: ['0', '1', '2', '3'],
+        componentCounts: ['0', '1', '2', '3'],
+        statusCodeCounts: ['0', '1', '2', '3'],
+      });
+
+      jest.advanceTimersByTime(intervalMs * 2);
+      metricsService.trim();
+
+      expect(getIntervalKeys(metricsService)).toEqual({
+        data: ['2', '3'],
+        overall: ['2', '3'],
+        componentCounts: ['2', '3'],
+        statusCodeCounts: ['2', '3'],
+      });
+    });
+
+    it('should retain recent interval stats after trim', () => {
+      jest.useFakeTimers('modern');
+      jest.setSystemTime(0);
+
+      const intervalMs = METRIC_INTERVAL.ONE_MINUTE;
+      const trimmedSetup = metricsService.setup(intervalMs, 3);
+
+      trimmedSetup.addMetric('component1', 'action1', 200, 100);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 200);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 300);
+      jest.advanceTimersByTime(intervalMs);
+      trimmedSetup.addMetric('component1', 'action1', 200, 400);
+      jest.advanceTimersByTime(intervalMs);
+
+      const stats = trimmedSetup.getStats();
+      expect(stats.data['component1']['action1'][200]).toEqual({
+        response_time_total: 400,
+        count: 1,
+      });
+      expect(stats.overall.response_time_avg).toEqual(400);
+      expect(stats.counts_by_component['component1']).toEqual(1);
+      expect(stats.counts_by_status_code[200]).toEqual(1);
     });
   });
 });

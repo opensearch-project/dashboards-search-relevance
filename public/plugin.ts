@@ -19,10 +19,13 @@ import {
 import { registerAllPluginNavGroups } from './plugin_nav';
 import { ContentManagementPluginStart } from '../../../src/plugins/content_management/public';
 import { registerCompareQueryCard } from './components/service_card/compare_query_card';
+import { ChatPluginSetup } from '../../../src/plugins/chat/public';
+import { registerSearchRelevanceCommand } from './chat/search_relevance_command';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSource: DataSourcePluginSetup;
   dataSourceManagement: DataSourceManagementPluginSetup;
+  chat?: ChatPluginSetup;
 }
 
 export interface SearchRelevanceStartDependencies {
@@ -32,10 +35,16 @@ export interface SearchRelevanceStartDependencies {
 
 export class SearchRelevancePlugin
   implements Plugin<SearchRelevancePluginSetup, SearchRelevancePluginStart> {
+  private unregisterSearchRelevanceCommand?: () => void;
+  private coreSetup?: CoreSetup;
+  private chatSetup?: ChatPluginSetup;
+
   public setup(
     core: CoreSetup,
-    { dataSource, dataSourceManagement }: SearchRelevancePluginSetupDependencies
+    { dataSource, dataSourceManagement, chat }: SearchRelevancePluginSetupDependencies
   ): SearchRelevancePluginSetup {
+    this.coreSetup = core;
+    this.chatSetup = chat;
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
@@ -50,10 +59,16 @@ export class SearchRelevancePlugin
         const { renderApp } = await import('./application');
         // Get start services as specified in opensearch_dashboards.json
         const [coreStart, depsStart] = await core.getStartServices();
+        const onAskAI = coreStart.chat.isAvailable()
+          ? () =>
+              coreStart.chat.sendMessageWithWindow('Help me improve search relevance', [], {
+                clearConversation: true,
+              })
+          : undefined;
         // Render the application
         return renderApp(
           coreStart,
-          depsStart as AppPluginStartDependencies,
+          { ...(depsStart as AppPluginStartDependencies), onAskAI },
           params,
           dataSourceManagement
         );
@@ -80,8 +95,21 @@ export class SearchRelevancePlugin
     if (contentManagement) {
       registerCompareQueryCard(contentManagement, core);
     }
+
+    if (
+      this.coreSetup &&
+      core.application.capabilities.searchRelevanceDashboards?.chatCommandEnabled
+    ) {
+      this.unregisterSearchRelevanceCommand = registerSearchRelevanceCommand(
+        this.coreSetup,
+        this.chatSetup
+      );
+    }
+
     return {};
   }
 
-  public stop() {}
+  public stop() {
+    this.unregisterSearchRelevanceCommand?.();
+  }
 }

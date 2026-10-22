@@ -15,11 +15,14 @@ import {
   EuiFieldNumber,
   EuiSwitch,
   EuiTitle,
+  EuiComboBox,
 } from '@elastic/eui';
 import { isValidTokenLimit } from '../utils/validation';
 import { PromptPanel } from './prompt_template/prompt_panel';
 import { ValidationPanel } from './prompt_template/validation_panel';
 import { usePromptTemplate } from '../hooks/use_prompt_template';
+
+const MAX_EXISTING_JUDGMENTS = 5;
 
 interface AdvancedSettingsProps {
   formData: any;
@@ -29,6 +32,8 @@ interface AdvancedSettingsProps {
   addContextField: () => void;
   removeContextField: (field: string) => void;
   modelOptions?: Array<{ label: string; value: string }>;
+  existingJudgmentOptions?: Array<{ label: string; value: string }>;
+  isLoadingExistingJudgments?: boolean;
   httpClient?: any;
   selectedSearchConfigs: Array<{ label: string; value: string }>;
 }
@@ -41,6 +46,8 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
   addContextField,
   removeContextField,
   modelOptions = [],
+  existingJudgmentOptions = [],
+  isLoadingExistingJudgments = false,
   httpClient,
   selectedSearchConfigs,
 }) => {
@@ -56,36 +63,37 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
     validationModelId,
     setValidationModelId,
     validatePrompt,
-    getPromptTemplate,
   } = usePromptTemplate({
     querySetId: formData.querySetId,
     modelId: formData.modelId,
     httpClient,
   });
 
-  // Auto-save template when it changes
+  // Existing LLM judgments the customer selected to reuse ratings from (up to 5).
+  // Options are fetched once in the form hook and passed down as props.
+  const selectedExistingJudgments = (formData.existingJudgments || []).map((id: string) => {
+    const match = existingJudgmentOptions.find((o) => o.value === id);
+    return match || { label: id, value: id };
+  });
+
+  // The backend rejects more than MAX_EXISTING_JUDGMENTS, so the picker ignores any selection
+  // beyond the cap. Track that so the ignored click is explained instead of looking broken.
+  const [existingJudgmentLimitHit, setExistingJudgmentLimitHit] = React.useState(false);
+
+  // Backend's default prompt template (used when user hasn't customized)
+  const BACKEND_DEFAULT_TEMPLATE = 'SearchText: {{searchText}}; Hits: {{hits}}';
+
+  // Default assembled template from PromptPanel's initial content
+  const DEFAULT_ASSEMBLED_TEMPLATE = BACKEND_DEFAULT_TEMPLATE;
+
+  // Auto-save template — send just the user's template string (not the full system prompt).
+  // The backend handles system prompts separately; promptTemplate is just the user-facing template.
   React.useEffect(() => {
-    const template = getPromptTemplate();
-    updateFormData({ promptTemplate: template });
+    const isDefault =
+      !userInstructions.trim() || userInstructions.trim() === DEFAULT_ASSEMBLED_TEMPLATE;
+    const templateString = isDefault ? BACKEND_DEFAULT_TEMPLATE : userInstructions.trim();
+    updateFormData({ promptTemplate: templateString });
   }, [outputSchema, userInstructions, placeholders]);
-
-  // Convert selectedSearchConfigs to array of IDs
-  const searchConfigurationList = React.useMemo(
-    () => selectedSearchConfigs.map((config) => config.value),
-    [selectedSearchConfigs]
-  );
-
-  // Debug: Log formData to see what's available
-  React.useEffect(() => {
-    console.log('AdvancedSettings - formData:', {
-      selectedSearchConfigs,
-      searchConfigurationList,
-      contextFields: formData.contextFields,
-      size: formData.size,
-      tokenLimit: formData.tokenLimit,
-      ignoreFailure: formData.ignoreFailure,
-    });
-  }, [selectedSearchConfigs, searchConfigurationList, formData.contextFields, formData.size, formData.tokenLimit, formData.ignoreFailure]);
 
   return (
     <>
@@ -115,11 +123,6 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
             modelOptions={modelOptions}
             onModelChange={setValidationModelId}
             onValidate={validatePrompt}
-            searchConfigurationList={searchConfigurationList}
-            contextFields={formData.contextFields || []}
-            size={formData.size}
-            tokenLimit={formData.tokenLimit}
-            ignoreFailure={formData.ignoreFailure}
           />
         </EuiFlexItem>
       </EuiFlexGroup>
@@ -210,6 +213,36 @@ export const AdvancedSettings: React.FC<AdvancedSettingsProps> = ({
           label="Ignore failures during judgment process"
           checked={formData.ignoreFailure}
           onChange={(e) => updateFormData({ ignoreFailure: e.target.checked })}
+        />
+      </EuiCompressedFormRow>
+
+      <EuiCompressedFormRow
+        label="Reuse Existing Judgments"
+        helpText={
+          existingJudgmentLimitHit
+            ? `You can reuse at most ${MAX_EXISTING_JUDGMENTS} existing judgments. Remove one before adding another.`
+            : `Reuse ratings from up to ${MAX_EXISTING_JUDGMENTS} existing LLM judgments to avoid re-scoring documents that were already judged.`
+        }
+        isInvalid={existingJudgmentLimitHit}
+        fullWidth
+      >
+        <EuiComboBox
+          data-test-subj="existingJudgmentsComboBox"
+          placeholder="Select existing judgments to reuse"
+          options={existingJudgmentOptions}
+          selectedOptions={selectedExistingJudgments}
+          onChange={(selected) => {
+            if (selected.length > MAX_EXISTING_JUDGMENTS) {
+              // Keep the current selection and tell the customer why the pick was ignored.
+              setExistingJudgmentLimitHit(true);
+              return;
+            }
+            setExistingJudgmentLimitHit(false);
+            updateFormData({ existingJudgments: selected.map((s: any) => s.value) });
+          }}
+          isInvalid={existingJudgmentLimitHit}
+          isLoading={isLoadingExistingJudgments}
+          fullWidth
         />
       </EuiCompressedFormRow>
     </>

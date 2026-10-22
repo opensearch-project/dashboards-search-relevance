@@ -5,26 +5,14 @@
 
 import { updateUrlWithConfig } from '../url_config';
 
-// Mock window.location and history
-const mockLocation = {
-  href: 'http://localhost:3000',
-  hash: '',
-  toString: () => 'http://localhost:3000',
-};
-
+// window.location is left as jsdom's real (non-configurable under jsdom 26) location;
+// the source only passes it to the mocked URL constructor below.
+// Spy on the real window.history.replaceState instead of replacing window.history
+// entirely: jest-location-mock's beforeEach hook spies on window.history.pushState,
+// which would not exist on a replacement object lacking it.
 const mockHistory = {
-  replaceState: jest.fn(),
+  replaceState: jest.spyOn(window.history, 'replaceState').mockImplementation(() => {}),
 };
-
-Object.defineProperty(window, 'location', {
-  value: mockLocation,
-  writable: true,
-});
-
-Object.defineProperty(window, 'history', {
-  value: mockHistory,
-  writable: true,
-});
 
 // Mock URL constructor
 global.URL = jest.fn().mockImplementation((url) => ({

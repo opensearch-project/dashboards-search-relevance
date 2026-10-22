@@ -64,3 +64,39 @@ export const validateJudgmentForm = (
 export const isValidTokenLimit = (value: number): boolean => {
   return value >= 1000 && value <= 500000;
 };
+
+/**
+ * Validates a prompt template string against backend-enforced rules.
+ * Returns an array of warning messages for each violation found.
+ * Returns an empty array for null/undefined/empty templates (backend default fallback).
+ */
+export const validatePromptTemplate = (template: string): string[] => {
+  if (!template) {
+    return [];
+  }
+
+  const warnings: string[] = [];
+
+  if (!template.includes('{{hits}}') && !template.includes('{{results}}')) {
+    warnings.push(
+      'Template must include {{hits}} or {{results}} so the LLM receives search result documents.'
+    );
+  }
+
+  if (!template.includes('{{queryText}}') && !template.includes('{{searchText}}')) {
+    warnings.push(
+      'Template must include {{queryText}} or {{searchText}} so the LLM has the search query for context.'
+    );
+  }
+
+  if (template.length > 10000) {
+    warnings.push('Template exceeds the maximum length of 10,000 characters.');
+  }
+
+  if (template.includes('#')) {
+    warnings.push("Template contains the reserved '#' character which is not allowed.");
+  }
+
+  return warnings;
+};
+

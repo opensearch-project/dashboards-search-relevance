@@ -170,6 +170,20 @@ describe('QuerySetForm', () => {
     expect(mockFormState.setIsManualInput).toHaveBeenCalledWith(true);
   });
 
+  it('labels description as optional', () => {
+    render(
+      <QuerySetForm
+        formState={mockFormState}
+        filePickerId={mockFilePickerId}
+        indexOptions={mockIndexOptions}
+        isLoadingIndexes={false}
+      />
+    );
+
+    expect(screen.getByText('Description (optional)')).toBeInTheDocument();
+    expect(screen.getByText('Optionally describe the query set (< 250 characters).')).toBeInTheDocument();
+  });
+
   it('displays validation errors', () => {
     const formStateWithErrors = {
       ...mockFormState,

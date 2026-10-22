@@ -11,6 +11,7 @@ import {
   EuiDescriptionList,
   EuiDescriptionListTitle,
   EuiDescriptionListDescription,
+  EuiHealth,
   EuiSpacer,
   EuiToolTip,
 } from '@elastic/eui';
@@ -45,7 +46,21 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  TOOK_TOOL_TIP,
 } from '../../../../common';
+import {
+  buildQueryEvaluationRows,
+  countQueryOutcomes,
+  getQueryExecutionOrder,
+  getQueryTextsFromQuerySet,
+  mapQueryStatusesFromVariants,
+  mapTookFromVariants,
+  parseVariantSources,
+  QueryEvaluationRow,
+  QueryEvaluationStatus,
+} from '../utils/query_evaluation_builder';
+import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
+import { formatTook } from '../../../utils/took';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -70,7 +85,7 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [queryEvaluations, setQueryEvaluations] = useState<QueryEvaluation[]>([]);
+  const [queryEvaluations, setQueryEvaluations] = useState<QueryEvaluationRow[]>([]);
 
   const [tableColumns, setTableColumns] = useState<any[]>([]);
 
@@ -79,13 +94,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     Array<{ docId: string; rating: string }>
   >([]);
 
-  const sanitizeResponse = (response: any) => response?.hits?.hits?.[0]?._source || undefined;
-
   const handleQueryClick = useCallback(
     (queryText: string) => {
       try {
         // Find the evaluation from already fetched queryEvaluations
         const evaluation = queryEvaluations.find((q) => q.queryText === queryText);
+
+        if (evaluation?.status && evaluation.status !== 'success') {
+          notifications.toasts.addWarning({
+            title: 'Query not evaluated',
+            text: evaluation.statusMessage || 'This query does not have evaluation results',
+          });
+          return;
+        }
 
         if (!evaluation?.documentIds?.length) {
           notifications.toasts.addWarning({
@@ -126,63 +147,68 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     const fetchExperiment = async () => {
       try {
         setLoading(true);
-        const options = dataSourceId ? { query: { dataSourceId } } : {};
-        
-        const _experiment = await http
-          .get(ServiceEndpoints.Experiments + '/' + inputExperiment.id, options)
-          .then(sanitizeResponse);
+
+        const resources = await loadExperimentResourcesParallel(
+          http,
+          {
+            experimentId: inputExperiment.id,
+            searchConfigurationId: inputExperiment.searchConfigurationId,
+            querySetId: inputExperiment.querySetId,
+            judgmentId: inputExperiment.judgmentId,
+            isScheduled: inputExperiment.isScheduled,
+            scheduledExperimentJobId: inputExperiment.scheduledExperimentJobId,
+          },
+          dataSourceId
+        );
+
+        const _experiment = resources?.experiment;
         const parsedExperiment = _experiment && toExperiment(_experiment);
-        const _searchConfiguration =
-          _experiment &&
-          (await http
-            .get(
-              ServiceEndpoints.SearchConfigurations + '/' + inputExperiment.searchConfigurationId,
-              options
-            )
-            .then(sanitizeResponse));
-        const _querySet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.QuerySets + '/' + inputExperiment.querySetId, options)
-            .then(sanitizeResponse));
-        const _judgmentSet =
-          _experiment &&
-          (await http
-            .get(ServiceEndpoints.Judgments + '/' + inputExperiment.judgmentId, options)
-            .then(sanitizeResponse));
+        const _searchConfiguration = resources?.searchConfiguration;
+        const _querySet = resources?.querySet;
+        const _judgmentSet = resources?.judgmentSet;
+        const _scheduledExperimentJob = resources?.scheduledExperimentJob;
 
-        const _scheduledExperimentJob =
-          _experiment && inputExperiment.isScheduled &&
-          (await http
-            .get(
-              ServiceEndpoints.ScheduledExperiments + '/' + inputExperiment.scheduledExperimentJobId,
-              options
-            )
-            .then(sanitizeResponse));
-
-        const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
-        const query = {
+        const queryTexts = getQueryTextsFromQuerySet(_querySet?.querySetQueries);
+        const querySetSize = queryTexts.length;
+        const evaluationQuery = {
           index: 'search-relevance-evaluation-result',
           query: {
             match: {
               experimentId: _experiment.id,
             },
           },
-          size: querySetSize,
+          size: Math.max(querySetSize, 1),
         };
-        
-        const requestBody = {
-          query1: query,
-          ...(dataSourceId && { dataSourceId1: dataSourceId })
+
+        const variantQuery = {
+          index: 'search-relevance-experiment-variant',
+          query: {
+            match: {
+              experimentId: _experiment.id,
+            },
+          },
+          size: Math.max(querySetSize, 1),
         };
-        
-        const result = await http.post(ServiceEndpoints.GetSearchResults, {
-          body: JSON.stringify(requestBody)
-        });
+
+        const dsQuery = dataSourceId ? { query: { dataSourceId } } : {};
+
+        const [evaluationSearchResult, variantSearchResult] = await Promise.all([
+          http.post(ServiceEndpoints.GetSearchResults, {
+            body: JSON.stringify({ query: evaluationQuery }),
+            ...dsQuery,
+          }),
+          http.post(ServiceEndpoints.GetSearchResults, {
+            body: JSON.stringify({ query: variantQuery }),
+            ...dsQuery,
+          }),
+        ]);
+
         const parseResults =
-          result &&
-          result.result1?.hits?.hits &&
-          combineResults(...result.result1.hits.hits.map((x: any) => toQueryEvaluation(x._source)));
+          evaluationSearchResult?.result?.hits?.hits &&
+          combineResults(
+            ...evaluationSearchResult.result.hits.hits.map((x: any) => toQueryEvaluation(x._source))
+          );
+
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           setExperiment(parsedExperiment.data);
           setSearchConfiguration(_searchConfiguration);
@@ -190,14 +216,57 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           setJudgmentSet(_judgmentSet);
           setScheduledExperimentJob(_scheduledExperimentJob);
           if (parseResults.success) {
-            setQueryEvaluations(parseResults.data);
-            // Check if there are ZSR queries by comparing resultIds count with query set count
-            if (_querySet && _querySet.querySetQueries && querySetSize > parseResults.data.length) {
-              const zsrCount = querySetSize - parseResults.data.length;
+            const evaluationByQueryText = new Map<string, QueryEvaluation>();
+            for (const evaluation of parseResults.data as QueryEvaluation[]) {
+              evaluationByQueryText.set(evaluation.queryText, evaluation);
+            }
+
+            const experimentResults = Array.isArray(_experiment.results) ? _experiment.results : [];
+            const variantSources = parseVariantSources(variantSearchResult?.result?.hits?.hits ?? []);
+            const queryExecutionOrder = getQueryExecutionOrder(experimentResults);
+            const variantStatusByQueryText = mapQueryStatusesFromVariants(
+              queryExecutionOrder,
+              variantSources
+            );
+            const tookByQueryText = mapTookFromVariants(queryExecutionOrder, variantSources);
+
+            const queryRows = buildQueryEvaluationRows({
+              queryTexts,
+              evaluationByQueryText,
+              experimentResults,
+              variantStatusByQueryText,
+              tookByQueryText,
+            });
+            setQueryEvaluations(queryRows);
+
+            const outcomeCounts = countQueryOutcomes(queryRows);
+            if (outcomeCounts.failed > 0) {
+              notifications.toasts.addDanger({
+                title: 'Some queries failed',
+                text: `${outcomeCounts.failed} ${
+                  outcomeCounts.failed === 1 ? 'query' : 'queries'
+                } failed to execute`,
+                'data-test-subj': 'failedQueriesWarningToast',
+                toastLifeTimeMs: 10000,
+              });
+            }
+            if (outcomeCounts.zeroResults > 0) {
               notifications.toasts.addWarning({
                 title: 'You have some ZSR queries',
-                text: `${zsrCount} queries returned Zero Search Results`,
+                text: `${outcomeCounts.zeroResults} ${
+                  outcomeCounts.zeroResults === 1 ? 'query' : 'queries'
+                } returned Zero Search Results`,
                 'data-test-subj': 'zsrQueriesWarningToast',
+                toastLifeTimeMs: 10000,
+              });
+            }
+            if (outcomeCounts.notRun > 0) {
+              notifications.toasts.addWarning({
+                title: 'Some queries were not evaluated',
+                text: `${outcomeCounts.notRun} ${
+                  outcomeCounts.notRun === 1 ? 'query was' : 'queries were'
+                } not evaluated`,
+                'data-test-subj': 'notRunQueriesWarningToast',
                 toastLifeTimeMs: 10000,
               });
             }
@@ -221,9 +290,38 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
     fetchExperiment();
   }, [http, inputExperiment, dataSourceId]);
 
-  function extractMetricNames(queryEvaluations: any): string[] {
-    if (queryEvaluations.length > 0) {
-      return Object.keys(queryEvaluations[0].metrics);
+  const getStatusIndicator = (status: QueryEvaluationStatus, statusMessage?: string) => {
+    // EuiHealth matches experiment listing status styling (see common_utils/status.ts).
+    const statusConfig: Record<
+      QueryEvaluationStatus,
+      { color: 'success' | 'warning' | 'danger' | 'subdued'; label: string }
+    > = {
+      success: { color: 'success', label: 'Evaluated' },
+      zero_results: { color: 'warning', label: 'Zero results' },
+      failed: { color: 'danger', label: 'Failed' },
+      not_run: { color: 'subdued', label: 'Not run' },
+    };
+    const config = statusConfig[status];
+
+    const indicator = (
+      <span data-test-subj={`queryStatus-${status}`}>
+        <EuiHealth color={config.color}>{config.label}</EuiHealth>
+      </span>
+    );
+
+    if (statusMessage) {
+      return <EuiToolTip content={statusMessage}>{indicator}</EuiToolTip>;
+    }
+
+    return indicator;
+  };
+
+  function extractMetricNames(evaluations: QueryEvaluationRow[]): string[] {
+    const successfulEvaluation = evaluations.find(
+      (evaluation) => evaluation.status === 'success' && Object.keys(evaluation.metrics).length > 0
+    );
+    if (successfulEvaluation) {
+      return Object.keys(successfulEvaluation.metrics);
     }
     return [];
   }
@@ -244,6 +342,10 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         coverage: COVERAGE_TOOL_TIP,
       };
 
+      const hasTook = queryEvaluations.some(
+        (evaluation) => evaluation.took !== undefined && evaluation.took !== null
+      );
+
       const columns: any[] = [
         {
           field: 'queryText',
@@ -256,7 +358,30 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             </EuiButtonEmpty>
           ),
         },
+        {
+          field: 'status',
+          name: 'Status',
+          dataType: 'string',
+          sortable: true,
+          render: (_status: QueryEvaluationStatus, row: QueryEvaluationRow) =>
+            getStatusIndicator(row.status, row.statusMessage),
+        },
       ];
+      if (hasTook) {
+        columns.push({
+          field: 'took',
+          name: (
+            <EuiToolTip content={TOOK_TOOL_TIP}>
+              <span>Time taken</span>
+            </EuiToolTip>
+          ),
+          dataType: 'number',
+          sortable: true,
+          render: (_value: number | undefined, row: QueryEvaluationRow) => (
+            <span data-test-subj="tookCell">{formatTook(row.took)}</span>
+          ),
+        });
+      }
       metricNames.forEach((metricName) => {
         // Extract base name for tooltip lookup
         const baseMetricName = getBaseMetricName(metricName);
@@ -273,14 +398,17 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           ),
           dataType: 'number',
           sortable: true,
-          render: (value: any) => {
+          render: (value: any, row: QueryEvaluationRow) => {
+            if (row.status !== 'success') {
+              return '—';
+            }
             if (typeof value === 'number') {
               return new Intl.NumberFormat(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
               }).format(value);
             }
-            return '-';
+            return '—';
           },
         });
       });
@@ -399,7 +527,14 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           <EuiSpacer size="m" />
         </>
       )}
-      <MetricsSummaryPanel metrics={queryEvaluations.map((q) => q.metrics)} />
+      <MetricsSummaryPanel
+        metrics={queryEvaluations
+          .filter((query) => query.status === 'success')
+          .map((query) => query.metrics)}
+        tookValues={queryEvaluations
+          .filter((query) => query.status === 'success')
+          .map((query) => query.took)}
+      />
       <EuiSpacer size="m" />
       {resultsPane}
     </>

@@ -23,13 +23,20 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  AVG_TOOK_TOOL_TIP,
 } from '../../../../common';
+import { averageTook, formatTook } from '../../../utils/took';
 
 interface MetricsSummaryPanelProps {
   metrics: MetricsCollection;
+  /** Per-query took values; averaged separately from relevance metrics. */
+  tookValues?: Array<number | undefined | null>;
 }
 
-export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metrics }) => {
+export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
+  metrics,
+  tookValues,
+}) => {
   const formatValue = (values: number[] | undefined) => {
     if (!values || values.length === 0) return '-';
     // Calculate average of the values
@@ -56,6 +63,8 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metric
 
   // Get metric keys from the first element if available
   const metricKeys = metrics.length > 0 ? Object.keys(metrics[0]) : [];
+  const hasTook = tookValues?.some((value) => value !== undefined && value !== null) ?? false;
+  const avgTook = hasTook ? averageTook(tookValues) : undefined;
 
   return (
     <EuiPanel paddingSize="l">
@@ -83,6 +92,19 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({ metric
             </EuiFlexItem>
           );
         })}
+        {hasTook && (
+          <EuiFlexItem grow={2} key="avg-took-ms">
+            <EuiStat
+              title={formatTook(avgTook)}
+              description={
+                <EuiToolTip content={AVG_TOOK_TOOL_TIP}>
+                  <span data-test-subj="avgTookSummary">Avg. time taken</span>
+                </EuiToolTip>
+              }
+              titleSize="l"
+            />
+          </EuiFlexItem>
+        )}
       </EuiFlexGroup>
     </EuiPanel>
   );

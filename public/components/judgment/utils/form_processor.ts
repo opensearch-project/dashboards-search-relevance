@@ -9,12 +9,20 @@ export const buildJudgmentPayload = (
   formData: JudgmentFormData,
   selectedQuerySet: ComboBoxOption[],
   selectedSearchConfigs: ComboBoxOption[],
-  selectedModel: ComboBoxOption[]
+  selectedModel: ComboBoxOption[],
+  importedRatings: any[] = []
 ): JudgmentFormData => {
   const basePayload = {
     name: formData.name.trim(),
     type: formData.type,
   };
+
+  if (formData.type === JudgmentType.IMPORT) {
+    return {
+      ...basePayload,
+      judgmentRatings: importedRatings,
+    } as JudgmentFormData;
+  }
 
   if (formData.type === JudgmentType.LLM) {
     return {
@@ -26,6 +34,8 @@ export const buildJudgmentPayload = (
       ...(formData.contextFields?.length && { contextFields: formData.contextFields }),
       ...(formData.tokenLimit !== 4000 && { tokenLimit: formData.tokenLimit }),
       ...(formData.ignoreFailure && { ignoreFailure: formData.ignoreFailure }),
+      ...(formData.promptTemplate && { promptTemplate: formData.promptTemplate }),
+      ...(formData.existingJudgments?.length && { existingJudgments: formData.existingJudgments }),
     };
   }
 

@@ -42,10 +42,8 @@ export const PromptTemplateSettings: React.FC<PromptTemplateSettingsProps> = ({
   const {
     outputSchema,
     setOutputSchema,
-    ratingCriteria,
-    setRatingCriteria,
-    customInstructions,
-    setCustomInstructions,
+    userInstructions,
+    setUserInstructions,
     placeholders,
     validationModelId,
     setValidationModelId,
@@ -93,10 +91,8 @@ export const PromptTemplateSettings: React.FC<PromptTemplateSettingsProps> = ({
               <PromptPanel
                 outputSchema={outputSchema}
                 onOutputSchemaChange={setOutputSchema}
-                ratingCriteria={ratingCriteria}
-                onRatingCriteriaChange={setRatingCriteria}
-                customInstructions={customInstructions}
-                onCustomInstructionsChange={setCustomInstructions}
+                userInstructions={userInstructions}
+                onUserInstructionsChange={setUserInstructions}
                 placeholders={placeholders}
               />
             </EuiFlexItem>

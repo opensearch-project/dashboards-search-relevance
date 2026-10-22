@@ -150,6 +150,40 @@ describe('JudgmentService', () => {
     });
   });
 
+  describe('fetchLlmJudgments', () => {
+    it('should fetch only LLM judgments and label them as "Name (ID)"', async () => {
+      const mockResponse = {
+        hits: {
+          hits: [
+            { _id: 'j1', _source: { name: 'Judgment 1', type: 'LLM_JUDGMENT' } },
+            { _id: 'j2', _source: { name: 'Judgment 2', type: 'UBI_JUDGMENT' } },
+            { _id: 'j3', _source: { name: 'Judgment 3', type: 'LLM_JUDGMENT' } },
+          ],
+        },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchLlmJudgments();
+
+      // UBI judgment is filtered out; LLM judgments are labelled with their id.
+      expect(result).toEqual([
+        { label: 'Judgment 1 (j1)', value: 'j1' },
+        { label: 'Judgment 3 (j3)', value: 'j3' },
+      ]);
+    });
+
+    it('should fall back to the id when a judgment has no name', async () => {
+      const mockResponse = {
+        hits: { hits: [{ _id: 'j1', _source: { type: 'LLM_JUDGMENT' } }] },
+      };
+      mockHttp.get.mockResolvedValue(mockResponse);
+
+      const result = await service.fetchLlmJudgments();
+
+      expect(result).toEqual([{ label: 'j1', value: 'j1' }]);
+    });
+  });
+
   describe('createJudgment', () => {
     it('should create judgment with correct payload', async () => {
       const formData = { name: 'test', type: 'LLM_JUDGMENT' };
@@ -191,6 +225,14 @@ describe('JudgmentService', () => {
       mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
 
       await service.fetchSearchConfigs('my-ds');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
+    });
+
+    it('fetchLlmJudgments should pass dataSourceId as query param', async () => {
+      mockHttp.get.mockResolvedValue({ hits: { hits: [] } });
+
+      await service.fetchLlmJudgments('my-ds');
 
       expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), { query: { dataSourceId: 'my-ds' } });
     });
@@ -254,6 +296,58 @@ describe('JudgmentService', () => {
       const formData = { name: 'test', type: 'LLM_JUDGMENT' };
 
       await expect(service.createJudgment(formData)).rejects.toThrow('API Error');
+    });
+  });
+
+  describe('updateRatings', () => {
+    it('groups flat edits by query into the judgmentRatings shape', async () => {
+      mockHttp.put.mockResolvedValue({ judgment_id: 'j1', result: 'updated' });
+
+      await service.updateRatings('j1', [
+        { query: 'superhero action', docId: '5', rating: '0.8' },
+        { query: 'superhero action', docId: '9', rating: '0.2' },
+        { query: 'comedy', docId: '3', rating: '1.0' },
+      ]);
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/judgments/j1', {
+        body: JSON.stringify({
+          judgmentRatings: [
+            {
+              query: 'superhero action',
+              ratings: [
+                { docId: '5', rating: '0.8' },
+                { docId: '9', rating: '0.2' },
+              ],
+            },
+            { query: 'comedy', ratings: [{ docId: '3', rating: '1.0' }] },
+          ],
+        }),
+      });
+    });
+
+    it('passes dataSourceId as a query param when provided', async () => {
+      mockHttp.put.mockResolvedValue({});
+
+      await service.updateRatings(
+        'j1',
+        [{ query: 'q', docId: '1', rating: '0.5' }],
+        'my-ds'
+      );
+
+      expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/judgments/j1', {
+        body: JSON.stringify({
+          judgmentRatings: [{ query: 'q', ratings: [{ docId: '1', rating: '0.5' }] }],
+        }),
+        query: { dataSourceId: 'my-ds' },
+      });
+    });
+
+    it('propagates backend errors to the caller', async () => {
+      mockHttp.put.mockRejectedValue(new Error('conflict'));
+
+      await expect(
+        service.updateRatings('j1', [{ query: 'q', docId: '1', rating: '0.5' }])
+      ).rejects.toThrow('conflict');
     });
   });
 });

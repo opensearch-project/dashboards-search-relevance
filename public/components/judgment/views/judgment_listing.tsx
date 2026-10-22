@@ -6,6 +6,7 @@
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import React, { useState } from 'react';
 import {
+  EuiBadge,
   EuiButtonEmpty,
   EuiButton,
   EuiButtonIcon,
@@ -19,13 +20,11 @@ import {
 } from '@elastic/eui';
 import moment from 'moment';
 import { CoreStart } from '../../../../../../src/core/public';
-import { DataSourceManagementPluginSetup } from '../../../../../../src/plugins/data_source_management/public';
 import {
   reactRouterNavigate,
   TableListView,
 } from '../../../../../../src/plugins/opensearch_dashboards_react/public';
 import { DeleteModal } from '../../common/DeleteModal';
-import { DataSourceSelector } from '../../common/datasource_selector';
 import { useConfig } from '../../../contexts/date_format_context';
 import { Routes } from '../../../../common';
 import { useJudgmentList } from '../hooks/use_judgment_list';
@@ -33,20 +32,15 @@ import { getStatusColor } from '../../common_utils/status';
 
 interface JudgmentListingProps extends RouteComponentProps {
   http: CoreStart['http'];
-  savedObjects?: CoreStart['savedObjects'];
-  dataSourceEnabled?: boolean;
-  dataSourceManagement?: DataSourceManagementPluginSetup;
+  dataSourceId?: string;
 }
 
 export const JudgmentListing: React.FC<JudgmentListingProps> = ({
   http,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
 }) => {
   const { dateFormat } = useConfig();
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     isLoading,
     error,
@@ -55,7 +49,8 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
     refreshKey,
     findJudgments,
     deleteJudgment,
-  } = useJudgmentList(http, selectedDataSource || undefined);
+    retryJudgment,
+  } = useJudgmentList(http, dataSourceId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [judgmentToDelete, setJudgmentToDelete] = useState<any>(null);
@@ -84,7 +79,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
         <>
           <EuiButtonEmpty
             size="xs"
-            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}${selectedDataSource ? `?dataSourceId=${selectedDataSource}` : ''}`)}
+            {...reactRouterNavigate(history, `${Routes.JudgmentViewPrefix}/${judgment.id}${dataSourceId ? `?dataSourceId=${dataSourceId}` : ''}`)}
           >
             {name}
           </EuiButtonEmpty>
@@ -99,6 +94,19 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
       render: (status: string) => {
         return <EuiHealth color={getStatusColor(status)}>{status}</EuiHealth>;
       },
+    },
+    {
+      field: 'failedQueries',
+      name: 'Failures',
+      sortable: true,
+      // Show whether the judgment has any failed documents (Error) or not (No Error), so users
+      // can see at a glance which judgments are worth retrying.
+      render: (failedQueries: number) =>
+        failedQueries > 0 ? (
+          <EuiBadge color="danger">Error</EuiBadge>
+        ) : (
+          <EuiBadge color="hollow">No Error</EuiBadge>
+        ),
     },
     {
       field: 'type',
@@ -120,17 +128,31 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiToolTip content="Delete">
-          <EuiButtonIcon
-            aria-label="Delete"
-            iconType="trash"
-            color="danger"
-            onClick={() => {
-              setJudgmentToDelete(item);
-              setShowDeleteModal(true);
-            }}
-          />
-        </EuiToolTip>
+        <>
+          {/* Retry is only shown when the judgment has failed documents to re-score. */}
+          {item.failedQueries > 0 && item.status !== 'PROCESSING' && item.status !== 'RETRYING' && (
+            <EuiToolTip content="Retry failed documents">
+              <EuiButtonIcon
+                aria-label="Retry failed documents"
+                iconType="refresh"
+                color="primary"
+                data-test-subj="retryJudgmentButton"
+                onClick={() => retryJudgment(item)}
+              />
+            </EuiToolTip>
+          )}
+          <EuiToolTip content="Delete">
+            <EuiButtonIcon
+              aria-label="Delete"
+              iconType="trash"
+              color="danger"
+              onClick={() => {
+                setJudgmentToDelete(item);
+                setShowDeleteModal(true);
+              }}
+            />
+          </EuiToolTip>
+        </>
       ),
     },
   ];
@@ -155,16 +177,6 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
         ]}
       />
 
-      {dataSourceEnabled && dataSourceManagement && savedObjects && (
-        <DataSourceSelector
-          dataSourceEnabled={dataSourceEnabled}
-          dataSourceManagement={dataSourceManagement}
-          savedObjects={savedObjects}
-          selectedDataSource={selectedDataSource}
-          setSelectedDataSource={setSelectedDataSource}
-        />
-      )}
-
       <EuiFlexItem>
         {error ? (
           <EuiCallOut title="Error" color="danger">
@@ -172,7 +184,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
           </EuiCallOut>
         ) : (
           <TableListView
-            key={`${refreshKey}-${selectedDataSource}`}
+            key={`${refreshKey}-${dataSourceId ?? ''}`}
             headingId="judgmentListingHeading"
             entityName="Judgment"
             entityNamePlural="Judgments"

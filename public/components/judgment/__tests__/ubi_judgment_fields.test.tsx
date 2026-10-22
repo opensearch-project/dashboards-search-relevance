@@ -100,6 +100,26 @@ describe('UBIJudgmentFields', () => {
     expect(screen.getByText('UBI Events Index (Optional)')).toBeInTheDocument();
   });
 
+  it('shows an error when COEC is selected but no UBI events data is available', () => {
+    const props = { ...defaultProps, indexOptions: [], isLoadingIndexes: false };
+    render(<UBIJudgmentFields {...props} />);
+    expect(screen.getByText(/no UBI events index was found/i)).toBeInTheDocument();
+  });
+
+  it('does not show the no-data error when UBI events indexes are available', () => {
+    render(<UBIJudgmentFields {...defaultProps} />);
+    expect(screen.queryByText(/no UBI events index was found/i)).not.toBeInTheDocument();
+  });
+
+  it('labels UBI Events Index as optional for non-COEC click models', () => {
+    const props = {
+      ...defaultProps,
+      formData: { ...defaultProps.formData, clickModel: 'other' },
+    };
+    render(<UBIJudgmentFields {...props} />);
+    expect(screen.getByText('UBI Events Index (Optional)')).toBeInTheDocument();
+  });
+
   it('calls updateFormData when click model changes', () => {
     const mockUpdate = jest.fn();
     render(<UBIJudgmentFields {...defaultProps} updateFormData={mockUpdate} />);
