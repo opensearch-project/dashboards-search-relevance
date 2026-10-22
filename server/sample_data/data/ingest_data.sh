@@ -1,3 +1,6 @@
+# Copyright OpenSearch Contributors
+# SPDX-License-Identifier: Apache-2.0
+
 cd /Users/mfenqin/workspace/OpenSearch-Dashboards/plugins/dashboards-search-relevance/server/sample_data/data && \
 python3 << 'EOF'
 import gzip
