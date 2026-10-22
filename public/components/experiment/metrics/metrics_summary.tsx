@@ -24,6 +24,9 @@ import {
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
   AVG_TOOK_TOOL_TIP,
+  RECALL_TOOL_TIP,
+  MRR_TOOL_TIP,
+  DCG_TOOL_TIP,
 } from '../../../../common';
 import { averageTook, formatTook } from '../../../utils/took';
 
@@ -48,11 +51,14 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
     jaccard: JACCARD_TOOL_TIP,
     rbo50: RBO50_TOOL_TIP,
     rbo90: RBO90_TOOL_TIP,
-    frequencyWeighted: FREQUENCY_WEIGHTED_TOOL_TIP,
+    frequencyweighted: FREQUENCY_WEIGHTED_TOOL_TIP,
     ndcg: NDCG_TOOL_TIP,
     precision: PRECISION_TOOL_TIP,
     map: MAP_TOOL_TIP,
     coverage: COVERAGE_TOOL_TIP,
+    recall: RECALL_TOOL_TIP,
+    mrr: MRR_TOOL_TIP,
+    dcg: DCG_TOOL_TIP,
   };
 
   // metrics for evaluations are stored with @k, need to extract the base name
