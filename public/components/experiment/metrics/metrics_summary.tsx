@@ -36,6 +36,32 @@ interface MetricsSummaryPanelProps {
   tookValues?: Array<number | undefined | null>;
 }
 
+// tool tip texts, keyed by lowercased base metric name (see getBaseMetricName)
+export const metricDescriptions: { [key: string]: string } = {
+  jaccard: JACCARD_TOOL_TIP,
+  rbo50: RBO50_TOOL_TIP,
+  rbo90: RBO90_TOOL_TIP,
+  frequencyweighted: FREQUENCY_WEIGHTED_TOOL_TIP,
+  ndcg: NDCG_TOOL_TIP,
+  precision: PRECISION_TOOL_TIP,
+  map: MAP_TOOL_TIP,
+  coverage: COVERAGE_TOOL_TIP,
+  recall: RECALL_TOOL_TIP,
+  mrr: MRR_TOOL_TIP,
+  dcg: DCG_TOOL_TIP,
+};
+
+// metrics for evaluations are stored with @k, need to extract the base name
+export const getBaseMetricName = (fullMetricName: string): string => {
+  const parts = fullMetricName.split('@');
+  return parts[0].toLowerCase();
+};
+
+export const getMetricTooltip = (fullMetricName: string): string => {
+  const baseMetricName = getBaseMetricName(fullMetricName);
+  return metricDescriptions[baseMetricName] || `No description available for ${baseMetricName}`;
+};
+
 export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
   metrics,
   tookValues,
@@ -45,26 +71,6 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
     // Calculate average of the values
     const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
     return avg.toFixed(2).replace(/\.00$/, '');
-  };
-  // tool tip texts
-  const metricDescriptions: { [key: string]: string } = {
-    jaccard: JACCARD_TOOL_TIP,
-    rbo50: RBO50_TOOL_TIP,
-    rbo90: RBO90_TOOL_TIP,
-    frequencyweighted: FREQUENCY_WEIGHTED_TOOL_TIP,
-    ndcg: NDCG_TOOL_TIP,
-    precision: PRECISION_TOOL_TIP,
-    map: MAP_TOOL_TIP,
-    coverage: COVERAGE_TOOL_TIP,
-    recall: RECALL_TOOL_TIP,
-    mrr: MRR_TOOL_TIP,
-    dcg: DCG_TOOL_TIP,
-  };
-
-  // metrics for evaluations are stored with @k, need to extract the base name
-  const getBaseMetricName = (fullMetricName: string): string => {
-    const parts = fullMetricName.split('@');
-    return parts[0].toLowerCase();
   };
 
   // Get metric keys from the first element if available
@@ -80,10 +86,7 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
       <EuiHorizontalRule margin="m" />
       <EuiFlexGroup>
         {metricKeys.map((metricKey) => {
-          // Get the base name for lookup
-          const baseMetricName = getBaseMetricName(metricKey);
-          const tooltipContent =
-            metricDescriptions[baseMetricName] || `No description available for ${baseMetricName}`;
+          const tooltipContent = getMetricTooltip(metricKey);
           return (
             <EuiFlexItem grow={2} key={metricKey}>
               <EuiStat

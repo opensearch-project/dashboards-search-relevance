@@ -5,7 +5,43 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MetricsSummaryPanel } from '../metrics/metrics_summary';
+import {
+  MetricsSummaryPanel,
+  getBaseMetricName,
+  getMetricTooltip,
+  metricDescriptions,
+} from '../metrics/metrics_summary';
+
+describe('getBaseMetricName', () => {
+  it('strips the @k suffix and lowercases the result', () => {
+    expect(getBaseMetricName('recall@10')).toBe('recall');
+    expect(getBaseMetricName('NDCG@5')).toBe('ndcg');
+    expect(getBaseMetricName('frequencyWeighted')).toBe('frequencyweighted');
+  });
+});
+
+describe('getMetricTooltip', () => {
+  it.each(Object.keys(metricDescriptions))(
+    'resolves a real tooltip for metric key "%s"',
+    (metricKey) => {
+      expect(getMetricTooltip(metricKey)).toBe(metricDescriptions[metricKey]);
+    }
+  );
+
+  it.each(['recall@10', 'ndcg@5', 'frequencyWeighted', 'MRR'])(
+    'resolves a real tooltip for @k-suffixed or differently-cased name "%s"',
+    (metricKey) => {
+      const tooltip = getMetricTooltip(metricKey);
+      expect(tooltip).not.toMatch(/No description available/);
+    }
+  );
+
+  it('falls back to a "no description" message for an unknown metric', () => {
+    expect(getMetricTooltip('totallyMadeUp')).toBe(
+      'No description available for totallymadeup'
+    );
+  });
+});
 
 describe('MetricsSummaryPanel', () => {
   it('renders metrics summary title', () => {
