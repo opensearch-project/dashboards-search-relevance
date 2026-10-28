@@ -58,9 +58,9 @@ describe('ExperimentMetadataFields', () => {
   });
 
   it('does not show validation errors when none are provided', () => {
-    render(<ExperimentMetadataFields {...defaultProps} />);
+    const { container } = render(<ExperimentMetadataFields {...defaultProps} />);
 
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(container.querySelector('.euiFormErrorText')).not.toBeInTheDocument();
   });
 
   it('surfaces a name validation error', () => {
