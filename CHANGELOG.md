@@ -25,5 +25,6 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Documentation
 
 ### Maintenance
+* Add unit tests for ExperimentMetadataFields, previously untested (0% coverage) ([#968](https://github.com/opensearch-project/dashboards-search-relevance/pull/968))
 
 ### Refactoring
