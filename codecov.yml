@@ -9,8 +9,6 @@ coverage:
         # allows 5% coverage reduction without failing
         threshold: 5%
     patch: yes
-    # Match org practice (e.g. opensearch-js): indirect coverage diffs are
-    # noisy and should not fail PRs. Keep project + patch as the gates.
     changes: no
 
 # disable comments in PRs
