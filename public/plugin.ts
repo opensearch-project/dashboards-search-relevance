@@ -38,6 +38,8 @@ export class SearchRelevancePlugin
   private unregisterSearchRelevanceCommand?: () => void;
   private coreSetup?: CoreSetup;
   private chatSetup?: ChatPluginSetup;
+  private dataSourceEnabled = false;
+  private hideLocalCluster = false;
 
   public setup(
     core: CoreSetup,
@@ -45,6 +47,8 @@ export class SearchRelevancePlugin
   ): SearchRelevancePluginSetup {
     this.coreSetup = core;
     this.chatSetup = chat;
+    this.dataSourceEnabled = !!dataSource;
+    this.hideLocalCluster = !!dataSource?.hideLocalCluster;
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
@@ -90,19 +94,23 @@ export class SearchRelevancePlugin
 
   public start(
     core: CoreStart,
-    { dataSource, contentManagement }: SearchRelevanceStartDependencies
+    { contentManagement }: SearchRelevanceStartDependencies
   ): SearchRelevancePluginStart {
     if (contentManagement) {
       registerCompareQueryCard(contentManagement, core);
     }
 
+    // Command stays registered; the handler reports when no usable data source exists rather than
+    // hiding it. dataSourceEnabled + hideLocalCluster tell it whether the local cluster counts.
     if (
       this.coreSetup &&
       core.application.capabilities.searchRelevanceDashboards?.chatCommandEnabled
     ) {
       this.unregisterSearchRelevanceCommand = registerSearchRelevanceCommand(
         this.coreSetup,
-        this.chatSetup
+        this.chatSetup,
+        this.dataSourceEnabled,
+        this.hideLocalCluster
       );
     }
 

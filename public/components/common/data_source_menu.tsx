@@ -4,15 +4,13 @@
  */
 
 import React, { useMemo } from 'react';
-import semver from 'semver';
-import { CoreStart, MountPoint, SavedObject } from '../../../../../src/core/public';
+import { CoreStart, MountPoint } from '../../../../../src/core/public';
 import {
   DataSourceManagementPluginSetup,
   DataSourceSelectableConfig,
 } from '../../../../../src/plugins/data_source_management/public';
 import { DataSourceOption } from '../../../../../src/plugins/data_source_management/public/components/data_source_menu/types';
-import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
-import * as pluginManifest from '../../../opensearch_dashboards.json';
+import { isSupportedSearchRelevanceDataSource } from './datasource_utils';
 
 interface DataSourceMenuProps {
   dataSourceEnabled: boolean;
@@ -23,14 +21,6 @@ interface DataSourceMenuProps {
   dataSourceId: string | undefined;
   setDataSourceId: (id: string | undefined) => void;
 }
-
-const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
-  if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
-    return false;
-  }
-  const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
-  return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
-};
 
 export const DataSourceMenu: React.FC<DataSourceMenuProps> = ({
   dataSourceEnabled,
@@ -67,7 +57,7 @@ export const DataSourceMenu: React.FC<DataSourceMenuProps> = ({
             }
             setDataSourceId(id);
           },
-          dataSourceFilter: dataSourceFilterFn,
+          dataSourceFilter: isSupportedSearchRelevanceDataSource,
         }}
       />
     );
