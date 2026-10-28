@@ -4,7 +4,7 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import { useDataSourceFilter } from '../datasource_utils';
+import { isSupportedSearchRelevanceDataSource, useDataSourceFilter } from '../datasource_utils';
 
 const createMockDataSource = (version: string, engineType?: string) => ({
   id: 'test-ds',
@@ -17,6 +17,30 @@ const createMockDataSource = (version: string, engineType?: string) => ({
     auth: { type: 'no_auth', credentials: undefined },
   },
   references: [],
+});
+
+describe('isSupportedSearchRelevanceDataSource', () => {
+  it('returns false for an AnalyticEngine data source regardless of version', () => {
+    expect(
+      isSupportedSearchRelevanceDataSource(createMockDataSource('2.12.0', 'AnalyticEngine') as any)
+    ).toBe(false);
+  });
+
+  it('returns true for a non-AnalyticEngine data source with a supported version', () => {
+    expect(
+      isSupportedSearchRelevanceDataSource(createMockDataSource('2.12.0', 'OpenSearch') as any)
+    ).toBe(true);
+  });
+
+  it('returns false for a non-AnalyticEngine data source with an unsupported version', () => {
+    expect(
+      isSupportedSearchRelevanceDataSource(createMockDataSource('2.6.0', 'OpenSearch') as any)
+    ).toBe(false);
+  });
+
+  it('returns true for a data source with no engine type and a supported version', () => {
+    expect(isSupportedSearchRelevanceDataSource(createMockDataSource('2.12.0') as any)).toBe(true);
+  });
 });
 
 describe('useDataSourceFilter', () => {
