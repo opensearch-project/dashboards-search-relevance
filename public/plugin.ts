@@ -21,11 +21,17 @@ import { ContentManagementPluginStart } from '../../../src/plugins/content_manag
 import { registerCompareQueryCard } from './components/service_card/compare_query_card';
 import { ChatPluginSetup } from '../../../src/plugins/chat/public';
 import { registerSearchRelevanceCommand } from './chat/search_relevance_command';
+import {
+  StarterSuggestionsPluginSetup,
+  StarterSuggestionsRegistration,
+} from '../../../src/plugins/starter_suggestions/public';
+import { registerSearchRelevanceStarterSuggestions } from './chat/starter_suggestions';
 
 export interface SearchRelevancePluginSetupDependencies {
   dataSource: DataSourcePluginSetup;
   dataSourceManagement: DataSourceManagementPluginSetup;
   chat?: ChatPluginSetup;
+  starterSuggestions?: StarterSuggestionsPluginSetup;
 }
 
 export interface SearchRelevanceStartDependencies {
@@ -38,13 +44,24 @@ export class SearchRelevancePlugin
   private unregisterSearchRelevanceCommand?: () => void;
   private coreSetup?: CoreSetup;
   private chatSetup?: ChatPluginSetup;
+  private starterSuggestionsRegistration?: StarterSuggestionsRegistration;
 
   public setup(
     core: CoreSetup,
-    { dataSource, dataSourceManagement, chat }: SearchRelevancePluginSetupDependencies
+    {
+      dataSource,
+      dataSourceManagement,
+      chat,
+      starterSuggestions,
+    }: SearchRelevancePluginSetupDependencies
   ): SearchRelevancePluginSetup {
     this.coreSetup = core;
     this.chatSetup = chat;
+    if (starterSuggestions) {
+      this.starterSuggestionsRegistration = registerSearchRelevanceStarterSuggestions(
+        starterSuggestions
+      );
+    }
     // Register an application into the side navigation menu
     core.application.register({
       id: PLUGIN_ID,
@@ -111,5 +128,6 @@ export class SearchRelevancePlugin
 
   public stop() {
     this.unregisterSearchRelevanceCommand?.();
+    this.starterSuggestionsRegistration?.unregister();
   }
 }

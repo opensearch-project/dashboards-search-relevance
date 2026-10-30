@@ -20,7 +20,12 @@ jest.mock('./components/service_card/compare_query_card', () => ({
   registerCompareQueryCard: jest.fn(),
 }));
 
+jest.mock('./chat/starter_suggestions', () => ({
+  registerSearchRelevanceStarterSuggestions: jest.fn(),
+}));
+
 import { registerSearchRelevanceCommand } from './chat/search_relevance_command';
+import { registerSearchRelevanceStarterSuggestions } from './chat/starter_suggestions';
 
 describe('SearchRelevancePlugin', () => {
   let plugin: SearchRelevancePlugin;
@@ -152,6 +157,43 @@ describe('SearchRelevancePlugin', () => {
       plugin.stop();
 
       expect(mockUnregister).toHaveBeenCalled();
+    });
+  });
+
+  describe('starter suggestions', () => {
+    it('registers starter suggestions when the starterSuggestions plugin is available', () => {
+      const starterSuggestions = { registerProvider: jest.fn() };
+
+      plugin.setup(coreSetupMock as any, {
+        dataSource: {} as any,
+        dataSourceManagement: {} as any,
+        starterSuggestions,
+      });
+
+      expect(registerSearchRelevanceStarterSuggestions).toHaveBeenCalledWith(starterSuggestions);
+    });
+
+    it('does not register starter suggestions when the starterSuggestions plugin is missing', () => {
+      plugin.setup(coreSetupMock as any, {
+        dataSource: {} as any,
+        dataSourceManagement: {} as any,
+      });
+
+      expect(registerSearchRelevanceStarterSuggestions).not.toHaveBeenCalled();
+    });
+
+    it('unregisters starter suggestions on stop', () => {
+      const registration = { invalidate: jest.fn(), unregister: jest.fn() };
+      (registerSearchRelevanceStarterSuggestions as jest.Mock).mockReturnValue(registration);
+
+      plugin.setup(coreSetupMock as any, {
+        dataSource: {} as any,
+        dataSourceManagement: {} as any,
+        starterSuggestions: { registerProvider: jest.fn() },
+      });
+      plugin.stop();
+
+      expect(registration.unregister).toHaveBeenCalled();
     });
   });
 });

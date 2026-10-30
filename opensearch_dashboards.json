@@ -14,7 +14,8 @@
     "dataSourceManagement",
     "contentManagement",
     "home",
-    "chat"
+    "chat",
+    "starterSuggestions"
   ],
   "supportedOSDataSourceVersions": ">=2.8.0",
   "configPath": [
