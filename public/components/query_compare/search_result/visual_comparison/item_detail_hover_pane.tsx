@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { HighlightText } from './highlight_text';
+import { isImageUrlFieldValue } from './image_utils';
 
 interface Position {
   top: number;
@@ -32,8 +33,6 @@ const EXCLUDED_FIELDS = [
   'change',
   'status',
 ];
-const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i;
-
 export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
   item,
   mousePosition,
@@ -104,7 +103,7 @@ export const ItemDetailHoverPane: React.FC<ItemDetailHoverPaneProps> = ({
         </button>
       </div>
 
-      {imageFieldName && item[imageFieldName] && item[imageFieldName].match(IMAGE_REGEX) ? (
+      {imageFieldName && isImageUrlFieldValue(item[imageFieldName]) ? (
         <>
           <div className="flex items-center mb-2">
             <div className="w-16 h-16 flex-shrink-0 mr-3">

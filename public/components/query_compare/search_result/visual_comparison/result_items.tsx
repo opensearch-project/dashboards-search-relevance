@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { HighlightText } from './highlight_text';
+import { isImageUrlFieldValue } from './image_utils';
 
 interface ResultItemsProps {
   items: any[];
@@ -64,15 +65,13 @@ export const ResultItems: React.FC<ResultItemsProps> = ({
           >
             {item.rank}
           </div>
-          {imageFieldName &&
-          item[imageFieldName] &&
-          item[imageFieldName].match(/\.(jpg|jpeg|png|gif|svg|webp)($|\?)/i) && (
+          {imageFieldName && isImageUrlFieldValue(item[imageFieldName]) && (
             <div className={`${resultNum === 1 ? 'ml-2' : 'mr-2'} flex-shrink-0`} style={{ width: `${imageSize}px`, height: `${imageSize}px` }}>
               <img
                 width={imageSize}
                 height={imageSize}
                 src={item[imageFieldName]}
-                className="object-contain rounded"
+                className={`object-contain rounded ${imageSizeClass}`}
                 style={{ width: `${imageSize}px`, height: `${imageSize}px` }}
               />
             </div>
