@@ -43,10 +43,13 @@ export const parseEntityParams = (entityId: string) => {
  * Hook for datasource selection callback
  */
 export const useDataSourceSelection = (setSelectedDataSource: (id: string) => void) => {
-  return useCallback((dataSources) => {
-    const dataConnectionId = dataSources[0] ? dataSources[0].id : '';
-    setSelectedDataSource(dataConnectionId);
-  }, [setSelectedDataSource]);
+  return useCallback(
+    (dataSources) => {
+      const dataConnectionId = dataSources[0] ? dataSources[0].id : '';
+      setSelectedDataSource(dataConnectionId);
+    },
+    [setSelectedDataSource]
+  );
 };
 
 /**
@@ -103,22 +106,16 @@ export const isSupportedSearchRelevanceDataSource = (
 };
 
 /**
- * Hook for datasource filter function
+ * Whether the data source has the Search Relevance backend plugin. Data sources without an
+ * installedPlugins list are treated as supported.
  */
-export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
-  return useCallback(
-    (dataSource: SavedObject<DataSourceAttributes>) => {
-      if (
-        excludeEngineTypes?.length &&
-        dataSource?.attributes?.dataSourceEngineType &&
-        excludeEngineTypes.includes(dataSource.attributes.dataSourceEngineType)
-      ) {
-        return false;
-      }
-      const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
-      return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
-    },
-    [excludeEngineTypes]
+export const hasSearchRelevancePlugin = (
+  dataSource: SavedObject<DataSourceAttributes>
+): boolean => {
+  const installedPlugins = dataSource?.attributes?.installedPlugins;
+  return (
+    !Array.isArray(installedPlugins) ||
+    installedPlugins.includes(SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN)
   );
 };
 
@@ -148,11 +145,7 @@ export const useDataSourceSupportsSearchRelevance = (
       .get<DataSourceAttributes>('data-source', dataSourceId)
       .then((dataSource) => {
         if (cancelled) return;
-        const installedPlugins = dataSource?.attributes?.installedPlugins;
-        setSupportsSearchRelevance(
-          !Array.isArray(installedPlugins) ||
-            installedPlugins.includes(SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN)
-        );
+        setSupportsSearchRelevance(hasSearchRelevancePlugin(dataSource));
       })
       .catch(() => {
         if (!cancelled) setSupportsSearchRelevance(true);

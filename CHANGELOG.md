@@ -16,6 +16,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Added missing tool tips for Recall, MRR and DCG metrics in the experiment results page. ([#967](https://github.com/opensearch-project/dashboards-search-relevance/pull/967)) 
 
 ### Bug Fixes
+* Check the Search Relevance backend plugin in the `/search-relevance` command's data source availability check, matching the Workbench page ([#972](https://github.com/opensearch-project/dashboards-search-relevance/pull/972))
 * Escape cells in the document scores CSV export ([#957](https://github.com/opensearch-project/dashboards-search-relevance/pull/957))
 
 ### Infrastructure
