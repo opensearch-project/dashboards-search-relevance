@@ -14,7 +14,10 @@ import { DataSourceAttributes } from '../../../../src/plugins/data_source/common
 import { ChatPluginSetup } from '../../../../src/plugins/chat/public';
 import { SlashCommandResult } from '../../../../src/plugins/chat/public/services/slash_commands';
 import { PLUGIN_ID } from '../../common';
-import { isSupportedSearchRelevanceDataSource } from '../components/common/datasource_utils';
+import {
+  hasSearchRelevancePlugin,
+  isSupportedSearchRelevanceDataSource,
+} from '../components/common/datasource_utils';
 
 const getWelcomeMessage = () =>
   i18n.translate('searchRelevance.command.welcomeMessage', {
@@ -36,8 +39,8 @@ const hasSearchUseCase = (features: string[]): boolean =>
 
 /**
  * Whether the workspace has a data source the Workbench can use, applying the selector's filter
- * (non-AnalyticEngine, compatible version). MDS off or a visible local cluster counts as usable; a
- * lookup failure fails open.
+ * (non-AnalyticEngine, compatible version) and the backend plugin check. MDS off or a visible
+ * local cluster counts as usable; a lookup failure fails open.
  */
 const hasUsableDataSource = async (
   core: CoreSetup,
@@ -50,9 +53,12 @@ const hasUsableDataSource = async (
     const { savedObjects } = await coreStart.savedObjects.client.find<DataSourceAttributes>({
       type: 'data-source',
       perPage: 10000,
-      fields: ['dataSourceEngineType', 'dataSourceVersion'],
+      fields: ['dataSourceEngineType', 'dataSourceVersion', 'installedPlugins'],
     });
-    return savedObjects.some((dataSource) => isSupportedSearchRelevanceDataSource(dataSource));
+    return savedObjects.some(
+      (dataSource) =>
+        isSupportedSearchRelevanceDataSource(dataSource) && hasSearchRelevancePlugin(dataSource)
+    );
   } catch {
     return true;
   }

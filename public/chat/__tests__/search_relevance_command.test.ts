@@ -27,9 +27,9 @@ describe('registerSearchRelevanceCommand', () => {
     mockSendMessageWithWindow = jest.fn();
     mockFind = jest.fn().mockResolvedValue({ savedObjects: [] });
 
-    mockChatSetup = ({
+    mockChatSetup = {
       commandRegistry: { registerCommand: mockRegisterCommand },
-    } as unknown) as ChatPluginSetup;
+    } as unknown as ChatPluginSetup;
 
     mockCoreSetup = {
       workspaces: {
@@ -104,9 +104,7 @@ describe('registerSearchRelevanceCommand', () => {
 
     const result = await getHandler()('');
 
-    expect(mockFind).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'data-source' })
-    );
+    expect(mockFind).toHaveBeenCalledWith(expect.objectContaining({ type: 'data-source' }));
     expect(result).toEqual({
       title: 'Unsupported data source',
       localMessage: expect.stringContaining(
@@ -136,6 +134,65 @@ describe('registerSearchRelevanceCommand', () => {
       ),
     });
     expect(mockNavigateToApp).not.toHaveBeenCalled();
+  });
+
+  it('reports no supported data source when no data source has the Search Relevance plugin (MDS on)', async () => {
+    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({
+      name: 'My Search',
+      features: ['use-case-search'],
+    });
+    mockFind.mockResolvedValue({
+      savedObjects: [
+        {
+          attributes: {
+            dataSourceEngineType: 'OpenSearch',
+            dataSourceVersion: '2.12.0',
+            installedPlugins: ['opensearch-ml'],
+          },
+        },
+      ],
+    });
+
+    registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup, true, true);
+
+    const result = await getHandler()('');
+
+    expect(mockFind).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fields: expect.arrayContaining(['installedPlugins']),
+      })
+    );
+    expect(result).toEqual({
+      title: 'Unsupported data source',
+      localMessage: expect.stringContaining(
+        'No available data source supports search relevance tuning'
+      ),
+    });
+    expect(mockNavigateToApp).not.toHaveBeenCalled();
+  });
+
+  it('navigates when a data source lists the Search Relevance plugin (MDS on)', async () => {
+    mockCoreSetup.workspaces.currentWorkspace$.getValue.mockReturnValue({
+      name: 'My Search',
+      features: ['use-case-search'],
+    });
+    mockFind.mockResolvedValue({
+      savedObjects: [
+        {
+          attributes: {
+            dataSourceEngineType: 'OpenSearch',
+            dataSourceVersion: '2.12.0',
+            installedPlugins: ['opensearch-search-relevance'],
+          },
+        },
+      ],
+    });
+
+    registerSearchRelevanceCommand(mockCoreSetup, mockChatSetup, true, true);
+
+    await getHandler()('');
+
+    expect(mockNavigateToApp).toHaveBeenCalledWith('searchRelevance');
   });
 
   it('navigates when a supported (non-AE, compatible) data source is available (MDS on)', async () => {

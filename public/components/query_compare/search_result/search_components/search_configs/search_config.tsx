@@ -16,13 +16,11 @@ import {
 } from '@elastic/eui';
 import React, { FunctionComponent, useEffect } from 'react';
 
-import semver from 'semver';
 import {
   AppMountParameters,
   CoreStart,
   MountPoint,
   NotificationsStart,
-  SavedObject,
   SavedObjectsStart,
   ToastsStart,
 } from '../../../../../../../../src/core/public';
@@ -32,9 +30,8 @@ import { DataSourceOption } from '../../../../../../../../src/plugins/data_sourc
 import { NavigationPublicPluginStart } from '../../../../../../../../src/plugins/navigation/public';
 import { useSearchRelevanceContext } from '../../../../../contexts';
 import { QueryError, QueryStringError, SelectIndexError } from '../../../../../types/index';
-import { DataSourceAttributes } from '../../../../../../../../src/plugins/data_source/common/data_sources';
 import { ServiceEndpoints } from '../../../../../../common';
-import * as pluginManifest from '../../../../../../opensearch_dashboards.json';
+import { isSupportedSearchRelevanceDataSource } from '../../../../common/datasource_utils';
 import { SearchConfigurationService } from '../../../../search_configuration/services/search_configuration_service';
 import { ResizableQueryEditor } from '../resizable_query_editor';
 
@@ -101,7 +98,10 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   const [isLoadingConfigs, setIsLoadingConfigs] = React.useState<boolean>(false);
   const [allConfigs, setAllConfigs] = React.useState<any[]>([]);
   const { services } = useOpenSearchDashboards<SearchRelevanceServices>();
-  const searchConfigurationService = React.useMemo(() => new SearchConfigurationService(services.http), [services.http]);
+  const searchConfigurationService = React.useMemo(
+    () => new SearchConfigurationService(services.http),
+    [services.http]
+  );
   const {
     documentsIndexes1,
     setDataSource1,
@@ -259,13 +259,6 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
   if (dataSourceEnabled) {
     DataSourceSelector = dataSourceManagement.ui.DataSourceSelector;
   }
-  const dataSourceFilterFn = (dataSource: SavedObject<DataSourceAttributes>) => {
-    if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
-      return false;
-    }
-    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
-    return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
-  };
   return (
     <>
       <EuiTitle size="xs">
@@ -284,7 +277,7 @@ export const SearchConfig: FunctionComponent<SearchConfigProps> = ({
                 disabled={false}
                 fullWidth={false}
                 removePrepend={true}
-                dataSourceFilter={dataSourceFilterFn}
+                dataSourceFilter={isSupportedSearchRelevanceDataSource}
               />
             </EuiCompressedFormRow>
             <EuiSpacer size="s" />
