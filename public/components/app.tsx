@@ -7,16 +7,7 @@ import { EuiGlobalToastList } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
 import React, { useState } from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
-import {
-  EuiPageSideBar,
-  EuiSideNav,
-  EuiTitle,
-  EuiSpacer,
-  EuiPage,
-  EuiPageBody,
-  EuiLoadingSpinner,
-  EuiEmptyPrompt,
-} from '@elastic/eui';
+import { EuiSpacer, EuiPage, EuiPageBody, EuiLoadingSpinner, EuiEmptyPrompt } from '@elastic/eui';
 import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
 import { NavigationPublicPluginStart } from '../../../../src/plugins/navigation/public';
@@ -49,19 +40,7 @@ import {
   useDataSourceSupportsSearchRelevance,
 } from './common/datasource_utils';
 import { DataSourceMenu } from './common/data_source_menu';
-
-enum Navigation {
-  SRW = 'Search Relevance Workbench',
-  Overview = 'Overview',
-  Experiments = 'Experiments',
-  ExperimentsQueryAnalysis = 'Query Analysis',
-  ExperimentsQuerySetComparison = 'Query Set Comparison',
-  ExperimentsSearchEvaluation = 'Search Evaluation',
-  ExperimentsHybridOptimizer = 'Hybrid Optimizer',
-  QuerySets = 'Query Sets',
-  SearchConfigurations = 'Search Configurations',
-  Judgments = 'Judgments',
-}
+import { WorkbenchNavigation } from './common/workbench_navigation';
 
 interface SearchRelevanceAppDeps {
   notifications: CoreStart['notifications'];
@@ -115,96 +94,6 @@ const SearchRelevancePage = ({
     ? [{ text: COMPARE_SEARCH_RESULTS_TITLE, href: '#' }]
     : [{ text: PLUGIN_NAME, href: '#' }];
 
-  const sideNavItems = [
-    {
-      name: Navigation.SRW,
-      id: Navigation.SRW,
-      renderItem: () => {
-        return (
-          <>
-            <EuiTitle size="xs">
-              <h3>{Navigation.SRW}</h3>
-            </EuiTitle>
-            <EuiSpacer />
-          </>
-        );
-      },
-      items: [
-        {
-          name: Navigation.Experiments,
-          id: Navigation.Experiments,
-          onClick: () => {
-            history.push(Routes.Home);
-          },
-          isSelected:
-            location.pathname === Routes.Home ||
-            location.pathname.startsWith(Routes.ExperimentViewPrefix),
-          forceOpen: true,
-          items: [
-            {
-              name: Navigation.ExperimentsQueryAnalysis,
-              id: Navigation.ExperimentsQueryAnalysis,
-              onClick: () => {
-                history.push(Routes.ExperimentCreateQueryAnalysis);
-              },
-              isSelected: location.pathname.startsWith(
-                Routes.ExperimentCreateQueryAnalysis
-              ),
-            },
-            {
-              name: Navigation.ExperimentsQuerySetComparison,
-              id: Navigation.ExperimentsQuerySetComparison,
-              onClick: () => {
-                history.push(Routes.ExperimentCreateQuerySetComparison);
-              },
-              isSelected: location.pathname.startsWith(Routes.ExperimentCreateQuerySetComparison),
-            },
-            {
-              name: Navigation.ExperimentsSearchEvaluation,
-              id: Navigation.ExperimentsSearchEvaluation,
-              onClick: () => {
-                history.push(Routes.ExperimentCreateSearchEvaluation);
-              },
-              isSelected: location.pathname.startsWith(Routes.ExperimentCreateSearchEvaluation),
-            },
-            {
-              name: Navigation.ExperimentsHybridOptimizer,
-              id: Navigation.ExperimentsHybridOptimizer,
-              onClick: () => {
-                history.push(Routes.ExperimentCreateHybridOptimizer);
-              },
-              isSelected: location.pathname.startsWith(Routes.ExperimentCreateHybridOptimizer),
-            },
-          ],
-        },
-        {
-          name: Navigation.QuerySets,
-          id: Navigation.QuerySets,
-          onClick: () => {
-            history.push(Routes.QuerySetListing);
-          },
-          isSelected: location.pathname.startsWith(Routes.QuerySetListing),
-        },
-        {
-          name: Navigation.SearchConfigurations,
-          id: Navigation.SearchConfigurations,
-          onClick: () => {
-            history.push(Routes.SearchConfigurationListing);
-          },
-          isSelected: location.pathname.startsWith(Routes.SearchConfigurationListing),
-        },
-        {
-          name: Navigation.Judgments,
-          id: Navigation.Judgments,
-          onClick: () => {
-            history.push(Routes.JudgmentListing);
-          },
-          isSelected: location.pathname.startsWith(Routes.JudgmentListing),
-        },
-      ],
-    },
-  ];
-
   let dataSourceGate: React.ReactNode = null;
   if (isAwaitingDataSourceSelection(dataSourceEnabled, dataSourceId)) {
     dataSourceGate = (
@@ -242,10 +131,9 @@ const SearchRelevancePage = ({
         dataSourceId={dataSourceId}
         setDataSourceId={setDataSourceId}
       />
-      <EuiPageSideBar style={{ minWidth: 200 }}>
-        <EuiSideNav style={{ width: 200 }} items={sideNavItems} />
-      </EuiPageSideBar>
       <EuiPageBody>
+        <WorkbenchNavigation />
+        <EuiSpacer size="m" />
         {dataSourceGate || (
         <Switch>
           <Route
