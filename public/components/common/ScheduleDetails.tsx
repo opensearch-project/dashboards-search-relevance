@@ -22,8 +22,10 @@ export const ScheduleDetails: React.FC<ScheduleDetailsProps> = ({
   const isCronEmpty = !cron || !cron.expression || cron.expression.trim() === '';
 
   const formatTimestamp = (timestamp?: number | string): string => {
-    if (!timestamp) return '—';
-    const date = new Date(Number(timestamp));
+    if (timestamp === undefined || timestamp === null || timestamp === '') return '—';
+    const numericTimestamp = Number(timestamp);
+    if (isNaN(numericTimestamp)) return '—';
+    const date = new Date(numericTimestamp);
     if (isNaN(date.getTime())) return '—';
     try {
       // Intentionally omitting timeZone override to display in the user's local browser timezone.
