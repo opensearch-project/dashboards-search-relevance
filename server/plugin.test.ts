@@ -9,6 +9,7 @@ import { SearchRelevancePlugin } from './plugin';
 jest.mock('./routes', () => ({
   defineRoutes: jest.fn(),
   registerSearchRelevanceRoutes: jest.fn(),
+  registerLtrRoutes: jest.fn(),
 }));
 
 jest.mock('./routes/ml_route_service', () => ({
