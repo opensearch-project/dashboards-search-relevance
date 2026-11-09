@@ -9,7 +9,7 @@ coverage:
         # allows 5% coverage reduction without failing
         threshold: 5%
     patch: yes
-    changes: yes
+    changes: no
 
 # disable comments in PRs
 comment: yes

@@ -87,6 +87,22 @@ export const useDataSourceUrlSync = (
 };
 
 /**
+ * Pure predicate matching the Search Relevance Workbench data source selector's filter: it excludes
+ * AnalyticEngine data sources (relevance tuning relies on DSL, unsupported on AE) and requires a
+ * data source version this plugin supports. Shared by the page selector (DataSourceMenu) and the
+ * /search-relevance command's availability check so both agree on what a usable data source is.
+ */
+export const isSupportedSearchRelevanceDataSource = (
+  dataSource: SavedObject<DataSourceAttributes>
+): boolean => {
+  if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
+    return false;
+  }
+  const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+  return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+};
+
+/**
  * Hook for datasource filter function
  */
 export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
