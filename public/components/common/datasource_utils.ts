@@ -3,11 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useCallback } from 'react';
-import { SavedObject } from '../../../../../src/core/public';
+import { useCallback, useEffect, useState } from 'react';
+import { CoreStart, SavedObject } from '../../../../../src/core/public';
 import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
 import semver from 'semver';
 import * as pluginManifest from '../../../opensearch_dashboards.json';
+
+export const SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN = 'opensearch-search-relevance';
 
 /**
  * Parse dataSourceId from URL search parameters
@@ -48,11 +50,102 @@ export const useDataSourceSelection = (setSelectedDataSource: (id: string) => vo
 };
 
 /**
+ * Hook that owns the active dataSourceId and keeps it in sync with the URL
+ * `?dataSourceId=…` query param. Seeded from the URL on mount (only when MDS
+ * is enabled, so a stale param from a prior session is ignored when the
+ * dataSource plugin isn't loaded), then re-stamped on every navigation so
+ * tab clicks via `history.push(pathname)` don't drop the param.
+ */
+export const useDataSourceUrlSync = (
+  dataSourceEnabled: boolean,
+  history: { replace: (location: any) => void },
+  location: { search?: string; pathname?: string; hash?: string }
+): [string | undefined, (id: string | undefined) => void] => {
+  const [dataSourceId, setDataSourceId] = useState<string | undefined>(() =>
+    dataSourceEnabled ? parseDataSourceIdFromUrl(location) : undefined
+  );
+
+  useEffect(() => {
+    if (!dataSourceEnabled) return;
+    const params = new URLSearchParams(location.search);
+    const current = params.get('dataSourceId') ?? undefined;
+    if (current === dataSourceId) return;
+    if (dataSourceId === undefined) {
+      params.delete('dataSourceId');
+    } else {
+      params.set('dataSourceId', dataSourceId);
+    }
+    const search = params.toString();
+    history.replace({
+      pathname: location.pathname,
+      search: search ? `?${search}` : '',
+      hash: location.hash,
+    });
+  }, [dataSourceId, dataSourceEnabled, location.search, location.pathname, location.hash, history]);
+
+  return [dataSourceId, setDataSourceId];
+};
+
+/**
  * Hook for datasource filter function
  */
-export const useDataSourceFilter = () => {
-  return useCallback((dataSource: SavedObject<DataSourceAttributes>) => {
-    const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
-    return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
-  }, []);
+export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
+  return useCallback(
+    (dataSource: SavedObject<DataSourceAttributes>) => {
+      if (
+        excludeEngineTypes?.length &&
+        dataSource?.attributes?.dataSourceEngineType &&
+        excludeEngineTypes.includes(dataSource.attributes.dataSourceEngineType)
+      ) {
+        return false;
+      }
+      const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+      return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+    },
+    [excludeEngineTypes]
+  );
+};
+
+export const isAwaitingDataSourceSelection = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined
+): boolean => dataSourceEnabled && dataSourceId === undefined;
+
+export const useDataSourceSupportsSearchRelevance = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined,
+  savedObjects: CoreStart['savedObjects']
+): boolean => {
+  const [supportsSearchRelevance, setSupportsSearchRelevance] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!dataSourceEnabled || dataSourceId === undefined || dataSourceId === '') {
+      setSupportsSearchRelevance(true);
+      return;
+    }
+
+    setSupportsSearchRelevance(true);
+
+    savedObjects.client
+      .get<DataSourceAttributes>('data-source', dataSourceId)
+      .then((dataSource) => {
+        if (cancelled) return;
+        const installedPlugins = dataSource?.attributes?.installedPlugins;
+        setSupportsSearchRelevance(
+          !Array.isArray(installedPlugins) ||
+            installedPlugins.includes(SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN)
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setSupportsSearchRelevance(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataSourceEnabled, dataSourceId, savedObjects]);
+
+  return supportsSearchRelevance;
 };

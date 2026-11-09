@@ -1,0 +1,83 @@
+/*
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Styles for the AI callout button, matching the chat plugin's Ask AI button style
+/* stylelint-disable @osd/stylelint/no_restricted_values */
+
+.chatHeaderButton {
+  &__borderWrapper {
+    display: inline-block;
+    padding: 1px;
+    background: linear-gradient(90deg, #00d0ff 0%, #1034d4 50%, #9b1fa8 100%);
+    border-radius: calc(#{$ouiBorderRadius} + 2px);
+  }
+
+  &__button {
+    position: relative;
+    border-radius: $ouiBorderRadius;
+    background:
+      linear-gradient(180deg, rgba(87, 196, 251, 10%) 0%, rgba(165, 20, 255, 10%) 100%),
+      $ouiColorEmptyShade !important;
+
+    // EuiCallOut wraps children in EuiText which sets img { display: block }.
+    // Reset it so the icon stays inline inside the button content flex row.
+    img.euiIcon {
+      display: inline-block !important;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      z-index: -1;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #00d0ff 0%, #1034d4 50%, #9b1fa8 100%);
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+  }
+}
+
+.srgExperimentListingNameTooltipAnchor {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.srgExperimentListingNameButton {
+  max-width: 100%;
+
+  &.euiButtonEmpty {
+    min-width: 0;
+  }
+
+  .euiButtonEmpty__content {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+.srgExperimentListingNameButton__label {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srgExperimentListingNameTooltip {
+  max-width: 400px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.srgExperimentListingNameTooltip__name {
+  display: block;
+  font-weight: $ouiFontWeightSemiBold;
+}
+
+.srgExperimentListingNameTooltip__description {
+  display: block;
+  margin-top: $ouiSizeS;
+}

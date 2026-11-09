@@ -143,6 +143,97 @@ describe('useJudgmentList', () => {
     });
   });
 
+  it('should restore the full list after an initial search-filtered fetch', async () => {
+    // Regression: first findJudgments(search) used to cache only the filtered hits, so
+    // clearing search could never show the non-matching rows without a full page reload.
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: '1',
+              name: 'Test Judgment',
+              type: 'LLM',
+              status: 'COMPLETED',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+          {
+            _source: {
+              id: '2',
+              name: 'Another Judgment',
+              type: 'UBI',
+              status: 'COMPLETED',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      const filtered = await result.current.findJudgments('test');
+      expect(filtered.total).toBe(1);
+      expect(filtered.hits[0].name).toBe('Test Judgment');
+    });
+
+    // Cache should still hold the full list; no second HTTP call.
+    expect(mockHttp.get).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      const restored = await result.current.findJudgments('');
+      expect(restored.total).toBe(2);
+      expect(restored.hits.map((h: { id: string }) => h.id)).toEqual(['1', '2']);
+    });
+
+    expect(mockHttp.get).toHaveBeenCalledTimes(1);
+  });
+
+  it('should keep PROCESSING judgments in cache when first fetch uses a non-matching search', async () => {
+    // If the full list is not cached, hasProcessing would go false and polling would stop.
+    const mockResponse = {
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'proc-1',
+              name: 'Processing Judgment',
+              type: 'LLM',
+              status: 'PROCESSING',
+              timestamp: '2023-01-01T00:00:00Z',
+            },
+          },
+          {
+            _source: {
+              id: 'done-1',
+              name: 'Done Judgment',
+              type: 'LLM',
+              status: 'COMPLETED',
+              timestamp: '2023-01-02T00:00:00Z',
+            },
+          },
+        ],
+      },
+    };
+
+    mockHttp.get.mockResolvedValue(mockResponse);
+
+    const { result } = renderHook(() => useJudgmentList(mockHttp as any));
+
+    await act(async () => {
+      const response = await result.current.findJudgments('done');
+      expect(response.total).toBe(1);
+      expect(response.hits[0].id).toBe('done-1');
+    });
+
+    expect(result.current.hasProcessing).toBe(true);
+    expect(result.current.judgments).toHaveLength(2);
+  });
+
   it('should handle fetch error', async () => {
     mockHttp.get.mockRejectedValue(new Error('Fetch failed'));
 

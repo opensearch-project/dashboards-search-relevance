@@ -3,7 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { validateName, validateQuery, validateIndex, validateForm } from '../utils/validation';
+import {
+  validateName,
+  validateQuery,
+  validateIndex,
+  validateDescription,
+  validateForm,
+} from '../utils/validation';
 
 describe('Search Configuration Validation', () => {
   describe('validateName', () => {
@@ -42,6 +48,29 @@ describe('Search Configuration Validation', () => {
     });
   });
 
+  describe('validateDescription', () => {
+    it('should return empty string for empty description', () => {
+      expect(validateDescription('')).toBe('');
+      expect(validateDescription('   ')).toBe('');
+    });
+
+    it('should return error for description that is too long', () => {
+      expect(validateDescription('a'.repeat(251))).toBe(
+        'Description is too long (> 250 characters).'
+      );
+    });
+
+    it('should return error for invalid characters', () => {
+      expect(validateDescription('bad <script>')).toBe(
+        'Description contains invalid characters (e.g., quotes, backslashes, or HTML tags).'
+      );
+    });
+
+    it('should return empty string for valid description', () => {
+      expect(validateDescription('Current production algorithm')).toBe('');
+    });
+  });
+
   describe('validateForm', () => {
     it('should return all validation results', () => {
       const result = validateForm('', '', []);
@@ -59,6 +88,15 @@ describe('Search Configuration Validation', () => {
       expect(result.nameError).toBe('');
       expect(result.queryError).toBe('');
       expect(result.indexError).toBe('');
+      expect(result.descriptionError).toBe('');
+    });
+
+    it('should return description validation error', () => {
+      const result = validateForm('Test Configuration', '{"query": {"match_all": {}}}', [
+        { label: 'test-index', value: 'uuid' },
+      ], 'a'.repeat(251));
+      expect(result.isValid).toBe(false);
+      expect(result.descriptionError).toBe('Description is too long (> 250 characters).');
     });
   });
 });

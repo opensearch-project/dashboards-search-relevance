@@ -2,7 +2,6 @@ name: 'Install Dashboards with Plugin via Binary'
 
 on: [push, pull_request]
 env:
-  OPENSEARCH_VERSION: '3.2.0'
   CI: 1
   # avoid warnings like "tput: No value for $TERM and no -T specified"
   TERM: xterm
@@ -18,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout Branch
-        uses: actions/checkout@v3
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - name: Set env
         run: |
@@ -29,7 +28,7 @@ jobs:
         shell: bash
 
       - name: Run Opensearch
-        uses: derek-ho/start-opensearch@v6
+        uses: opensearch-project/opensearch-build/.github/actions/start-opensearch@3d9a524bbfc8128d96113cc578b462153f2ea8d4
         with:
           opensearch-version: ${{ env.OPENSEARCH_VERSION }}
           security-enabled: false
@@ -37,7 +36,7 @@ jobs:
 
       - name: Run Dashboard
         id: setup-dashboards
-        uses: derek-ho/setup-opensearch-dashboards@v2
+        uses: opensearch-project/opensearch-build/.github/actions/setup-opensearch-dashboards@3d9a524bbfc8128d96113cc578b462153f2ea8d4
         with:
           plugin_name: dashboards-search-relevance
           built_plugin_name: searchRelevanceDashboards

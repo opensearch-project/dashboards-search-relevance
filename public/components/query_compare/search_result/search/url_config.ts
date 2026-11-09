@@ -44,16 +44,11 @@ export const updateUrlWithConfig = (
 
     if (urlString.length > MAX_URL_LENGTH) {
       // URL is too long, update without parameters
-      console.log(
-        'URL too long (' + urlString.length + ' characters), updating without config parameter'
-      );
       newUrl.hash = '#/';
       window.history.replaceState({}, document.title, newUrl.toString());
-      console.log('Updated URL without config (length limit exceeded):', newUrl.toString());
     } else {
       // URL is within safe length, update with configuration
       window.history.replaceState({}, document.title, urlString);
-      console.log('Updated URL with config:', urlString);
     }
   } catch (e) {
     console.error('Failed to update URL with configuration:', e);

@@ -3,6 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+jest.mock('../../../../src/core/server', () => ({
+  extractTimelineExpression: jest.fn(),
+  extractVegaSpecFromSavedObject: jest.fn(),
+  updateDataSourceNameInTimeline: jest.fn(),
+  updateDataSourceNameInVegaSpec: jest.fn(),
+}));
+
 import { ubiSpecProvider, getUbiDataIndices } from './ubi_sample_data';
 import { getUbiSavedObjects } from './ubi_saved_objects';
 

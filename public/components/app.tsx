@@ -5,7 +5,7 @@
 
 import { EuiGlobalToastList } from '@elastic/eui';
 import { I18nProvider } from '@osd/i18n/react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { HashRouter, Route, Switch, withRouter, useLocation } from 'react-router-dom';
 import {
   EuiPageSideBar,
@@ -15,6 +15,7 @@ import {
   EuiPage,
   EuiPageBody,
   EuiLoadingSpinner,
+  EuiEmptyPrompt,
 } from '@elastic/eui';
 import { CoreStart, MountPoint, Toast, ReactChild } from '../../../../src/core/public';
 import { DataSourceManagementPluginSetup } from '../../../../src/plugins/data_source_management/public';
@@ -41,7 +42,13 @@ import { QuerySetView } from './query_set';
 import { QuerySetCreate } from './query_set';
 import { TemplateType, routeToTemplateType } from './experiment/configuration/types';
 import { TemplateConfigurationWithRouter } from './experiment/configuration/template_configuration';
-import { parseEntityParams } from './common/datasource_utils';
+import {
+  parseEntityParams,
+  useDataSourceUrlSync,
+  isAwaitingDataSourceSelection,
+  useDataSourceSupportsSearchRelevance,
+} from './common/datasource_utils';
+import { DataSourceMenu } from './common/data_source_menu';
 
 enum Navigation {
   SRW = 'Search Relevance Workbench',
@@ -67,6 +74,7 @@ interface SearchRelevanceAppDeps {
   setActionMenu: (menuMount: MountPoint | undefined) => void;
   application: CoreStart['application'];
   uiSettings: CoreStart['uiSettings'];
+  onAskAI?: () => void;
 }
 
 interface SearchRelevancePageProps extends SearchRelevanceAppDeps {
@@ -85,9 +93,22 @@ const SearchRelevancePage = ({
   dataSourceManagement,
   setActionMenu,
   uiSettings,
+  onAskAI,
 }: SearchRelevancePageProps) => {
   const location = useLocation();
   const { http: osDashboardsHttp } = useOpenSearchDashboards().services;
+
+  const [dataSourceId, setDataSourceId] = useDataSourceUrlSync(
+    dataSourceEnabled,
+    history,
+    location
+  );
+
+  const supportsSearchRelevance = useDataSourceSupportsSearchRelevance(
+    dataSourceEnabled,
+    dataSourceId,
+    savedObjects
+  );
 
   const getNavGroupEnabled = chrome.navGroup.getNavGroupEnabled();
   const parentBreadCrumbs = getNavGroupEnabled
@@ -184,12 +205,48 @@ const SearchRelevancePage = ({
     },
   ];
 
+  let dataSourceGate: React.ReactNode = null;
+  if (isAwaitingDataSourceSelection(dataSourceEnabled, dataSourceId)) {
+    dataSourceGate = (
+      <EuiEmptyPrompt
+        iconType="database"
+        title={<h2>Select a data source</h2>}
+        body={<p>Choose a data source to get started.</p>}
+        data-test-subj="searchRelevanceSelectDataSourcePrompt"
+      />
+    );
+  } else if (!supportsSearchRelevance) {
+    dataSourceGate = (
+      <EuiEmptyPrompt
+        iconType="alert"
+        title={<h2>Search Relevance is not available on this data source</h2>}
+        body={
+          <p>
+            The selected data source does not have the Search Relevance plugin installed. Choose a
+            different data source to continue.
+          </p>
+        }
+        data-test-subj="searchRelevanceUnsupportedDataSourcePrompt"
+      />
+    );
+  }
+
   return (
     <EuiPage restrictWidth={'100%'}>
+      <DataSourceMenu
+        dataSourceEnabled={dataSourceEnabled}
+        dataSourceManagement={dataSourceManagement}
+        savedObjects={savedObjects}
+        notifications={notifications}
+        setActionMenu={setActionMenu}
+        dataSourceId={dataSourceId}
+        setDataSourceId={setDataSourceId}
+      />
       <EuiPageSideBar style={{ minWidth: 200 }}>
         <EuiSideNav style={{ width: 200 }} items={sideNavItems} />
       </EuiPageSideBar>
       <EuiPageBody>
+        {dataSourceGate || (
         <Switch>
           <Route
             path="/"
@@ -218,9 +275,8 @@ const SearchRelevancePage = ({
                 // No config parameter, show experiment listing
                 return <ExperimentListingWithRoute
                   http={http}
-                  savedObjects={savedObjects}
-                  dataSourceEnabled={dataSourceEnabled}
-                  dataSourceManagement={dataSourceManagement}
+                  dataSourceId={dataSourceId}
+                  onAskAI={onAskAI}
                 />;
               }
             }}
@@ -231,9 +287,8 @@ const SearchRelevancePage = ({
             render={() => {
               return <ExperimentListingWithRoute
                 http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
+                onAskAI={onAskAI}
               />;
             }}
           />
@@ -241,36 +296,21 @@ const SearchRelevancePage = ({
             path={Routes.QuerySetListing}
             exact
             render={() => {
-              return <QuerySetListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <QuerySetListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
             path={Routes.SearchConfigurationListing}
             exact
             render={() => {
-              return <SearchConfigurationListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <SearchConfigurationListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
             path={Routes.JudgmentListing}
             exact
             render={() => {
-              return <JudgmentListing
-                http={http}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
-              />;
+              return <JudgmentListing http={http} dataSourceId={dataSourceId} />;
             }}
           />
           <Route
@@ -313,7 +353,14 @@ const SearchRelevancePage = ({
             render={(props) => {
               const { entityId } = props.match.params;
               const { cleanEntityId, dataSourceId } = parseEntityParams(entityId);
-              return <JudgmentView http={http} id={cleanEntityId} dataSourceId={dataSourceId} />;
+              return (
+                <JudgmentView
+                  http={http}
+                  notifications={notifications}
+                  id={cleanEntityId}
+                  dataSourceId={dataSourceId}
+                />
+              );
             }}
           />
           <Route
@@ -357,9 +404,7 @@ const SearchRelevancePage = ({
                       history.goBack();
                     }}
                     onClose={() => { }}
-                    savedObjects={savedObjects}
-                    dataSourceEnabled={dataSourceEnabled}
-                    dataSourceManagement={dataSourceManagement}
+                    dataSourceId={dataSourceId}
                   />
                 );
               }
@@ -372,9 +417,7 @@ const SearchRelevancePage = ({
               return <QuerySetCreate
                 http={http}
                 notifications={notifications}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />
@@ -385,9 +428,7 @@ const SearchRelevancePage = ({
               return <SearchConfigurationCreate
                 http={http}
                 notifications={notifications}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />
@@ -399,13 +440,12 @@ const SearchRelevancePage = ({
                 http={http}
                 notifications={notifications}
                 history={history}
-                savedObjects={savedObjects}
-                dataSourceEnabled={dataSourceEnabled}
-                dataSourceManagement={dataSourceManagement}
+                dataSourceId={dataSourceId}
               />;
             }}
           />
         </Switch>
+        )}
       </EuiPageBody>
     </EuiPage>
   );
@@ -424,6 +464,7 @@ export const SearchRelevanceApp = ({
   dataSourceManagement,
   application,
   uiSettings,
+  onAskAI,
 }: SearchRelevanceAppDeps) => {
   // Move all useState declarations to the top
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -462,6 +503,7 @@ export const SearchRelevanceApp = ({
             dataSourceManagement={dataSourceManagement}
             setActionMenu={setActionMenu}
             uiSettings={uiSettings}
+            onAskAI={onAskAI}
           />
         </SearchRelevanceContextProvider>
       </I18nProvider>

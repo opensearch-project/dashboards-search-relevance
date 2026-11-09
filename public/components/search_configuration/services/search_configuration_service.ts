@@ -9,6 +9,7 @@ import { DocumentsIndex } from '../../../types';
 
 export interface SearchConfigurationData {
   name: string;
+  description?: string;
   index: string;
   query: string;
   searchPipeline?: string;
@@ -52,7 +53,15 @@ export class SearchConfigurationService {
   }
 
   async createSearchConfiguration(data: SearchConfigurationData, dataSourceId?: string | null): Promise<any> {
-    const opts: any = { body: JSON.stringify(data) };
+    const descriptionField = data.description?.trim() ? { description: data.description } : {};
+    const body = {
+      name: data.name,
+      ...descriptionField,
+      index: data.index,
+      query: data.query,
+      ...(data.searchPipeline && { searchPipeline: data.searchPipeline }),
+    };
+    const opts: any = { body: JSON.stringify(body) };
     if (dataSourceId) {
       opts.query = { dataSourceId };
     }
@@ -64,7 +73,10 @@ export class SearchConfigurationService {
     if (dataSourceId) {
       opts.query = { dataSourceId };
     }
-    const response = await this.http.post(ServiceEndpoints.GetSingleSearchResults, opts);
+    const response = await this.http.post(ServiceEndpoints.GetSearchResults, opts);
+    if (response.errorMessage) {
+      throw new Error(response.errorMessage.body);
+    }
     return response.result;
   }
 }

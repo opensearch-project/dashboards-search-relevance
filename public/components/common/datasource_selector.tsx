@@ -23,6 +23,7 @@ interface DataSourceSelectorProps {
   disabled?: boolean;
   fullWidth?: boolean;
   removePrepend?: boolean;
+  excludeEngineTypes?: string[];
 }
 
 export const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
@@ -37,7 +38,8 @@ export const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
   notifications,
   disabled = false,
   fullWidth = false,
-  removePrepend = true
+  removePrepend = true,
+  excludeEngineTypes
 }) => {
   const { services } = useOpenSearchDashboards();
   const onSelectedDataSource = useCallback((dataSources) => {
@@ -45,7 +47,7 @@ export const DataSourceSelector: React.FC<DataSourceSelectorProps> = ({
     setSelectedDataSource(dataConnectionId);
     onChange?.();
   }, [setSelectedDataSource, onChange]);
-  const dataSourceFilter = useDataSourceFilter();
+  const dataSourceFilter = useDataSourceFilter(excludeEngineTypes);
 
   if (!dataSourceEnabled || !dataSourceManagement?.ui?.DataSourceSelector) {
     return null;

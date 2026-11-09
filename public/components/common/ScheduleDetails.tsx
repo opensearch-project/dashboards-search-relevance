@@ -46,7 +46,10 @@ export const ScheduleDetails: React.FC<ScheduleDetailsProps> = ({
   }
 
   const scheduleInfoList = [
-    { title: 'Cron setup', description: `${cron?.expression || '—'} ${cron?.timezone ? `(${cron.timezone})` : ''}` },
+    {
+      title: 'Cron setup',
+      description: `${cron?.expression || '—'}${cron?.timezone ? ` (${cron.timezone})` : ''}`,
+    },
     { title: 'Frequency', description: cronDescription },
   ];
 

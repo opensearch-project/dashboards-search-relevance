@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { withRouter } from 'react-router-dom';
 import {
   EuiButton,
@@ -13,20 +13,17 @@ import {
   EuiPanel,
   EuiPageHeader,
 } from '@elastic/eui';
-import { JudgmentCreateProps } from '../types';
+import { JudgmentCreateProps, JudgmentType } from '../types';
 import { useJudgmentForm } from '../hooks/use_judgment_form';
+import { JudgmentPreview } from '../components/judgment_preview';
 import { JudgmentForm } from '../components/judgment_form';
-import { DataSourceSelector } from '../../common/datasource_selector';
 
 export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
   http,
   notifications,
   history,
-  savedObjects,
-  dataSourceEnabled = false,
-  dataSourceManagement,
+  dataSourceId,
 }) => {
-  const [selectedDataSource, setSelectedDataSource] = useState<string>('');
   const {
     formData,
     updateFormData,
@@ -40,18 +37,27 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
     searchConfigOptions,
     modelOptions,
     indexOptions,
+    existingJudgmentOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
     isLoadingIndexes,
+    isLoadingExistingJudgments,
     nameError,
     newContextField,
     setNewContextField,
     addContextField,
     removeContextField,
     validateAndSubmit,
+    handleJudgmentFileContent,
     dateRangeError,
-  } = useJudgmentForm(http, notifications, selectedDataSource || undefined, dataSourceEnabled);
+    parsedJudgments,
+    parseSummary,
+  } = useJudgmentForm(
+    http,
+    notifications,
+    dataSourceId
+  );
 
   const handleSubmit = useCallback(() => {
     validateAndSubmit(() => {
@@ -92,15 +98,6 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
 
       <EuiPanel hasBorder={true}>
         <EuiFlexItem>
-          {dataSourceEnabled && dataSourceManagement && savedObjects && (
-            <DataSourceSelector
-              dataSourceEnabled={dataSourceEnabled}
-              dataSourceManagement={dataSourceManagement}
-              savedObjects={savedObjects}
-              selectedDataSource={selectedDataSource}
-              setSelectedDataSource={setSelectedDataSource}
-            />
-          )}
           <JudgmentForm
             formData={formData}
             updateFormData={updateFormData}
@@ -115,17 +112,25 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
             searchConfigOptions={searchConfigOptions}
             modelOptions={modelOptions}
             indexOptions={indexOptions}
+            existingJudgmentOptions={existingJudgmentOptions}
             isLoadingQuerySets={isLoadingQuerySets}
             isLoadingSearchConfigs={isLoadingSearchConfigs}
             isLoadingModels={isLoadingModels}
             isLoadingIndexes={isLoadingIndexes}
+            isLoadingExistingJudgments={isLoadingExistingJudgments}
             newContextField={newContextField}
             setNewContextField={setNewContextField}
             addContextField={addContextField}
             removeContextField={removeContextField}
             dateRangeError={dateRangeError}
+            handleJudgmentFileContent={handleJudgmentFileContent}
             httpClient={http}
           />
+
+          {formData.type === JudgmentType.IMPORT && (
+              <JudgmentPreview parsedJudgments={parsedJudgments} parseSummary={parseSummary} />
+          )}
+
         </EuiFlexItem>
       </EuiPanel>
     </EuiPageTemplate>

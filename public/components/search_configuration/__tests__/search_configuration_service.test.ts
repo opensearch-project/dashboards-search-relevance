@@ -54,6 +54,7 @@ describe('SearchConfigurationService', () => {
     it('should create search configuration with correct data', async () => {
       const configData = {
         name: 'Test Config',
+        description: 'Current production algorithm',
         index: 'test-index',
         query: '{"query": {"match_all": {}}}',
         searchPipeline: 'test-pipeline',
@@ -63,8 +64,28 @@ describe('SearchConfigurationService', () => {
       await service.createSearchConfiguration(configData);
 
       expect(mockHttp.put).toHaveBeenCalledWith('/api/relevancy/search_configurations', {
-        body: JSON.stringify(configData),
+        body: JSON.stringify({
+          name: 'Test Config',
+          description: 'Current production algorithm',
+          index: 'test-index',
+          query: '{"query": {"match_all": {}}}',
+          searchPipeline: 'test-pipeline',
+        }),
       });
+    });
+
+    it('should omit description from body when empty', async () => {
+      const configData = {
+        name: 'Test Config',
+        description: '',
+        index: 'test-index',
+        query: '{"query": {"match_all": {}}}',
+      };
+      mockHttp.put.mockResolvedValue({ success: true });
+
+      await service.createSearchConfiguration(configData);
+
+      expect(JSON.parse(mockHttp.put.mock.calls[0][1].body)).not.toHaveProperty('description');
     });
   });
 
@@ -77,6 +98,27 @@ describe('SearchConfigurationService', () => {
       const result = await service.validateSearchQuery(requestBody);
 
       expect(result).toEqual(mockResponse.result);
+    });
+
+    it('should post to the shared search endpoint', async () => {
+      mockHttp.post.mockResolvedValue({ result: {} });
+
+      await service.validateSearchQuery({ index: 'test-index' });
+
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        '/api/relevancy/search',
+        expect.any(Object)
+      );
+    });
+
+    it('should throw when the route reports an errorMessage', async () => {
+      mockHttp.post.mockResolvedValue({
+        errorMessage: { statusCode: 400, body: 'Invalid Index or missing' },
+      });
+
+      await expect(service.validateSearchQuery({ index: '' })).rejects.toThrow(
+        'Invalid Index or missing'
+      );
     });
   });
 

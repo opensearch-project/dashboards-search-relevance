@@ -13,6 +13,10 @@ const mockHookReturn = {
   setName: jest.fn(),
   nameError: '',
   validateNameField: jest.fn(),
+  description: '',
+  setDescription: jest.fn(),
+  descriptionError: '',
+  validateDescriptionField: jest.fn(),
   query: '',
   setQuery: jest.fn(),
   queryError: '',
@@ -172,20 +176,24 @@ describe('SearchConfigurationCreate', () => {
     expect(screen.getByTestId('createSearchConfigurationButton')).toBeInTheDocument();
   });
 
-  it('should render with data source enabled', () => {
+  it('forwards dataSourceId to the form hook', () => {
+    const captured: any[] = [];
+    const useFormMock = jest.requireMock('../hooks/use_search_configuration_form');
+    useFormMock.useSearchConfigurationForm = jest.fn((props: any) => {
+      captured.push(props);
+      return mockHookReturn;
+    });
+
     render(
       <SearchConfigurationCreate
         http={mockHttp}
         notifications={mockNotifications}
         history={mockHistory}
-        dataSourceEnabled={true}
-        dataSourceManagement={{ ui: { DataSourceSelector: () => <div>DataSourceSelector</div> } } as any}
-        savedObjects={{ client: {} } as any}
-        navigation={{} as any}
-        setActionMenu={jest.fn()}
+        dataSourceId="foo-ds"
       />
     );
 
-    expect(screen.getByText('DataSourceSelector')).toBeInTheDocument();
+    const lastCall = captured[captured.length - 1];
+    expect(lastCall.dataSourceId).toBe('foo-ds');
   });
 });

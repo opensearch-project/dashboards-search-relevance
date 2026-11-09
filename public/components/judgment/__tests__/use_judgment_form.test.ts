@@ -12,6 +12,7 @@ const mockService = {
   fetchQuerySets: jest.fn().mockResolvedValue([]),
   fetchSearchConfigs: jest.fn().mockResolvedValue([]),
   fetchModels: jest.fn().mockResolvedValue([]),
+  fetchLlmJudgments: jest.fn().mockResolvedValue([]),
   fetchUbiIndexes: jest.fn().mockResolvedValue([]),
   createJudgment: jest.fn().mockResolvedValue({}),
 };
@@ -25,6 +26,7 @@ const mockNotifications = {
   toasts: {
     addDanger: jest.fn(),
     addSuccess: jest.fn(),
+    addWarning: jest.fn(),
     addError: jest.fn(),
   },
 };
@@ -369,6 +371,57 @@ describe('useJudgmentForm', () => {
     });
 
     expect(result.current.formData.contextFields).not.toContain('title');
+  });
+
+  it('should set importError when no file is selected', async () => {
+    const { result } = renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+    // Create an empty FileList-like object
+    const emptyFileList = {
+      length: 0,
+      item: () => null,
+      [Symbol.iterator]: function* () { },
+    } as unknown as FileList;
+
+    await act(async () => {
+      await result.current.handleJudgmentFileContent(emptyFileList);
+    });
+
+    expect(result.current.importError).toBe('No file selected. Please upload a CSV file.');
+    expect(result.current.parsedJudgments).toEqual([]);
+    expect(result.current.importedRatings).toEqual([]);
+  });
+
+  describe('dataSourceId propagation', () => {
+    it('runs the initial fetch with no dataSourceId when none is supplied', async () => {
+      renderHook(() => useJudgmentForm(mockHttp, mockNotifications));
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalledWith(undefined);
+    });
+
+    it('refetches when dataSourceId changes', async () => {
+      const { rerender } = renderHook(
+        ({ dataSourceId }: { dataSourceId: string | undefined }) =>
+          useJudgmentForm(mockHttp, mockNotifications, dataSourceId),
+        { initialProps: { dataSourceId: undefined as string | undefined } }
+      );
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      rerender({ dataSourceId: 'foo-ds' });
+
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+
+      expect(mockService.fetchUbiIndexes).toHaveBeenCalledWith('foo-ds');
+    });
   });
 });
 
