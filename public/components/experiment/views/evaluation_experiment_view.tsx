@@ -46,6 +46,10 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  TOOK_TOOL_TIP,
+  RECALL_TOOL_TIP,
+  MRR_TOOL_TIP,
+  DCG_TOOL_TIP,
 } from '../../../../common';
 import {
   buildQueryEvaluationRows,
@@ -53,11 +57,13 @@ import {
   getQueryExecutionOrder,
   getQueryTextsFromQuerySet,
   mapQueryStatusesFromVariants,
+  mapTookFromVariants,
   parseVariantSources,
   QueryEvaluationRow,
   QueryEvaluationStatus,
 } from '../utils/query_evaluation_builder';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
+import { formatTook } from '../../../utils/took';
 
 interface EvaluationExperimentViewProps extends RouteComponentProps<{ id: string }> {
   http: CoreStart['http'];
@@ -187,14 +193,16 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
           size: Math.max(querySetSize, 1),
         };
 
-        const requestBase = dataSourceId ? { dataSourceId } : {};
+        const dsQuery = dataSourceId ? { query: { dataSourceId } } : {};
 
         const [evaluationSearchResult, variantSearchResult] = await Promise.all([
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query: evaluationQuery, ...requestBase }),
+            body: JSON.stringify({ query: evaluationQuery }),
+            ...dsQuery,
           }),
           http.post(ServiceEndpoints.GetSearchResults, {
-            body: JSON.stringify({ query: variantQuery, ...requestBase }),
+            body: JSON.stringify({ query: variantQuery }),
+            ...dsQuery,
           }),
         ]);
 
@@ -218,16 +226,19 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
 
             const experimentResults = Array.isArray(_experiment.results) ? _experiment.results : [];
             const variantSources = parseVariantSources(variantSearchResult?.result?.hits?.hits ?? []);
+            const queryExecutionOrder = getQueryExecutionOrder(experimentResults);
             const variantStatusByQueryText = mapQueryStatusesFromVariants(
-              getQueryExecutionOrder(experimentResults),
+              queryExecutionOrder,
               variantSources
             );
+            const tookByQueryText = mapTookFromVariants(queryExecutionOrder, variantSources);
 
             const queryRows = buildQueryEvaluationRows({
               queryTexts,
               evaluationByQueryText,
               experimentResults,
               variantStatusByQueryText,
+              tookByQueryText,
             });
             setQueryEvaluations(queryRows);
 
@@ -332,7 +343,14 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         precision: PRECISION_TOOL_TIP,
         map: MAP_TOOL_TIP,
         coverage: COVERAGE_TOOL_TIP,
+        recall: RECALL_TOOL_TIP,
+        mrr: MRR_TOOL_TIP,
+        dcg: DCG_TOOL_TIP,
       };
+
+      const hasTook = queryEvaluations.some(
+        (evaluation) => evaluation.took !== undefined && evaluation.took !== null
+      );
 
       const columns: any[] = [
         {
@@ -355,6 +373,21 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
             getStatusIndicator(row.status, row.statusMessage),
         },
       ];
+      if (hasTook) {
+        columns.push({
+          field: 'took',
+          name: (
+            <EuiToolTip content={TOOK_TOOL_TIP}>
+              <span>Time taken</span>
+            </EuiToolTip>
+          ),
+          dataType: 'number',
+          sortable: true,
+          render: (_value: number | undefined, row: QueryEvaluationRow) => (
+            <span data-test-subj="tookCell">{formatTook(row.took)}</span>
+          ),
+        });
+      }
       metricNames.forEach((metricName) => {
         // Extract base name for tooltip lookup
         const baseMetricName = getBaseMetricName(metricName);
@@ -502,6 +535,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         metrics={queryEvaluations
           .filter((query) => query.status === 'success')
           .map((query) => query.metrics)}
+        tookValues={queryEvaluations
+          .filter((query) => query.status === 'success')
+          .map((query) => query.took)}
       />
       <EuiSpacer size="m" />
       {resultsPane}

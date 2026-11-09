@@ -25,6 +25,11 @@ const defaultProps = {
     { label: 'Model 1', value: 'model1' },
     { label: 'Model 2', value: 'model2' },
   ],
+  existingJudgmentOptions: [
+    { label: 'Judgment 1 (j1)', value: 'j1' },
+    { label: 'Judgment 2 (j2)', value: 'j2' },
+  ],
+  isLoadingExistingJudgments: false,
   httpClient: {
     get: jest.fn(),
     post: jest.fn(),
@@ -184,6 +189,75 @@ describe('AdvancedSettings', () => {
       rerender(<AdvancedSettings {...newProps} />);
 
       expect(screen.getByText('Prompt Template Configuration')).toBeInTheDocument();
+    });
+  });
+
+  describe('reuse existing judgments', () => {
+    it('should render the Reuse Existing Judgments field', () => {
+      render(<AdvancedSettings {...defaultProps} />);
+      expect(screen.getByText('Reuse Existing Judgments')).toBeInTheDocument();
+    });
+
+    it('should show previously selected existing judgments', () => {
+      const propsWithSelection = {
+        ...defaultProps,
+        formData: { ...defaultProps.formData, existingJudgments: ['j1'] },
+      };
+      render(<AdvancedSettings {...propsWithSelection} />);
+      expect(screen.getByText('Judgment 1 (j1)')).toBeInTheDocument();
+    });
+
+    // The backend caps reuse at 5, so a 6th pick is ignored — it must say so rather than
+    // silently doing nothing.
+    describe('when the selection cap is reached', () => {
+      const sixOptions = Array.from({ length: 6 }).map((_, i) => ({
+        label: `Judgment ${i + 1} (j${i + 1})`,
+        value: `j${i + 1}`,
+      }));
+      const atCapProps = {
+        ...defaultProps,
+        existingJudgmentOptions: sixOptions,
+        formData: {
+          ...defaultProps.formData,
+          existingJudgments: ['j1', 'j2', 'j3', 'j4', 'j5'],
+        },
+      };
+
+      const pickSixthJudgment = (container: HTMLElement) => {
+        const input = container.querySelector(
+          '[data-test-subj="existingJudgmentsComboBox"] input[role="textbox"]'
+        ) as HTMLInputElement;
+        fireEvent.focus(input);
+        fireEvent.click(screen.getByRole('option', { name: 'Judgment 6 (j6)' }));
+      };
+
+      it('should not update the form data beyond the maximum', () => {
+        const mockUpdateFormData = jest.fn();
+        const { container } = render(
+          <AdvancedSettings {...atCapProps} updateFormData={mockUpdateFormData} />
+        );
+        mockUpdateFormData.mockClear(); // ignore the prompt-template auto-save
+
+        pickSixthJudgment(container);
+
+        expect(mockUpdateFormData).not.toHaveBeenCalledWith(
+          expect.objectContaining({ existingJudgments: expect.anything() })
+        );
+      });
+
+      it('should explain why the extra selection was ignored', () => {
+        const { container } = render(<AdvancedSettings {...atCapProps} />);
+
+        expect(
+          screen.queryByText(/You can reuse at most 5 existing judgments/)
+        ).not.toBeInTheDocument();
+
+        pickSixthJudgment(container);
+
+        expect(
+          screen.getByText(/You can reuse at most 5 existing judgments/)
+        ).toBeInTheDocument();
+      });
     });
   });
 

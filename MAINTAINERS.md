@@ -13,6 +13,7 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Heemin Kim | [heemin32](https://github.com/heemin32)       | Amazon      |
 | Martin Gaievski | [heemin32](https://github.com/martin-gaievski)               | Amazon      |
 | Prithvi S    | [iprithv](https://github.com/iprithv)         | Cloudera      |
+| Venkateshwaran Shanmugham | [venkateshwaracholan](https://github.com/venkateshwaracholan)        | Cloudera |
 
 
 

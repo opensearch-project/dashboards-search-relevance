@@ -7,16 +7,13 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
-* Add optional description field to Search Configuration create form, detail view, and listing ([#798](https://github.com/opensearch-project/dashboards-search-relevance/issues/798))
-* Add /search-relevance slash command for chatbot with welcome message and AI-assisted search relevance tuning ([#843](https://github.com/opensearch-project/dashboards-search-relevance/pull/843))
-* Add chatCommandEnabled dynamic config feature flag to gate /search-relevance command registration ([#890](https://github.com/opensearch-project/dashboards-search-relevance/pull/890))
-
-* Add experiment name and description across the full lifecycle: optional fields on creation forms, display in list and detail views (tooltips, header, search), and edit from the detail view ([#823](https://github.com/opensearch-project/dashboards-search-relevance/pull/823))
+* Show per-query OpenSearch search latency (took) in experiment results ([#942](https://github.com/opensearch-project/dashboards-search-relevance/issues/942))
 
 ### Enhancements
-* Show which documents failed in the Judgment view: the ratings table now lists each query's unrated docs with a Failed status alongside the rated ones ([#899](https://github.com/opensearch-project/dashboards-search-relevance/pull/899))
-* Load experiment detail resources in parallel after the initial experiment fetch ([#882](https://github.com/opensearch-project/dashboards-search-relevance/issues/882))
-* Make Query Set description optional on create ([#758](https://github.com/opensearch-project/dashboards-search-relevance/issues/758))
+* Gate the `/search-relevance` chat command on data source availability; report an unsupported message when the workspace has no data source the Workbench can use (e.g. only AnalyticEngine data sources) ([#970](https://github.com/opensearch-project/dashboards-search-relevance/pull/970))
+* Reduce O(n²) result matching in VisualComparison and connection lines by precomputing `_id` lookup maps ([#881](https://github.com/opensearch-project/dashboards-search-relevance/issues/881))
+* Rename `%SearchText%` to `%queryText%` in Query Template ([#774](https://github.com/opensearch-project/dashboards-search-relevance/pull/774))
+* Added missing tool tips for Recall, MRR and DCG metrics in the experiment results page. ([#967](https://github.com/opensearch-project/dashboards-search-relevance/pull/967)) 
 
 ### Bug Fixes
 * Fix judgment list creation failing when Token Limit is changed from the default 4000; server route validation expected a string but the UI sends a number ([#662](https://github.com/opensearch-project/dashboards-search-relevance/issues/662))
@@ -30,16 +27,18 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Surface backend error messages in Search Configuration and Judgment detail views instead of generic load-failure messages ([#894](https://github.com/opensearch-project/dashboards-search-relevance/issues/894))
 * Render an error callout on the Experiment Details page when the experiment fails to load (missing id, invalid data, or fetch error) instead of a blank content area ([#892](https://github.com/opensearch-project/dashboards-search-relevance/issues/892))
 * Surface the detailed error message on the Hybrid Optimizer experiment view, and show an informative empty state instead of a blank results table when an experiment completes with no evaluation results ([#550](https://github.com/opensearch-project/dashboards-search-relevance/issues/550))
+* Escape cells in the document scores CSV export ([#957](https://github.com/opensearch-project/dashboards-search-relevance/pull/957))
 
 ### Infrastructure
-* Add unit tests for the metrics route handler (`GET /api/relevancy/stats`): route registration config, success response, and error status mapping ([#893](https://github.com/opensearch-project/dashboards-search-relevance/issues/893))
+* Disable Codecov `changes` status check so indirect coverage diffs do not fail PRs
+* Fix Lychee link checking attempting to test a fake link. ([#962](https://github.com/opensearch-project/dashboards-search-relevance/pull/962))
+- Add SPDX license header checker and missing headers ([#941](https://github.com/opensearch-project/dashboards-search-relevance/pull/941))
+
+- Install the functional test repository's pinned Cypress in the FTR E2E workflow ([#958](https://github.com/opensearch-project/dashboards-search-relevance/pull/958))
 
 ### Documentation
 
 ### Maintenance
-* Remove debug console logging from production UI code ([#878](https://github.com/opensearch-project/dashboards-search-relevance/pull/878))
+* Add unit tests for ExperimentMetadataFields, previously untested (0% coverage) ([#968](https://github.com/opensearch-project/dashboards-search-relevance/pull/968))
 
 ### Refactoring
-* Refactor `GetSearchResults` to a single-query endpoint; fixes inconsistent query1/query2 validation, wrong error routing for query2, and cross-cluster index rejection ([#784](https://github.com/opensearch-project/dashboards-search-relevance/issues/784))
-* Replace per-page data source selectors with a single global data source menu in the OSD chrome header, backed by URL-synced state ([#850](https://github.com/opensearch-project/dashboards-search-relevance/pull/850))
-* Remove unused `resource_management_home` component directory ([#779](https://github.com/opensearch-project/dashboards-search-relevance/issues/779))

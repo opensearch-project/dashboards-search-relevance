@@ -2,6 +2,11 @@
  * Copyright OpenSearch Contributors
  * SPDX-License-Identifier: Apache-2.0
  */
+
+import { parseTook } from '../utils/took';
+
+export { parseTook } from '../utils/took';
+
 export interface DocumentsIndex {
   'docs.count': string;
   'docs.deleted': string;
@@ -203,11 +208,15 @@ export interface QueryEvaluation {
   queryText: string;
   metrics: Metrics;
   documentIds: string[];
+  /** OpenSearch cluster search time in ms (SearchResponse.getTook()). Absent on legacy/failed rows. */
+  took?: number;
 }
 
 export interface QuerySnapshot {
   queryText: string;
   documentIds: string[];
+  /** OpenSearch cluster search time in ms for this search configuration × query. */
+  took?: number;
 }
 
 export type ParseResult<T> = { success: true; data: T } | { success: false; errors: string[] };
@@ -237,6 +246,13 @@ export const parseMetrics = (metricsArray: Array<{ metric: string; value: number
   ) as Metrics;
 };
 
+const withOptionalTook = <T extends object>(
+  base: T,
+  took: number | undefined
+): T & { took?: number } => {
+  return took === undefined ? base : { ...base, took };
+};
+
 // Currently this function consumes the response of a pairwise comparison experiment
 // In the future this will be applied to an endpoint dedicated to evaluations
 export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> => {
@@ -249,11 +265,14 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
     if (!result.metrics) {
       hasMetrics = false;
     }
-    return {
-      queryText: result.query_text,
-      metrics: parseMetrics(result.metrics),
-      documentIds: [],
-    };
+    return withOptionalTook(
+      {
+        queryText: result.query_text,
+        metrics: parseMetrics(result.metrics),
+        documentIds: [],
+      },
+      parseTook(result.took)
+    );
   });
 
   if (!hasMetrics) {
@@ -263,7 +282,7 @@ export const toQueryEvaluations = (source: any): ParseResult<QueryEvaluation[]> 
   return { success: true, data: res };
 };
 
-export const toQueryEvaluation = (source: any): ParseResult<QueryEvaluation[]> => {
+export const toQueryEvaluation = (source: any): ParseResult<QueryEvaluation> => {
   if (!source.searchText) {
     return parseError('Missing search text');
   }
@@ -273,11 +292,14 @@ export const toQueryEvaluation = (source: any): ParseResult<QueryEvaluation[]> =
 
   return {
     success: true,
-    data: {
-      queryText: source.searchText,
-      metrics: parseMetrics(source.metrics),
-      documentIds: source.documentIds,
-    },
+    data: withOptionalTook(
+      {
+        queryText: source.searchText,
+        metrics: parseMetrics(source.metrics),
+        documentIds: source.documentIds,
+      },
+      parseTook(source.took)
+    ),
   };
 };
 
@@ -290,10 +312,15 @@ export const toQuerySnapshots = (source: any, queryName: string): ParseResult<Qu
   source.results.forEach((result: any) => {
     const snapshot = result.snapshots.find((s: any) => s.searchConfigurationId === queryName);
     if (snapshot) {
-      data.push({
-        queryText: result.query_text,
-        documentIds: snapshot.docIds,
-      });
+      data.push(
+        withOptionalTook(
+          {
+            queryText: result.query_text,
+            documentIds: snapshot.docIds,
+          },
+          parseTook(snapshot.took)
+        )
+      );
     }
   });
   return { success: true, data };

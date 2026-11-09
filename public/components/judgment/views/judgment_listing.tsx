@@ -6,6 +6,7 @@
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import React, { useState } from 'react';
 import {
+  EuiBadge,
   EuiButtonEmpty,
   EuiButton,
   EuiButtonIcon,
@@ -48,6 +49,7 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
     refreshKey,
     findJudgments,
     deleteJudgment,
+    retryJudgment,
   } = useJudgmentList(http, dataSourceId);
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -94,6 +96,19 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
       },
     },
     {
+      field: 'failedQueries',
+      name: 'Failures',
+      sortable: true,
+      // Show whether the judgment has any failed documents (Error) or not (No Error), so users
+      // can see at a glance which judgments are worth retrying.
+      render: (failedQueries: number) =>
+        failedQueries > 0 ? (
+          <EuiBadge color="danger">Error</EuiBadge>
+        ) : (
+          <EuiBadge color="hollow">No Error</EuiBadge>
+        ),
+    },
+    {
       field: 'type',
       name: 'Judgment Type',
       dataType: 'string',
@@ -113,17 +128,31 @@ export const JudgmentListing: React.FC<JudgmentListingProps> = ({
       name: 'Actions',
       width: '10%',
       render: (id: string, item: any) => (
-        <EuiToolTip content="Delete">
-          <EuiButtonIcon
-            aria-label="Delete"
-            iconType="trash"
-            color="danger"
-            onClick={() => {
-              setJudgmentToDelete(item);
-              setShowDeleteModal(true);
-            }}
-          />
-        </EuiToolTip>
+        <>
+          {/* Retry is only shown when the judgment has failed documents to re-score. */}
+          {item.failedQueries > 0 && item.status !== 'PROCESSING' && item.status !== 'RETRYING' && (
+            <EuiToolTip content="Retry failed documents">
+              <EuiButtonIcon
+                aria-label="Retry failed documents"
+                iconType="refresh"
+                color="primary"
+                data-test-subj="retryJudgmentButton"
+                onClick={() => retryJudgment(item)}
+              />
+            </EuiToolTip>
+          )}
+          <EuiToolTip content="Delete">
+            <EuiButtonIcon
+              aria-label="Delete"
+              iconType="trash"
+              color="danger"
+              onClick={() => {
+                setJudgmentToDelete(item);
+                setShowDeleteModal(true);
+              }}
+            />
+          </EuiToolTip>
+        </>
       ),
     },
   ];

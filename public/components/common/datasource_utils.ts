@@ -4,10 +4,12 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { SavedObject } from '../../../../../src/core/public';
+import { CoreStart, SavedObject } from '../../../../../src/core/public';
 import { DataSourceAttributes } from '../../../../../src/plugins/data_source/common/data_sources';
 import semver from 'semver';
 import * as pluginManifest from '../../../opensearch_dashboards.json';
+
+export const SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN = 'opensearch-search-relevance';
 
 /**
  * Parse dataSourceId from URL search parameters
@@ -85,6 +87,22 @@ export const useDataSourceUrlSync = (
 };
 
 /**
+ * Pure predicate matching the Search Relevance Workbench data source selector's filter: it excludes
+ * AnalyticEngine data sources (relevance tuning relies on DSL, unsupported on AE) and requires a
+ * data source version this plugin supports. Shared by the page selector (DataSourceMenu) and the
+ * /search-relevance command's availability check so both agree on what a usable data source is.
+ */
+export const isSupportedSearchRelevanceDataSource = (
+  dataSource: SavedObject<DataSourceAttributes>
+): boolean => {
+  if (dataSource?.attributes?.dataSourceEngineType === 'AnalyticEngine') {
+    return false;
+  }
+  const dataSourceVersion = dataSource?.attributes?.dataSourceVersion || '';
+  return semver.satisfies(dataSourceVersion, pluginManifest.supportedOSDataSourceVersions);
+};
+
+/**
  * Hook for datasource filter function
  */
 export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
@@ -102,4 +120,48 @@ export const useDataSourceFilter = (excludeEngineTypes?: string[]) => {
     },
     [excludeEngineTypes]
   );
+};
+
+export const isAwaitingDataSourceSelection = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined
+): boolean => dataSourceEnabled && dataSourceId === undefined;
+
+export const useDataSourceSupportsSearchRelevance = (
+  dataSourceEnabled: boolean,
+  dataSourceId: string | undefined,
+  savedObjects: CoreStart['savedObjects']
+): boolean => {
+  const [supportsSearchRelevance, setSupportsSearchRelevance] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!dataSourceEnabled || dataSourceId === undefined || dataSourceId === '') {
+      setSupportsSearchRelevance(true);
+      return;
+    }
+
+    setSupportsSearchRelevance(true);
+
+    savedObjects.client
+      .get<DataSourceAttributes>('data-source', dataSourceId)
+      .then((dataSource) => {
+        if (cancelled) return;
+        const installedPlugins = dataSource?.attributes?.installedPlugins;
+        setSupportsSearchRelevance(
+          !Array.isArray(installedPlugins) ||
+            installedPlugins.includes(SEARCH_RELEVANCE_DATA_SOURCE_PLUGIN)
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setSupportsSearchRelevance(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dataSourceEnabled, dataSourceId, savedObjects]);
+
+  return supportsSearchRelevance;
 };

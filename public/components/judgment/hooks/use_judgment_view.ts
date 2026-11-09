@@ -128,5 +128,6 @@ export const useJudgmentView = (
     loading,
     error,
     formatJson,
+    refresh: fetchJudgment,
   };
 };

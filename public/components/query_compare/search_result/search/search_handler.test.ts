@@ -25,10 +25,8 @@ describe('SearchHandler', () => {
       await searchHandler.performSearch(requestBody, dataSourceId);
 
       expect(mockHttp.post).toHaveBeenCalledWith(ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({
-          query: requestBody,
-          dataSourceId,
-        }),
+        body: JSON.stringify({ query: requestBody }),
+        query: { dataSourceId },
       });
     });
 
@@ -57,16 +55,12 @@ describe('SearchHandler', () => {
 
       expect(mockHttp.post).toHaveBeenCalledTimes(2);
       expect(mockHttp.post).toHaveBeenNthCalledWith(1, ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({
-          query: requestBody1,
-          dataSourceId: dataSourceId1,
-        }),
+        body: JSON.stringify({ query: requestBody1 }),
+        query: { dataSourceId: dataSourceId1 },
       });
       expect(mockHttp.post).toHaveBeenNthCalledWith(2, ServiceEndpoints.GetSearchResults, {
-        body: JSON.stringify({
-          query: requestBody2,
-          dataSourceId: dataSourceId2,
-        }),
+        body: JSON.stringify({ query: requestBody2 }),
+        query: { dataSourceId: dataSourceId2 },
       });
     });
 

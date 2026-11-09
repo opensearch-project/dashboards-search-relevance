@@ -46,6 +46,7 @@ import {
   createPhraseFilter,
   addDaysToTimestamp,
   checkDashboardsInstalled,
+  getScopedSavedObjectId,
 } from '../../common_utils/dashboards';
 import { getStatusColor } from '../../common_utils/status';
 import { ScheduleModal } from './ScheduleModal';
@@ -90,6 +91,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
   const { services } = useOpenSearchDashboards();
   const share = services.share;
+  const workspaceId = services.workspaces?.currentWorkspaceId$?.getValue();
 
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(
     () => services.chat?.isWindowOpen() ?? false
@@ -205,7 +207,10 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
   } = useExperimentPolling();
 
   const openDashboard = async (experiment: any, dashboardId: string, indexPatternId: string) => {
-    const filters = [createPhraseFilter('experimentId', experiment.id, indexPatternId)];
+    const resolvedDashboardId = getScopedSavedObjectId(dashboardId, workspaceId, dataSourceId);
+    const resolvedIndexPatternId = getScopedSavedObjectId(indexPatternId, workspaceId, dataSourceId);
+
+    const filters = [createPhraseFilter('experimentId', experiment.id, resolvedIndexPatternId)];
 
     // Create timeRange from experiment timestamp
     const timeRange = {
@@ -213,7 +218,14 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       to: "now",
     };
 
-    const url = await dashboardUrl(share, dashboardId, indexPatternId, filters, timeRange);
+    const url = await dashboardUrl(
+      share,
+      resolvedDashboardId,
+      resolvedIndexPatternId,
+      filters,
+      timeRange,
+      dataSourceId
+    );
     window.open(url, '_blank');
   };
 
@@ -223,7 +235,7 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
     indexPatternId: string
   ) => {
     try {
-      const dashboardsAreInstalled = await checkDashboardsInstalled(http);
+      const dashboardsAreInstalled = await checkDashboardsInstalled(http, workspaceId, dataSourceId);
       if (!dashboardsAreInstalled) {
         setPendingDashboardAction(() => () =>
           openDashboard(experiment, dashboardId, indexPatternId)
@@ -550,7 +562,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
 
   // Data fetching function
   const findExperiments = async (search: any) => {
-    // Use tableData if available (from polling or previous fetch)
+    // Use tableData if available (from polling or previous fetch). Always filter from the
+    // full cached list so search never permanently shrinks the cache.
     if (tableData.length > 0) {
       const filteredList = search
         ? tableData.filter((item) => experimentMatchesSearch(item, search))
@@ -577,10 +590,15 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
       }
 
       const list = parseResults.data;
-      const filteredList = search ? list.filter((item) => experimentMatchesSearch(item, search)) : list;
+      // Always cache the full unfiltered list. Search only affects the returned hits so
+      // clearing the search box (or remounting after delete/refresh with an empty term)
+      // restores all rows. Keeping the full list also preserves hasProcessing for polling.
+      setExperiments(list);
+      setTableData(list);
 
-      setExperiments(filteredList);
-      setTableData(filteredList);
+      const filteredList = search
+        ? list.filter((item) => experimentMatchesSearch(item, search))
+        : list;
 
       return {
         total: filteredList.length,
@@ -714,6 +732,8 @@ export const ExperimentListing: React.FC<ExperimentListingProps> = ({
           onSuccess={pendingDashboardAction}
           http={http}
           setError={setError}
+          workspaceId={workspaceId}
+          dataSourceId={dataSourceId}
         />
       )}
 

@@ -5,6 +5,7 @@
 
 import { AgentHandler } from '../agent_handler';
 import { SearchResults } from '../../../../../types/index';
+import { ServiceEndpoints } from '../../../../../../common';
 
 describe('AgentHandler', () => {
   let agentHandler: AgentHandler;
@@ -41,6 +42,31 @@ describe('AgentHandler', () => {
     it('should return false for null/undefined query', () => {
       expect(agentHandler.isAgenticQuery(null)).toBe(false);
       expect(agentHandler.isAgenticQuery(undefined)).toBe(false);
+    });
+  });
+
+  describe('performAgenticSearch', () => {
+    it('should send dataSourceId as a query parameter, not in the body', async () => {
+      const requestBody = { query: { agentic: { query_text: 'white shoes' } } };
+      mockHttp.post.mockResolvedValue({ result: {} });
+
+      await agentHandler.performAgenticSearch(requestBody, 'ds-1');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(ServiceEndpoints.GetSearchResults, {
+        body: JSON.stringify({ query: requestBody }),
+        query: { dataSourceId: 'ds-1' },
+      });
+    });
+
+    it('should omit the query param when no dataSourceId is given', async () => {
+      const requestBody = { query: { agentic: { query_text: 'white shoes' } } };
+      mockHttp.post.mockResolvedValue({ result: {} });
+
+      await agentHandler.performAgenticSearch(requestBody, '');
+
+      expect(mockHttp.post).toHaveBeenCalledWith(ServiceEndpoints.GetSearchResults, {
+        body: JSON.stringify({ query: requestBody }),
+      });
     });
   });
 

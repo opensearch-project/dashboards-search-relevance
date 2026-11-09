@@ -39,7 +39,7 @@ describe('SearchRelevancePlugin', () => {
   });
 
   describe('chatCommandEnabled feature flag', () => {
-    it('registers the command when chatCommandEnabled is true', () => {
+    it('registers the command when chatCommandEnabled is true, passing dataSourceEnabled', () => {
       const chatSetup = {
         commandRegistry: { registerCommand: mockRegisterCommand },
       };
@@ -50,17 +50,69 @@ describe('SearchRelevancePlugin', () => {
         chat: chatSetup as any,
       });
 
-      // Set capability to true
       coreStartMock.application.capabilities = {
         ...coreStartMock.application.capabilities,
         searchRelevanceDashboards: { chatCommandEnabled: true },
       };
 
-      plugin.start(coreStartMock as any, { dataSource: {} as any });
+      plugin.start(coreStartMock as any, {} as any);
 
       expect(registerSearchRelevanceCommand).toHaveBeenCalledWith(
         coreSetupMock,
-        chatSetup
+        chatSetup,
+        true,
+        false
+      );
+    });
+
+    it('forwards hideLocalCluster=true when the local cluster is hidden', () => {
+      const chatSetup = {
+        commandRegistry: { registerCommand: mockRegisterCommand },
+      };
+
+      plugin.setup(coreSetupMock as any, {
+        dataSource: { hideLocalCluster: true } as any,
+        dataSourceManagement: {} as any,
+        chat: chatSetup as any,
+      });
+
+      coreStartMock.application.capabilities = {
+        ...coreStartMock.application.capabilities,
+        searchRelevanceDashboards: { chatCommandEnabled: true },
+      };
+
+      plugin.start(coreStartMock as any, {} as any);
+
+      expect(registerSearchRelevanceCommand).toHaveBeenCalledWith(
+        coreSetupMock,
+        chatSetup,
+        true,
+        true
+      );
+    });
+
+    it('passes dataSourceEnabled=false when the dataSource plugin is absent', () => {
+      const chatSetup = {
+        commandRegistry: { registerCommand: mockRegisterCommand },
+      };
+
+      plugin.setup(coreSetupMock as any, {
+        dataSourceManagement: {} as any,
+        chat: chatSetup as any,
+      } as any);
+
+      coreStartMock.application.capabilities = {
+        ...coreStartMock.application.capabilities,
+        searchRelevanceDashboards: { chatCommandEnabled: true },
+      };
+
+      plugin.start(coreStartMock as any, {} as any);
+
+      expect(registerSearchRelevanceCommand).toHaveBeenCalledWith(
+        coreSetupMock,
+        chatSetup,
+        false,
+        false
       );
     });
 
@@ -75,13 +127,12 @@ describe('SearchRelevancePlugin', () => {
         chat: chatSetup as any,
       });
 
-      // Set capability to false (default)
       coreStartMock.application.capabilities = {
         ...coreStartMock.application.capabilities,
         searchRelevanceDashboards: { chatCommandEnabled: false },
       };
 
-      plugin.start(coreStartMock as any, { dataSource: {} as any });
+      plugin.start(coreStartMock as any, {} as any);
 
       expect(registerSearchRelevanceCommand).not.toHaveBeenCalled();
     });
@@ -97,12 +148,11 @@ describe('SearchRelevancePlugin', () => {
         chat: chatSetup as any,
       });
 
-      // No searchRelevanceDashboards capability
       coreStartMock.application.capabilities = {
         ...coreStartMock.application.capabilities,
       };
 
-      plugin.start(coreStartMock as any, { dataSource: {} as any });
+      plugin.start(coreStartMock as any, {} as any);
 
       expect(registerSearchRelevanceCommand).not.toHaveBeenCalled();
     });
@@ -113,19 +163,20 @@ describe('SearchRelevancePlugin', () => {
       plugin.setup(coreSetupMock as any, {
         dataSource: {} as any,
         dataSourceManagement: {} as any,
-        // No chat plugin
-      });
+      } as any);
 
       coreStartMock.application.capabilities = {
         ...coreStartMock.application.capabilities,
         searchRelevanceDashboards: { chatCommandEnabled: true },
       };
 
-      plugin.start(coreStartMock as any, { dataSource: {} as any });
+      plugin.start(coreStartMock as any, {} as any);
 
       expect(registerSearchRelevanceCommand).toHaveBeenCalledWith(
         coreSetupMock,
-        undefined
+        undefined,
+        true,
+        false
       );
     });
 
@@ -148,7 +199,7 @@ describe('SearchRelevancePlugin', () => {
         searchRelevanceDashboards: { chatCommandEnabled: true },
       };
 
-      plugin.start(coreStartMock as any, { dataSource: {} as any });
+      plugin.start(coreStartMock as any, {} as any);
       plugin.stop();
 
       expect(mockUnregister).toHaveBeenCalled();

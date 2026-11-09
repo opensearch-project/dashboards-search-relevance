@@ -20,10 +20,8 @@ export class AgentHandler {
 
   async performAgenticSearch(requestBody: any, dataSourceId: string): Promise<any> {
     return await this.http.post(ServiceEndpoints.GetSearchResults, {
-      body: JSON.stringify({
-        query: requestBody,
-        dataSourceId,
-      }),
+      body: JSON.stringify({ query: requestBody }),
+      ...(dataSourceId ? { query: { dataSourceId } } : {}),
     });
   }
 

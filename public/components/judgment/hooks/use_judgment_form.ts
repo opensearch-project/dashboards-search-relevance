@@ -26,6 +26,7 @@ export const useJudgmentForm = (
     clickModel: 'coec',
     maxRank: 20,
     contextFields: [],
+    existingJudgments: [],
     startDate: moment('2000-01-01').format('YYYY-MM-DD'),
     endDate: moment().format('YYYY-MM-DD'),
   });
@@ -46,12 +47,14 @@ export const useJudgmentForm = (
   const [searchConfigOptions, setSearchConfigOptions] = useState<ComboBoxOption[]>([]);
   const [modelOptions, setModelOptions] = useState<ModelOption[]>([]);
   const [indexOptions, setIndexOptions] = useState<Array<{ label: string; value: string }>>([]);
+  const [existingJudgmentOptions, setExistingJudgmentOptions] = useState<ComboBoxOption[]>([]);
 
   // Loading states
   const [isLoadingQuerySets, setIsLoadingQuerySets] = useState(false);
   const [isLoadingSearchConfigs, setIsLoadingSearchConfigs] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
   const [isLoadingIndexes, setIsLoadingIndexes] = useState(false);
+  const [isLoadingExistingJudgments, setIsLoadingExistingJudgments] = useState(false);
 
   // UI states
   const [nameError, setNameError] = useState('');
@@ -67,6 +70,7 @@ export const useJudgmentForm = (
     setQuerySetOptions([]);
     setSearchConfigOptions([]);
     setModelOptions([]);
+    setExistingJudgmentOptions([]);
     setSelectedQuerySet([]);
     setSelectedSearchConfigs([]);
     setSelectedModel([]);
@@ -92,6 +96,7 @@ export const useJudgmentForm = (
     setIsLoadingQuerySets(true);
     setIsLoadingSearchConfigs(true);
     setIsLoadingModels(true);
+    setIsLoadingExistingJudgments(true);
 
     await Promise.all([
       service.fetchUbiIndexes(dataSourceId).then(setIndexOptions).catch(() => {
@@ -110,6 +115,10 @@ export const useJudgmentForm = (
         notifications.toasts.addDanger('Failed to fetch models');
         setModelOptions([]);
       }).finally(() => setIsLoadingModels(false)),
+      service.fetchLlmJudgments(dataSourceId).then(setExistingJudgmentOptions).catch(() => {
+        notifications.toasts.addDanger('Failed to fetch existing judgments');
+        setExistingJudgmentOptions([]);
+      }).finally(() => setIsLoadingExistingJudgments(false)),
     ]);
   }, [formData.type, http, notifications.toasts, dataSourceId]);
 
@@ -242,10 +251,12 @@ export const useJudgmentForm = (
     searchConfigOptions,
     modelOptions,
     indexOptions,
+    existingJudgmentOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
     isLoadingIndexes,
+    isLoadingExistingJudgments,
     nameError,
     newContextField,
     setNewContextField,

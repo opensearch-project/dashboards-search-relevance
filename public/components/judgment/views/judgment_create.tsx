@@ -37,10 +37,12 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
     searchConfigOptions,
     modelOptions,
     indexOptions,
+    existingJudgmentOptions,
     isLoadingQuerySets,
     isLoadingSearchConfigs,
     isLoadingModels,
     isLoadingIndexes,
+    isLoadingExistingJudgments,
     nameError,
     newContextField,
     setNewContextField,
@@ -110,10 +112,12 @@ export const JudgmentCreate: React.FC<JudgmentCreateProps> = ({
             searchConfigOptions={searchConfigOptions}
             modelOptions={modelOptions}
             indexOptions={indexOptions}
+            existingJudgmentOptions={existingJudgmentOptions}
             isLoadingQuerySets={isLoadingQuerySets}
             isLoadingSearchConfigs={isLoadingSearchConfigs}
             isLoadingModels={isLoadingModels}
             isLoadingIndexes={isLoadingIndexes}
+            isLoadingExistingJudgments={isLoadingExistingJudgments}
             newContextField={newContextField}
             setNewContextField={setNewContextField}
             addContextField={addContextField}

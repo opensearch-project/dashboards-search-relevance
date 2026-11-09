@@ -31,11 +31,17 @@ import {
   PRECISION_TOOL_TIP,
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
+  TOOK_TOOL_TIP,
+  RECALL_TOOL_TIP,
+  MRR_TOOL_TIP,
+  DCG_TOOL_TIP,
 } from '../../../../common';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
+import { formatTook, parseTook } from '../../../utils/took';
 
 interface VariantEvaluation {
   metrics: Record<string, number>;
+  took?: number;
 }
 
 interface QueryVariantEvaluations {
@@ -101,6 +107,8 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         const _judgmentSet = resources?.judgmentSet;
         const _scheduledExperimentJob = resources?.scheduledExperimentJob;
 
+        const dsQuery = dataSourceId ? { query: { dataSourceId } } : {};
+
         if (_experiment && _searchConfiguration && _querySet && _judgmentSet) {
           const querySetSize = _querySet && Object.keys(_querySet.querySetQueries).length;
           const maxSize = 10000; // OpenSearch max result window
@@ -130,8 +138,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
               };
               const result = await http.post(ServiceEndpoints.GetSearchResults, {
                 body: JSON.stringify({ query }),
+                ...dsQuery,
               });
-              
+
               if (result?.result?.hits?.hits && result.result.hits.hits.length > 0) {
                 allResults = allResults.concat(result.result.hits.hits);
                 from += result.result.hits.hits.length;
@@ -165,12 +174,18 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
           const result = await http.post(ServiceEndpoints.GetSearchResults, {
             body: JSON.stringify({ query }),
+            ...dsQuery,
           });
 
           if (result?.result?.hits?.hits) {
               allResults = result.result.hits.hits;
             }
           }
+
+          setExperiment(_experiment as HybridOptimizerExperiment);
+          setSearchConfiguration(_searchConfiguration);
+          setQuerySet(_querySet);
+          setJudgmentSet(_judgmentSet);
 
           if (!allResults || allResults.length === 0) {
             // The experiment completed but produced no evaluation results,
@@ -193,12 +208,14 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             hit._source.metrics?.forEach((metric: any) => {
               nMetrics[metric.metric] = metric.value;
             });
+            const took = parseTook(hit._source.took);
             evaluationsByQueryAndVariant[hit._source.searchText] =
               evaluationsByQueryAndVariant[hit._source.searchText] || {};
             evaluationsByQueryAndVariant[hit._source.searchText][
               hit._source.experimentVariantId
             ] = {
               metrics: nMetrics,
+              ...(took !== undefined ? { took } : {}),
             };
           });
 
@@ -238,6 +255,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
 
       const result = await http.post(ServiceEndpoints.GetSearchResults, {
         body: JSON.stringify({ query }),
+        ...(dataSourceId ? { query: { dataSourceId } } : {}),
       });
 
       const variantDetails = result?.result?.hits?.hits?.[0]?._source;
@@ -293,12 +311,21 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         precision: PRECISION_TOOL_TIP,
         map: MAP_TOOL_TIP,
         coverage: COVERAGE_TOOL_TIP,
+        recall: RECALL_TOOL_TIP,
+        mrr: MRR_TOOL_TIP,
+        dcg: DCG_TOOL_TIP,
       };
 
       if (metricNames.length === 0) {
         console.warn('No metric names found');
         return;
       }
+
+      const hasTook = Object.values(queryEvaluations).some((variants) =>
+        Object.values(variants).some(
+          (data: VariantEvaluation) => data.took !== undefined && data.took !== null
+        )
+      );
 
       const columns = [
         {
@@ -318,6 +345,23 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             </EuiButtonEmpty>
           ),
         },
+        ...(hasTook
+          ? [
+              {
+                field: 'took',
+                name: (
+                  <EuiToolTip content={TOOK_TOOL_TIP}>
+                    <span>Time taken</span>
+                  </EuiToolTip>
+                ),
+                dataType: 'number',
+                sortable: true,
+                render: (value: number | undefined) => (
+                  <span data-test-subj="tookCell">{formatTook(value)}</span>
+                ),
+              },
+            ]
+          : []),
         ...metricNames.map((metricName) => {
           const baseMetricName = getBaseMetricName(metricName);
           const tooltipContent =
@@ -366,6 +410,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             queryText,
             variantId,
             metrics: data.metrics,
+            took: data.took,
           });
         });
       });

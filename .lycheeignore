@@ -21,6 +21,7 @@ git://*
 //test
 //notfound
 //asdf
+^http://x/?$
 //elsewhere
 //build-?url
 //dev-url

@@ -10,9 +10,11 @@ import {
   SEARCH_USE_CASE_ID,
   isNavGroupInFeatureConfigs,
 } from '../../../../src/core/public';
+import { DataSourceAttributes } from '../../../../src/plugins/data_source/common/data_sources';
 import { ChatPluginSetup } from '../../../../src/plugins/chat/public';
 import { SlashCommandResult } from '../../../../src/plugins/chat/public/services/slash_commands';
 import { PLUGIN_ID } from '../../common';
+import { isSupportedSearchRelevanceDataSource } from '../components/common/datasource_utils';
 
 const getWelcomeMessage = () =>
   i18n.translate('searchRelevance.command.welcomeMessage', {
@@ -32,41 +34,83 @@ const hasSearchUseCase = (features: string[]): boolean =>
   isNavGroupInFeatureConfigs(SEARCH_USE_CASE_ID, features) ||
   isNavGroupInFeatureConfigs(ALL_USE_CASE_ID, features);
 
-const createHandler = (core: CoreSetup) => async (args: string): Promise<SlashCommandResult> => {
-  const currentWorkspace = core.workspaces.currentWorkspace$.getValue();
-  const features = currentWorkspace?.features ?? [];
-
-  if (!hasSearchUseCase(features)) {
-    return {
-      title: i18n.translate('searchRelevance.command.incompatibleWorkspaceTitle', {
-        defaultMessage: 'Incompatible workspace type',
-      }),
-      localMessage: i18n.translate('searchRelevance.command.incompatibleWorkspaceMessage', {
-        defaultMessage:
-          'The /search-relevance command only works in Search or Analytics (all) workspaces. Please navigate to one and try again.',
-      }),
-    };
+/**
+ * Whether the workspace has a data source the Workbench can use, applying the selector's filter
+ * (non-AnalyticEngine, compatible version). MDS off or a visible local cluster counts as usable; a
+ * lookup failure fails open.
+ */
+const hasUsableDataSource = async (
+  core: CoreSetup,
+  dataSourceEnabled: boolean,
+  hideLocalCluster: boolean
+): Promise<boolean> => {
+  if (!dataSourceEnabled || !hideLocalCluster) return true;
+  try {
+    const [coreStart] = await core.getStartServices();
+    const { savedObjects } = await coreStart.savedObjects.client.find<DataSourceAttributes>({
+      type: 'data-source',
+      perPage: 10000,
+      fields: ['dataSourceEngineType', 'dataSourceVersion'],
+    });
+    return savedObjects.some((dataSource) => isSupportedSearchRelevanceDataSource(dataSource));
+  } catch {
+    return true;
   }
-
-  const [coreStart] = await core.getStartServices();
-  coreStart.application.navigateToApp(PLUGIN_ID);
-
-  const question = args.trim();
-  if (question) {
-    coreStart.chat.sendMessageWithWindow(question, [], { clearConversation: true });
-    return '';
-  }
-
-  return { localMessage: getWelcomeMessage(), role: 'assistant' };
 };
+
+const createHandler =
+  (core: CoreSetup, dataSourceEnabled: boolean, hideLocalCluster: boolean) =>
+  async (args: string): Promise<SlashCommandResult> => {
+    const currentWorkspace = core.workspaces.currentWorkspace$.getValue();
+    const features = currentWorkspace?.features ?? [];
+
+    if (!hasSearchUseCase(features)) {
+      return {
+        title: i18n.translate('searchRelevance.command.incompatibleWorkspaceTitle', {
+          defaultMessage: 'Incompatible workspace type',
+        }),
+        localMessage: i18n.translate('searchRelevance.command.incompatibleWorkspaceMessage', {
+          defaultMessage:
+            'The /search-relevance command only works in Search or Analytics (all) workspaces. Please navigate to one and try again.',
+        }),
+      };
+    }
+
+    // Search relevance tuning relies on DSL, which AnalyticEngine data sources do not support. When
+    // no usable (non-AE, compatible) data source is available, report it instead of navigating.
+    if (!(await hasUsableDataSource(core, dataSourceEnabled, hideLocalCluster))) {
+      return {
+        title: i18n.translate('searchRelevance.command.noSupportedDataSourceTitle', {
+          defaultMessage: 'Unsupported data source',
+        }),
+        localMessage: i18n.translate('searchRelevance.command.noSupportedDataSourceMessage', {
+          defaultMessage:
+            'No available data source supports search relevance tuning. Connect a compatible data source and try again.',
+        }),
+      };
+    }
+
+    const [coreStart] = await core.getStartServices();
+    coreStart.application.navigateToApp(PLUGIN_ID);
+
+    const question = args.trim();
+    if (question) {
+      coreStart.chat.sendMessageWithWindow(question, [], { clearConversation: true });
+      return '';
+    }
+
+    return { localMessage: getWelcomeMessage(), role: 'assistant' };
+  };
 
 export const registerSearchRelevanceCommand = (
   core: CoreSetup,
-  chatSetup?: ChatPluginSetup
+  chatSetup?: ChatPluginSetup,
+  dataSourceEnabled: boolean = false,
+  hideLocalCluster: boolean = false
 ): (() => void) | undefined => {
   if (!chatSetup?.commandRegistry) return undefined;
 
-  const handler = createHandler(core);
+  const handler = createHandler(core, dataSourceEnabled, hideLocalCluster);
 
   const unregister = chatSetup.commandRegistry.registerCommand({
     command: 'search-relevance',

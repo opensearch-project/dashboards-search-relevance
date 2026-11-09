@@ -50,6 +50,18 @@ describe('validation', () => {
     expect(result.errors).toEqual({});
   });
 
+  describe('COEC click model', () => {
+    it('does not require a UBI events index (COEC uses the default index)', () => {
+      const result = validateJudgmentForm(
+        { name: 'test', type: JudgmentType.UBI, clickModel: 'coec', ubiEventsIndex: '' },
+        [],
+        [],
+        []
+      );
+      expect(result.isValid).toBe(true);
+    });
+  });
+
   describe('date range validation', () => {
     it('should fail validation when end date is before start date', () => {
       const result = validateJudgmentForm(
