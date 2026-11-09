@@ -450,7 +450,7 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
     <>
       {experimentDetails}
       <EuiSpacer size="m" />
-      {experiment?.isScheduled && scheduledExperimentJob?.schedule?.cron?.expression?.trim() && (
+      {experiment?.isScheduled && (
         <>
           <ScheduleDetails
             isScheduled={experiment?.isScheduled}
