@@ -17,3 +17,4 @@ export function defineRoutes(
 }
 
 export * from './search_relevance_route_service';
+export * from './ltr_route_service';
