@@ -30,6 +30,9 @@ import {
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
   TOOK_TOOL_TIP,
+  RECALL_TOOL_TIP,
+  MRR_TOOL_TIP,
+  DCG_TOOL_TIP,
 } from '../../../../common';
 import { loadExperimentResourcesParallel } from '../services/experiment_resource_loader';
 import { formatTook, parseTook } from '../../../utils/took';
@@ -293,6 +296,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
         precision: PRECISION_TOOL_TIP,
         map: MAP_TOOL_TIP,
         coverage: COVERAGE_TOOL_TIP,
+        recall: RECALL_TOOL_TIP,
+        mrr: MRR_TOOL_TIP,
+        dcg: DCG_TOOL_TIP,
       };
 
       if (metricNames.length === 0) {

@@ -47,6 +47,9 @@ import {
   MAP_TOOL_TIP,
   COVERAGE_TOOL_TIP,
   TOOK_TOOL_TIP,
+  RECALL_TOOL_TIP,
+  MRR_TOOL_TIP,
+  DCG_TOOL_TIP,
 } from '../../../../common';
 import {
   buildQueryEvaluationRows,
@@ -340,6 +343,9 @@ export const EvaluationExperimentView: React.FC<EvaluationExperimentViewProps> =
         precision: PRECISION_TOOL_TIP,
         map: MAP_TOOL_TIP,
         coverage: COVERAGE_TOOL_TIP,
+        recall: RECALL_TOOL_TIP,
+        mrr: MRR_TOOL_TIP,
+        dcg: DCG_TOOL_TIP,
       };
 
       const hasTook = queryEvaluations.some(

@@ -104,6 +104,9 @@ export const TOOK_TOOL_TIP =
   'OpenSearch search time for this query (cluster "took"), in milliseconds. Compare with the same query on a previous experiment run.';
 export const AVG_TOOK_TOOL_TIP =
   'Average OpenSearch search time (cluster "took") across queries that recorded latency.';
+export const RECALL_TOOL_TIP = 'Recall measures the proportion of relevant documents that are retrieved. For a given rank K, Recall@K is the number of relevant documents among the top K retrieved documents, divided by the total number of judged relevant documents for the query. A higher value means fewer relevant documents are missed.';
+export const MRR_TOOL_TIP = 'Mean Reciprocal Rank (MRR) measures how early the first relevant document appears in the result list. For a single query, the Reciprocal Rank (RR) is 1 divided by the rank of the first relevant document, or 0 if no relevant document is retrieved. MRR is the mean of these Reciprocal Rank scores across multiple queries. A higher value means relevant results appear closer to the top.';
+export const DCG_TOOL_TIP = 'Discounted Cumulative Gain (DCG) measures the usefulness, or gain, of documents based on their position in the result list. The gain is accumulated from the top of the result list to the bottom, with documents at lower ranks being "discounted". Unlike NDCG, DCG is not normalized, so its value has no fixed upper bound and is best compared between runs that use the same queries and judgments.';
 
 export {
   EXPERIMENT_DESCRIPTION_MAX_LENGTH,
