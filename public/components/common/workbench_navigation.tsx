@@ -6,7 +6,7 @@
 import React from 'react';
 import { EuiTab, EuiTabs } from '@elastic/eui';
 import { useHistory, useLocation } from 'react-router-dom';
-import { reactRouterNavigate } from '../../../../../src/plugins/opensearch_dashboards_react/public/react_router_navigate';
+import { reactRouterNavigate } from '../../../../../src/plugins/opensearch_dashboards_react/public';
 import { Routes } from '../../../common';
 import './workbench_navigation.scss';
 
