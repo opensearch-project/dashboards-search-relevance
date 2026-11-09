@@ -71,6 +71,29 @@ describe('VisualComparison', () => {
     expect(screen.getByText('Common')).toBeInTheDocument();
   });
 
+  it('computes overlap counts via id lookup maps', () => {
+    // result1: ids [1,2,3], result2: ids [1,2,4]
+    // => common (inBoth) = 2, unique-to-1 = 1, unique-to-2 = 1
+    const { container } = render(
+      <VisualComparison
+        {...defaultProps}
+        queryResult1={[
+          { _id: '1', _score: 0.9, rank: 1, title: 'A' },
+          { _id: '2', _score: 0.8, rank: 2, title: 'B' },
+          { _id: '3', _score: 0.7, rank: 3, title: 'C' },
+        ]}
+        queryResult2={[
+          { _id: '1', _score: 0.85, rank: 2, title: 'A' },
+          { _id: '2', _score: 0.75, rank: 1, title: 'B' },
+          { _id: '4', _score: 0.65, rank: 3, title: 'D' },
+        ]}
+      />
+    );
+    expect(container.querySelector('.venn-left .venn-value')?.textContent).toBe('1');
+    expect(container.querySelector('.venn-middle .venn-value')?.textContent).toBe('2');
+    expect(container.querySelector('.venn-right .venn-value')?.textContent).toBe('1');
+  });
+
   it('shows empty prompt when results are not arrays', () => {
     render(<VisualComparison {...defaultProps} queryResult1={null} queryResult2={null} />);
     expect(screen.getByText('You need two Setups to display comparison.')).toBeInTheDocument();

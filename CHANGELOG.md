@@ -28,6 +28,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 * Render an error callout on the Experiment Details page when the experiment fails to load (missing id, invalid data, or fetch error) instead of a blank content area ([#892](https://github.com/opensearch-project/dashboards-search-relevance/issues/892))
 * Surface the detailed error message on the Hybrid Optimizer experiment view, and show an informative empty state instead of a blank results table when an experiment completes with no evaluation results ([#550](https://github.com/opensearch-project/dashboards-search-relevance/issues/550))
 * Escape cells in the document scores CSV export ([#957](https://github.com/opensearch-project/dashboards-search-relevance/pull/957))
+* Guard visual comparison image rendering against non-string field values to prevent a crash when an image field contains numbers, arrays, booleans, or objects ([#945](https://github.com/opensearch-project/dashboards-search-relevance/issues/945))
 
 ### Infrastructure
 * Disable Codecov `changes` status check so indirect coverage diffs do not fail PRs
