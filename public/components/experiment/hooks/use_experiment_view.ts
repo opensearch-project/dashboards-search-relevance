@@ -24,6 +24,7 @@ export const useExperimentView = (
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pollErrorCount = useRef<number>(0);
   const experimentServiceRef = useRef(new ExperimentService(http));
+  const isMountedRef = useRef(true);
 
   const stopPolling = useCallback(() => {
     if (intervalRef.current) {
@@ -37,12 +38,15 @@ export const useExperimentView = (
       const showLoading = options?.showLoading ?? false;
 
       try {
-        if (showLoading) {
+        if (showLoading && isMountedRef.current) {
           setLoading(true);
           setError(null);
         }
 
         const response = await experimentServiceRef.current.getExperiment(id, dataSourceId);
+        if (!isMountedRef.current) {
+          return;
+        }
         const source = response?.hits?.hits?.[0]?._source;
 
         if (source) {
@@ -64,9 +68,19 @@ export const useExperimentView = (
           setExperiment(null);
           setError('No matching experiment found');
           stopPolling();
+        } else {
+          // Poll tick found no document (e.g. deleted mid-run). Treat like a poll
+          // error rather than silently continuing to poll forever.
+          pollErrorCount.current += 1;
+          if (pollErrorCount.current >= MAX_POLL_ERRORS) {
+            stopPolling();
+          }
         }
       } catch (err) {
         console.error('Failed to fetch experiment', err);
+        if (!isMountedRef.current) {
+          return;
+        }
         if (showLoading) {
           setExperiment(null);
           if (err?.body?.statusCode === 404) {
@@ -82,7 +96,7 @@ export const useExperimentView = (
           }
         }
       } finally {
-        if (showLoading) {
+        if (showLoading && isMountedRef.current) {
           setLoading(false);
         }
       }
@@ -91,8 +105,10 @@ export const useExperimentView = (
   );
 
   useEffect(() => {
+    isMountedRef.current = true;
     fetchExperiment({ showLoading: true });
     return () => {
+      isMountedRef.current = false;
       stopPolling();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

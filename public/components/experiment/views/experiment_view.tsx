@@ -17,7 +17,7 @@ import {
   EuiText,
   EuiToolTip,
 } from '@elastic/eui';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { CoreStart } from '../../../../../../src/core/public';
 import {
@@ -65,7 +65,7 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
 }) => {
   const { experiment, loading, error, refetch } = useExperimentView(http, id, dataSourceId);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const experimentService = new ExperimentService(http);
+  const experimentService = useMemo(() => new ExperimentService(http), [http]);
 
   const pageTitle = experiment ? getExperimentDisplayName(experiment.name) : 'Experiment Details';
   const descriptionText =

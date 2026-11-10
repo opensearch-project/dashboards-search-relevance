@@ -149,6 +149,55 @@ describe('useExperimentView', () => {
     jest.useRealTimers();
   });
 
+  it('stops polling after repeated empty poll-tick responses', async () => {
+    jest.useFakeTimers();
+
+    mockHttp.get
+      .mockResolvedValueOnce({
+        hits: { hits: [{ _source: { id: '1', status: 'PROCESSING' } }] },
+      })
+      .mockResolvedValue({ hits: { hits: [] } });
+
+    const { result } = renderHook(() => useExperimentView(mockHttp as any, '1'));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.experiment?.status).toBe('PROCESSING');
+
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(mockHttp.get).toHaveBeenCalledTimes(2));
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(mockHttp.get).toHaveBeenCalledTimes(3));
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(mockHttp.get).toHaveBeenCalledTimes(4));
+
+    // A 5th tick should not occur since polling stops after MAX_POLL_ERRORS (3)
+    // consecutive empty responses, same as for thrown errors.
+    jest.advanceTimersByTime(5000);
+    expect(mockHttp.get).toHaveBeenCalledTimes(4);
+    expect(result.current.experiment?.status).toBe('PROCESSING');
+    expect(result.current.error).toBe(null);
+
+    jest.useRealTimers();
+  });
+
+  it('does not update state after unmount while a fetch is in flight', async () => {
+    let resolveFetch: (value: any) => void = () => {};
+    mockHttp.get.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve;
+        })
+    );
+
+    const { unmount } = renderHook(() => useExperimentView(mockHttp as any, '1'));
+
+    unmount();
+
+    expect(() =>
+      resolveFetch({ hits: { hits: [{ _source: { id: '1', status: 'COMPLETED' } }] } })
+    ).not.toThrow();
+  });
+
   it('refetch() triggers a fresh loading fetch', async () => {
     mockHttp.get.mockResolvedValue({
       hits: { hits: [{ _source: { id: '1', status: 'COMPLETED' } }] },

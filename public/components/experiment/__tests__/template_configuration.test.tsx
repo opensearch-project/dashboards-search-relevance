@@ -119,4 +119,17 @@ describe('TemplateConfiguration', () => {
       expect(mockHistory.push).toHaveBeenCalledWith('/experiment/view/exp-123?dataSourceId=ds-1');
     });
   });
+
+  it('URL-encodes the experiment id and dataSourceId when navigating after creation', async () => {
+    mockHttp.post.mockResolvedValue({ experiment_id: 'exp/123' });
+
+    render(<TemplateConfiguration {...defaultProps} dataSourceId="ds a&b" />);
+    fireEvent.click(screen.getByText('Next'));
+
+    await waitFor(() => {
+      expect(mockHistory.push).toHaveBeenCalledWith(
+        '/experiment/view/exp%2F123?dataSourceId=ds%20a%26b'
+      );
+    });
+  });
 });

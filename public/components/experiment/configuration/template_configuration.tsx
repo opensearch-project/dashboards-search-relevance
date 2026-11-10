@@ -69,8 +69,8 @@ export const TemplateConfiguration = ({
             `Experiment ${response.experiment_id} created successfully`
           );
           history.push(
-            `${Routes.ExperimentViewPrefix}/${response.experiment_id}${
-              dataSourceId ? `?dataSourceId=${dataSourceId}` : ''
+            `${Routes.ExperimentViewPrefix}/${encodeURIComponent(response.experiment_id)}${
+              dataSourceId ? `?dataSourceId=${encodeURIComponent(dataSourceId)}` : ''
             }`
           );
           if (configurationFormRef.current) {
