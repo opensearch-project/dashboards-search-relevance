@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ItemDetailHoverPane } from '../item_detail_hover_pane';
 
 const mockItem = {
@@ -139,5 +139,23 @@ describe('ItemDetailHoverPane', () => {
     const img = container.querySelector('img');
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute('src', 'https://example.com/image.jpg');
+  });
+
+  it('should skip non-string image field values without crashing', () => {
+    const itemWithInvalidImage = {
+      ...mockItem,
+      thumbnail: { url: 'https://example.com/image.jpg' },
+    };
+
+    const { container } = render(
+      <ItemDetailHoverPane
+        {...defaultProps}
+        item={itemWithInvalidImage}
+        imageFieldName="thumbnail"
+      />
+    );
+
+    expect(container.querySelector('img')).toBeNull();
+    expect(screen.getByText('Item Details')).toBeInTheDocument();
   });
 });
