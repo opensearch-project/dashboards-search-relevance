@@ -204,4 +204,138 @@ describe('ExperimentView', () => {
     expect(screen.queryByText('Unable to load experiment')).not.toBeInTheDocument();
     expect(screen.queryByText('Loading experiment data...')).not.toBeInTheDocument();
   });
+
+  it('renders a processing state without mounting the type-specific sub-view', async () => {
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'exp-1',
+              type: ExperimentType.PAIRWISE_COMPARISON,
+              status: 'PROCESSING',
+            },
+          },
+        ],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Experiment is running')).toBeInTheDocument();
+    });
+    expect(screen.queryByText('Pairwise View')).not.toBeInTheDocument();
+  });
+
+  it('shows an elapsed-time label while processing that ticks every second', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'exp-1',
+              type: ExperimentType.HYBRID_OPTIMIZER,
+              status: 'PROCESSING',
+              timestamp: '2026-01-01T00:00:00.000Z',
+            },
+          },
+        ],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Running for 0s')).toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(3000);
+
+    await waitFor(() => {
+      expect(screen.getByText('Running for 3s')).toBeInTheDocument();
+    });
+
+    jest.useRealTimers();
+  });
+
+  it('polls while processing and renders the full view once the experiment completes', async () => {
+    jest.useFakeTimers();
+
+    mockHttp.get
+      .mockResolvedValueOnce({
+        hits: {
+          hits: [
+            {
+              _source: {
+                id: 'exp-1',
+                type: ExperimentType.PAIRWISE_COMPARISON,
+                status: 'PROCESSING',
+              },
+            },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({
+        hits: {
+          hits: [
+            {
+              _source: {
+                id: 'exp-1',
+                type: ExperimentType.PAIRWISE_COMPARISON,
+                status: 'COMPLETED',
+              },
+            },
+          ],
+        },
+      });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Experiment is running')).toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(5000);
+
+    await waitFor(() => {
+      expect(screen.getByText('Pairwise View')).toBeInTheDocument();
+    });
+    expect(mockHttp.get).toHaveBeenCalledTimes(2);
+
+    jest.useRealTimers();
+  });
+
+  it('stops polling cleanly on unmount without throwing', async () => {
+    jest.useFakeTimers();
+
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'exp-1',
+              type: ExperimentType.PAIRWISE_COMPARISON,
+              status: 'PROCESSING',
+            },
+          },
+        ],
+      },
+    });
+
+    const { unmount } = render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Experiment is running')).toBeInTheDocument();
+    });
+
+    unmount();
+
+    expect(() => jest.advanceTimersByTime(5000)).not.toThrow();
+
+    jest.useRealTimers();
+  });
 });

@@ -97,4 +97,26 @@ describe('TemplateConfiguration', () => {
 
     expect(screen.getByText('Next')).toBeInTheDocument();
   });
+
+  it('navigates to the experiment view page after successful creation', async () => {
+    mockHttp.post.mockResolvedValue({ experiment_id: 'exp-123' });
+
+    render(<TemplateConfiguration {...defaultProps} />);
+    fireEvent.click(screen.getByText('Next'));
+
+    await waitFor(() => {
+      expect(mockHistory.push).toHaveBeenCalledWith('/experiment/view/exp-123');
+    });
+  });
+
+  it('includes dataSourceId as a query param when navigating after creation', async () => {
+    mockHttp.post.mockResolvedValue({ experiment_id: 'exp-123' });
+
+    render(<TemplateConfiguration {...defaultProps} dataSourceId="ds-1" />);
+    fireEvent.click(screen.getByText('Next'));
+
+    await waitFor(() => {
+      expect(mockHistory.push).toHaveBeenCalledWith('/experiment/view/exp-123?dataSourceId=ds-1');
+    });
+  });
 });
