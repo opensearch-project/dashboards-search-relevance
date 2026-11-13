@@ -78,6 +78,25 @@ describe('ResultItems', () => {
     expect(image).toHaveAttribute('src', 'https://example.com/image.jpg');
   });
 
+  it('skips non-string image field values without crashing', () => {
+    const propsWithInvalidImage = {
+      ...defaultProps,
+      imageFieldName: 'image',
+      items: [
+        {
+          _id: '1',
+          rank: 1,
+          title: 'Test Document 1',
+          image: 1234,
+        },
+      ],
+    };
+
+    const { container } = render(<ResultItems {...propsWithInvalidImage} />);
+    expect(screen.getByText('Test Document 1')).toBeInTheDocument();
+    expect(container.querySelector('img')).toBeNull();
+  });
+
   it('right-aligns text content for resultNum 1', () => {
     const { container } = render(<ResultItems {...defaultProps} resultNum={1} />);
     const textDivs = container.querySelectorAll('.font-mono.text-xs');
