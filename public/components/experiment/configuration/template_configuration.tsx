@@ -68,7 +68,11 @@ export const TemplateConfiguration = ({
           notifications.toasts.addSuccess(
             `Experiment ${response.experiment_id} created successfully`
           );
-          history.push(Routes.Home);
+          history.push(
+            `${Routes.ExperimentViewPrefix}/${encodeURIComponent(response.experiment_id)}${
+              dataSourceId ? `?dataSourceId=${encodeURIComponent(dataSourceId)}` : ''
+            }`
+          );
           if (configurationFormRef.current) {
             configurationFormRef.current.clearFormErrors();
           }
