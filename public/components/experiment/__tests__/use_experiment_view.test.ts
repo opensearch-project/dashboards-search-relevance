@@ -119,7 +119,7 @@ describe('useExperimentView', () => {
     jest.useRealTimers();
   });
 
-  it('stops polling after repeated poll-tick errors without surfacing a loading error', async () => {
+  it('stops polling after repeated poll-tick errors and surfaces a retryable warning', async () => {
     jest.useFakeTimers();
 
     mockHttp.get
@@ -145,11 +145,12 @@ describe('useExperimentView', () => {
     expect(mockHttp.get).toHaveBeenCalledTimes(4);
     expect(result.current.experiment?.status).toBe('PROCESSING');
     expect(result.current.error).toBe(null);
+    expect(result.current.warning).toMatch(/Lost connection/);
 
     jest.useRealTimers();
   });
 
-  it('stops polling after repeated empty poll-tick responses', async () => {
+  it('stops polling after repeated empty poll-tick responses and surfaces a retryable warning', async () => {
     jest.useFakeTimers();
 
     mockHttp.get
@@ -176,6 +177,7 @@ describe('useExperimentView', () => {
     expect(mockHttp.get).toHaveBeenCalledTimes(4);
     expect(result.current.experiment?.status).toBe('PROCESSING');
     expect(result.current.error).toBe(null);
+    expect(result.current.warning).toMatch(/Lost connection/);
 
     jest.useRealTimers();
   });

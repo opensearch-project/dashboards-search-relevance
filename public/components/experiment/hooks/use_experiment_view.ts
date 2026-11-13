@@ -10,6 +10,8 @@ import { ExperimentService } from '../services/experiment_service';
 
 const POLL_INTERVAL_MS = 5000;
 const MAX_POLL_ERRORS = 3;
+const POLL_INTERRUPTED_WARNING =
+  'Lost connection while the experiment was running. Retry to check the latest status.';
 
 export const useExperimentView = (
   http: CoreStart['http'],
@@ -19,6 +21,7 @@ export const useExperimentView = (
   const [experiment, setExperiment] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
   const [refreshRevision, setRefreshRevision] = useState(0);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -41,6 +44,7 @@ export const useExperimentView = (
         if (showLoading && isMountedRef.current) {
           setLoading(true);
           setError(null);
+          setWarning(null);
         }
 
         const response = await experimentServiceRef.current.getExperiment(id, dataSourceId);
@@ -54,6 +58,7 @@ export const useExperimentView = (
           if (parsedExperiment.success) {
             setExperiment(parsedExperiment.data);
             setError(null);
+            setWarning(null);
             pollErrorCount.current = 0;
 
             if (parsedExperiment.data.status !== 'PROCESSING') {
@@ -74,6 +79,7 @@ export const useExperimentView = (
           pollErrorCount.current += 1;
           if (pollErrorCount.current >= MAX_POLL_ERRORS) {
             stopPolling();
+            setWarning(POLL_INTERRUPTED_WARNING);
           }
         }
       } catch (err) {
@@ -93,6 +99,7 @@ export const useExperimentView = (
           pollErrorCount.current += 1;
           if (pollErrorCount.current >= MAX_POLL_ERRORS) {
             stopPolling();
+            setWarning(POLL_INTERRUPTED_WARNING);
           }
         }
       } finally {
@@ -136,6 +143,7 @@ export const useExperimentView = (
     experiment,
     loading,
     error,
+    warning,
     refetch: () => setRefreshRevision((r) => r + 1),
   };
 };

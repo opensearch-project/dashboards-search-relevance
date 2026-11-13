@@ -5,6 +5,7 @@
 
 import {
   EuiBadge,
+  EuiButton,
   EuiButtonEmpty,
   EuiCallOut,
   EuiFlexGroup,
@@ -63,7 +64,11 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
   dataSourceId,
   history,
 }) => {
-  const { experiment, loading, error, refetch } = useExperimentView(http, id, dataSourceId);
+  const { experiment, loading, error, warning, refetch } = useExperimentView(
+    http,
+    id,
+    dataSourceId
+  );
   const [isEditOpen, setIsEditOpen] = useState(false);
   const experimentService = useMemo(() => new ExperimentService(http), [http]);
 
@@ -76,7 +81,9 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
       : undefined;
 
   const isProcessing = experiment?.status === 'PROCESSING';
-  const showResults = Boolean(experiment) && !isProcessing;
+  const isCompleted = experiment?.status === 'COMPLETED';
+  const isFailed = experiment?.status === 'ERROR' || experiment?.status === 'TIMEOUT';
+  const showResults = Boolean(experiment) && isCompleted;
 
   const editButton = (
     <EuiButtonEmpty
@@ -150,7 +157,37 @@ export const ExperimentView: React.FC<ExperimentViewProps> = ({
           </EuiText>
         </>
       )}
-      {experiment && isProcessing && (
+      {experiment && isFailed && (
+        <>
+          <EuiSpacer size="l" />
+          <EuiCallOut
+            title="Experiment failed"
+            color="danger"
+            iconType="alert"
+            data-test-subj="experimentFailedCallOut"
+          >
+            <p>This experiment ended with status {experiment.status}.</p>
+          </EuiCallOut>
+        </>
+      )}
+      {experiment && isProcessing && warning && (
+        <>
+          <EuiSpacer size="l" />
+          <EuiCallOut
+            title="Unable to refresh status"
+            color="warning"
+            iconType="alert"
+            data-test-subj="experimentPollWarningCallOut"
+          >
+            <p>{warning}</p>
+            <EuiSpacer size="s" />
+            <EuiButton size="s" onClick={refetch} data-test-subj="experimentPollRetryButton">
+              Retry
+            </EuiButton>
+          </EuiCallOut>
+        </>
+      )}
+      {experiment && isProcessing && !warning && (
         <>
           <EuiSpacer size="l" />
           <EuiPanel

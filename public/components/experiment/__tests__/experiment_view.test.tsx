@@ -192,7 +192,15 @@ describe('ExperimentView', () => {
   it('does not render an error callout when the experiment loads successfully', async () => {
     mockHttp.get.mockResolvedValue({
       hits: {
-        hits: [{ _source: { id: 'exp-1', type: ExperimentType.PAIRWISE_COMPARISON } }],
+        hits: [
+          {
+            _source: {
+              id: 'exp-1',
+              type: ExperimentType.PAIRWISE_COMPARISON,
+              status: 'COMPLETED',
+            },
+          },
+        ],
       },
     });
 
@@ -335,6 +343,71 @@ describe('ExperimentView', () => {
     unmount();
 
     expect(() => jest.advanceTimersByTime(5000)).not.toThrow();
+
+    jest.useRealTimers();
+  });
+
+  it('shows a failure callout instead of results when status is ERROR', async () => {
+    mockHttp.get.mockResolvedValue({
+      hits: {
+        hits: [
+          {
+            _source: {
+              id: 'exp-1',
+              type: ExperimentType.PAIRWISE_COMPARISON,
+              status: 'ERROR',
+            },
+          },
+        ],
+      },
+    });
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('experimentFailedCallOut')).toBeInTheDocument();
+    });
+    expect(screen.getByText(/ended with status ERROR/)).toBeInTheDocument();
+    expect(screen.queryByText('Pairwise View')).not.toBeInTheDocument();
+    expect(screen.queryByText('Experiment is running')).not.toBeInTheDocument();
+  });
+
+  it('shows a retryable warning when polling is interrupted', async () => {
+    jest.useFakeTimers();
+
+    mockHttp.get
+      .mockResolvedValueOnce({
+        hits: {
+          hits: [
+            {
+              _source: {
+                id: 'exp-1',
+                type: ExperimentType.PAIRWISE_COMPARISON,
+                status: 'PROCESSING',
+              },
+            },
+          ],
+        },
+      })
+      .mockRejectedValue(new Error('poll failed'));
+
+    render(<ExperimentView {...defaultProps} />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Experiment is running')).toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(mockHttp.get).toHaveBeenCalledTimes(2));
+    jest.advanceTimersByTime(5000);
+    await waitFor(() => expect(mockHttp.get).toHaveBeenCalledTimes(3));
+    jest.advanceTimersByTime(5000);
+
+    await waitFor(() => {
+      expect(screen.getByTestId('experimentPollWarningCallOut')).toBeInTheDocument();
+    });
+    expect(screen.getByTestId('experimentPollRetryButton')).toBeInTheDocument();
+    expect(screen.queryByText('Experiment is running')).not.toBeInTheDocument();
 
     jest.useRealTimers();
   });
