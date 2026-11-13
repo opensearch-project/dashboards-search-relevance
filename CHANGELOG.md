@@ -7,28 +7,21 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 ### Breaking Changes
 
 ### Features
-* Show per-query OpenSearch search latency (took) in experiment results ([#942](https://github.com/opensearch-project/dashboards-search-relevance/issues/942))
+* Improve experiment detail UI for schedule information. ([#809](https://github.com/opensearch-project/dashboards-search-relevance/pull/809))
 
 ### Enhancements
 * Move Workbench section navigation above the page content to provide more space for experiments and results. ([#977](https://github.com/opensearch-project/dashboards-search-relevance/pull/977))
-* Gate the `/search-relevance` chat command on data source availability; report an unsupported message when the workspace has no data source the Workbench can use (e.g. only AnalyticEngine data sources) ([#970](https://github.com/opensearch-project/dashboards-search-relevance/pull/970))
-* Reduce O(n²) result matching in VisualComparison and connection lines by precomputing `_id` lookup maps ([#881](https://github.com/opensearch-project/dashboards-search-relevance/issues/881))
-* Rename `%SearchText%` to `%queryText%` in Query Template ([#774](https://github.com/opensearch-project/dashboards-search-relevance/pull/774))
-* Added missing tool tips for Recall, MRR and DCG metrics in the experiment results page. ([#967](https://github.com/opensearch-project/dashboards-search-relevance/pull/967)) 
 
 ### Bug Fixes
-* Escape cells in the document scores CSV export ([#957](https://github.com/opensearch-project/dashboards-search-relevance/pull/957))
+* Surface the detailed error message on the Hybrid Optimizer experiment view, and show an informative empty state instead of a blank results table when an experiment completes with no evaluation results ([#550](https://github.com/opensearch-project/dashboards-search-relevance/issues/550))
+* Guard visual comparison image rendering against non-string field values to prevent a crash when an image field contains numbers, arrays, booleans, or objects ([#945](https://github.com/opensearch-project/dashboards-search-relevance/issues/945))
 
 ### Infrastructure
 * Disable Codecov `changes` status check so indirect coverage diffs do not fail PRs
-* Fix Lychee link checking attempting to test a fake link. ([#962](https://github.com/opensearch-project/dashboards-search-relevance/pull/962))
 - Add SPDX license header checker and missing headers ([#941](https://github.com/opensearch-project/dashboards-search-relevance/pull/941))
-
-- Install the functional test repository's pinned Cypress in the FTR E2E workflow ([#958](https://github.com/opensearch-project/dashboards-search-relevance/pull/958))
 
 ### Documentation
 
 ### Maintenance
-* Add unit tests for ExperimentMetadataFields, previously untested (0% coverage) ([#968](https://github.com/opensearch-project/dashboards-search-relevance/pull/968))
 
 ### Refactoring
