@@ -40,7 +40,7 @@ import { loadExperimentResourcesParallel } from '../services/experiment_resource
 import { formatTook, parseTook } from '../../../utils/took';
 
 interface VariantEvaluation {
-  metrics: Record<string, number>;
+  metrics: Record<string, number | string>;
   took?: number;
 }
 
@@ -378,6 +378,9 @@ export const HybridOptimizerExperimentView: React.FC<HybridOptimizerExperimentVi
             sortable: true,
             render: (value: any) => {
               if (value !== undefined && value !== null) {
+                if (typeof value === 'string') {
+                  return value; // Return string values directly
+                }
                 return new Intl.NumberFormat(undefined, {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,

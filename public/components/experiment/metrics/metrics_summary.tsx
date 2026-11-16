@@ -66,10 +66,20 @@ export const MetricsSummaryPanel: React.FC<MetricsSummaryPanelProps> = ({
   metrics,
   tookValues,
 }) => {
-  const formatValue = (values: number[] | undefined) => {
+  const formatValue = (values: (number | string)[] | undefined) => {
     if (!values || values.length === 0) return '-';
-    // Calculate average of the values
-    const avg = values.reduce((sum, val) => sum + val, 0) / values.length;
+    
+    // Check if any value is a string
+    const stringValues = values.filter(val => typeof val === 'string');
+    if (stringValues.length > 0) {
+      // If we have string values, return the first one
+      return stringValues[0];
+    }
+    
+    // For numeric values, calculate average as before
+    const numericValues = values.filter(val => typeof val === 'number') as number[];
+    if (numericValues.length === 0) return '-';
+    const avg = numericValues.reduce((sum, val) => sum + val, 0) / numericValues.length;
     return avg.toFixed(2).replace(/\.00$/, '');
   };
 
